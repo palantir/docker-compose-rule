@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<Configuration monitorInterval="5">
+    <Appenders>
+        <RollingFile name="LOG" fileName="logs/magritte.log" filePattern="logs/magritte-%d{yyyy-MM-dd}.log.gz">
+            <PatternLayout pattern="%d{ISO8601} %-5p - %t %c - %m%n"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1"/>
+            </Policies>
+            <DefaultRolloverStrategy max="30"/>
+        </RollingFile>
+
+        <Console name="STDOUT" target="SYSTEM_OUT">
+            <PatternLayout pattern="%d{ISO8601} %-5p - %t %c - %m%n"/>
+        </Console>
+    </Appenders>
+    <Loggers>
+        <Logger name="com.palantir" level="debug" additivity="false">
+            <AppenderRef ref="STDOUT"/>
+            <AppenderRef ref="LOG"/>
+        </Logger>
+
+        <Logger name="com.palantir.dia" level="debug" additivity="false">
+            <AppenderRef ref="STDOUT"/>
+            <AppenderRef ref="LOG"/>
+        </Logger>
+
+        <Logger name="org.apache.camel" level="debug" additivity="false">
+            <AppenderRef ref="STDOUT"/>
+            <AppenderRef ref="LOG"/>
+        </Logger>
+
+        <Root level="warn">
+            <AppenderRef ref="STDOUT"/>
+            <AppenderRef ref="LOG"/>
+        </Root>
+    </Loggers>
+</Configuration>

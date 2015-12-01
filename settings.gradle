@@ -1,0 +1,5 @@
+rootProject.name='magritte'
+
+include 'magritte-core'
+include 'magritte-app'
+include 'magritte-ete'

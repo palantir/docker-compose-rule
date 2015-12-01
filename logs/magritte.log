@@ -1,0 +1,1257 @@
+2015-12-01T16:37:08,715 DEBUG - main com.palantir.magritte.ete.DockerComposition - Using docker-compose file 'src/test/resources/docker-compose.yaml'
+2015-12-01T16:37:08,727 DEBUG - main com.palantir.magritte.ete.DockerComposition - Starting docker-compose cluster
+2015-12-01T16:37:09,029 DEBUG - main com.palantir.magritte.ete.DockerComposeExecutable - db2 uses an image, skipping
+db uses an image, skipping
+
+2015-12-01T16:37:09,716 DEBUG - main com.palantir.magritte.ete.DockerComposeExecutable - Creating resources_db2_1
+Creating resources_db_1
+
+2015-12-01T16:37:09,716 DEBUG - main com.palantir.magritte.ete.DockerComposition - Starting log collection
+2015-12-01T16:37:09,716 DEBUG - main com.palantir.magritte.ete.DockerComposition - Waiting for services
+2015-12-01T16:37:09,717 DEBUG - main com.palantir.magritte.ete.DockerComposition - Waiting for service 'Service [serviceName=db, dockerComposeProcess=com.palantir.magritte.ete.DockerComposeExecutable@75437611, dockerMachine=com.palantir.magritte.ete.DockerMachine@350aac89]'
+2015-12-01T16:37:10,075 DEBUG - main com.palantir.magritte.ete.DockerComposeExecutable - stty: stdin isn't a terminal
+     Name                   Command               State           Ports          
+--------------------------------------------------------------------------------
+resources_db_1   /docker-entrypoint.sh postgres   Up      0.0.0.0:5433->5432/tcp 
+
+2015-12-01T16:37:10,080 INFO  - main com.palantir.magritte.ete.Ports - Waiting PT120S for ports '[DockerPort [ip=192.168.99.100, portMapping=PortMapping [externalPort=5433, internalPort=5432]]]' to be open
+2015-12-01T16:37:14,666 INFO  - main com.palantir.magritte.ete.Ports - All ports open
+2015-12-01T16:37:14,667 DEBUG - main com.palantir.magritte.ete.DockerComposition - Waiting for service 'Service [serviceName=db2, dockerComposeProcess=com.palantir.magritte.ete.DockerComposeExecutable@75437611, dockerMachine=com.palantir.magritte.ete.DockerMachine@350aac89]'
+2015-12-01T16:37:15,029 DEBUG - main com.palantir.magritte.ete.DockerComposeExecutable - stty: stdin isn't a terminal
+     Name                    Command               State            Ports          
+----------------------------------------------------------------------------------
+resources_db2_1   /docker-entrypoint.sh postgres   Up      0.0.0.0:33349->5432/tcp 
+
+2015-12-01T16:37:15,029 INFO  - main com.palantir.magritte.ete.Ports - Waiting PT120S for ports '[DockerPort [ip=192.168.99.100, portMapping=PortMapping [externalPort=33349, internalPort=5432]]]' to be open
+2015-12-01T16:37:15,081 INFO  - main com.palantir.magritte.ete.Ports - All ports open
+2015-12-01T16:37:15,081 DEBUG - main com.palantir.magritte.ete.DockerComposition - docker-compose cluster started
+2015-12-01T16:37:15,083 DEBUG - main com.palantir.magritte.ete.DockerComposition - Starting docker-compose cluster
+2015-12-01T16:37:15,358 DEBUG - main com.palantir.magritte.ete.DockerComposeExecutable - db2 uses an image, skipping
+db uses an image, skipping
+
+2015-12-01T16:37:15,697 DEBUG - main com.palantir.magritte.ete.DockerComposeExecutable - resources_db2_1 is up-to-date
+resources_db_1 is up-to-date
+
+2015-12-01T16:37:15,697 DEBUG - main com.palantir.magritte.ete.DockerComposition - Starting log collection
+2015-12-01T16:37:16,036 DEBUG - main com.palantir.magritte.ete.DockerComposeExecutable - stty: stdin isn't a terminal
+     Name                    Command               State            Ports          
+----------------------------------------------------------------------------------
+resources_db2_1   /docker-entrypoint.sh postgres   Up      0.0.0.0:33349->5432/tcp 
+resources_db_1    /docker-entrypoint.sh postgres   Up      0.0.0.0:5433->5432/tcp  
+
+2015-12-01T16:37:16,041 DEBUG - main com.palantir.magritte.ete.DockerComposition - Waiting for services
+2015-12-01T16:37:16,041 INFO  - pool-4-thread-2 com.palantir.magritte.ete.FileLogCollector - Writing logs for container 'db' to '/var/folders/y8/h2h504q13h1gydckx1b4r5sd080c1_/T/junit8820599720303313670/junit1489158144686632462/db.log'
+2015-12-01T16:37:16,041 INFO  - pool-4-thread-1 com.palantir.magritte.ete.FileLogCollector - Writing logs for container 'db2' to '/var/folders/y8/h2h504q13h1gydckx1b4r5sd080c1_/T/junit8820599720303313670/junit1489158144686632462/db2.log'
+2015-12-01T16:37:16,041 DEBUG - main com.palantir.magritte.ete.DockerComposition - Waiting for service 'Service [serviceName=db, dockerComposeProcess=com.palantir.magritte.ete.DockerComposeExecutable@75437611, dockerMachine=com.palantir.magritte.ete.DockerMachine@350aac89]'
+2015-12-01T16:37:16,525 DEBUG - main com.palantir.magritte.ete.DockerComposeExecutable - stty: stdin isn't a terminal
+     Name                   Command               State           Ports          
+--------------------------------------------------------------------------------
+resources_db_1   /docker-entrypoint.sh postgres   Up      0.0.0.0:5433->5432/tcp 
+
+2015-12-01T16:37:16,525 INFO  - main com.palantir.magritte.ete.Ports - Waiting PT120S for ports '[DockerPort [ip=192.168.99.100, portMapping=PortMapping [externalPort=5433, internalPort=5432]]]' to be open
+2015-12-01T16:37:16,577 INFO  - main com.palantir.magritte.ete.Ports - All ports open
+2015-12-01T16:37:16,577 DEBUG - main com.palantir.magritte.ete.DockerComposition - Waiting for service 'Service [serviceName=db2, dockerComposeProcess=com.palantir.magritte.ete.DockerComposeExecutable@75437611, dockerMachine=com.palantir.magritte.ete.DockerMachine@350aac89]'
+2015-12-01T16:37:16,917 DEBUG - main com.palantir.magritte.ete.DockerComposeExecutable - stty: stdin isn't a terminal
+     Name                    Command               State            Ports          
+----------------------------------------------------------------------------------
+resources_db2_1   /docker-entrypoint.sh postgres   Up      0.0.0.0:33349->5432/tcp 
+
+2015-12-01T16:37:16,917 INFO  - main com.palantir.magritte.ete.Ports - Waiting PT120S for ports '[DockerPort [ip=192.168.99.100, portMapping=PortMapping [externalPort=33349, internalPort=5432]]]' to be open
+2015-12-01T16:37:16,969 INFO  - main com.palantir.magritte.ete.Ports - All ports open
+2015-12-01T16:37:16,969 DEBUG - main com.palantir.magritte.ete.DockerComposition - docker-compose cluster started
+2015-12-01T16:37:16,969 DEBUG - main com.palantir.magritte.ete.DockerComposition - Killing docker-compose cluster
+2015-12-01T16:37:17,420 DEBUG - main com.palantir.magritte.ete.DockerComposeExecutable - Killing resources_db_1 ... 
+Killing resources_db2_1 ... 
+[2A[2KKilling resources_db_1 ... done
+[2B[1A[2KKilling resources_db2_1 ... done
+[1B
+2015-12-01T16:37:17,759 DEBUG - main com.palantir.magritte.ete.DockerComposeExecutable - Going to remove resources_db_1, resources_db2_1
+Removing resources_db_1 ... 
+Removing resources_db2_1 ... 
+[2A[2KRemoving resources_db_1 ... done
+[2B[1A[2KRemoving resources_db2_1 ... done
+[1B
+2015-12-01T16:37:17,811 WARN  - main com.palantir.magritte.ete.FileLogCollector - docker containers were still running when log collection stopped
+2015-12-01T16:37:17,827 DEBUG - main com.palantir.magritte.ete.DockerComposition - Killing docker-compose cluster
+2015-12-01T16:37:18,146 DEBUG - main com.palantir.magritte.ete.DockerComposeExecutable - 
+2015-12-01T16:37:18,480 DEBUG - main com.palantir.magritte.ete.DockerComposeExecutable - No stopped containers
+
+2015-12-01T16:37:18,481 DEBUG - main com.palantir.magritte.ete.DockerComposition - Using docker-compose file 'src/test/resources/docker-compose.yaml'
+2015-12-01T16:37:18,482 DEBUG - main com.palantir.magritte.ete.DockerComposition - Starting docker-compose cluster
+2015-12-01T16:37:18,752 DEBUG - main com.palantir.magritte.ete.DockerComposeExecutable - db2 uses an image, skipping
+db uses an image, skipping
+
+2015-12-01T16:37:19,456 DEBUG - main com.palantir.magritte.ete.DockerComposeExecutable - Creating resources_db2_1
+Creating resources_db_1
+
+2015-12-01T16:37:19,457 DEBUG - main com.palantir.magritte.ete.DockerComposition - Starting log collection
+2015-12-01T16:37:19,457 DEBUG - main com.palantir.magritte.ete.DockerComposition - Waiting for services
+2015-12-01T16:37:19,457 DEBUG - main com.palantir.magritte.ete.DockerComposition - Waiting for service 'Service [serviceName=db2, dockerComposeProcess=com.palantir.magritte.ete.DockerComposeExecutable@769a1df5, dockerMachine=com.palantir.magritte.ete.DockerMachine@41f69e84]'
+2015-12-01T16:37:19,833 DEBUG - main com.palantir.magritte.ete.DockerComposeExecutable - stty: stdin isn't a terminal
+     Name                    Command               State            Ports          
+----------------------------------------------------------------------------------
+resources_db2_1   /docker-entrypoint.sh postgres   Up      0.0.0.0:33350->5432/tcp 
+
+2015-12-01T16:37:19,833 INFO  - main com.palantir.magritte.ete.Ports - Waiting PT120S for ports '[DockerPort [ip=192.168.99.100, portMapping=PortMapping [externalPort=33350, internalPort=5432]]]' to be open
+2015-12-01T16:37:24,137 INFO  - main com.palantir.magritte.ete.Ports - All ports open
+2015-12-01T16:37:24,137 DEBUG - main com.palantir.magritte.ete.DockerComposition - Waiting for service 'Service [serviceName=db, dockerComposeProcess=com.palantir.magritte.ete.DockerComposeExecutable@769a1df5, dockerMachine=com.palantir.magritte.ete.DockerMachine@41f69e84]'
+2015-12-01T16:37:24,492 DEBUG - main com.palantir.magritte.ete.DockerComposeExecutable - stty: stdin isn't a terminal
+     Name                   Command               State           Ports          
+--------------------------------------------------------------------------------
+resources_db_1   /docker-entrypoint.sh postgres   Up      0.0.0.0:5433->5432/tcp 
+
+2015-12-01T16:37:24,492 INFO  - main com.palantir.magritte.ete.Ports - Waiting PT120S for ports '[DockerPort [ip=192.168.99.100, portMapping=PortMapping [externalPort=5433, internalPort=5432]]]' to be open
+2015-12-01T16:37:24,544 INFO  - main com.palantir.magritte.ete.Ports - All ports open
+2015-12-01T16:37:24,545 DEBUG - main com.palantir.magritte.ete.DockerComposition - docker-compose cluster started
+2015-12-01T16:37:24,889 DEBUG - main com.palantir.magritte.ete.DockerComposeExecutable - stty: stdin isn't a terminal
+     Name                   Command               State           Ports          
+--------------------------------------------------------------------------------
+resources_db_1   /docker-entrypoint.sh postgres   Up      0.0.0.0:5433->5432/tcp 
+
+2015-12-01T16:37:24,892 DEBUG - main com.palantir.magritte.ete.DockerComposition - Killing docker-compose cluster
+2015-12-01T16:37:25,317 DEBUG - main com.palantir.magritte.ete.DockerComposeExecutable - Killing resources_db_1 ... 
+Killing resources_db2_1 ... 
+[2A[2KKilling resources_db_1 ... done
+[2B[1A[2KKilling resources_db2_1 ... done
+[1B
+2015-12-01T16:37:25,694 DEBUG - main com.palantir.magritte.ete.DockerComposeExecutable - Going to remove resources_db_1, resources_db2_1
+Removing resources_db_1 ... 
+Removing resources_db2_1 ... 
+[2A[2KRemoving resources_db_1 ... done
+[2B[1A[2KRemoving resources_db2_1 ... done
+[1B
+2015-12-01T16:37:25,695 DEBUG - main com.palantir.magritte.ete.DockerComposition - Using docker-compose file 'src/test/resources/docker-compose.yaml'
+2015-12-01T16:37:25,695 DEBUG - main com.palantir.magritte.ete.DockerComposition - Starting docker-compose cluster
+2015-12-01T16:37:25,979 DEBUG - main com.palantir.magritte.ete.DockerComposeExecutable - db2 uses an image, skipping
+db uses an image, skipping
+
+2015-12-01T16:37:26,714 DEBUG - main com.palantir.magritte.ete.DockerComposeExecutable - Creating resources_db2_1
+Creating resources_db_1
+
+2015-12-01T16:37:26,714 DEBUG - main com.palantir.magritte.ete.DockerComposition - Starting log collection
+2015-12-01T16:37:26,714 DEBUG - main com.palantir.magritte.ete.DockerComposition - Waiting for services
+2015-12-01T16:37:26,715 DEBUG - main com.palantir.magritte.ete.DockerComposition - Waiting for service 'Service [serviceName=db2, dockerComposeProcess=com.palantir.magritte.ete.DockerComposeExecutable@2ad48653, dockerMachine=com.palantir.magritte.ete.DockerMachine@6bb4dd34]'
+2015-12-01T16:37:27,103 DEBUG - main com.palantir.magritte.ete.DockerComposeExecutable - stty: stdin isn't a terminal
+     Name                    Command               State            Ports          
+----------------------------------------------------------------------------------
+resources_db2_1   /docker-entrypoint.sh postgres   Up      0.0.0.0:33351->5432/tcp 
+
+2015-12-01T16:37:27,103 INFO  - main com.palantir.magritte.ete.Ports - Waiting PT120S for ports '[DockerPort [ip=192.168.99.100, portMapping=PortMapping [externalPort=33351, internalPort=5432]]]' to be open
+2015-12-01T16:37:31,615 INFO  - main com.palantir.magritte.ete.Ports - All ports open
+2015-12-01T16:37:31,616 DEBUG - main com.palantir.magritte.ete.DockerComposition - Waiting for service 'Service [serviceName=db, dockerComposeProcess=com.palantir.magritte.ete.DockerComposeExecutable@2ad48653, dockerMachine=com.palantir.magritte.ete.DockerMachine@6bb4dd34]'
+2015-12-01T16:37:31,980 DEBUG - main com.palantir.magritte.ete.DockerComposeExecutable - stty: stdin isn't a terminal
+     Name                   Command               State           Ports          
+--------------------------------------------------------------------------------
+resources_db_1   /docker-entrypoint.sh postgres   Up      0.0.0.0:5433->5432/tcp 
+
+2015-12-01T16:37:31,980 INFO  - main com.palantir.magritte.ete.Ports - Waiting PT120S for ports '[DockerPort [ip=192.168.99.100, portMapping=PortMapping [externalPort=5433, internalPort=5432]]]' to be open
+2015-12-01T16:37:32,032 INFO  - main com.palantir.magritte.ete.Ports - All ports open
+2015-12-01T16:37:32,033 DEBUG - main com.palantir.magritte.ete.DockerComposition - docker-compose cluster started
+2015-12-01T16:37:32,372 DEBUG - main com.palantir.magritte.ete.DockerComposeExecutable - stty: stdin isn't a terminal
+     Name                   Command               State           Ports          
+--------------------------------------------------------------------------------
+resources_db_1   /docker-entrypoint.sh postgres   Up      0.0.0.0:5433->5432/tcp 
+
+2015-12-01T16:37:32,374 DEBUG - main com.palantir.magritte.ete.DockerComposition - Killing docker-compose cluster
+2015-12-01T16:37:32,854 DEBUG - main com.palantir.magritte.ete.DockerComposeExecutable - Killing resources_db_1 ... 
+Killing resources_db2_1 ... 
+[1A[2KKilling resources_db2_1 ... done
+[1B[2A[2KKilling resources_db_1 ... done
+[2B
+2015-12-01T16:37:33,210 DEBUG - main com.palantir.magritte.ete.DockerComposeExecutable - Going to remove resources_db_1, resources_db2_1
+Removing resources_db_1 ... 
+Removing resources_db2_1 ... 
+[2A[2KRemoving resources_db_1 ... done
+[2B[1A[2KRemoving resources_db2_1 ... done
+[1B
+2015-12-01T16:37:33,211 DEBUG - main com.palantir.magritte.ete.DockerComposition - Using docker-compose file 'src/test/resources/docker-compose.yaml'
+2015-12-01T16:37:33,211 DEBUG - main com.palantir.magritte.ete.DockerComposition - Starting docker-compose cluster
+2015-12-01T16:37:33,498 DEBUG - main com.palantir.magritte.ete.DockerComposeExecutable - db2 uses an image, skipping
+db uses an image, skipping
+
+2015-12-01T16:37:34,302 DEBUG - main com.palantir.magritte.ete.DockerComposeExecutable - Creating resources_db2_1
+Creating resources_db_1
+
+2015-12-01T16:37:34,303 DEBUG - main com.palantir.magritte.ete.DockerComposition - Starting log collection
+2015-12-01T16:37:34,303 DEBUG - main com.palantir.magritte.ete.DockerComposition - Waiting for services
+2015-12-01T16:37:34,303 DEBUG - main com.palantir.magritte.ete.DockerComposition - Waiting for service 'Service [serviceName=db, dockerComposeProcess=com.palantir.magritte.ete.DockerComposeExecutable@74287ea3, dockerMachine=com.palantir.magritte.ete.DockerMachine@7d7758be]'
+2015-12-01T16:37:34,686 DEBUG - main com.palantir.magritte.ete.DockerComposeExecutable - stty: stdin isn't a terminal
+     Name                   Command               State           Ports          
+--------------------------------------------------------------------------------
+resources_db_1   /docker-entrypoint.sh postgres   Up      0.0.0.0:5433->5432/tcp 
+
+2015-12-01T16:37:34,687 INFO  - main com.palantir.magritte.ete.Ports - Waiting PT120S for ports '[DockerPort [ip=192.168.99.100, portMapping=PortMapping [externalPort=5433, internalPort=5432]]]' to be open
+2015-12-01T16:37:39,258 INFO  - main com.palantir.magritte.ete.Ports - All ports open
+2015-12-01T16:37:39,259 DEBUG - main com.palantir.magritte.ete.DockerComposition - Waiting for service 'Service [serviceName=db2, dockerComposeProcess=com.palantir.magritte.ete.DockerComposeExecutable@74287ea3, dockerMachine=com.palantir.magritte.ete.DockerMachine@7d7758be]'
+2015-12-01T16:37:39,628 DEBUG - main com.palantir.magritte.ete.DockerComposeExecutable - stty: stdin isn't a terminal
+     Name                    Command               State            Ports          
+----------------------------------------------------------------------------------
+resources_db2_1   /docker-entrypoint.sh postgres   Up      0.0.0.0:33352->5432/tcp 
+
+2015-12-01T16:37:39,628 INFO  - main com.palantir.magritte.ete.Ports - Waiting PT120S for ports '[DockerPort [ip=192.168.99.100, portMapping=PortMapping [externalPort=33352, internalPort=5432]]]' to be open
+2015-12-01T16:37:39,680 INFO  - main com.palantir.magritte.ete.Ports - All ports open
+2015-12-01T16:37:39,680 DEBUG - main com.palantir.magritte.ete.DockerComposition - docker-compose cluster started
+2015-12-01T16:37:39,680 DEBUG - main com.palantir.magritte.ete.DockerComposition - Killing docker-compose cluster
+2015-12-01T16:37:40,154 DEBUG - main com.palantir.magritte.ete.DockerComposeExecutable - Killing resources_db_1 ... 
+Killing resources_db2_1 ... 
+[2A[2KKilling resources_db_1 ... done
+[2B[1A[2KKilling resources_db2_1 ... done
+[1B
+2015-12-01T16:37:40,524 DEBUG - main com.palantir.magritte.ete.DockerComposeExecutable - Going to remove resources_db_1, resources_db2_1
+Removing resources_db_1 ... 
+Removing resources_db2_1 ... 
+[1A[2KRemoving resources_db2_1 ... done
+[1B[2A[2KRemoving resources_db_1 ... done
+[2B
+2015-12-01T16:37:40,903 DEBUG - main com.palantir.magritte.ete.DockerComposeExecutable - stty: stdin isn't a terminal
+Name   Command   State   Ports 
+------------------------------
+
+2015-12-01T16:37:40,904 DEBUG - main com.palantir.magritte.ete.DockerComposition - Killing docker-compose cluster
+2015-12-01T16:37:41,260 DEBUG - main com.palantir.magritte.ete.DockerComposeExecutable - 
+2015-12-01T16:37:41,622 DEBUG - main com.palantir.magritte.ete.DockerComposeExecutable - No stopped containers
+
+2015-12-01T16:47:17,179 WARN  - Test worker com.palantir.docker.compose.Container - Container 'service' failed to come up: Condition defined as a lambda expression in com.palantir.docker.compose.Container that uses com.palantir.docker.compose.DockerPort, com.palantir.docker.compose.DockerPortcom.google.common.base.Function 
+Expected: is <true>
+     but: was <false> within 100 milliseconds.
+com.jayway.awaitility.core.ConditionTimeoutException: Condition defined as a lambda expression in com.palantir.docker.compose.Container that uses com.palantir.docker.compose.DockerPort, com.palantir.docker.compose.DockerPortcom.google.common.base.Function 
+Expected: is <true>
+     but: was <false> within 100 milliseconds.
+	at com.jayway.awaitility.core.ConditionAwaiter.await(ConditionAwaiter.java:98) ~[awaitility-1.6.5.jar:?]
+	at com.jayway.awaitility.core.AssertionCondition.await(AssertionCondition.java:117) ~[awaitility-1.6.5.jar:?]
+	at com.jayway.awaitility.core.AssertionCondition.await(AssertionCondition.java:31) ~[awaitility-1.6.5.jar:?]
+	at com.jayway.awaitility.core.ConditionFactory.until(ConditionFactory.java:713) ~[awaitility-1.6.5.jar:?]
+	at com.jayway.awaitility.core.ConditionFactory.until(ConditionFactory.java:566) ~[awaitility-1.6.5.jar:?]
+	at com.palantir.docker.compose.Container.waitForHttpPort(Container.java:54) [main/:?]
+	at com.palantir.docker.compose.ContainerTest.waitForAContainersHttpPortsReturnsFalseWhenThePortIsUnavailable(ContainerTest.java:49) [test/:?]
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[?:1.8.0_65]
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62) ~[?:1.8.0_65]
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43) ~[?:1.8.0_65]
+	at java.lang.reflect.Method.invoke(Method.java:497) ~[?:1.8.0_65]
+	at org.junit.runners.model.FrameworkMethod$1.runReflectiveCall(FrameworkMethod.java:50) [junit-4.12.jar:4.12]
+	at org.junit.internal.runners.model.ReflectiveCallable.run(ReflectiveCallable.java:12) [junit-4.12.jar:4.12]
+	at org.junit.runners.model.FrameworkMethod.invokeExplosively(FrameworkMethod.java:47) [junit-4.12.jar:4.12]
+	at org.junit.internal.runners.statements.InvokeMethod.evaluate(InvokeMethod.java:17) [junit-4.12.jar:4.12]
+	at org.junit.rules.ExpectedException$ExpectedExceptionStatement.evaluate(ExpectedException.java:239) [junit-4.12.jar:4.12]
+	at org.junit.rules.RunRules.evaluate(RunRules.java:20) [junit-4.12.jar:4.12]
+	at org.junit.runners.ParentRunner.runLeaf(ParentRunner.java:325) [junit-4.12.jar:4.12]
+	at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:78) [junit-4.12.jar:4.12]
+	at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:57) [junit-4.12.jar:4.12]
+	at org.junit.runners.ParentRunner$3.run(ParentRunner.java:290) [junit-4.12.jar:4.12]
+	at org.junit.runners.ParentRunner$1.schedule(ParentRunner.java:71) [junit-4.12.jar:4.12]
+	at org.junit.runners.ParentRunner.runChildren(ParentRunner.java:288) [junit-4.12.jar:4.12]
+	at org.junit.runners.ParentRunner.access$000(ParentRunner.java:58) [junit-4.12.jar:4.12]
+	at org.junit.runners.ParentRunner$2.evaluate(ParentRunner.java:268) [junit-4.12.jar:4.12]
+	at org.junit.runners.ParentRunner.run(ParentRunner.java:363) [junit-4.12.jar:4.12]
+	at org.gradle.api.internal.tasks.testing.junit.JUnitTestClassExecuter.runTestClass(JUnitTestClassExecuter.java:105) [gradle-plugins-2.8.jar:2.8]
+	at org.gradle.api.internal.tasks.testing.junit.JUnitTestClassExecuter.execute(JUnitTestClassExecuter.java:56) [gradle-plugins-2.8.jar:2.8]
+	at org.gradle.api.internal.tasks.testing.junit.JUnitTestClassProcessor.processTestClass(JUnitTestClassProcessor.java:64) [gradle-plugins-2.8.jar:2.8]
+	at org.gradle.api.internal.tasks.testing.SuiteTestClassProcessor.processTestClass(SuiteTestClassProcessor.java:50) [gradle-plugins-2.8.jar:2.8]
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[?:1.8.0_65]
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62) ~[?:1.8.0_65]
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43) ~[?:1.8.0_65]
+	at java.lang.reflect.Method.invoke(Method.java:497) ~[?:1.8.0_65]
+	at org.gradle.messaging.dispatch.ReflectionDispatch.dispatch(ReflectionDispatch.java:35) [gradle-messaging-2.8.jar:2.8]
+	at org.gradle.messaging.dispatch.ReflectionDispatch.dispatch(ReflectionDispatch.java:24) [gradle-messaging-2.8.jar:2.8]
+	at org.gradle.messaging.dispatch.ContextClassLoaderDispatch.dispatch(ContextClassLoaderDispatch.java:32) [gradle-messaging-2.8.jar:2.8]
+	at org.gradle.messaging.dispatch.ProxyDispatchAdapter$DispatchingInvocationHandler.invoke(ProxyDispatchAdapter.java:93) [gradle-messaging-2.8.jar:2.8]
+	at com.sun.proxy.$Proxy2.processTestClass(Unknown Source) [?:?]
+	at org.gradle.api.internal.tasks.testing.worker.TestWorker.processTestClass(TestWorker.java:106) [gradle-plugins-2.8.jar:2.8]
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[?:1.8.0_65]
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62) ~[?:1.8.0_65]
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43) ~[?:1.8.0_65]
+	at java.lang.reflect.Method.invoke(Method.java:497) ~[?:1.8.0_65]
+	at org.gradle.messaging.dispatch.ReflectionDispatch.dispatch(ReflectionDispatch.java:35) [gradle-messaging-2.8.jar:2.8]
+	at org.gradle.messaging.dispatch.ReflectionDispatch.dispatch(ReflectionDispatch.java:24) [gradle-messaging-2.8.jar:2.8]
+	at org.gradle.messaging.remote.internal.hub.MessageHub$Handler.run(MessageHub.java:360) [gradle-messaging-2.8.jar:2.8]
+	at org.gradle.internal.concurrent.ExecutorPolicy$CatchAndRecordFailures.onExecute(ExecutorPolicy.java:54) [gradle-base-services-2.8.jar:2.8]
+	at org.gradle.internal.concurrent.StoppableExecutorImpl$1.run(StoppableExecutorImpl.java:40) [gradle-base-services-2.8.jar:2.8]
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1142) [?:1.8.0_65]
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:617) [?:1.8.0_65]
+	at java.lang.Thread.run(Thread.java:745) [?:1.8.0_65]
+2015-12-01T16:47:17,190 INFO  - Test worker com.palantir.docker.compose.Ports - Waiting PT0.100S for ports '[Mock for DockerPort, hashCode: 1539383651]' to be open
+2015-12-01T16:47:17,244 INFO  - Test worker com.palantir.docker.compose.Ports - All ports open
+2015-12-01T16:47:17,245 INFO  - Test worker com.palantir.docker.compose.Ports - Waiting PT0.100S for ports '[Mock for DockerPort, hashCode: 1673577847]' to be open
+2015-12-01T16:47:17,347 WARN  - Test worker com.palantir.docker.compose.Container - Container 'service' failed to come up: Internal port '5432' mapped to '5433' was unavailable
+java.lang.IllegalStateException: Internal port '5432' mapped to '5433' was unavailable
+	at com.palantir.docker.compose.Ports.waitToBeListeningWithin(Ports.java:35) ~[main/:?]
+	at com.palantir.docker.compose.Container.waitForPorts(Container.java:40) [main/:?]
+	at com.palantir.docker.compose.ContainerTest.waitForAContainersPortsReturnsFalseWhenThePortIsUnavailable(ContainerTest.java:36) [test/:?]
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[?:1.8.0_65]
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62) ~[?:1.8.0_65]
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43) ~[?:1.8.0_65]
+	at java.lang.reflect.Method.invoke(Method.java:497) ~[?:1.8.0_65]
+	at org.junit.runners.model.FrameworkMethod$1.runReflectiveCall(FrameworkMethod.java:50) [junit-4.12.jar:4.12]
+	at org.junit.internal.runners.model.ReflectiveCallable.run(ReflectiveCallable.java:12) [junit-4.12.jar:4.12]
+	at org.junit.runners.model.FrameworkMethod.invokeExplosively(FrameworkMethod.java:47) [junit-4.12.jar:4.12]
+	at org.junit.internal.runners.statements.InvokeMethod.evaluate(InvokeMethod.java:17) [junit-4.12.jar:4.12]
+	at org.junit.rules.ExpectedException$ExpectedExceptionStatement.evaluate(ExpectedException.java:239) [junit-4.12.jar:4.12]
+	at org.junit.rules.RunRules.evaluate(RunRules.java:20) [junit-4.12.jar:4.12]
+	at org.junit.runners.ParentRunner.runLeaf(ParentRunner.java:325) [junit-4.12.jar:4.12]
+	at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:78) [junit-4.12.jar:4.12]
+	at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:57) [junit-4.12.jar:4.12]
+	at org.junit.runners.ParentRunner$3.run(ParentRunner.java:290) [junit-4.12.jar:4.12]
+	at org.junit.runners.ParentRunner$1.schedule(ParentRunner.java:71) [junit-4.12.jar:4.12]
+	at org.junit.runners.ParentRunner.runChildren(ParentRunner.java:288) [junit-4.12.jar:4.12]
+	at org.junit.runners.ParentRunner.access$000(ParentRunner.java:58) [junit-4.12.jar:4.12]
+	at org.junit.runners.ParentRunner$2.evaluate(ParentRunner.java:268) [junit-4.12.jar:4.12]
+	at org.junit.runners.ParentRunner.run(ParentRunner.java:363) [junit-4.12.jar:4.12]
+	at org.gradle.api.internal.tasks.testing.junit.JUnitTestClassExecuter.runTestClass(JUnitTestClassExecuter.java:105) [gradle-plugins-2.8.jar:2.8]
+	at org.gradle.api.internal.tasks.testing.junit.JUnitTestClassExecuter.execute(JUnitTestClassExecuter.java:56) [gradle-plugins-2.8.jar:2.8]
+	at org.gradle.api.internal.tasks.testing.junit.JUnitTestClassProcessor.processTestClass(JUnitTestClassProcessor.java:64) [gradle-plugins-2.8.jar:2.8]
+	at org.gradle.api.internal.tasks.testing.SuiteTestClassProcessor.processTestClass(SuiteTestClassProcessor.java:50) [gradle-plugins-2.8.jar:2.8]
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[?:1.8.0_65]
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62) ~[?:1.8.0_65]
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43) ~[?:1.8.0_65]
+	at java.lang.reflect.Method.invoke(Method.java:497) ~[?:1.8.0_65]
+	at org.gradle.messaging.dispatch.ReflectionDispatch.dispatch(ReflectionDispatch.java:35) [gradle-messaging-2.8.jar:2.8]
+	at org.gradle.messaging.dispatch.ReflectionDispatch.dispatch(ReflectionDispatch.java:24) [gradle-messaging-2.8.jar:2.8]
+	at org.gradle.messaging.dispatch.ContextClassLoaderDispatch.dispatch(ContextClassLoaderDispatch.java:32) [gradle-messaging-2.8.jar:2.8]
+	at org.gradle.messaging.dispatch.ProxyDispatchAdapter$DispatchingInvocationHandler.invoke(ProxyDispatchAdapter.java:93) [gradle-messaging-2.8.jar:2.8]
+	at com.sun.proxy.$Proxy2.processTestClass(Unknown Source) [?:?]
+	at org.gradle.api.internal.tasks.testing.worker.TestWorker.processTestClass(TestWorker.java:106) [gradle-plugins-2.8.jar:2.8]
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[?:1.8.0_65]
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62) ~[?:1.8.0_65]
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43) ~[?:1.8.0_65]
+	at java.lang.reflect.Method.invoke(Method.java:497) ~[?:1.8.0_65]
+	at org.gradle.messaging.dispatch.ReflectionDispatch.dispatch(ReflectionDispatch.java:35) [gradle-messaging-2.8.jar:2.8]
+	at org.gradle.messaging.dispatch.ReflectionDispatch.dispatch(ReflectionDispatch.java:24) [gradle-messaging-2.8.jar:2.8]
+	at org.gradle.messaging.remote.internal.hub.MessageHub$Handler.run(MessageHub.java:360) [gradle-messaging-2.8.jar:2.8]
+	at org.gradle.internal.concurrent.ExecutorPolicy$CatchAndRecordFailures.onExecute(ExecutorPolicy.java:54) [gradle-base-services-2.8.jar:2.8]
+	at org.gradle.internal.concurrent.StoppableExecutorImpl$1.run(StoppableExecutorImpl.java:40) [gradle-base-services-2.8.jar:2.8]
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1142) [?:1.8.0_65]
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:617) [?:1.8.0_65]
+	at java.lang.Thread.run(Thread.java:745) [?:1.8.0_65]
+Caused by: com.jayway.awaitility.core.ConditionTimeoutException: Condition defined as a lambda expression in com.palantir.docker.compose.Ports Internal port '5432' mapped to '5433' was unavailable within 100 milliseconds.
+	at com.jayway.awaitility.core.ConditionAwaiter.await(ConditionAwaiter.java:98) ~[awaitility-1.6.5.jar:?]
+	at com.jayway.awaitility.core.AssertionCondition.await(AssertionCondition.java:117) ~[awaitility-1.6.5.jar:?]
+	at com.jayway.awaitility.core.AssertionCondition.await(AssertionCondition.java:31) ~[awaitility-1.6.5.jar:?]
+	at com.jayway.awaitility.core.ConditionFactory.until(ConditionFactory.java:713) ~[awaitility-1.6.5.jar:?]
+	at com.jayway.awaitility.core.ConditionFactory.until(ConditionFactory.java:566) ~[awaitility-1.6.5.jar:?]
+	at com.palantir.docker.compose.Ports.waitForPorts(Ports.java:44) ~[main/:?]
+	at com.palantir.docker.compose.Ports.waitToBeListeningWithin(Ports.java:33) ~[main/:?]
+	... 47 more
+2015-12-01T16:47:17,363 DEBUG - Test worker com.palantir.docker.compose.DockerComposeExecutable - 0.0.0.0:7000->7000/tcp
+2015-12-01T16:47:17,366 DEBUG - Test worker com.palantir.docker.compose.DockerComposeExecutable - 
+2015-12-01T16:47:17,370 DEBUG - Test worker com.palantir.docker.compose.DockerComposeExecutable - 0.0.0.0:7000->7000/tcp
+2015-12-01T16:47:17,372 DEBUG - Test worker com.palantir.docker.compose.DockerComposeExecutable - 0.0.0.0:7000->7000/tcp
+2015-12-01T16:47:17,373 DEBUG - Test worker com.palantir.docker.compose.DockerComposeExecutable - ps
+----
+dir_db_1
+2015-12-01T16:47:17,374 DEBUG - Test worker com.palantir.docker.compose.DockerComposeExecutable - 0.0.0.0:7000->7000/tcp
+2015-12-01T16:47:17,382 DEBUG - Test worker com.palantir.docker.compose.DockerComposition - Using docker-compose file 'src/test/resources/docker-compose.yaml'
+2015-12-01T16:47:17,385 DEBUG - Test worker com.palantir.docker.compose.DockerComposition - Starting docker-compose cluster
+2015-12-01T16:47:17,687 DEBUG - Test worker com.palantir.docker.compose.DockerComposeExecutable - db2 uses an image, skipping
+db uses an image, skipping
+
+2015-12-01T16:47:18,412 DEBUG - Test worker com.palantir.docker.compose.DockerComposeExecutable - Creating resources_db2_1
+Creating resources_db_1
+
+2015-12-01T16:47:18,412 DEBUG - Test worker com.palantir.docker.compose.DockerComposition - Starting log collection
+2015-12-01T16:47:18,412 DEBUG - Test worker com.palantir.docker.compose.DockerComposition - Waiting for services
+2015-12-01T16:47:18,413 DEBUG - Test worker com.palantir.docker.compose.DockerComposition - Waiting for service 'Service [serviceName=db, dockerComposeProcess=com.palantir.docker.compose.DockerComposeExecutable@18ef2add, dockerMachine=com.palantir.docker.compose.DockerMachine@6646bc3e]'
+2015-12-01T16:47:18,782 DEBUG - Test worker com.palantir.docker.compose.DockerComposeExecutable - stty: stdin isn't a terminal
+     Name                   Command               State           Ports          
+--------------------------------------------------------------------------------
+resources_db_1   /docker-entrypoint.sh postgres   Up      0.0.0.0:5433->5432/tcp 
+
+2015-12-01T16:47:18,782 INFO  - Test worker com.palantir.docker.compose.Ports - Waiting PT120S for ports '[DockerPort [ip=192.168.99.100, portMapping=PortMapping [externalPort=5433, internalPort=5432]]]' to be open
+2015-12-01T16:47:23,352 INFO  - Test worker com.palantir.docker.compose.Ports - All ports open
+2015-12-01T16:47:23,352 DEBUG - Test worker com.palantir.docker.compose.DockerComposition - Waiting for service 'Service [serviceName=db2, dockerComposeProcess=com.palantir.docker.compose.DockerComposeExecutable@18ef2add, dockerMachine=com.palantir.docker.compose.DockerMachine@6646bc3e]'
+2015-12-01T16:47:23,702 DEBUG - Test worker com.palantir.docker.compose.DockerComposeExecutable - stty: stdin isn't a terminal
+     Name                    Command               State            Ports          
+----------------------------------------------------------------------------------
+resources_db2_1   /docker-entrypoint.sh postgres   Up      0.0.0.0:33353->5432/tcp 
+
+2015-12-01T16:47:23,703 INFO  - Test worker com.palantir.docker.compose.Ports - Waiting PT120S for ports '[DockerPort [ip=192.168.99.100, portMapping=PortMapping [externalPort=33353, internalPort=5432]]]' to be open
+2015-12-01T16:47:23,755 INFO  - Test worker com.palantir.docker.compose.Ports - All ports open
+2015-12-01T16:47:23,755 DEBUG - Test worker com.palantir.docker.compose.DockerComposition - docker-compose cluster started
+2015-12-01T16:47:23,756 DEBUG - Test worker com.palantir.docker.compose.DockerComposition - Starting docker-compose cluster
+2015-12-01T16:47:24,034 DEBUG - Test worker com.palantir.docker.compose.DockerComposeExecutable - db2 uses an image, skipping
+db uses an image, skipping
+
+2015-12-01T16:47:24,361 DEBUG - Test worker com.palantir.docker.compose.DockerComposeExecutable - resources_db2_1 is up-to-date
+resources_db_1 is up-to-date
+
+2015-12-01T16:47:24,361 DEBUG - Test worker com.palantir.docker.compose.DockerComposition - Starting log collection
+2015-12-01T16:47:24,699 DEBUG - Test worker com.palantir.docker.compose.DockerComposeExecutable - stty: stdin isn't a terminal
+     Name                    Command               State            Ports          
+----------------------------------------------------------------------------------
+resources_db2_1   /docker-entrypoint.sh postgres   Up      0.0.0.0:33353->5432/tcp 
+resources_db_1    /docker-entrypoint.sh postgres   Up      0.0.0.0:5433->5432/tcp  
+
+2015-12-01T16:47:24,701 DEBUG - Test worker com.palantir.docker.compose.DockerComposition - Waiting for services
+2015-12-01T16:47:24,701 INFO  - pool-8-thread-1 com.palantir.docker.compose.FileLogCollector - Writing logs for container 'db2' to '/var/folders/y8/h2h504q13h1gydckx1b4r5sd080c1_/T/junit559434662043071237/junit5840766662068001341/db2.log'
+2015-12-01T16:47:24,701 INFO  - pool-8-thread-2 com.palantir.docker.compose.FileLogCollector - Writing logs for container 'db' to '/var/folders/y8/h2h504q13h1gydckx1b4r5sd080c1_/T/junit559434662043071237/junit5840766662068001341/db.log'
+2015-12-01T16:47:24,702 DEBUG - Test worker com.palantir.docker.compose.DockerComposition - Waiting for service 'Service [serviceName=db, dockerComposeProcess=com.palantir.docker.compose.DockerComposeExecutable@18ef2add, dockerMachine=com.palantir.docker.compose.DockerMachine@6646bc3e]'
+2015-12-01T16:47:25,107 DEBUG - Test worker com.palantir.docker.compose.DockerComposeExecutable - stty: stdin isn't a terminal
+     Name                   Command               State           Ports          
+--------------------------------------------------------------------------------
+resources_db_1   /docker-entrypoint.sh postgres   Up      0.0.0.0:5433->5432/tcp 
+
+2015-12-01T16:47:25,108 INFO  - Test worker com.palantir.docker.compose.Ports - Waiting PT120S for ports '[DockerPort [ip=192.168.99.100, portMapping=PortMapping [externalPort=5433, internalPort=5432]]]' to be open
+2015-12-01T16:47:25,160 INFO  - Test worker com.palantir.docker.compose.Ports - All ports open
+2015-12-01T16:47:25,160 DEBUG - Test worker com.palantir.docker.compose.DockerComposition - Waiting for service 'Service [serviceName=db2, dockerComposeProcess=com.palantir.docker.compose.DockerComposeExecutable@18ef2add, dockerMachine=com.palantir.docker.compose.DockerMachine@6646bc3e]'
+2015-12-01T16:47:25,497 DEBUG - Test worker com.palantir.docker.compose.DockerComposeExecutable - stty: stdin isn't a terminal
+     Name                    Command               State            Ports          
+----------------------------------------------------------------------------------
+resources_db2_1   /docker-entrypoint.sh postgres   Up      0.0.0.0:33353->5432/tcp 
+
+2015-12-01T16:47:25,497 INFO  - Test worker com.palantir.docker.compose.Ports - Waiting PT120S for ports '[DockerPort [ip=192.168.99.100, portMapping=PortMapping [externalPort=33353, internalPort=5432]]]' to be open
+2015-12-01T16:47:25,549 INFO  - Test worker com.palantir.docker.compose.Ports - All ports open
+2015-12-01T16:47:25,549 DEBUG - Test worker com.palantir.docker.compose.DockerComposition - docker-compose cluster started
+2015-12-01T16:47:25,549 DEBUG - Test worker com.palantir.docker.compose.DockerComposition - Killing docker-compose cluster
+2015-12-01T16:47:26,023 DEBUG - Test worker com.palantir.docker.compose.DockerComposeExecutable - Killing resources_db_1 ... 
+Killing resources_db2_1 ... 
+[2A[2KKilling resources_db_1 ... done
+[2B[1A[2KKilling resources_db2_1 ... done
+[1B
+2015-12-01T16:47:26,365 DEBUG - Test worker com.palantir.docker.compose.DockerComposeExecutable - Going to remove resources_db_1, resources_db2_1
+Removing resources_db_1 ... 
+Removing resources_db2_1 ... 
+[2A[2KRemoving resources_db_1 ... done
+[2B[1A[2KRemoving resources_db2_1 ... done
+[1B
+2015-12-01T16:47:26,415 WARN  - Test worker com.palantir.docker.compose.FileLogCollector - docker containers were still running when log collection stopped
+2015-12-01T16:47:26,424 DEBUG - Test worker com.palantir.docker.compose.DockerComposition - Killing docker-compose cluster
+2015-12-01T16:47:26,752 DEBUG - Test worker com.palantir.docker.compose.DockerComposeExecutable - 
+2015-12-01T16:47:27,106 DEBUG - Test worker com.palantir.docker.compose.DockerComposeExecutable - No stopped containers
+
+2015-12-01T16:47:27,107 DEBUG - Test worker com.palantir.docker.compose.DockerComposition - Using docker-compose file 'src/test/resources/docker-compose.yaml'
+2015-12-01T16:47:27,108 DEBUG - Test worker com.palantir.docker.compose.DockerComposition - Starting docker-compose cluster
+2015-12-01T16:47:27,378 DEBUG - Test worker com.palantir.docker.compose.DockerComposeExecutable - db2 uses an image, skipping
+db uses an image, skipping
+
+2015-12-01T16:47:28,054 DEBUG - Test worker com.palantir.docker.compose.DockerComposeExecutable - Creating resources_db2_1
+Creating resources_db_1
+
+2015-12-01T16:47:28,055 DEBUG - Test worker com.palantir.docker.compose.DockerComposition - Starting log collection
+2015-12-01T16:47:28,055 DEBUG - Test worker com.palantir.docker.compose.DockerComposition - Waiting for services
+2015-12-01T16:47:28,055 DEBUG - Test worker com.palantir.docker.compose.DockerComposition - Waiting for service 'Service [serviceName=db2, dockerComposeProcess=com.palantir.docker.compose.DockerComposeExecutable@33f0be74, dockerMachine=com.palantir.docker.compose.DockerMachine@71f53a1b]'
+2015-12-01T16:47:28,434 DEBUG - Test worker com.palantir.docker.compose.DockerComposeExecutable - stty: stdin isn't a terminal
+     Name                    Command               State            Ports          
+----------------------------------------------------------------------------------
+resources_db2_1   /docker-entrypoint.sh postgres   Up      0.0.0.0:33354->5432/tcp 
+
+2015-12-01T16:47:28,434 INFO  - Test worker com.palantir.docker.compose.Ports - Waiting PT120S for ports '[DockerPort [ip=192.168.99.100, portMapping=PortMapping [externalPort=33354, internalPort=5432]]]' to be open
+2015-12-01T16:47:32,742 INFO  - Test worker com.palantir.docker.compose.Ports - All ports open
+2015-12-01T16:47:32,742 DEBUG - Test worker com.palantir.docker.compose.DockerComposition - Waiting for service 'Service [serviceName=db, dockerComposeProcess=com.palantir.docker.compose.DockerComposeExecutable@33f0be74, dockerMachine=com.palantir.docker.compose.DockerMachine@71f53a1b]'
+2015-12-01T16:47:33,101 DEBUG - Test worker com.palantir.docker.compose.DockerComposeExecutable - stty: stdin isn't a terminal
+     Name                   Command               State           Ports          
+--------------------------------------------------------------------------------
+resources_db_1   /docker-entrypoint.sh postgres   Up      0.0.0.0:5433->5432/tcp 
+
+2015-12-01T16:47:33,102 INFO  - Test worker com.palantir.docker.compose.Ports - Waiting PT120S for ports '[DockerPort [ip=192.168.99.100, portMapping=PortMapping [externalPort=5433, internalPort=5432]]]' to be open
+2015-12-01T16:47:33,154 INFO  - Test worker com.palantir.docker.compose.Ports - All ports open
+2015-12-01T16:47:33,154 DEBUG - Test worker com.palantir.docker.compose.DockerComposition - docker-compose cluster started
+2015-12-01T16:47:33,502 DEBUG - Test worker com.palantir.docker.compose.DockerComposeExecutable - stty: stdin isn't a terminal
+     Name                   Command               State           Ports          
+--------------------------------------------------------------------------------
+resources_db_1   /docker-entrypoint.sh postgres   Up      0.0.0.0:5433->5432/tcp 
+
+2015-12-01T16:47:33,502 DEBUG - Test worker com.palantir.docker.compose.DockerComposition - Killing docker-compose cluster
+2015-12-01T16:47:33,975 DEBUG - Test worker com.palantir.docker.compose.DockerComposeExecutable - Killing resources_db_1 ... 
+Killing resources_db2_1 ... 
+[2A[2KKilling resources_db_1 ... done
+[2B[1A[2KKilling resources_db2_1 ... done
+[1B
+2015-12-01T16:47:34,323 DEBUG - Test worker com.palantir.docker.compose.DockerComposeExecutable - Going to remove resources_db_1, resources_db2_1
+Removing resources_db_1 ... 
+Removing resources_db2_1 ... 
+[2A[2KRemoving resources_db_1 ... done
+[2B[1A[2KRemoving resources_db2_1 ... done
+[1B
+2015-12-01T16:47:34,323 DEBUG - Test worker com.palantir.docker.compose.DockerComposition - Using docker-compose file 'src/test/resources/docker-compose.yaml'
+2015-12-01T16:47:34,324 DEBUG - Test worker com.palantir.docker.compose.DockerComposition - Starting docker-compose cluster
+2015-12-01T16:47:34,592 DEBUG - Test worker com.palantir.docker.compose.DockerComposeExecutable - db2 uses an image, skipping
+db uses an image, skipping
+
+2015-12-01T16:47:35,280 DEBUG - Test worker com.palantir.docker.compose.DockerComposeExecutable - Creating resources_db2_1
+Creating resources_db_1
+
+2015-12-01T16:47:35,281 DEBUG - Test worker com.palantir.docker.compose.DockerComposition - Starting log collection
+2015-12-01T16:47:35,281 DEBUG - Test worker com.palantir.docker.compose.DockerComposition - Waiting for services
+2015-12-01T16:47:35,281 DEBUG - Test worker com.palantir.docker.compose.DockerComposition - Waiting for service 'Service [serviceName=db, dockerComposeProcess=com.palantir.docker.compose.DockerComposeExecutable@31d404d1, dockerMachine=com.palantir.docker.compose.DockerMachine@546b02b2]'
+2015-12-01T16:47:35,649 DEBUG - Test worker com.palantir.docker.compose.DockerComposeExecutable - stty: stdin isn't a terminal
+     Name                   Command               State           Ports          
+--------------------------------------------------------------------------------
+resources_db_1   /docker-entrypoint.sh postgres   Up      0.0.0.0:5433->5432/tcp 
+
+2015-12-01T16:47:35,649 INFO  - Test worker com.palantir.docker.compose.Ports - Waiting PT120S for ports '[DockerPort [ip=192.168.99.100, portMapping=PortMapping [externalPort=5433, internalPort=5432]]]' to be open
+2015-12-01T16:47:40,151 INFO  - Test worker com.palantir.docker.compose.Ports - All ports open
+2015-12-01T16:47:40,151 DEBUG - Test worker com.palantir.docker.compose.DockerComposition - Waiting for service 'Service [serviceName=db2, dockerComposeProcess=com.palantir.docker.compose.DockerComposeExecutable@31d404d1, dockerMachine=com.palantir.docker.compose.DockerMachine@546b02b2]'
+2015-12-01T16:47:40,517 DEBUG - Test worker com.palantir.docker.compose.DockerComposeExecutable - stty: stdin isn't a terminal
+     Name                    Command               State            Ports          
+----------------------------------------------------------------------------------
+resources_db2_1   /docker-entrypoint.sh postgres   Up      0.0.0.0:33355->5432/tcp 
+
+2015-12-01T16:47:40,518 INFO  - Test worker com.palantir.docker.compose.Ports - Waiting PT120S for ports '[DockerPort [ip=192.168.99.100, portMapping=PortMapping [externalPort=33355, internalPort=5432]]]' to be open
+2015-12-01T16:47:40,570 INFO  - Test worker com.palantir.docker.compose.Ports - All ports open
+2015-12-01T16:47:40,570 DEBUG - Test worker com.palantir.docker.compose.DockerComposition - docker-compose cluster started
+2015-12-01T16:47:40,910 DEBUG - Test worker com.palantir.docker.compose.DockerComposeExecutable - stty: stdin isn't a terminal
+     Name                   Command               State           Ports          
+--------------------------------------------------------------------------------
+resources_db_1   /docker-entrypoint.sh postgres   Up      0.0.0.0:5433->5432/tcp 
+
+2015-12-01T16:47:40,910 DEBUG - Test worker com.palantir.docker.compose.DockerComposition - Killing docker-compose cluster
+2015-12-01T16:47:41,387 DEBUG - Test worker com.palantir.docker.compose.DockerComposeExecutable - Killing resources_db_1 ... 
+Killing resources_db2_1 ... 
+[2A[2KKilling resources_db_1 ... done
+[2B[1A[2KKilling resources_db2_1 ... done
+[1B
+2015-12-01T16:47:41,746 DEBUG - Test worker com.palantir.docker.compose.DockerComposeExecutable - Going to remove resources_db_1, resources_db2_1
+Removing resources_db_1 ... 
+Removing resources_db2_1 ... 
+[2A[2KRemoving resources_db_1 ... done
+[2B[1A[2KRemoving resources_db2_1 ... done
+[1B
+2015-12-01T16:47:41,746 DEBUG - Test worker com.palantir.docker.compose.DockerComposition - Using docker-compose file 'src/test/resources/docker-compose.yaml'
+2015-12-01T16:47:41,747 DEBUG - Test worker com.palantir.docker.compose.DockerComposition - Starting docker-compose cluster
+2015-12-01T16:47:42,021 DEBUG - Test worker com.palantir.docker.compose.DockerComposeExecutable - db2 uses an image, skipping
+db uses an image, skipping
+
+2015-12-01T16:47:42,733 DEBUG - Test worker com.palantir.docker.compose.DockerComposeExecutable - Creating resources_db2_1
+Creating resources_db_1
+
+2015-12-01T16:47:42,733 DEBUG - Test worker com.palantir.docker.compose.DockerComposition - Starting log collection
+2015-12-01T16:47:42,734 DEBUG - Test worker com.palantir.docker.compose.DockerComposition - Waiting for services
+2015-12-01T16:47:42,734 DEBUG - Test worker com.palantir.docker.compose.DockerComposition - Waiting for service 'Service [serviceName=db, dockerComposeProcess=com.palantir.docker.compose.DockerComposeExecutable@6f8bf4fa, dockerMachine=com.palantir.docker.compose.DockerMachine@584df50c]'
+2015-12-01T16:47:43,111 DEBUG - Test worker com.palantir.docker.compose.DockerComposeExecutable - stty: stdin isn't a terminal
+     Name                   Command               State           Ports          
+--------------------------------------------------------------------------------
+resources_db_1   /docker-entrypoint.sh postgres   Up      0.0.0.0:5433->5432/tcp 
+
+2015-12-01T16:47:43,112 INFO  - Test worker com.palantir.docker.compose.Ports - Waiting PT120S for ports '[DockerPort [ip=192.168.99.100, portMapping=PortMapping [externalPort=5433, internalPort=5432]]]' to be open
+2015-12-01T16:47:47,620 INFO  - Test worker com.palantir.docker.compose.Ports - All ports open
+2015-12-01T16:47:47,620 DEBUG - Test worker com.palantir.docker.compose.DockerComposition - Waiting for service 'Service [serviceName=db2, dockerComposeProcess=com.palantir.docker.compose.DockerComposeExecutable@6f8bf4fa, dockerMachine=com.palantir.docker.compose.DockerMachine@584df50c]'
+2015-12-01T16:47:47,983 DEBUG - Test worker com.palantir.docker.compose.DockerComposeExecutable - stty: stdin isn't a terminal
+     Name                    Command               State            Ports          
+----------------------------------------------------------------------------------
+resources_db2_1   /docker-entrypoint.sh postgres   Up      0.0.0.0:33356->5432/tcp 
+
+2015-12-01T16:47:47,983 INFO  - Test worker com.palantir.docker.compose.Ports - Waiting PT120S for ports '[DockerPort [ip=192.168.99.100, portMapping=PortMapping [externalPort=33356, internalPort=5432]]]' to be open
+2015-12-01T16:47:48,035 INFO  - Test worker com.palantir.docker.compose.Ports - All ports open
+2015-12-01T16:47:48,035 DEBUG - Test worker com.palantir.docker.compose.DockerComposition - docker-compose cluster started
+2015-12-01T16:47:48,035 DEBUG - Test worker com.palantir.docker.compose.DockerComposition - Killing docker-compose cluster
+2015-12-01T16:47:48,509 DEBUG - Test worker com.palantir.docker.compose.DockerComposeExecutable - Killing resources_db_1 ... 
+Killing resources_db2_1 ... 
+[1A[2KKilling resources_db2_1 ... done
+[1B[2A[2KKilling resources_db_1 ... done
+[2B
+2015-12-01T16:47:48,844 DEBUG - Test worker com.palantir.docker.compose.DockerComposeExecutable - Going to remove resources_db_1, resources_db2_1
+Removing resources_db_1 ... 
+Removing resources_db2_1 ... 
+[2A[2KRemoving resources_db_1 ... done
+[2B[1A[2KRemoving resources_db2_1 ... done
+[1B
+2015-12-01T16:47:49,215 DEBUG - Test worker com.palantir.docker.compose.DockerComposeExecutable - stty: stdin isn't a terminal
+Name   Command   State   Ports 
+------------------------------
+
+2015-12-01T16:47:49,215 DEBUG - Test worker com.palantir.docker.compose.DockerComposition - Killing docker-compose cluster
+2015-12-01T16:47:49,537 DEBUG - Test worker com.palantir.docker.compose.DockerComposeExecutable - 
+2015-12-01T16:47:49,859 DEBUG - Test worker com.palantir.docker.compose.DockerComposeExecutable - No stopped containers
+
+2015-12-01T16:47:49,862 DEBUG - Test worker com.palantir.docker.compose.DockerComposition - Starting docker-compose cluster
+2015-12-01T16:47:49,863 DEBUG - Test worker com.palantir.docker.compose.DockerComposition - Starting log collection
+2015-12-01T16:47:49,863 DEBUG - Test worker com.palantir.docker.compose.DockerComposition - Waiting for services
+2015-12-01T16:47:49,863 DEBUG - Test worker com.palantir.docker.compose.DockerComposition - Waiting for service 'Service [serviceName=db, dockerComposeProcess=Mock for DockerComposeExecutable, hashCode: 1650775033, dockerMachine=Mock for DockerMachine, hashCode: 1219986782]'
+2015-12-01T16:47:49,863 INFO  - Test worker com.palantir.docker.compose.Ports - Waiting PT0.100S for ports '[Mock for DockerPort, hashCode: 358636057]' to be open
+2015-12-01T16:47:49,914 INFO  - Test worker com.palantir.docker.compose.Ports - All ports open
+2015-12-01T16:47:49,914 DEBUG - Test worker com.palantir.docker.compose.DockerComposition - docker-compose cluster started
+2015-12-01T16:47:49,916 DEBUG - Test worker com.palantir.docker.compose.DockerComposition - Starting docker-compose cluster
+2015-12-01T16:47:49,916 DEBUG - Test worker com.palantir.docker.compose.DockerComposition - Starting log collection
+2015-12-01T16:47:49,916 DEBUG - Test worker com.palantir.docker.compose.DockerComposition - Waiting for services
+2015-12-01T16:47:49,916 DEBUG - Test worker com.palantir.docker.compose.DockerComposition - Waiting for service 'Service [serviceName=otherDb, dockerComposeProcess=Mock for DockerComposeExecutable, hashCode: 632703575, dockerMachine=Mock for DockerMachine, hashCode: 1134449381]'
+2015-12-01T16:47:49,916 INFO  - Test worker com.palantir.docker.compose.Ports - Waiting PT0.100S for ports '[Mock for DockerPort, hashCode: 2013818829]' to be open
+2015-12-01T16:47:49,969 INFO  - Test worker com.palantir.docker.compose.Ports - All ports open
+2015-12-01T16:47:49,969 DEBUG - Test worker com.palantir.docker.compose.DockerComposition - Waiting for service 'Service [serviceName=db, dockerComposeProcess=Mock for DockerComposeExecutable, hashCode: 632703575, dockerMachine=Mock for DockerMachine, hashCode: 1134449381]'
+2015-12-01T16:47:49,969 INFO  - Test worker com.palantir.docker.compose.Ports - Waiting PT0.100S for ports '[Mock for DockerPort, hashCode: 1092971084]' to be open
+2015-12-01T16:47:50,021 INFO  - Test worker com.palantir.docker.compose.Ports - All ports open
+2015-12-01T16:47:50,022 DEBUG - Test worker com.palantir.docker.compose.DockerComposition - docker-compose cluster started
+2015-12-01T16:47:50,025 DEBUG - Test worker com.palantir.docker.compose.DockerComposition - Starting docker-compose cluster
+2015-12-01T16:47:50,026 DEBUG - Test worker com.palantir.docker.compose.DockerComposition - Starting log collection
+2015-12-01T16:47:50,026 DEBUG - Test worker com.palantir.docker.compose.DockerComposition - Waiting for services
+2015-12-01T16:47:50,026 DEBUG - Test worker com.palantir.docker.compose.DockerComposition - Waiting for service 'Service [serviceName=http, dockerComposeProcess=Mock for DockerComposeExecutable, hashCode: 880422059, dockerMachine=Mock for DockerMachine, hashCode: 877737471]'
+2015-12-01T16:47:50,078 DEBUG - Test worker com.palantir.docker.compose.DockerComposition - docker-compose cluster started
+2015-12-01T16:47:50,080 DEBUG - Test worker com.palantir.docker.compose.DockerComposition - Starting docker-compose cluster
+2015-12-01T16:47:50,080 DEBUG - Test worker com.palantir.docker.compose.DockerComposition - Starting log collection
+2015-12-01T16:47:50,081 DEBUG - Test worker com.palantir.docker.compose.DockerComposition - Waiting for services
+2015-12-01T16:47:50,081 DEBUG - Test worker com.palantir.docker.compose.DockerComposition - docker-compose cluster started
+2015-12-01T16:47:50,081 INFO  - pool-21-thread-1 com.palantir.docker.compose.FileLogCollector - Writing logs for container 'db' to '/var/folders/y8/h2h504q13h1gydckx1b4r5sd080c1_/T/junit4764409758728970329/junit9192591777958843999/db.log'
+2015-12-01T16:47:50,081 DEBUG - Test worker com.palantir.docker.compose.DockerComposition - Killing docker-compose cluster
+2015-12-01T16:47:50,132 WARN  - Test worker com.palantir.docker.compose.FileLogCollector - docker containers were still running when log collection stopped
+2015-12-01T16:47:50,136 DEBUG - Test worker com.palantir.docker.compose.DockerComposition - Starting docker-compose cluster
+2015-12-01T16:47:50,136 DEBUG - Test worker com.palantir.docker.compose.DockerComposition - Starting log collection
+2015-12-01T16:47:50,136 DEBUG - Test worker com.palantir.docker.compose.DockerComposition - Waiting for services
+2015-12-01T16:47:50,136 DEBUG - Test worker com.palantir.docker.compose.DockerComposition - Waiting for service 'Service [serviceName=db, dockerComposeProcess=Mock for DockerComposeExecutable, hashCode: 1293182211, dockerMachine=Mock for DockerMachine, hashCode: 448865351]'
+2015-12-01T16:47:50,136 DEBUG - Test worker com.palantir.docker.compose.DockerComposition - docker-compose cluster started
+2015-12-01T16:47:50,138 DEBUG - Test worker com.palantir.docker.compose.DockerComposition - Starting docker-compose cluster
+2015-12-01T16:47:50,138 DEBUG - Test worker com.palantir.docker.compose.DockerComposition - Starting log collection
+2015-12-01T16:47:50,138 DEBUG - Test worker com.palantir.docker.compose.DockerComposition - Waiting for services
+2015-12-01T16:47:50,138 DEBUG - Test worker com.palantir.docker.compose.DockerComposition - Waiting for service 'Service [serviceName=db, dockerComposeProcess=Mock for DockerComposeExecutable, hashCode: 2052259278, dockerMachine=Mock for DockerMachine, hashCode: 343974906]'
+2015-12-01T16:47:50,139 DEBUG - Test worker com.palantir.docker.compose.DockerComposition - Starting docker-compose cluster
+2015-12-01T16:47:50,139 DEBUG - Test worker com.palantir.docker.compose.DockerComposition - Starting log collection
+2015-12-01T16:47:50,139 DEBUG - Test worker com.palantir.docker.compose.DockerComposition - Waiting for services
+2015-12-01T16:47:50,139 DEBUG - Test worker com.palantir.docker.compose.DockerComposition - Waiting for service 'Service [serviceName=nonExistent, dockerComposeProcess=Mock for DockerComposeExecutable, hashCode: 663660407, dockerMachine=Mock for DockerMachine, hashCode: 905993999]'
+2015-12-01T16:47:50,140 WARN  - Test worker com.palantir.docker.compose.Container - Container 'nonExistent' failed to come up: No container with name 'nonExistent' found
+java.lang.IllegalStateException: No container with name 'nonExistent' found
+	at com.palantir.docker.compose.Container.waitForPorts(Container.java:39) ~[main/:?]
+	at com.palantir.docker.compose.DockerComposition.lambda$waitingForService$16(DockerComposition.java:87) ~[main/:?]
+	at com.palantir.docker.compose.DockerComposition.before(DockerComposition.java:59) [main/:?]
+	at com.palantir.docker.compose.DockerCompositionTest.waitingForServiceThatDoesNotExistResultsInAnIllegalStateException(DockerCompositionTest.java:126) [test/:?]
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[?:1.8.0_65]
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62) ~[?:1.8.0_65]
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43) ~[?:1.8.0_65]
+	at java.lang.reflect.Method.invoke(Method.java:497) ~[?:1.8.0_65]
+	at org.junit.runners.model.FrameworkMethod$1.runReflectiveCall(FrameworkMethod.java:50) [junit-4.12.jar:4.12]
+	at org.junit.internal.runners.model.ReflectiveCallable.run(ReflectiveCallable.java:12) [junit-4.12.jar:4.12]
+	at org.junit.runners.model.FrameworkMethod.invokeExplosively(FrameworkMethod.java:47) [junit-4.12.jar:4.12]
+	at org.junit.internal.runners.statements.InvokeMethod.evaluate(InvokeMethod.java:17) [junit-4.12.jar:4.12]
+	at org.junit.rules.ExpectedException$ExpectedExceptionStatement.evaluate(ExpectedException.java:239) [junit-4.12.jar:4.12]
+	at org.junit.rules.ExternalResource$1.evaluate(ExternalResource.java:48) [junit-4.12.jar:4.12]
+	at org.junit.rules.RunRules.evaluate(RunRules.java:20) [junit-4.12.jar:4.12]
+	at org.junit.runners.ParentRunner.runLeaf(ParentRunner.java:325) [junit-4.12.jar:4.12]
+	at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:78) [junit-4.12.jar:4.12]
+	at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:57) [junit-4.12.jar:4.12]
+	at org.junit.runners.ParentRunner$3.run(ParentRunner.java:290) [junit-4.12.jar:4.12]
+	at org.junit.runners.ParentRunner$1.schedule(ParentRunner.java:71) [junit-4.12.jar:4.12]
+	at org.junit.runners.ParentRunner.runChildren(ParentRunner.java:288) [junit-4.12.jar:4.12]
+	at org.junit.runners.ParentRunner.access$000(ParentRunner.java:58) [junit-4.12.jar:4.12]
+	at org.junit.runners.ParentRunner$2.evaluate(ParentRunner.java:268) [junit-4.12.jar:4.12]
+	at org.junit.runners.ParentRunner.run(ParentRunner.java:363) [junit-4.12.jar:4.12]
+	at org.gradle.api.internal.tasks.testing.junit.JUnitTestClassExecuter.runTestClass(JUnitTestClassExecuter.java:105) [gradle-plugins-2.8.jar:2.8]
+	at org.gradle.api.internal.tasks.testing.junit.JUnitTestClassExecuter.execute(JUnitTestClassExecuter.java:56) [gradle-plugins-2.8.jar:2.8]
+	at org.gradle.api.internal.tasks.testing.junit.JUnitTestClassProcessor.processTestClass(JUnitTestClassProcessor.java:64) [gradle-plugins-2.8.jar:2.8]
+	at org.gradle.api.internal.tasks.testing.SuiteTestClassProcessor.processTestClass(SuiteTestClassProcessor.java:50) [gradle-plugins-2.8.jar:2.8]
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[?:1.8.0_65]
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62) ~[?:1.8.0_65]
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43) ~[?:1.8.0_65]
+	at java.lang.reflect.Method.invoke(Method.java:497) ~[?:1.8.0_65]
+	at org.gradle.messaging.dispatch.ReflectionDispatch.dispatch(ReflectionDispatch.java:35) [gradle-messaging-2.8.jar:2.8]
+	at org.gradle.messaging.dispatch.ReflectionDispatch.dispatch(ReflectionDispatch.java:24) [gradle-messaging-2.8.jar:2.8]
+	at org.gradle.messaging.dispatch.ContextClassLoaderDispatch.dispatch(ContextClassLoaderDispatch.java:32) [gradle-messaging-2.8.jar:2.8]
+	at org.gradle.messaging.dispatch.ProxyDispatchAdapter$DispatchingInvocationHandler.invoke(ProxyDispatchAdapter.java:93) [gradle-messaging-2.8.jar:2.8]
+	at com.sun.proxy.$Proxy2.processTestClass(Unknown Source) [?:?]
+	at org.gradle.api.internal.tasks.testing.worker.TestWorker.processTestClass(TestWorker.java:106) [gradle-plugins-2.8.jar:2.8]
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[?:1.8.0_65]
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62) ~[?:1.8.0_65]
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43) ~[?:1.8.0_65]
+	at java.lang.reflect.Method.invoke(Method.java:497) ~[?:1.8.0_65]
+	at org.gradle.messaging.dispatch.ReflectionDispatch.dispatch(ReflectionDispatch.java:35) [gradle-messaging-2.8.jar:2.8]
+	at org.gradle.messaging.dispatch.ReflectionDispatch.dispatch(ReflectionDispatch.java:24) [gradle-messaging-2.8.jar:2.8]
+	at org.gradle.messaging.remote.internal.hub.MessageHub$Handler.run(MessageHub.java:360) [gradle-messaging-2.8.jar:2.8]
+	at org.gradle.internal.concurrent.ExecutorPolicy$CatchAndRecordFailures.onExecute(ExecutorPolicy.java:54) [gradle-base-services-2.8.jar:2.8]
+	at org.gradle.internal.concurrent.StoppableExecutorImpl$1.run(StoppableExecutorImpl.java:40) [gradle-base-services-2.8.jar:2.8]
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1142) [?:1.8.0_65]
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:617) [?:1.8.0_65]
+	at java.lang.Thread.run(Thread.java:745) [?:1.8.0_65]
+2015-12-01T16:47:50,141 DEBUG - Test worker com.palantir.docker.compose.DockerComposition - Killing docker-compose cluster
+2015-12-01T16:47:50,145 DEBUG - Test worker com.palantir.docker.compose.DockerComposition - Starting docker-compose cluster
+2015-12-01T16:47:50,145 DEBUG - Test worker com.palantir.docker.compose.DockerComposition - Starting log collection
+2015-12-01T16:47:50,145 DEBUG - Test worker com.palantir.docker.compose.DockerComposition - Waiting for services
+2015-12-01T16:47:50,145 DEBUG - Test worker com.palantir.docker.compose.DockerComposition - Waiting for service 'Service [serviceName=db, dockerComposeProcess=Mock for DockerComposeExecutable, hashCode: 855940648, dockerMachine=Mock for DockerMachine, hashCode: 85384000]'
+2015-12-01T16:47:50,146 INFO  - Test worker com.palantir.docker.compose.Ports - Waiting PT0.100S for ports '[Mock for DockerPort, hashCode: 1664988236]' to be open
+2015-12-01T16:47:50,247 WARN  - Test worker com.palantir.docker.compose.Container - Container 'db' failed to come up: Internal port '5432' mapped to '5432' was unavailable
+java.lang.IllegalStateException: Internal port '5432' mapped to '5432' was unavailable
+	at com.palantir.docker.compose.Ports.waitToBeListeningWithin(Ports.java:35) ~[main/:?]
+	at com.palantir.docker.compose.Container.waitForPorts(Container.java:40) ~[main/:?]
+	at com.palantir.docker.compose.DockerComposition.lambda$waitingForService$16(DockerComposition.java:87) ~[main/:?]
+	at com.palantir.docker.compose.DockerComposition.before(DockerComposition.java:59) [main/:?]
+	at com.palantir.docker.compose.DockerCompositionTest.dockerComposeWaitForServiceThrowsAnExceptionWhenThePortIsUnavailable(DockerCompositionTest.java:94) [test/:?]
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[?:1.8.0_65]
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62) ~[?:1.8.0_65]
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43) ~[?:1.8.0_65]
+	at java.lang.reflect.Method.invoke(Method.java:497) ~[?:1.8.0_65]
+	at org.junit.runners.model.FrameworkMethod$1.runReflectiveCall(FrameworkMethod.java:50) [junit-4.12.jar:4.12]
+	at org.junit.internal.runners.model.ReflectiveCallable.run(ReflectiveCallable.java:12) [junit-4.12.jar:4.12]
+	at org.junit.runners.model.FrameworkMethod.invokeExplosively(FrameworkMethod.java:47) [junit-4.12.jar:4.12]
+	at org.junit.internal.runners.statements.InvokeMethod.evaluate(InvokeMethod.java:17) [junit-4.12.jar:4.12]
+	at org.junit.rules.ExpectedException$ExpectedExceptionStatement.evaluate(ExpectedException.java:239) [junit-4.12.jar:4.12]
+	at org.junit.rules.ExternalResource$1.evaluate(ExternalResource.java:48) [junit-4.12.jar:4.12]
+	at org.junit.rules.RunRules.evaluate(RunRules.java:20) [junit-4.12.jar:4.12]
+	at org.junit.runners.ParentRunner.runLeaf(ParentRunner.java:325) [junit-4.12.jar:4.12]
+	at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:78) [junit-4.12.jar:4.12]
+	at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:57) [junit-4.12.jar:4.12]
+	at org.junit.runners.ParentRunner$3.run(ParentRunner.java:290) [junit-4.12.jar:4.12]
+	at org.junit.runners.ParentRunner$1.schedule(ParentRunner.java:71) [junit-4.12.jar:4.12]
+	at org.junit.runners.ParentRunner.runChildren(ParentRunner.java:288) [junit-4.12.jar:4.12]
+	at org.junit.runners.ParentRunner.access$000(ParentRunner.java:58) [junit-4.12.jar:4.12]
+	at org.junit.runners.ParentRunner$2.evaluate(ParentRunner.java:268) [junit-4.12.jar:4.12]
+	at org.junit.runners.ParentRunner.run(ParentRunner.java:363) [junit-4.12.jar:4.12]
+	at org.gradle.api.internal.tasks.testing.junit.JUnitTestClassExecuter.runTestClass(JUnitTestClassExecuter.java:105) [gradle-plugins-2.8.jar:2.8]
+	at org.gradle.api.internal.tasks.testing.junit.JUnitTestClassExecuter.execute(JUnitTestClassExecuter.java:56) [gradle-plugins-2.8.jar:2.8]
+	at org.gradle.api.internal.tasks.testing.junit.JUnitTestClassProcessor.processTestClass(JUnitTestClassProcessor.java:64) [gradle-plugins-2.8.jar:2.8]
+	at org.gradle.api.internal.tasks.testing.SuiteTestClassProcessor.processTestClass(SuiteTestClassProcessor.java:50) [gradle-plugins-2.8.jar:2.8]
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[?:1.8.0_65]
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62) ~[?:1.8.0_65]
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43) ~[?:1.8.0_65]
+	at java.lang.reflect.Method.invoke(Method.java:497) ~[?:1.8.0_65]
+	at org.gradle.messaging.dispatch.ReflectionDispatch.dispatch(ReflectionDispatch.java:35) [gradle-messaging-2.8.jar:2.8]
+	at org.gradle.messaging.dispatch.ReflectionDispatch.dispatch(ReflectionDispatch.java:24) [gradle-messaging-2.8.jar:2.8]
+	at org.gradle.messaging.dispatch.ContextClassLoaderDispatch.dispatch(ContextClassLoaderDispatch.java:32) [gradle-messaging-2.8.jar:2.8]
+	at org.gradle.messaging.dispatch.ProxyDispatchAdapter$DispatchingInvocationHandler.invoke(ProxyDispatchAdapter.java:93) [gradle-messaging-2.8.jar:2.8]
+	at com.sun.proxy.$Proxy2.processTestClass(Unknown Source) [?:?]
+	at org.gradle.api.internal.tasks.testing.worker.TestWorker.processTestClass(TestWorker.java:106) [gradle-plugins-2.8.jar:2.8]
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[?:1.8.0_65]
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62) ~[?:1.8.0_65]
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43) ~[?:1.8.0_65]
+	at java.lang.reflect.Method.invoke(Method.java:497) ~[?:1.8.0_65]
+	at org.gradle.messaging.dispatch.ReflectionDispatch.dispatch(ReflectionDispatch.java:35) [gradle-messaging-2.8.jar:2.8]
+	at org.gradle.messaging.dispatch.ReflectionDispatch.dispatch(ReflectionDispatch.java:24) [gradle-messaging-2.8.jar:2.8]
+	at org.gradle.messaging.remote.internal.hub.MessageHub$Handler.run(MessageHub.java:360) [gradle-messaging-2.8.jar:2.8]
+	at org.gradle.internal.concurrent.ExecutorPolicy$CatchAndRecordFailures.onExecute(ExecutorPolicy.java:54) [gradle-base-services-2.8.jar:2.8]
+	at org.gradle.internal.concurrent.StoppableExecutorImpl$1.run(StoppableExecutorImpl.java:40) [gradle-base-services-2.8.jar:2.8]
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1142) [?:1.8.0_65]
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:617) [?:1.8.0_65]
+	at java.lang.Thread.run(Thread.java:745) [?:1.8.0_65]
+Caused by: com.jayway.awaitility.core.ConditionTimeoutException: Condition defined as a lambda expression in com.palantir.docker.compose.Ports Internal port '5432' mapped to '5432' was unavailable within 100 milliseconds.
+	at com.jayway.awaitility.core.ConditionAwaiter.await(ConditionAwaiter.java:98) ~[awaitility-1.6.5.jar:?]
+	at com.jayway.awaitility.core.AssertionCondition.await(AssertionCondition.java:117) ~[awaitility-1.6.5.jar:?]
+	at com.jayway.awaitility.core.AssertionCondition.await(AssertionCondition.java:31) ~[awaitility-1.6.5.jar:?]
+	at com.jayway.awaitility.core.ConditionFactory.until(ConditionFactory.java:713) ~[awaitility-1.6.5.jar:?]
+	at com.jayway.awaitility.core.ConditionFactory.until(ConditionFactory.java:566) ~[awaitility-1.6.5.jar:?]
+	at com.palantir.docker.compose.Ports.waitForPorts(Ports.java:44) ~[main/:?]
+	at com.palantir.docker.compose.Ports.waitToBeListeningWithin(Ports.java:33) ~[main/:?]
+	... 50 more
+2015-12-01T16:47:50,249 DEBUG - Test worker com.palantir.docker.compose.DockerComposition - Starting docker-compose cluster
+2015-12-01T16:47:50,250 DEBUG - Test worker com.palantir.docker.compose.DockerComposition - Starting log collection
+2015-12-01T16:47:50,250 DEBUG - Test worker com.palantir.docker.compose.DockerComposition - Waiting for services
+2015-12-01T16:47:50,250 DEBUG - Test worker com.palantir.docker.compose.DockerComposition - docker-compose cluster started
+2015-12-01T16:47:50,255 INFO  - pool-23-thread-1 com.palantir.docker.compose.FileLogCollector - Writing logs for container 'db' to '/var/folders/y8/h2h504q13h1gydckx1b4r5sd080c1_/T/junit7545194984596498343/junit1499265525869791806/db.log'
+2015-12-01T16:47:50,255 INFO  - pool-23-thread-2 com.palantir.docker.compose.FileLogCollector - Writing logs for container 'db2' to '/var/folders/y8/h2h504q13h1gydckx1b4r5sd080c1_/T/junit7545194984596498343/junit1499265525869791806/db2.log'
+2015-12-01T16:47:50,308 WARN  - Test worker com.palantir.docker.compose.FileLogCollector - docker containers were still running when log collection stopped
+2015-12-01T16:47:50,311 INFO  - pool-24-thread-1 com.palantir.docker.compose.FileLogCollector - Writing logs for container 'db' to '/var/folders/y8/h2h504q13h1gydckx1b4r5sd080c1_/T/junit3527882215700796790/junit3978139331113555555/db.log'
+2015-12-01T16:47:50,361 WARN  - Test worker com.palantir.docker.compose.FileLogCollector - docker containers were still running when log collection stopped
+2015-12-01T16:47:50,365 INFO  - pool-25-thread-1 com.palantir.docker.compose.FileLogCollector - Writing logs for container 'db' to '/var/folders/y8/h2h504q13h1gydckx1b4r5sd080c1_/T/junit3114080296714237369/junit4771606661492491634/db.log'
+2015-12-01T16:47:50,416 WARN  - Test worker com.palantir.docker.compose.FileLogCollector - docker containers were still running when log collection stopped
+2015-12-01T16:47:50,419 INFO  - pool-26-thread-1 com.palantir.docker.compose.FileLogCollector - Writing logs for container 'db' to '/var/folders/y8/h2h504q13h1gydckx1b4r5sd080c1_/T/junit3353534681413786351/junit2525080732814146193/db.log'
+2015-12-01T16:47:50,422 INFO  - pool-27-thread-1 com.palantir.docker.compose.FileLogCollector - Writing logs for container 'db' to '/var/folders/y8/h2h504q13h1gydckx1b4r5sd080c1_/T/junit367221377810421623/junit4806496997592556410/db.log'
+2015-12-01T16:47:50,473 WARN  - Test worker com.palantir.docker.compose.FileLogCollector - docker containers were still running when log collection stopped
+2015-12-01T16:47:50,479 INFO  - Test worker com.palantir.docker.compose.Ports - Waiting PT0.200S for ports '[Mock for DockerPort, hashCode: 235238158]' to be open
+2015-12-01T16:47:50,683 INFO  - Test worker com.palantir.docker.compose.Ports - Waiting PT0.200S for ports '[Mock for DockerPort, hashCode: 2090246876]' to be open
+2015-12-01T16:47:50,736 INFO  - Test worker com.palantir.docker.compose.Ports - All ports open
+2015-12-01T16:47:50,737 INFO  - Test worker com.palantir.docker.compose.Ports - Waiting PT0.200S for ports '[Mock for DockerPort, hashCode: 271810254]' to be open
+2015-12-01T16:47:50,839 INFO  - Test worker com.palantir.docker.compose.Ports - All ports open
+2015-12-01T16:47:51,015 WARN  - Test worker com.palantir.magritte.ete.Container - Container 'service' failed to come up: Condition defined as a lambda expression in com.palantir.magritte.ete.Container that uses com.palantir.magritte.ete.DockerPort, com.palantir.magritte.ete.DockerPortcom.google.common.base.Function 
+Expected: is <true>
+     but: was <false> within 100 milliseconds.
+com.jayway.awaitility.core.ConditionTimeoutException: Condition defined as a lambda expression in com.palantir.magritte.ete.Container that uses com.palantir.magritte.ete.DockerPort, com.palantir.magritte.ete.DockerPortcom.google.common.base.Function 
+Expected: is <true>
+     but: was <false> within 100 milliseconds.
+	at com.jayway.awaitility.core.ConditionAwaiter.await(ConditionAwaiter.java:98) ~[awaitility-1.6.5.jar:?]
+	at com.jayway.awaitility.core.AssertionCondition.await(AssertionCondition.java:117) ~[awaitility-1.6.5.jar:?]
+	at com.jayway.awaitility.core.AssertionCondition.await(AssertionCondition.java:31) ~[awaitility-1.6.5.jar:?]
+	at com.jayway.awaitility.core.ConditionFactory.until(ConditionFactory.java:713) ~[awaitility-1.6.5.jar:?]
+	at com.jayway.awaitility.core.ConditionFactory.until(ConditionFactory.java:566) ~[awaitility-1.6.5.jar:?]
+	at com.palantir.magritte.ete.Container.waitForHttpPort(Container.java:54) [main/:?]
+	at com.palantir.magritte.ete.ContainerTest.waitForAContainersHttpPortsReturnsFalseWhenThePortIsUnavailable(ContainerTest.java:49) [test/:?]
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[?:1.8.0_65]
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62) ~[?:1.8.0_65]
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43) ~[?:1.8.0_65]
+	at java.lang.reflect.Method.invoke(Method.java:497) ~[?:1.8.0_65]
+	at org.junit.runners.model.FrameworkMethod$1.runReflectiveCall(FrameworkMethod.java:50) [junit-4.12.jar:4.12]
+	at org.junit.internal.runners.model.ReflectiveCallable.run(ReflectiveCallable.java:12) [junit-4.12.jar:4.12]
+	at org.junit.runners.model.FrameworkMethod.invokeExplosively(FrameworkMethod.java:47) [junit-4.12.jar:4.12]
+	at org.junit.internal.runners.statements.InvokeMethod.evaluate(InvokeMethod.java:17) [junit-4.12.jar:4.12]
+	at org.junit.rules.ExpectedException$ExpectedExceptionStatement.evaluate(ExpectedException.java:239) [junit-4.12.jar:4.12]
+	at org.junit.rules.RunRules.evaluate(RunRules.java:20) [junit-4.12.jar:4.12]
+	at org.junit.runners.ParentRunner.runLeaf(ParentRunner.java:325) [junit-4.12.jar:4.12]
+	at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:78) [junit-4.12.jar:4.12]
+	at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:57) [junit-4.12.jar:4.12]
+	at org.junit.runners.ParentRunner$3.run(ParentRunner.java:290) [junit-4.12.jar:4.12]
+	at org.junit.runners.ParentRunner$1.schedule(ParentRunner.java:71) [junit-4.12.jar:4.12]
+	at org.junit.runners.ParentRunner.runChildren(ParentRunner.java:288) [junit-4.12.jar:4.12]
+	at org.junit.runners.ParentRunner.access$000(ParentRunner.java:58) [junit-4.12.jar:4.12]
+	at org.junit.runners.ParentRunner$2.evaluate(ParentRunner.java:268) [junit-4.12.jar:4.12]
+	at org.junit.runners.ParentRunner.run(ParentRunner.java:363) [junit-4.12.jar:4.12]
+	at org.gradle.api.internal.tasks.testing.junit.JUnitTestClassExecuter.runTestClass(JUnitTestClassExecuter.java:105) [gradle-plugins-2.8.jar:2.8]
+	at org.gradle.api.internal.tasks.testing.junit.JUnitTestClassExecuter.execute(JUnitTestClassExecuter.java:56) [gradle-plugins-2.8.jar:2.8]
+	at org.gradle.api.internal.tasks.testing.junit.JUnitTestClassProcessor.processTestClass(JUnitTestClassProcessor.java:64) [gradle-plugins-2.8.jar:2.8]
+	at org.gradle.api.internal.tasks.testing.SuiteTestClassProcessor.processTestClass(SuiteTestClassProcessor.java:50) [gradle-plugins-2.8.jar:2.8]
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[?:1.8.0_65]
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62) ~[?:1.8.0_65]
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43) ~[?:1.8.0_65]
+	at java.lang.reflect.Method.invoke(Method.java:497) ~[?:1.8.0_65]
+	at org.gradle.messaging.dispatch.ReflectionDispatch.dispatch(ReflectionDispatch.java:35) [gradle-messaging-2.8.jar:2.8]
+	at org.gradle.messaging.dispatch.ReflectionDispatch.dispatch(ReflectionDispatch.java:24) [gradle-messaging-2.8.jar:2.8]
+	at org.gradle.messaging.dispatch.ContextClassLoaderDispatch.dispatch(ContextClassLoaderDispatch.java:32) [gradle-messaging-2.8.jar:2.8]
+	at org.gradle.messaging.dispatch.ProxyDispatchAdapter$DispatchingInvocationHandler.invoke(ProxyDispatchAdapter.java:93) [gradle-messaging-2.8.jar:2.8]
+	at com.sun.proxy.$Proxy2.processTestClass(Unknown Source) [?:?]
+	at org.gradle.api.internal.tasks.testing.worker.TestWorker.processTestClass(TestWorker.java:106) [gradle-plugins-2.8.jar:2.8]
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[?:1.8.0_65]
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62) ~[?:1.8.0_65]
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43) ~[?:1.8.0_65]
+	at java.lang.reflect.Method.invoke(Method.java:497) ~[?:1.8.0_65]
+	at org.gradle.messaging.dispatch.ReflectionDispatch.dispatch(ReflectionDispatch.java:35) [gradle-messaging-2.8.jar:2.8]
+	at org.gradle.messaging.dispatch.ReflectionDispatch.dispatch(ReflectionDispatch.java:24) [gradle-messaging-2.8.jar:2.8]
+	at org.gradle.messaging.remote.internal.hub.MessageHub$Handler.run(MessageHub.java:360) [gradle-messaging-2.8.jar:2.8]
+	at org.gradle.internal.concurrent.ExecutorPolicy$CatchAndRecordFailures.onExecute(ExecutorPolicy.java:54) [gradle-base-services-2.8.jar:2.8]
+	at org.gradle.internal.concurrent.StoppableExecutorImpl$1.run(StoppableExecutorImpl.java:40) [gradle-base-services-2.8.jar:2.8]
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1142) [?:1.8.0_65]
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:617) [?:1.8.0_65]
+	at java.lang.Thread.run(Thread.java:745) [?:1.8.0_65]
+2015-12-01T16:47:51,018 INFO  - Test worker com.palantir.magritte.ete.Ports - Waiting PT0.100S for ports '[Mock for DockerPort, hashCode: 349273637]' to be open
+2015-12-01T16:47:51,070 INFO  - Test worker com.palantir.magritte.ete.Ports - All ports open
+2015-12-01T16:47:51,071 INFO  - Test worker com.palantir.magritte.ete.Ports - Waiting PT0.100S for ports '[Mock for DockerPort, hashCode: 316482871]' to be open
+2015-12-01T16:47:51,174 WARN  - Test worker com.palantir.magritte.ete.Container - Container 'service' failed to come up: Internal port '5432' mapped to '5433' was unavailable
+java.lang.IllegalStateException: Internal port '5432' mapped to '5433' was unavailable
+	at com.palantir.magritte.ete.Ports.waitToBeListeningWithin(Ports.java:35) ~[main/:?]
+	at com.palantir.magritte.ete.Container.waitForPorts(Container.java:40) [main/:?]
+	at com.palantir.magritte.ete.ContainerTest.waitForAContainersPortsReturnsFalseWhenThePortIsUnavailable(ContainerTest.java:36) [test/:?]
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[?:1.8.0_65]
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62) ~[?:1.8.0_65]
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43) ~[?:1.8.0_65]
+	at java.lang.reflect.Method.invoke(Method.java:497) ~[?:1.8.0_65]
+	at org.junit.runners.model.FrameworkMethod$1.runReflectiveCall(FrameworkMethod.java:50) [junit-4.12.jar:4.12]
+	at org.junit.internal.runners.model.ReflectiveCallable.run(ReflectiveCallable.java:12) [junit-4.12.jar:4.12]
+	at org.junit.runners.model.FrameworkMethod.invokeExplosively(FrameworkMethod.java:47) [junit-4.12.jar:4.12]
+	at org.junit.internal.runners.statements.InvokeMethod.evaluate(InvokeMethod.java:17) [junit-4.12.jar:4.12]
+	at org.junit.rules.ExpectedException$ExpectedExceptionStatement.evaluate(ExpectedException.java:239) [junit-4.12.jar:4.12]
+	at org.junit.rules.RunRules.evaluate(RunRules.java:20) [junit-4.12.jar:4.12]
+	at org.junit.runners.ParentRunner.runLeaf(ParentRunner.java:325) [junit-4.12.jar:4.12]
+	at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:78) [junit-4.12.jar:4.12]
+	at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:57) [junit-4.12.jar:4.12]
+	at org.junit.runners.ParentRunner$3.run(ParentRunner.java:290) [junit-4.12.jar:4.12]
+	at org.junit.runners.ParentRunner$1.schedule(ParentRunner.java:71) [junit-4.12.jar:4.12]
+	at org.junit.runners.ParentRunner.runChildren(ParentRunner.java:288) [junit-4.12.jar:4.12]
+	at org.junit.runners.ParentRunner.access$000(ParentRunner.java:58) [junit-4.12.jar:4.12]
+	at org.junit.runners.ParentRunner$2.evaluate(ParentRunner.java:268) [junit-4.12.jar:4.12]
+	at org.junit.runners.ParentRunner.run(ParentRunner.java:363) [junit-4.12.jar:4.12]
+	at org.gradle.api.internal.tasks.testing.junit.JUnitTestClassExecuter.runTestClass(JUnitTestClassExecuter.java:105) [gradle-plugins-2.8.jar:2.8]
+	at org.gradle.api.internal.tasks.testing.junit.JUnitTestClassExecuter.execute(JUnitTestClassExecuter.java:56) [gradle-plugins-2.8.jar:2.8]
+	at org.gradle.api.internal.tasks.testing.junit.JUnitTestClassProcessor.processTestClass(JUnitTestClassProcessor.java:64) [gradle-plugins-2.8.jar:2.8]
+	at org.gradle.api.internal.tasks.testing.SuiteTestClassProcessor.processTestClass(SuiteTestClassProcessor.java:50) [gradle-plugins-2.8.jar:2.8]
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[?:1.8.0_65]
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62) ~[?:1.8.0_65]
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43) ~[?:1.8.0_65]
+	at java.lang.reflect.Method.invoke(Method.java:497) ~[?:1.8.0_65]
+	at org.gradle.messaging.dispatch.ReflectionDispatch.dispatch(ReflectionDispatch.java:35) [gradle-messaging-2.8.jar:2.8]
+	at org.gradle.messaging.dispatch.ReflectionDispatch.dispatch(ReflectionDispatch.java:24) [gradle-messaging-2.8.jar:2.8]
+	at org.gradle.messaging.dispatch.ContextClassLoaderDispatch.dispatch(ContextClassLoaderDispatch.java:32) [gradle-messaging-2.8.jar:2.8]
+	at org.gradle.messaging.dispatch.ProxyDispatchAdapter$DispatchingInvocationHandler.invoke(ProxyDispatchAdapter.java:93) [gradle-messaging-2.8.jar:2.8]
+	at com.sun.proxy.$Proxy2.processTestClass(Unknown Source) [?:?]
+	at org.gradle.api.internal.tasks.testing.worker.TestWorker.processTestClass(TestWorker.java:106) [gradle-plugins-2.8.jar:2.8]
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[?:1.8.0_65]
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62) ~[?:1.8.0_65]
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43) ~[?:1.8.0_65]
+	at java.lang.reflect.Method.invoke(Method.java:497) ~[?:1.8.0_65]
+	at org.gradle.messaging.dispatch.ReflectionDispatch.dispatch(ReflectionDispatch.java:35) [gradle-messaging-2.8.jar:2.8]
+	at org.gradle.messaging.dispatch.ReflectionDispatch.dispatch(ReflectionDispatch.java:24) [gradle-messaging-2.8.jar:2.8]
+	at org.gradle.messaging.remote.internal.hub.MessageHub$Handler.run(MessageHub.java:360) [gradle-messaging-2.8.jar:2.8]
+	at org.gradle.internal.concurrent.ExecutorPolicy$CatchAndRecordFailures.onExecute(ExecutorPolicy.java:54) [gradle-base-services-2.8.jar:2.8]
+	at org.gradle.internal.concurrent.StoppableExecutorImpl$1.run(StoppableExecutorImpl.java:40) [gradle-base-services-2.8.jar:2.8]
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1142) [?:1.8.0_65]
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:617) [?:1.8.0_65]
+	at java.lang.Thread.run(Thread.java:745) [?:1.8.0_65]
+Caused by: com.jayway.awaitility.core.ConditionTimeoutException: Condition defined as a lambda expression in com.palantir.magritte.ete.Ports Internal port '5432' mapped to '5433' was unavailable within 100 milliseconds.
+	at com.jayway.awaitility.core.ConditionAwaiter.await(ConditionAwaiter.java:98) ~[awaitility-1.6.5.jar:?]
+	at com.jayway.awaitility.core.AssertionCondition.await(AssertionCondition.java:117) ~[awaitility-1.6.5.jar:?]
+	at com.jayway.awaitility.core.AssertionCondition.await(AssertionCondition.java:31) ~[awaitility-1.6.5.jar:?]
+	at com.jayway.awaitility.core.ConditionFactory.until(ConditionFactory.java:713) ~[awaitility-1.6.5.jar:?]
+	at com.jayway.awaitility.core.ConditionFactory.until(ConditionFactory.java:566) ~[awaitility-1.6.5.jar:?]
+	at com.palantir.magritte.ete.Ports.waitForPorts(Ports.java:44) ~[main/:?]
+	at com.palantir.magritte.ete.Ports.waitToBeListeningWithin(Ports.java:33) ~[main/:?]
+	... 47 more
+2015-12-01T16:47:51,180 DEBUG - Test worker com.palantir.magritte.ete.DockerComposeExecutable - 0.0.0.0:7000->7000/tcp
+2015-12-01T16:47:51,181 DEBUG - Test worker com.palantir.magritte.ete.DockerComposeExecutable - 
+2015-12-01T16:47:51,182 DEBUG - Test worker com.palantir.magritte.ete.DockerComposeExecutable - 0.0.0.0:7000->7000/tcp
+2015-12-01T16:47:51,183 DEBUG - Test worker com.palantir.magritte.ete.DockerComposeExecutable - 0.0.0.0:7000->7000/tcp
+2015-12-01T16:47:51,183 DEBUG - Test worker com.palantir.magritte.ete.DockerComposeExecutable - ps
+----
+dir_db_1
+2015-12-01T16:47:51,184 DEBUG - Test worker com.palantir.magritte.ete.DockerComposeExecutable - 0.0.0.0:7000->7000/tcp
+2015-12-01T16:47:51,188 DEBUG - Test worker com.palantir.magritte.ete.DockerComposition - Using docker-compose file 'src/test/resources/docker-compose.yaml'
+2015-12-01T16:47:51,189 DEBUG - Test worker com.palantir.magritte.ete.DockerComposition - Starting docker-compose cluster
+2015-12-01T16:47:51,465 DEBUG - Test worker com.palantir.magritte.ete.DockerComposeExecutable - db2 uses an image, skipping
+db uses an image, skipping
+
+2015-12-01T16:47:52,187 DEBUG - Test worker com.palantir.magritte.ete.DockerComposeExecutable - Creating resources_db2_1
+Creating resources_db_1
+
+2015-12-01T16:47:52,187 DEBUG - Test worker com.palantir.magritte.ete.DockerComposition - Starting log collection
+2015-12-01T16:47:52,187 DEBUG - Test worker com.palantir.magritte.ete.DockerComposition - Waiting for services
+2015-12-01T16:47:52,188 DEBUG - Test worker com.palantir.magritte.ete.DockerComposition - Waiting for service 'Service [serviceName=db, dockerComposeProcess=com.palantir.magritte.ete.DockerComposeExecutable@4936189a, dockerMachine=com.palantir.magritte.ete.DockerMachine@5c086f05]'
+2015-12-01T16:47:52,567 DEBUG - Test worker com.palantir.magritte.ete.DockerComposeExecutable - stty: stdin isn't a terminal
+     Name                   Command               State           Ports          
+--------------------------------------------------------------------------------
+resources_db_1   /docker-entrypoint.sh postgres   Up      0.0.0.0:5433->5432/tcp 
+
+2015-12-01T16:47:52,568 INFO  - Test worker com.palantir.magritte.ete.Ports - Waiting PT120S for ports '[DockerPort [ip=192.168.99.100, portMapping=PortMapping [externalPort=5433, internalPort=5432]]]' to be open
+2015-12-01T16:47:57,066 INFO  - Test worker com.palantir.magritte.ete.Ports - All ports open
+2015-12-01T16:47:57,066 DEBUG - Test worker com.palantir.magritte.ete.DockerComposition - Waiting for service 'Service [serviceName=db2, dockerComposeProcess=com.palantir.magritte.ete.DockerComposeExecutable@4936189a, dockerMachine=com.palantir.magritte.ete.DockerMachine@5c086f05]'
+2015-12-01T16:47:57,426 DEBUG - Test worker com.palantir.magritte.ete.DockerComposeExecutable - stty: stdin isn't a terminal
+     Name                    Command               State            Ports          
+----------------------------------------------------------------------------------
+resources_db2_1   /docker-entrypoint.sh postgres   Up      0.0.0.0:33357->5432/tcp 
+
+2015-12-01T16:47:57,426 INFO  - Test worker com.palantir.magritte.ete.Ports - Waiting PT120S for ports '[DockerPort [ip=192.168.99.100, portMapping=PortMapping [externalPort=33357, internalPort=5432]]]' to be open
+2015-12-01T16:47:57,478 INFO  - Test worker com.palantir.magritte.ete.Ports - All ports open
+2015-12-01T16:47:57,478 DEBUG - Test worker com.palantir.magritte.ete.DockerComposition - docker-compose cluster started
+2015-12-01T16:47:57,479 DEBUG - Test worker com.palantir.magritte.ete.DockerComposition - Starting docker-compose cluster
+2015-12-01T16:47:57,753 DEBUG - Test worker com.palantir.magritte.ete.DockerComposeExecutable - db2 uses an image, skipping
+db uses an image, skipping
+
+2015-12-01T16:47:58,077 DEBUG - Test worker com.palantir.magritte.ete.DockerComposeExecutable - resources_db2_1 is up-to-date
+resources_db_1 is up-to-date
+
+2015-12-01T16:47:58,077 DEBUG - Test worker com.palantir.magritte.ete.DockerComposition - Starting log collection
+2015-12-01T16:47:58,416 DEBUG - Test worker com.palantir.magritte.ete.DockerComposeExecutable - stty: stdin isn't a terminal
+     Name                    Command               State            Ports          
+----------------------------------------------------------------------------------
+resources_db2_1   /docker-entrypoint.sh postgres   Up      0.0.0.0:33357->5432/tcp 
+resources_db_1    /docker-entrypoint.sh postgres   Up      0.0.0.0:5433->5432/tcp  
+
+2015-12-01T16:47:58,417 DEBUG - Test worker com.palantir.magritte.ete.DockerComposition - Waiting for services
+2015-12-01T16:47:58,418 INFO  - pool-37-thread-2 com.palantir.magritte.ete.FileLogCollector - Writing logs for container 'db' to '/var/folders/y8/h2h504q13h1gydckx1b4r5sd080c1_/T/junit2015108850348353681/junit7540558910315658164/db.log'
+2015-12-01T16:47:58,418 INFO  - pool-37-thread-1 com.palantir.magritte.ete.FileLogCollector - Writing logs for container 'db2' to '/var/folders/y8/h2h504q13h1gydckx1b4r5sd080c1_/T/junit2015108850348353681/junit7540558910315658164/db2.log'
+2015-12-01T16:47:58,418 DEBUG - Test worker com.palantir.magritte.ete.DockerComposition - Waiting for service 'Service [serviceName=db, dockerComposeProcess=com.palantir.magritte.ete.DockerComposeExecutable@4936189a, dockerMachine=com.palantir.magritte.ete.DockerMachine@5c086f05]'
+2015-12-01T16:47:58,832 DEBUG - Test worker com.palantir.magritte.ete.DockerComposeExecutable - stty: stdin isn't a terminal
+     Name                   Command               State           Ports          
+--------------------------------------------------------------------------------
+resources_db_1   /docker-entrypoint.sh postgres   Up      0.0.0.0:5433->5432/tcp 
+
+2015-12-01T16:47:58,833 INFO  - Test worker com.palantir.magritte.ete.Ports - Waiting PT120S for ports '[DockerPort [ip=192.168.99.100, portMapping=PortMapping [externalPort=5433, internalPort=5432]]]' to be open
+2015-12-01T16:47:58,885 INFO  - Test worker com.palantir.magritte.ete.Ports - All ports open
+2015-12-01T16:47:58,885 DEBUG - Test worker com.palantir.magritte.ete.DockerComposition - Waiting for service 'Service [serviceName=db2, dockerComposeProcess=com.palantir.magritte.ete.DockerComposeExecutable@4936189a, dockerMachine=com.palantir.magritte.ete.DockerMachine@5c086f05]'
+2015-12-01T16:47:59,231 DEBUG - Test worker com.palantir.magritte.ete.DockerComposeExecutable - stty: stdin isn't a terminal
+     Name                    Command               State            Ports          
+----------------------------------------------------------------------------------
+resources_db2_1   /docker-entrypoint.sh postgres   Up      0.0.0.0:33357->5432/tcp 
+
+2015-12-01T16:47:59,231 INFO  - Test worker com.palantir.magritte.ete.Ports - Waiting PT120S for ports '[DockerPort [ip=192.168.99.100, portMapping=PortMapping [externalPort=33357, internalPort=5432]]]' to be open
+2015-12-01T16:47:59,284 INFO  - Test worker com.palantir.magritte.ete.Ports - All ports open
+2015-12-01T16:47:59,284 DEBUG - Test worker com.palantir.magritte.ete.DockerComposition - docker-compose cluster started
+2015-12-01T16:47:59,284 DEBUG - Test worker com.palantir.magritte.ete.DockerComposition - Killing docker-compose cluster
+2015-12-01T16:47:59,750 DEBUG - Test worker com.palantir.magritte.ete.DockerComposeExecutable - Killing resources_db_1 ... 
+Killing resources_db2_1 ... 
+[2A[2KKilling resources_db_1 ... done
+[2B[1A[2KKilling resources_db2_1 ... done
+[1B
+2015-12-01T16:48:00,090 DEBUG - Test worker com.palantir.magritte.ete.DockerComposeExecutable - Going to remove resources_db_1, resources_db2_1
+Removing resources_db_1 ... 
+Removing resources_db2_1 ... 
+[2A[2KRemoving resources_db_1 ... done
+[2B[1A[2KRemoving resources_db2_1 ... done
+[1B
+2015-12-01T16:48:00,141 WARN  - Test worker com.palantir.magritte.ete.FileLogCollector - docker containers were still running when log collection stopped
+2015-12-01T16:48:00,148 DEBUG - Test worker com.palantir.magritte.ete.DockerComposition - Killing docker-compose cluster
+2015-12-01T16:48:00,468 DEBUG - Test worker com.palantir.magritte.ete.DockerComposeExecutable - 
+2015-12-01T16:48:00,810 DEBUG - Test worker com.palantir.magritte.ete.DockerComposeExecutable - No stopped containers
+
+2015-12-01T16:48:00,811 DEBUG - Test worker com.palantir.magritte.ete.DockerComposition - Using docker-compose file 'src/test/resources/docker-compose.yaml'
+2015-12-01T16:48:00,811 DEBUG - Test worker com.palantir.magritte.ete.DockerComposition - Starting docker-compose cluster
+2015-12-01T16:48:01,092 DEBUG - Test worker com.palantir.magritte.ete.DockerComposeExecutable - db2 uses an image, skipping
+db uses an image, skipping
+
+2015-12-01T16:48:01,774 DEBUG - Test worker com.palantir.magritte.ete.DockerComposeExecutable - Creating resources_db2_1
+Creating resources_db_1
+
+2015-12-01T16:48:01,774 DEBUG - Test worker com.palantir.magritte.ete.DockerComposition - Starting log collection
+2015-12-01T16:48:01,774 DEBUG - Test worker com.palantir.magritte.ete.DockerComposition - Waiting for services
+2015-12-01T16:48:01,774 DEBUG - Test worker com.palantir.magritte.ete.DockerComposition - Waiting for service 'Service [serviceName=db, dockerComposeProcess=com.palantir.magritte.ete.DockerComposeExecutable@5452fc5f, dockerMachine=com.palantir.magritte.ete.DockerMachine@35a4624e]'
+2015-12-01T16:48:02,145 DEBUG - Test worker com.palantir.magritte.ete.DockerComposeExecutable - stty: stdin isn't a terminal
+     Name                   Command               State           Ports          
+--------------------------------------------------------------------------------
+resources_db_1   /docker-entrypoint.sh postgres   Up      0.0.0.0:5433->5432/tcp 
+
+2015-12-01T16:48:02,145 INFO  - Test worker com.palantir.magritte.ete.Ports - Waiting PT120S for ports '[DockerPort [ip=192.168.99.100, portMapping=PortMapping [externalPort=5433, internalPort=5432]]]' to be open
+2015-12-01T16:48:06,837 INFO  - Test worker com.palantir.magritte.ete.Ports - All ports open
+2015-12-01T16:48:06,837 DEBUG - Test worker com.palantir.magritte.ete.DockerComposition - Waiting for service 'Service [serviceName=db2, dockerComposeProcess=com.palantir.magritte.ete.DockerComposeExecutable@5452fc5f, dockerMachine=com.palantir.magritte.ete.DockerMachine@35a4624e]'
+2015-12-01T16:48:07,211 DEBUG - Test worker com.palantir.magritte.ete.DockerComposeExecutable - stty: stdin isn't a terminal
+     Name                    Command               State            Ports          
+----------------------------------------------------------------------------------
+resources_db2_1   /docker-entrypoint.sh postgres   Up      0.0.0.0:33358->5432/tcp 
+
+2015-12-01T16:48:07,211 INFO  - Test worker com.palantir.magritte.ete.Ports - Waiting PT120S for ports '[DockerPort [ip=192.168.99.100, portMapping=PortMapping [externalPort=33358, internalPort=5432]]]' to be open
+2015-12-01T16:48:07,263 INFO  - Test worker com.palantir.magritte.ete.Ports - All ports open
+2015-12-01T16:48:07,263 DEBUG - Test worker com.palantir.magritte.ete.DockerComposition - docker-compose cluster started
+2015-12-01T16:48:07,605 DEBUG - Test worker com.palantir.magritte.ete.DockerComposeExecutable - stty: stdin isn't a terminal
+     Name                   Command               State           Ports          
+--------------------------------------------------------------------------------
+resources_db_1   /docker-entrypoint.sh postgres   Up      0.0.0.0:5433->5432/tcp 
+
+2015-12-01T16:48:07,606 DEBUG - Test worker com.palantir.magritte.ete.DockerComposition - Killing docker-compose cluster
+2015-12-01T16:48:08,056 DEBUG - Test worker com.palantir.magritte.ete.DockerComposeExecutable - Killing resources_db_1 ... 
+Killing resources_db2_1 ... 
+[2A[2KKilling resources_db_1 ... done
+[2B[1A[2KKilling resources_db2_1 ... done
+[1B
+2015-12-01T16:48:08,404 DEBUG - Test worker com.palantir.magritte.ete.DockerComposeExecutable - Going to remove resources_db_1, resources_db2_1
+Removing resources_db_1 ... 
+Removing resources_db2_1 ... 
+[2A[2KRemoving resources_db_1 ... done
+[2B[1A[2KRemoving resources_db2_1 ... done
+[1B
+2015-12-01T16:48:08,404 DEBUG - Test worker com.palantir.magritte.ete.DockerComposition - Using docker-compose file 'src/test/resources/docker-compose.yaml'
+2015-12-01T16:48:08,404 DEBUG - Test worker com.palantir.magritte.ete.DockerComposition - Starting docker-compose cluster
+2015-12-01T16:48:08,672 DEBUG - Test worker com.palantir.magritte.ete.DockerComposeExecutable - db2 uses an image, skipping
+db uses an image, skipping
+
+2015-12-01T16:48:09,373 DEBUG - Test worker com.palantir.magritte.ete.DockerComposeExecutable - Creating resources_db2_1
+Creating resources_db_1
+
+2015-12-01T16:48:09,373 DEBUG - Test worker com.palantir.magritte.ete.DockerComposition - Starting log collection
+2015-12-01T16:48:09,374 DEBUG - Test worker com.palantir.magritte.ete.DockerComposition - Waiting for services
+2015-12-01T16:48:09,374 DEBUG - Test worker com.palantir.magritte.ete.DockerComposition - Waiting for service 'Service [serviceName=db, dockerComposeProcess=com.palantir.magritte.ete.DockerComposeExecutable@81e3e50, dockerMachine=com.palantir.magritte.ete.DockerMachine@5d121339]'
+2015-12-01T16:48:09,727 DEBUG - Test worker com.palantir.magritte.ete.DockerComposeExecutable - stty: stdin isn't a terminal
+     Name                   Command               State           Ports          
+--------------------------------------------------------------------------------
+resources_db_1   /docker-entrypoint.sh postgres   Up      0.0.0.0:5433->5432/tcp 
+
+2015-12-01T16:48:09,728 INFO  - Test worker com.palantir.magritte.ete.Ports - Waiting PT120S for ports '[DockerPort [ip=192.168.99.100, portMapping=PortMapping [externalPort=5433, internalPort=5432]]]' to be open
+2015-12-01T16:48:14,174 INFO  - Test worker com.palantir.magritte.ete.Ports - All ports open
+2015-12-01T16:48:14,174 DEBUG - Test worker com.palantir.magritte.ete.DockerComposition - Waiting for service 'Service [serviceName=db2, dockerComposeProcess=com.palantir.magritte.ete.DockerComposeExecutable@81e3e50, dockerMachine=com.palantir.magritte.ete.DockerMachine@5d121339]'
+2015-12-01T16:48:14,551 DEBUG - Test worker com.palantir.magritte.ete.DockerComposeExecutable - stty: stdin isn't a terminal
+     Name                    Command               State            Ports          
+----------------------------------------------------------------------------------
+resources_db2_1   /docker-entrypoint.sh postgres   Up      0.0.0.0:33359->5432/tcp 
+
+2015-12-01T16:48:14,551 INFO  - Test worker com.palantir.magritte.ete.Ports - Waiting PT120S for ports '[DockerPort [ip=192.168.99.100, portMapping=PortMapping [externalPort=33359, internalPort=5432]]]' to be open
+2015-12-01T16:48:14,602 INFO  - Test worker com.palantir.magritte.ete.Ports - All ports open
+2015-12-01T16:48:14,602 DEBUG - Test worker com.palantir.magritte.ete.DockerComposition - docker-compose cluster started
+2015-12-01T16:48:14,936 DEBUG - Test worker com.palantir.magritte.ete.DockerComposeExecutable - stty: stdin isn't a terminal
+     Name                   Command               State           Ports          
+--------------------------------------------------------------------------------
+resources_db_1   /docker-entrypoint.sh postgres   Up      0.0.0.0:5433->5432/tcp 
+
+2015-12-01T16:48:14,937 DEBUG - Test worker com.palantir.magritte.ete.DockerComposition - Killing docker-compose cluster
+2015-12-01T16:48:15,392 DEBUG - Test worker com.palantir.magritte.ete.DockerComposeExecutable - Killing resources_db_1 ... 
+Killing resources_db2_1 ... 
+[2A[2KKilling resources_db_1 ... done
+[2B[1A[2KKilling resources_db2_1 ... done
+[1B
+2015-12-01T16:48:15,748 DEBUG - Test worker com.palantir.magritte.ete.DockerComposeExecutable - Going to remove resources_db_1, resources_db2_1
+Removing resources_db_1 ... 
+Removing resources_db2_1 ... 
+[2A[2KRemoving resources_db_1 ... done
+[2B[1A[2KRemoving resources_db2_1 ... done
+[1B
+2015-12-01T16:48:15,748 DEBUG - Test worker com.palantir.magritte.ete.DockerComposition - Using docker-compose file 'src/test/resources/docker-compose.yaml'
+2015-12-01T16:48:15,749 DEBUG - Test worker com.palantir.magritte.ete.DockerComposition - Starting docker-compose cluster
+2015-12-01T16:48:16,026 DEBUG - Test worker com.palantir.magritte.ete.DockerComposeExecutable - db2 uses an image, skipping
+db uses an image, skipping
+
+2015-12-01T16:48:16,696 DEBUG - Test worker com.palantir.magritte.ete.DockerComposeExecutable - Creating resources_db2_1
+Creating resources_db_1
+
+2015-12-01T16:48:16,696 DEBUG - Test worker com.palantir.magritte.ete.DockerComposition - Starting log collection
+2015-12-01T16:48:16,696 DEBUG - Test worker com.palantir.magritte.ete.DockerComposition - Waiting for services
+2015-12-01T16:48:16,696 DEBUG - Test worker com.palantir.magritte.ete.DockerComposition - Waiting for service 'Service [serviceName=db2, dockerComposeProcess=com.palantir.magritte.ete.DockerComposeExecutable@6a6c0ada, dockerMachine=com.palantir.magritte.ete.DockerMachine@6d9855f7]'
+2015-12-01T16:48:17,064 DEBUG - Test worker com.palantir.magritte.ete.DockerComposeExecutable - stty: stdin isn't a terminal
+     Name                    Command               State            Ports          
+----------------------------------------------------------------------------------
+resources_db2_1   /docker-entrypoint.sh postgres   Up      0.0.0.0:33360->5432/tcp 
+
+2015-12-01T16:48:17,064 INFO  - Test worker com.palantir.magritte.ete.Ports - Waiting PT120S for ports '[DockerPort [ip=192.168.99.100, portMapping=PortMapping [externalPort=33360, internalPort=5432]]]' to be open
+2015-12-01T16:48:21,443 INFO  - Test worker com.palantir.magritte.ete.Ports - All ports open
+2015-12-01T16:48:21,444 DEBUG - Test worker com.palantir.magritte.ete.DockerComposition - Waiting for service 'Service [serviceName=db, dockerComposeProcess=com.palantir.magritte.ete.DockerComposeExecutable@6a6c0ada, dockerMachine=com.palantir.magritte.ete.DockerMachine@6d9855f7]'
+2015-12-01T16:48:21,805 DEBUG - Test worker com.palantir.magritte.ete.DockerComposeExecutable - stty: stdin isn't a terminal
+     Name                   Command               State           Ports          
+--------------------------------------------------------------------------------
+resources_db_1   /docker-entrypoint.sh postgres   Up      0.0.0.0:5433->5432/tcp 
+
+2015-12-01T16:48:21,805 INFO  - Test worker com.palantir.magritte.ete.Ports - Waiting PT120S for ports '[DockerPort [ip=192.168.99.100, portMapping=PortMapping [externalPort=5433, internalPort=5432]]]' to be open
+2015-12-01T16:48:21,857 INFO  - Test worker com.palantir.magritte.ete.Ports - All ports open
+2015-12-01T16:48:21,857 DEBUG - Test worker com.palantir.magritte.ete.DockerComposition - docker-compose cluster started
+2015-12-01T16:48:21,857 DEBUG - Test worker com.palantir.magritte.ete.DockerComposition - Killing docker-compose cluster
+2015-12-01T16:48:22,328 DEBUG - Test worker com.palantir.magritte.ete.DockerComposeExecutable - Killing resources_db_1 ... 
+Killing resources_db2_1 ... 
+[2A[2KKilling resources_db_1 ... done
+[2B[1A[2KKilling resources_db2_1 ... done
+[1B
+2015-12-01T16:48:22,662 DEBUG - Test worker com.palantir.magritte.ete.DockerComposeExecutable - Going to remove resources_db_1, resources_db2_1
+Removing resources_db_1 ... 
+Removing resources_db2_1 ... 
+[2A[2KRemoving resources_db_1 ... done
+[2B[1A[2KRemoving resources_db2_1 ... done
+[1B
+2015-12-01T16:48:23,023 DEBUG - Test worker com.palantir.magritte.ete.DockerComposeExecutable - stty: stdin isn't a terminal
+Name   Command   State   Ports 
+------------------------------
+
+2015-12-01T16:48:23,023 DEBUG - Test worker com.palantir.magritte.ete.DockerComposition - Killing docker-compose cluster
+2015-12-01T16:48:23,348 DEBUG - Test worker com.palantir.magritte.ete.DockerComposeExecutable - 
+2015-12-01T16:48:23,668 DEBUG - Test worker com.palantir.magritte.ete.DockerComposeExecutable - No stopped containers
+
+2015-12-01T16:48:23,672 DEBUG - Test worker com.palantir.magritte.ete.DockerComposition - Starting docker-compose cluster
+2015-12-01T16:48:23,672 DEBUG - Test worker com.palantir.magritte.ete.DockerComposition - Starting log collection
+2015-12-01T16:48:23,672 DEBUG - Test worker com.palantir.magritte.ete.DockerComposition - Waiting for services
+2015-12-01T16:48:23,672 DEBUG - Test worker com.palantir.magritte.ete.DockerComposition - Waiting for service 'Service [serviceName=db, dockerComposeProcess=Mock for DockerComposeExecutable, hashCode: 1699585987, dockerMachine=Mock for DockerMachine, hashCode: 2041871077]'
+2015-12-01T16:48:23,672 INFO  - Test worker com.palantir.magritte.ete.Ports - Waiting PT0.100S for ports '[Mock for DockerPort, hashCode: 963993051]' to be open
+2015-12-01T16:48:23,724 INFO  - Test worker com.palantir.magritte.ete.Ports - All ports open
+2015-12-01T16:48:23,724 DEBUG - Test worker com.palantir.magritte.ete.DockerComposition - docker-compose cluster started
+2015-12-01T16:48:23,726 DEBUG - Test worker com.palantir.magritte.ete.DockerComposition - Starting docker-compose cluster
+2015-12-01T16:48:23,726 DEBUG - Test worker com.palantir.magritte.ete.DockerComposition - Starting log collection
+2015-12-01T16:48:23,726 DEBUG - Test worker com.palantir.magritte.ete.DockerComposition - Waiting for services
+2015-12-01T16:48:23,726 DEBUG - Test worker com.palantir.magritte.ete.DockerComposition - Waiting for service 'Service [serviceName=db, dockerComposeProcess=Mock for DockerComposeExecutable, hashCode: 1786140959, dockerMachine=Mock for DockerMachine, hashCode: 1398339762]'
+2015-12-01T16:48:23,726 INFO  - Test worker com.palantir.magritte.ete.Ports - Waiting PT0.100S for ports '[Mock for DockerPort, hashCode: 186722522]' to be open
+2015-12-01T16:48:23,778 INFO  - Test worker com.palantir.magritte.ete.Ports - All ports open
+2015-12-01T16:48:23,779 DEBUG - Test worker com.palantir.magritte.ete.DockerComposition - Waiting for service 'Service [serviceName=otherDb, dockerComposeProcess=Mock for DockerComposeExecutable, hashCode: 1786140959, dockerMachine=Mock for DockerMachine, hashCode: 1398339762]'
+2015-12-01T16:48:23,779 INFO  - Test worker com.palantir.magritte.ete.Ports - Waiting PT0.100S for ports '[Mock for DockerPort, hashCode: 4038920]' to be open
+2015-12-01T16:48:23,830 INFO  - Test worker com.palantir.magritte.ete.Ports - All ports open
+2015-12-01T16:48:23,830 DEBUG - Test worker com.palantir.magritte.ete.DockerComposition - docker-compose cluster started
+2015-12-01T16:48:23,832 DEBUG - Test worker com.palantir.magritte.ete.DockerComposition - Starting docker-compose cluster
+2015-12-01T16:48:23,832 DEBUG - Test worker com.palantir.magritte.ete.DockerComposition - Starting log collection
+2015-12-01T16:48:23,832 DEBUG - Test worker com.palantir.magritte.ete.DockerComposition - Waiting for services
+2015-12-01T16:48:23,832 DEBUG - Test worker com.palantir.magritte.ete.DockerComposition - Waiting for service 'Service [serviceName=http, dockerComposeProcess=Mock for DockerComposeExecutable, hashCode: 875525988, dockerMachine=Mock for DockerMachine, hashCode: 2001018522]'
+2015-12-01T16:48:23,884 DEBUG - Test worker com.palantir.magritte.ete.DockerComposition - docker-compose cluster started
+2015-12-01T16:48:23,886 DEBUG - Test worker com.palantir.magritte.ete.DockerComposition - Starting docker-compose cluster
+2015-12-01T16:48:23,886 DEBUG - Test worker com.palantir.magritte.ete.DockerComposition - Starting log collection
+2015-12-01T16:48:23,886 DEBUG - Test worker com.palantir.magritte.ete.DockerComposition - Waiting for services
+2015-12-01T16:48:23,886 DEBUG - Test worker com.palantir.magritte.ete.DockerComposition - docker-compose cluster started
+2015-12-01T16:48:23,886 INFO  - pool-50-thread-1 com.palantir.magritte.ete.FileLogCollector - Writing logs for container 'db' to '/var/folders/y8/h2h504q13h1gydckx1b4r5sd080c1_/T/junit7990827027061793515/junit2753062256626140648/db.log'
+2015-12-01T16:48:23,887 DEBUG - Test worker com.palantir.magritte.ete.DockerComposition - Killing docker-compose cluster
+2015-12-01T16:48:23,937 WARN  - Test worker com.palantir.magritte.ete.FileLogCollector - docker containers were still running when log collection stopped
+2015-12-01T16:48:23,940 DEBUG - Test worker com.palantir.magritte.ete.DockerComposition - Starting docker-compose cluster
+2015-12-01T16:48:23,940 DEBUG - Test worker com.palantir.magritte.ete.DockerComposition - Starting log collection
+2015-12-01T16:48:23,940 DEBUG - Test worker com.palantir.magritte.ete.DockerComposition - Waiting for services
+2015-12-01T16:48:23,940 DEBUG - Test worker com.palantir.magritte.ete.DockerComposition - Waiting for service 'Service [serviceName=db, dockerComposeProcess=Mock for DockerComposeExecutable, hashCode: 983527083, dockerMachine=Mock for DockerMachine, hashCode: 284994621]'
+2015-12-01T16:48:23,940 DEBUG - Test worker com.palantir.magritte.ete.DockerComposition - docker-compose cluster started
+2015-12-01T16:48:23,941 DEBUG - Test worker com.palantir.magritte.ete.DockerComposition - Starting docker-compose cluster
+2015-12-01T16:48:23,941 DEBUG - Test worker com.palantir.magritte.ete.DockerComposition - Starting log collection
+2015-12-01T16:48:23,941 DEBUG - Test worker com.palantir.magritte.ete.DockerComposition - Waiting for services
+2015-12-01T16:48:23,941 DEBUG - Test worker com.palantir.magritte.ete.DockerComposition - Waiting for service 'Service [serviceName=db, dockerComposeProcess=Mock for DockerComposeExecutable, hashCode: 1021009039, dockerMachine=Mock for DockerMachine, hashCode: 2112915337]'
+2015-12-01T16:48:23,942 DEBUG - Test worker com.palantir.magritte.ete.DockerComposition - Starting docker-compose cluster
+2015-12-01T16:48:23,942 DEBUG - Test worker com.palantir.magritte.ete.DockerComposition - Starting log collection
+2015-12-01T16:48:23,942 DEBUG - Test worker com.palantir.magritte.ete.DockerComposition - Waiting for services
+2015-12-01T16:48:23,942 DEBUG - Test worker com.palantir.magritte.ete.DockerComposition - Waiting for service 'Service [serviceName=nonExistent, dockerComposeProcess=Mock for DockerComposeExecutable, hashCode: 135807310, dockerMachine=Mock for DockerMachine, hashCode: 1104023405]'
+2015-12-01T16:48:23,942 WARN  - Test worker com.palantir.magritte.ete.Container - Container 'nonExistent' failed to come up: No container with name 'nonExistent' found
+java.lang.IllegalStateException: No container with name 'nonExistent' found
+	at com.palantir.magritte.ete.Container.waitForPorts(Container.java:39) ~[main/:?]
+	at com.palantir.magritte.ete.DockerComposition.lambda$waitingForService$16(DockerComposition.java:87) ~[main/:?]
+	at com.palantir.magritte.ete.DockerComposition.before(DockerComposition.java:59) [main/:?]
+	at com.palantir.magritte.ete.DockerCompositionTest.waitingForServiceThatDoesNotExistResultsInAnIllegalStateException(DockerCompositionTest.java:126) [test/:?]
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[?:1.8.0_65]
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62) ~[?:1.8.0_65]
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43) ~[?:1.8.0_65]
+	at java.lang.reflect.Method.invoke(Method.java:497) ~[?:1.8.0_65]
+	at org.junit.runners.model.FrameworkMethod$1.runReflectiveCall(FrameworkMethod.java:50) [junit-4.12.jar:4.12]
+	at org.junit.internal.runners.model.ReflectiveCallable.run(ReflectiveCallable.java:12) [junit-4.12.jar:4.12]
+	at org.junit.runners.model.FrameworkMethod.invokeExplosively(FrameworkMethod.java:47) [junit-4.12.jar:4.12]
+	at org.junit.internal.runners.statements.InvokeMethod.evaluate(InvokeMethod.java:17) [junit-4.12.jar:4.12]
+	at org.junit.rules.ExpectedException$ExpectedExceptionStatement.evaluate(ExpectedException.java:239) [junit-4.12.jar:4.12]
+	at org.junit.rules.ExternalResource$1.evaluate(ExternalResource.java:48) [junit-4.12.jar:4.12]
+	at org.junit.rules.RunRules.evaluate(RunRules.java:20) [junit-4.12.jar:4.12]
+	at org.junit.runners.ParentRunner.runLeaf(ParentRunner.java:325) [junit-4.12.jar:4.12]
+	at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:78) [junit-4.12.jar:4.12]
+	at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:57) [junit-4.12.jar:4.12]
+	at org.junit.runners.ParentRunner$3.run(ParentRunner.java:290) [junit-4.12.jar:4.12]
+	at org.junit.runners.ParentRunner$1.schedule(ParentRunner.java:71) [junit-4.12.jar:4.12]
+	at org.junit.runners.ParentRunner.runChildren(ParentRunner.java:288) [junit-4.12.jar:4.12]
+	at org.junit.runners.ParentRunner.access$000(ParentRunner.java:58) [junit-4.12.jar:4.12]
+	at org.junit.runners.ParentRunner$2.evaluate(ParentRunner.java:268) [junit-4.12.jar:4.12]
+	at org.junit.runners.ParentRunner.run(ParentRunner.java:363) [junit-4.12.jar:4.12]
+	at org.gradle.api.internal.tasks.testing.junit.JUnitTestClassExecuter.runTestClass(JUnitTestClassExecuter.java:105) [gradle-plugins-2.8.jar:2.8]
+	at org.gradle.api.internal.tasks.testing.junit.JUnitTestClassExecuter.execute(JUnitTestClassExecuter.java:56) [gradle-plugins-2.8.jar:2.8]
+	at org.gradle.api.internal.tasks.testing.junit.JUnitTestClassProcessor.processTestClass(JUnitTestClassProcessor.java:64) [gradle-plugins-2.8.jar:2.8]
+	at org.gradle.api.internal.tasks.testing.SuiteTestClassProcessor.processTestClass(SuiteTestClassProcessor.java:50) [gradle-plugins-2.8.jar:2.8]
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[?:1.8.0_65]
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62) ~[?:1.8.0_65]
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43) ~[?:1.8.0_65]
+	at java.lang.reflect.Method.invoke(Method.java:497) ~[?:1.8.0_65]
+	at org.gradle.messaging.dispatch.ReflectionDispatch.dispatch(ReflectionDispatch.java:35) [gradle-messaging-2.8.jar:2.8]
+	at org.gradle.messaging.dispatch.ReflectionDispatch.dispatch(ReflectionDispatch.java:24) [gradle-messaging-2.8.jar:2.8]
+	at org.gradle.messaging.dispatch.ContextClassLoaderDispatch.dispatch(ContextClassLoaderDispatch.java:32) [gradle-messaging-2.8.jar:2.8]
+	at org.gradle.messaging.dispatch.ProxyDispatchAdapter$DispatchingInvocationHandler.invoke(ProxyDispatchAdapter.java:93) [gradle-messaging-2.8.jar:2.8]
+	at com.sun.proxy.$Proxy2.processTestClass(Unknown Source) [?:?]
+	at org.gradle.api.internal.tasks.testing.worker.TestWorker.processTestClass(TestWorker.java:106) [gradle-plugins-2.8.jar:2.8]
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[?:1.8.0_65]
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62) ~[?:1.8.0_65]
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43) ~[?:1.8.0_65]
+	at java.lang.reflect.Method.invoke(Method.java:497) ~[?:1.8.0_65]
+	at org.gradle.messaging.dispatch.ReflectionDispatch.dispatch(ReflectionDispatch.java:35) [gradle-messaging-2.8.jar:2.8]
+	at org.gradle.messaging.dispatch.ReflectionDispatch.dispatch(ReflectionDispatch.java:24) [gradle-messaging-2.8.jar:2.8]
+	at org.gradle.messaging.remote.internal.hub.MessageHub$Handler.run(MessageHub.java:360) [gradle-messaging-2.8.jar:2.8]
+	at org.gradle.internal.concurrent.ExecutorPolicy$CatchAndRecordFailures.onExecute(ExecutorPolicy.java:54) [gradle-base-services-2.8.jar:2.8]
+	at org.gradle.internal.concurrent.StoppableExecutorImpl$1.run(StoppableExecutorImpl.java:40) [gradle-base-services-2.8.jar:2.8]
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1142) [?:1.8.0_65]
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:617) [?:1.8.0_65]
+	at java.lang.Thread.run(Thread.java:745) [?:1.8.0_65]
+2015-12-01T16:48:23,943 DEBUG - Test worker com.palantir.magritte.ete.DockerComposition - Killing docker-compose cluster
+2015-12-01T16:48:23,945 DEBUG - Test worker com.palantir.magritte.ete.DockerComposition - Starting docker-compose cluster
+2015-12-01T16:48:23,945 DEBUG - Test worker com.palantir.magritte.ete.DockerComposition - Starting log collection
+2015-12-01T16:48:23,945 DEBUG - Test worker com.palantir.magritte.ete.DockerComposition - Waiting for services
+2015-12-01T16:48:23,946 DEBUG - Test worker com.palantir.magritte.ete.DockerComposition - Waiting for service 'Service [serviceName=db, dockerComposeProcess=Mock for DockerComposeExecutable, hashCode: 655826175, dockerMachine=Mock for DockerMachine, hashCode: 1587678043]'
+2015-12-01T16:48:23,946 INFO  - Test worker com.palantir.magritte.ete.Ports - Waiting PT0.100S for ports '[Mock for DockerPort, hashCode: 629076837]' to be open
+2015-12-01T16:48:24,048 WARN  - Test worker com.palantir.magritte.ete.Container - Container 'db' failed to come up: Internal port '5432' mapped to '5432' was unavailable
+java.lang.IllegalStateException: Internal port '5432' mapped to '5432' was unavailable
+	at com.palantir.magritte.ete.Ports.waitToBeListeningWithin(Ports.java:35) ~[main/:?]
+	at com.palantir.magritte.ete.Container.waitForPorts(Container.java:40) ~[main/:?]
+	at com.palantir.magritte.ete.DockerComposition.lambda$waitingForService$16(DockerComposition.java:87) ~[main/:?]
+	at com.palantir.magritte.ete.DockerComposition.before(DockerComposition.java:59) [main/:?]
+	at com.palantir.magritte.ete.DockerCompositionTest.dockerComposeWaitForServiceThrowsAnExceptionWhenThePortIsUnavailable(DockerCompositionTest.java:94) [test/:?]
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[?:1.8.0_65]
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62) ~[?:1.8.0_65]
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43) ~[?:1.8.0_65]
+	at java.lang.reflect.Method.invoke(Method.java:497) ~[?:1.8.0_65]
+	at org.junit.runners.model.FrameworkMethod$1.runReflectiveCall(FrameworkMethod.java:50) [junit-4.12.jar:4.12]
+	at org.junit.internal.runners.model.ReflectiveCallable.run(ReflectiveCallable.java:12) [junit-4.12.jar:4.12]
+	at org.junit.runners.model.FrameworkMethod.invokeExplosively(FrameworkMethod.java:47) [junit-4.12.jar:4.12]
+	at org.junit.internal.runners.statements.InvokeMethod.evaluate(InvokeMethod.java:17) [junit-4.12.jar:4.12]
+	at org.junit.rules.ExpectedException$ExpectedExceptionStatement.evaluate(ExpectedException.java:239) [junit-4.12.jar:4.12]
+	at org.junit.rules.ExternalResource$1.evaluate(ExternalResource.java:48) [junit-4.12.jar:4.12]
+	at org.junit.rules.RunRules.evaluate(RunRules.java:20) [junit-4.12.jar:4.12]
+	at org.junit.runners.ParentRunner.runLeaf(ParentRunner.java:325) [junit-4.12.jar:4.12]
+	at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:78) [junit-4.12.jar:4.12]
+	at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:57) [junit-4.12.jar:4.12]
+	at org.junit.runners.ParentRunner$3.run(ParentRunner.java:290) [junit-4.12.jar:4.12]
+	at org.junit.runners.ParentRunner$1.schedule(ParentRunner.java:71) [junit-4.12.jar:4.12]
+	at org.junit.runners.ParentRunner.runChildren(ParentRunner.java:288) [junit-4.12.jar:4.12]
+	at org.junit.runners.ParentRunner.access$000(ParentRunner.java:58) [junit-4.12.jar:4.12]
+	at org.junit.runners.ParentRunner$2.evaluate(ParentRunner.java:268) [junit-4.12.jar:4.12]
+	at org.junit.runners.ParentRunner.run(ParentRunner.java:363) [junit-4.12.jar:4.12]
+	at org.gradle.api.internal.tasks.testing.junit.JUnitTestClassExecuter.runTestClass(JUnitTestClassExecuter.java:105) [gradle-plugins-2.8.jar:2.8]
+	at org.gradle.api.internal.tasks.testing.junit.JUnitTestClassExecuter.execute(JUnitTestClassExecuter.java:56) [gradle-plugins-2.8.jar:2.8]
+	at org.gradle.api.internal.tasks.testing.junit.JUnitTestClassProcessor.processTestClass(JUnitTestClassProcessor.java:64) [gradle-plugins-2.8.jar:2.8]
+	at org.gradle.api.internal.tasks.testing.SuiteTestClassProcessor.processTestClass(SuiteTestClassProcessor.java:50) [gradle-plugins-2.8.jar:2.8]
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[?:1.8.0_65]
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62) ~[?:1.8.0_65]
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43) ~[?:1.8.0_65]
+	at java.lang.reflect.Method.invoke(Method.java:497) ~[?:1.8.0_65]
+	at org.gradle.messaging.dispatch.ReflectionDispatch.dispatch(ReflectionDispatch.java:35) [gradle-messaging-2.8.jar:2.8]
+	at org.gradle.messaging.dispatch.ReflectionDispatch.dispatch(ReflectionDispatch.java:24) [gradle-messaging-2.8.jar:2.8]
+	at org.gradle.messaging.dispatch.ContextClassLoaderDispatch.dispatch(ContextClassLoaderDispatch.java:32) [gradle-messaging-2.8.jar:2.8]
+	at org.gradle.messaging.dispatch.ProxyDispatchAdapter$DispatchingInvocationHandler.invoke(ProxyDispatchAdapter.java:93) [gradle-messaging-2.8.jar:2.8]
+	at com.sun.proxy.$Proxy2.processTestClass(Unknown Source) [?:?]
+	at org.gradle.api.internal.tasks.testing.worker.TestWorker.processTestClass(TestWorker.java:106) [gradle-plugins-2.8.jar:2.8]
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[?:1.8.0_65]
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62) ~[?:1.8.0_65]
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43) ~[?:1.8.0_65]
+	at java.lang.reflect.Method.invoke(Method.java:497) ~[?:1.8.0_65]
+	at org.gradle.messaging.dispatch.ReflectionDispatch.dispatch(ReflectionDispatch.java:35) [gradle-messaging-2.8.jar:2.8]
+	at org.gradle.messaging.dispatch.ReflectionDispatch.dispatch(ReflectionDispatch.java:24) [gradle-messaging-2.8.jar:2.8]
+	at org.gradle.messaging.remote.internal.hub.MessageHub$Handler.run(MessageHub.java:360) [gradle-messaging-2.8.jar:2.8]
+	at org.gradle.internal.concurrent.ExecutorPolicy$CatchAndRecordFailures.onExecute(ExecutorPolicy.java:54) [gradle-base-services-2.8.jar:2.8]
+	at org.gradle.internal.concurrent.StoppableExecutorImpl$1.run(StoppableExecutorImpl.java:40) [gradle-base-services-2.8.jar:2.8]
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1142) [?:1.8.0_65]
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:617) [?:1.8.0_65]
+	at java.lang.Thread.run(Thread.java:745) [?:1.8.0_65]
+Caused by: com.jayway.awaitility.core.ConditionTimeoutException: Condition defined as a lambda expression in com.palantir.magritte.ete.Ports Internal port '5432' mapped to '5432' was unavailable within 100 milliseconds.
+	at com.jayway.awaitility.core.ConditionAwaiter.await(ConditionAwaiter.java:98) ~[awaitility-1.6.5.jar:?]
+	at com.jayway.awaitility.core.AssertionCondition.await(AssertionCondition.java:117) ~[awaitility-1.6.5.jar:?]
+	at com.jayway.awaitility.core.AssertionCondition.await(AssertionCondition.java:31) ~[awaitility-1.6.5.jar:?]
+	at com.jayway.awaitility.core.ConditionFactory.until(ConditionFactory.java:713) ~[awaitility-1.6.5.jar:?]
+	at com.jayway.awaitility.core.ConditionFactory.until(ConditionFactory.java:566) ~[awaitility-1.6.5.jar:?]
+	at com.palantir.magritte.ete.Ports.waitForPorts(Ports.java:44) ~[main/:?]
+	at com.palantir.magritte.ete.Ports.waitToBeListeningWithin(Ports.java:33) ~[main/:?]
+	... 50 more
+2015-12-01T16:48:24,050 DEBUG - Test worker com.palantir.magritte.ete.DockerComposition - Starting docker-compose cluster
+2015-12-01T16:48:24,051 DEBUG - Test worker com.palantir.magritte.ete.DockerComposition - Starting log collection
+2015-12-01T16:48:24,051 DEBUG - Test worker com.palantir.magritte.ete.DockerComposition - Waiting for services
+2015-12-01T16:48:24,051 DEBUG - Test worker com.palantir.magritte.ete.DockerComposition - docker-compose cluster started
+2015-12-01T16:48:24,065 INFO  - pool-52-thread-1 com.palantir.magritte.ete.FileLogCollector - Writing logs for container 'db' to '/var/folders/y8/h2h504q13h1gydckx1b4r5sd080c1_/T/junit1180755729043910560/junit4236619826046097391/db.log'
+2015-12-01T16:48:24,065 INFO  - pool-52-thread-2 com.palantir.magritte.ete.FileLogCollector - Writing logs for container 'db2' to '/var/folders/y8/h2h504q13h1gydckx1b4r5sd080c1_/T/junit1180755729043910560/junit4236619826046097391/db2.log'
+2015-12-01T16:48:24,120 WARN  - Test worker com.palantir.magritte.ete.FileLogCollector - docker containers were still running when log collection stopped
+2015-12-01T16:48:24,122 INFO  - pool-53-thread-1 com.palantir.magritte.ete.FileLogCollector - Writing logs for container 'db' to '/var/folders/y8/h2h504q13h1gydckx1b4r5sd080c1_/T/junit902214841311961191/junit1515048752415495594/db.log'
+2015-12-01T16:48:24,172 WARN  - Test worker com.palantir.magritte.ete.FileLogCollector - docker containers were still running when log collection stopped
+2015-12-01T16:48:24,174 INFO  - pool-54-thread-1 com.palantir.magritte.ete.FileLogCollector - Writing logs for container 'db' to '/var/folders/y8/h2h504q13h1gydckx1b4r5sd080c1_/T/junit172258124669435899/junit5309221884169590999/db.log'
+2015-12-01T16:48:24,225 WARN  - Test worker com.palantir.magritte.ete.FileLogCollector - docker containers were still running when log collection stopped
+2015-12-01T16:48:24,228 INFO  - pool-55-thread-1 com.palantir.magritte.ete.FileLogCollector - Writing logs for container 'db' to '/var/folders/y8/h2h504q13h1gydckx1b4r5sd080c1_/T/junit8566020948452036204/junit1885921756217473887/db.log'
+2015-12-01T16:48:24,231 INFO  - pool-56-thread-1 com.palantir.magritte.ete.FileLogCollector - Writing logs for container 'db' to '/var/folders/y8/h2h504q13h1gydckx1b4r5sd080c1_/T/junit2344730223268258312/junit4184237836025703555/db.log'
+2015-12-01T16:48:24,282 WARN  - Test worker com.palantir.magritte.ete.FileLogCollector - docker containers were still running when log collection stopped
+2015-12-01T16:48:24,296 INFO  - Test worker com.palantir.magritte.ete.Ports - Waiting PT0.200S for ports '[Mock for DockerPort, hashCode: 553032647]' to be open
+2015-12-01T16:48:24,499 INFO  - Test worker com.palantir.magritte.ete.Ports - Waiting PT0.200S for ports '[Mock for DockerPort, hashCode: 1192775353]' to be open
+2015-12-01T16:48:24,550 INFO  - Test worker com.palantir.magritte.ete.Ports - All ports open
+2015-12-01T16:48:24,551 INFO  - Test worker com.palantir.magritte.ete.Ports - Waiting PT0.200S for ports '[Mock for DockerPort, hashCode: 376104596]' to be open
+2015-12-01T16:48:24,653 INFO  - Test worker com.palantir.magritte.ete.Ports - All ports open
