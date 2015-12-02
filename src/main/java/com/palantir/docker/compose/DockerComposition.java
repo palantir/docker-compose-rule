@@ -46,7 +46,7 @@ public class DockerComposition extends ExternalResource {
     }
 
     @Override
-    protected void before() throws IOException, InterruptedException {
+    public void before() throws IOException, InterruptedException {
         log.debug("Starting docker-compose cluster");
         dockerComposeProcess.build();
         dockerComposeProcess.up();
@@ -64,7 +64,7 @@ public class DockerComposition extends ExternalResource {
     }
 
     @Override
-    protected void after() {
+    public void after() {
         try {
             log.debug("Killing docker-compose cluster");
             dockerComposeProcess.kill();
