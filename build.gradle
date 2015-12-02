@@ -48,3 +48,18 @@ dependencies {
     testCompile "com.google.code.findbugs:jsr305:3.0.0"
 }
 
+addPtIvyPublishRepo {
+  // true if version matches /\+/ or contains 'SNAPSHOT', '-dev', or 'dirty'
+  isSnapshot = semverSnapshot() // using semantic versioning
+}
+
+publishing {
+    publications {
+        ptIvy(IvyPublication) {
+            artifact(jar) {
+               type "jar"
+            }
+        }
+    }
+}
+
