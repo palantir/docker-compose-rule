@@ -10,6 +10,7 @@ apply plugin: 'java'
 apply plugin: 'pt-default-repos'
 apply plugin: 'pt-versions'
 apply plugin: 'pt-ivy-publish'
+apply plugin: 'pt-java-packaging'
 
 group = 'com.palantir.docker.compose'
 version semverVersion()
@@ -56,9 +57,7 @@ addPtIvyPublishRepo {
 publishing {
     publications {
         ptIvy(IvyPublication) {
-            artifact(jar) {
-               type "jar"
-            }
+            from components.java
         }
     }
 }
