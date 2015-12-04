@@ -90,3 +90,24 @@ There are then two methods for accessing port information:
     DockerPort portOnContainerWithInternalMapping(String container, int portNumber)
 
 In both cases the port in the Docker compose file must be referenced. Using the latter method no external port needs to be declared, this will be allocated by Docker at runtime and the DockerPort object contains the dynamic port and IP assignment.
+
+Collecting logs
+---------------
+
+To record the logs from your containers specify a location:
+
+  public class DockerCompositionTest {
+
+      @ClassRule
+      public DockerComposition composition = new DockerComposition("src/test/resources/docker-compose.yml")
+                                                    .saveLogsTo("build/dockerLogs/dockerCompositionTest");
+
+      @Test
+      public void testRecordsLogs() throws InterruptedException, IOException {
+         ...
+      }
+
+
+  }
+
+This will automatically record logs for all containers in real time to the specified directory. Collection will stop when the containers terminate.
