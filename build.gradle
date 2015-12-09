@@ -60,6 +60,7 @@ publishing {
     publications {
         ptIvy(IvyPublication) {
             from components.java
+            artifact sourceJar
         }
     }
 }
