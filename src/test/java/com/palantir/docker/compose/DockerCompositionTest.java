@@ -40,7 +40,7 @@ public class DockerCompositionTest {
     private final DockerMachine dockerMachine = mock(DockerMachine.class);
     private final MockDockerEnvironment env = new MockDockerEnvironment(dockerComposeExecutable, dockerMachine);
     private final DockerComposition dockerComposition = new DockerComposition(dockerComposeExecutable, dockerMachine)
-                                                               .serviceTimeout(Duration.millis(100));
+                                                               .serviceTimeout(Duration.millis(200));
 
     @Test
     public void dockerComposeBuildAndUpIsCalledBeforeTestsAreRun() throws IOException, InterruptedException {
@@ -77,6 +77,13 @@ public class DockerCompositionTest {
         AtomicInteger timesCheckCalled = new AtomicInteger(0);
         dockerComposition.waitingForService("db", (container) -> timesCheckCalled.incrementAndGet() == 1).before();
         assertThat(timesCheckCalled.get(), is(1));
+    }
+
+    @Test
+    public void dockerComposeWaitForServicePassesWhenCheckIsTrueAfterBeingFalse() throws IOException, InterruptedException {
+        AtomicInteger timesCheckCalled = new AtomicInteger(0);
+        dockerComposition.waitingForService("db", (container) -> timesCheckCalled.incrementAndGet() == 2).before();
+        assertThat(timesCheckCalled.get(), is(2));
     }
 
     @Test
