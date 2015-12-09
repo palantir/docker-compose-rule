@@ -4,7 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Map.Entry;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang3.Validate;
 import org.joda.time.Duration;
@@ -13,6 +13,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Function;
+import com.jayway.awaitility.Awaitility;
+import com.jayway.awaitility.core.ConditionTimeoutException;
 
 public class DockerComposition extends ExternalResource {
 
@@ -53,14 +55,20 @@ public class DockerComposition extends ExternalResource {
         log.debug("Starting log collection");
         logCollector.startCollecting(dockerComposeProcess);
         log.debug("Waiting for services");
-        for (Entry<Container, Function<Container, Boolean>> serviceCheck : servicesToWaitFor.entrySet()) {
-            Container service = serviceCheck.getKey();
-            log.debug("Waiting for service '{}'", service);
-            if (!serviceCheck.getValue().apply(service)) {
-                throw new IllegalStateException("Container '" + service.getContainerName() + "' failed to pass startup check");
-            }
-        }
+        servicesToWaitFor.entrySet().forEach(serviceCheck -> waitForService(serviceCheck.getKey(), serviceCheck.getValue()));
         log.debug("docker-compose cluster started");
+    }
+
+    private void waitForService(Container service, Function<Container, Boolean> serviceCheck) {
+        log.debug("Waiting for service '{}'", service);
+        try {
+            Awaitility.await()
+                .pollInterval(50, TimeUnit.MILLISECONDS)
+                .atMost(serviceTimeout.getMillis(), TimeUnit.MILLISECONDS)
+                .until(() -> serviceCheck.apply(service));
+        } catch (ConditionTimeoutException e) {
+            throw new IllegalStateException("Container '" + service.getContainerName() + "' failed to pass startup check");
+        }
     }
 
     @Override
