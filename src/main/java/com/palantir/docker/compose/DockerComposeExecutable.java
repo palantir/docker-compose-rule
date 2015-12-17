@@ -1,14 +1,16 @@
 package com.palantir.docker.compose;
 
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static java.util.stream.Collectors.joining;
 
 import static org.apache.commons.lang3.Validate.validState;
+
+import static com.palantir.docker.compose.DockerComposeExecutor.COMMAND_TIMEOUT;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Arrays;
-import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
@@ -60,7 +62,7 @@ public class DockerComposeExecutable {
         Process executedProcess = executor.execute("logs", "--no-color", container);
         IOUtils.copy(executedProcess.getInputStream(), output);
         try {
-            executedProcess.waitFor(DockerComposeExecutor.COMMAND_TIMEOUT_IN_SECONDS, TimeUnit.SECONDS);
+            executedProcess.waitFor(COMMAND_TIMEOUT.getMillis(), MILLISECONDS);
         } catch (InterruptedException e) {
             return false;
         }
