@@ -1,6 +1,5 @@
 package com.palantir.docker.compose;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -29,7 +28,7 @@ public class PortMappings implements Iterable<PortMapping> {
         this(Collections.singletonList(port));
     }
 
-    public static PortMappings parseFromDockerComposePs(String psOutput) throws IOException, InterruptedException {
+    public static PortMappings parseFromDockerComposePs(String psOutput) {
         Preconditions.checkArgument(!Strings.isNullOrEmpty(psOutput), "No container found");
         Matcher matcher = PORT_PATTERN.matcher(psOutput);
         List<PortMapping> ports = new ArrayList<>();
