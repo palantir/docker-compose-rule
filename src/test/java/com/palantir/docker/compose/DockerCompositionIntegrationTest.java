@@ -35,9 +35,7 @@ public class DockerCompositionIntegrationTest {
     @Test
     public void afterTestIsExecutedTheLaunchedPostgresContainerIsNoLongerListening() throws IOException, InterruptedException {
         composition.after();
-        exception.expect(IllegalArgumentException.class);
-        exception.expectMessage("No port mapped externally to '5433' for container 'db'");
-        composition.portOnContainerWithExternalMapping("db", 5433);
+        assertThat(composition.portOnContainerWithExternalMapping("db", 5433).isListeningNow(), is(false));
     }
 
     @Test

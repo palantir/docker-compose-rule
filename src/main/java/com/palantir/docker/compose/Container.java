@@ -12,6 +12,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Function;
+import com.google.common.base.Supplier;
+import com.google.common.base.Suppliers;
+import com.google.common.base.Throwables;
 import com.jayway.awaitility.Awaitility;
 
 public class Container {
@@ -21,6 +24,8 @@ public class Container {
     private final String containerName;
     private final DockerComposeExecutable dockerComposeProcess;
     private final DockerMachine dockerMachine;
+
+    private final Supplier<PortMappings> portMappings = Suppliers.memoize(this::getDockerPorts);
 
     public Container(String containerName,
                     DockerComposeExecutable dockerComposeProcess,
@@ -36,7 +41,7 @@ public class Container {
 
     public boolean waitForPorts(Duration timeout) {
         try {
-            PortMappings exposedPorts = dockerComposeProcess.ports(containerName);
+            PortMappings exposedPorts = portMappings.get();
             dockerMachine.portsFor(exposedPorts).waitToBeListeningWithin(timeout);
             return true;
         } catch (Exception e) {
@@ -60,21 +65,29 @@ public class Container {
     }
 
     public DockerPort portMappedExternallyTo(int externalPort) throws IOException, InterruptedException {
-        return dockerComposeProcess.ports(containerName)
-                                   .stream()
-                                   .map(dockerMachine::getPort)
-                                   .filter(port -> port.getExternalPort() == externalPort)
-                                   .findFirst()
-                                   .orElseThrow(() -> new IllegalArgumentException("No port mapped externally to '" + externalPort + "' for container '" + containerName + "'"));
+        return portMappings.get()
+                           .stream()
+                           .map(dockerMachine::getPort)
+                           .filter(port -> port.getExternalPort() == externalPort)
+                           .findFirst()
+                           .orElseThrow(() -> new IllegalArgumentException("No port mapped externally to '" + externalPort + "' for container '" + containerName + "'"));
     }
 
     public DockerPort portMappedInternallyTo(int internalPort) throws IOException, InterruptedException {
-        return dockerComposeProcess.ports(containerName)
-                                   .stream()
-                                   .map(dockerMachine::getPort)
-                                   .filter(port -> port.getInternalPort() == internalPort)
-                                   .findFirst()
-                                   .orElseThrow(() -> new IllegalArgumentException("No internal port '" + internalPort + "' for container '" + containerName + "'"));
+        return portMappings.get()
+                           .stream()
+                           .map(dockerMachine::getPort)
+                           .filter(port -> port.getInternalPort() == internalPort)
+                           .findFirst()
+                           .orElseThrow(() -> new IllegalArgumentException("No internal port '" + internalPort + "' for container '" + containerName + "'"));
+    }
+
+    private PortMappings getDockerPorts() {
+        try {
+            return dockerComposeProcess.ports(containerName);
+        } catch (IOException | InterruptedException e) {
+            throw Throwables.propagate(e);
+        }
     }
 
     @Override

@@ -4,6 +4,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import java.io.IOException;
@@ -61,6 +62,14 @@ public class ContainerTest {
         DockerPort expected = env.availableService("service", 5433, 5432);
         DockerPort port = service.portMappedInternallyTo(5432);
         assertThat(port, is(expected));
+    }
+
+    @Test
+    public void whenTwoPortsAreRequestedDockerPortsIsOnlyCalledOnce() throws IOException, InterruptedException {
+        env.ports("service", 8080, 8081);
+        service.portMappedInternallyTo(8080);
+        service.portMappedInternallyTo(8081);
+        verify(dockerComposeProcess, times(1)).ports("service");
     }
 
     @Test
