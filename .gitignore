@@ -11,3 +11,4 @@ logs/
 **/*.ipr
 **/*.iws
 **/*.iml
+out/
