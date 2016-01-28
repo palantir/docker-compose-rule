@@ -9,19 +9,26 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 
 public class DockerEnvironmentVariables {
+    private static final int DISABLE_CERT_VERIFICATION = 0;
+
+    private static final String LOCALHOST = "127.0.0.1";
+    private static final String OS_NAME = "os.name";
+    private static final String MAC_OS = "Mac";
+
+    public static final String TCP_PROTOCOL = "tcp://";
     public static final String DOCKER_CERT_PATH = "DOCKER_CERT_PATH";
     public static final String DOCKER_HOST = "DOCKER_HOST";
     public static final String DOCKER_TLS_VERIFY = "DOCKER_TLS_VERIFY";
-    private static final int DISABLE_CERT_VERIFICATION = 0;
+
+    public static final String CERT_PATH_PRESENT_BUT_TLS_VERIFY_DISABLED =
+            "Docker still attempts to use " + DOCKER_CERT_PATH + " to verify a "
+                    + "connection even when " + DOCKER_TLS_VERIFY + " is set to 0 (or is missing). "
+                    + "Please enable " + DOCKER_TLS_VERIFY + " or unset " + DOCKER_CERT_PATH;
 
     private static final List<String> requiredEnvVariables = ImmutableList.of(
             DOCKER_TLS_VERIFY,
             DOCKER_HOST,
             DOCKER_CERT_PATH);
-    public static final String localhost = "127.0.0.1";
-    public static final String OS_NAME = "os.name";
-    public static final String MAC_OS = "Mac";
-    public static final String TCP_PROTOCOL = "tcp://";
 
     private final Map<String, String> env;
 
@@ -50,9 +57,7 @@ public class DockerEnvironmentVariables {
                 missingEnvironmentVariables.remove(DOCKER_TLS_VERIFY);
                 missingEnvironmentVariables.remove(DOCKER_CERT_PATH);
             } else {
-                throw new IllegalStateException("Docker still attempts to use " + DOCKER_CERT_PATH + " to verify a "
-                        + "connection even when " + DOCKER_TLS_VERIFY + " is set to 0 (or is missing). "
-                        + "Please enable " + DOCKER_TLS_VERIFY + " or unset " + DOCKER_CERT_PATH);
+                throw new IllegalStateException(CERT_PATH_PRESENT_BUT_TLS_VERIFY_DISABLED);
             }
         }
 
@@ -69,9 +74,9 @@ public class DockerEnvironmentVariables {
         if (!Strings.isNullOrEmpty(dockerHostEnvVariable)) {
             // StringUtils.substringBetween unfortunately returns null if any of the separators does not match
             String ipAndMaybePort = StringUtils.substringAfter(dockerHostEnvVariable, TCP_PROTOCOL);
-            return StringUtils.substringAfter(ipAndMaybePort, ":");
+            return StringUtils.substringBefore(ipAndMaybePort, ":");
         }
 
-        return localhost;
+        return LOCALHOST;
     }
 }
