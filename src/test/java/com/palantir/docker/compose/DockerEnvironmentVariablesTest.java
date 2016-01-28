@@ -1,3 +1,7 @@
+/*
+ * Copyright 2016 Palantir Technologies, Inc. All rights reserved.
+ */
+
 package com.palantir.docker.compose;
 
 import static org.hamcrest.Matchers.is;
