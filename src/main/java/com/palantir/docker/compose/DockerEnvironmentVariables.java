@@ -37,7 +37,6 @@ public class DockerEnvironmentVariables {
 
     private final Map<String, String> env;
 
-
     public DockerEnvironmentVariables(Map<String, String> env) {
         this.env = Maps.newHashMap(env);
 
