@@ -4,6 +4,7 @@
 
 package com.palantir.docker.compose;
 
+import static com.palantir.docker.compose.DockerEnvironmentVariables.TCP_PROTOCOL;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
@@ -89,13 +90,12 @@ public class DockerEnvironmentVariablesTest {
 
     @Test
     public void testGetHostIpWithPort() throws Exception {
-        String protocol = DockerEnvironmentVariables.TCP_PROTOCOL;
         String ip = "192.168.99.100";
         String port = "2376";
         String ipAndPort = String.format("%s:%s", ip, port);
 
         ImmutableMap<String, String> env = ImmutableMap.<String, String>builder()
-                .put(DockerEnvironmentVariables.DOCKER_HOST, protocol + ipAndPort)
+                .put(DockerEnvironmentVariables.DOCKER_HOST, TCP_PROTOCOL + ipAndPort)
                 .put(DockerEnvironmentVariables.DOCKER_TLS_VERIFY, "0")
                 .build();
 
@@ -106,11 +106,10 @@ public class DockerEnvironmentVariablesTest {
 
     @Test
     public void testGetHostIpWithoutPort() throws Exception {
-        String protocol = DockerEnvironmentVariables.TCP_PROTOCOL;
         String ip = "192.168.99.100";
 
         ImmutableMap<String, String> env = ImmutableMap.<String, String>builder()
-                .put(DockerEnvironmentVariables.DOCKER_HOST, protocol + ip)
+                .put(DockerEnvironmentVariables.DOCKER_HOST, TCP_PROTOCOL + ip)
                 .put(DockerEnvironmentVariables.DOCKER_TLS_VERIFY, "0")
                 .build();
 
