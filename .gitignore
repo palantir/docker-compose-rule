@@ -6,6 +6,7 @@ build/
 .classpath
 .settings/
 logs/
+.bin/
 
 # IntelliJ
 **/*.ipr

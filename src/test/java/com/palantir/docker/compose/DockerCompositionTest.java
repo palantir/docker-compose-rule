@@ -7,6 +7,7 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -122,6 +123,14 @@ public class DockerCompositionTest {
         DockerPort expectedPort = env.port("db", 5433, 5432);
         DockerPort actualPort = dockerComposition.portOnContainerWithInternalMapping("db", 5432);
         assertThat(actualPort, is(expectedPort));
+    }
+
+    @Test
+    public void whenTwoExternalPortsOnAContainerAreRequestedDockerComposePsIsOnlyExecutedOnce() throws IOException, InterruptedException {
+        env.ports("db", 5432, 8080);
+        dockerComposition.portOnContainerWithInternalMapping("db", 5432);
+        dockerComposition.portOnContainerWithInternalMapping("db", 8080);
+        verify(dockerComposeExecutable, times(1)).ports("db");
     }
 
     @Test

@@ -5,6 +5,8 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class MockDockerEnvironment {
 
@@ -36,13 +38,30 @@ public class MockDockerEnvironment {
     }
 
     public DockerPort port(String service, int externalPortNumber, int internalPortNumber) throws IOException, InterruptedException {
+        DockerPort port = mockDockerPort(externalPortNumber, internalPortNumber);
+        PortMapping portMapping = new PortMapping(externalPortNumber, internalPortNumber);
+        when(dockerComposeProcess.ports(service)).thenReturn(new PortMappings(portMapping));
+        when(dockerMachine.portsFor(new PortMappings(portMapping))).thenReturn(new Ports(port));
+        return port;
+    }
+
+    public void ports(String service, int... portNumbers) throws IOException, InterruptedException {
+        List<DockerPort> ports = new ArrayList<>();
+        List<PortMapping> portMappings = new ArrayList<>();
+        for (int portNumber : portNumbers) {
+            DockerPort port = mockDockerPort(portNumber, portNumber);
+            ports.add(port);
+            portMappings.add(new PortMapping(portNumber, portNumber));
+        }
+        when(dockerComposeProcess.ports(service)).thenReturn(new PortMappings(portMappings));
+        when(dockerMachine.portsFor(new PortMappings(portMappings))).thenReturn(new Ports(ports));
+    }
+
+    private DockerPort mockDockerPort(int externalPortNumber, int internalPortNumber) {
         DockerPort port = mock(DockerPort.class);
         when(port.getExternalPort()).thenReturn(externalPortNumber);
         when(port.getInternalPort()).thenReturn(internalPortNumber);
-        PortMapping portMapping = new PortMapping(externalPortNumber, internalPortNumber);
-        when(dockerComposeProcess.ports(service)).thenReturn(new PortMappings(portMapping));
-        when(dockerMachine.getPort(portMapping)).thenReturn(port);
-        when(dockerMachine.portsFor(new PortMappings(portMapping))).thenReturn(new Ports(port));
+        when(dockerMachine.getPort(new PortMapping(externalPortNumber, internalPortNumber))).thenReturn(port);
         return port;
     }
 

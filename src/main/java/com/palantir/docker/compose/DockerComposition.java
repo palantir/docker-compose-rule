@@ -22,6 +22,7 @@ public class DockerComposition extends ExternalResource {
 
     private final DockerComposeExecutable dockerComposeProcess;
     private final DockerMachine dockerMachine;
+    private final Map<String, Container> containers;
     private final Map<Container, Function<Container, Boolean>> servicesToWaitFor;
     private final Duration serviceTimeout;
     private final LogCollector logCollector;
@@ -32,19 +33,21 @@ public class DockerComposition extends ExternalResource {
     }
 
     public DockerComposition(DockerComposeExecutable dockerComposeProcess, DockerMachine dockerMachine) {
-        this(dockerComposeProcess, dockerMachine, new HashMap<>(), Duration.standardMinutes(2), new DoNothingLogCollector());
+        this(dockerComposeProcess, dockerMachine, new HashMap<>(), Duration.standardMinutes(2), new DoNothingLogCollector(), new HashMap<>());
     }
 
     private DockerComposition(DockerComposeExecutable dockerComposeProcess,
                               DockerMachine dockerMachine,
                               Map<Container, Function<Container, Boolean>> servicesToWaitFor,
                               Duration serviceTimeout,
-                              LogCollector logCollector) {
+                              LogCollector logCollector,
+                              Map<String, Container> containers) {
                 this.dockerComposeProcess = dockerComposeProcess;
                 this.dockerMachine = dockerMachine;
                 this.servicesToWaitFor = servicesToWaitFor;
                 this.serviceTimeout = serviceTimeout;
                 this.logCollector = logCollector;
+                this.containers = new HashMap<>(containers);
     }
 
     @Override
@@ -106,7 +109,8 @@ public class DockerComposition extends ExternalResource {
                                      dockerMachine,
                                      services,
                                      serviceTimeout,
-                                     logCollector);
+                                     logCollector,
+                                     containers);
     }
 
     public DockerComposition serviceTimeout(Duration timeout) {
@@ -114,11 +118,13 @@ public class DockerComposition extends ExternalResource {
                                      dockerMachine,
                                      servicesToWaitFor,
                                      timeout,
-                                     logCollector);
+                                     logCollector,
+                                     containers);
     }
 
     private Container service(String serviceName) {
-        return new Container(serviceName, dockerComposeProcess, dockerMachine);
+        containers.putIfAbsent(serviceName, new Container(serviceName, dockerComposeProcess, dockerMachine));
+        return containers.get(serviceName);
     }
 
     public DockerComposition saveLogsTo(String path) {
@@ -132,7 +138,8 @@ public class DockerComposition extends ExternalResource {
                                      dockerMachine,
                                      servicesToWaitFor,
                                      serviceTimeout,
-                                     newLogCollector);
+                                     newLogCollector,
+                                     containers);
     }
 
 }
