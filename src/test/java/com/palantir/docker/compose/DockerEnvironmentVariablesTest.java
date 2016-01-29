@@ -83,7 +83,7 @@ public class DockerEnvironmentVariablesTest {
     }
 
     @Test
-    public void testGetHostIp() throws Exception {
+    public void testGetHostIpWithPort() throws Exception {
         String protocol = DockerEnvironmentVariables.TCP_PROTOCOL;
         String ip = "192.168.99.100";
         String port = "2376";
@@ -99,7 +99,7 @@ public class DockerEnvironmentVariablesTest {
     }
 
     @Test
-    public void testGetHostIp2() throws Exception {
+    public void testGetHostIpWithoutPort() throws Exception {
         String protocol = DockerEnvironmentVariables.TCP_PROTOCOL;
         String ip = "192.168.99.100";
 
