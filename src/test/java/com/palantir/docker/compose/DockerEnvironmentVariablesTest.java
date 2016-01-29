@@ -7,8 +7,7 @@ package com.palantir.docker.compose;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
-import java.util.HashMap;
-import java.util.Map;
+import com.google.common.collect.ImmutableMap;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -20,27 +19,30 @@ public class DockerEnvironmentVariablesTest {
 
     @Test
     public void testTlsMissingAndCertPathMissing() throws Exception {
-        Map<String, String> env = new HashMap<>();
-        env.put(DockerEnvironmentVariables.DOCKER_HOST, "host");
+        ImmutableMap<String, String> env = ImmutableMap.<String, String>builder()
+                .put(DockerEnvironmentVariables.DOCKER_HOST, "host")
+                .build();
 
         new DockerEnvironmentVariables(env).checkEnvVariables();
     }
 
     @Test
     public void testTlsDisabledAndCertPathMissing() throws Exception {
-        Map<String, String> env = new HashMap<>();
-        env.put(DockerEnvironmentVariables.DOCKER_HOST, "host");
-        env.put(DockerEnvironmentVariables.DOCKER_TLS_VERIFY, "0");
+        ImmutableMap<String, String> env = ImmutableMap.<String, String>builder()
+                .put(DockerEnvironmentVariables.DOCKER_HOST, "host")
+                .put(DockerEnvironmentVariables.DOCKER_TLS_VERIFY, "0")
+                .build();
 
         new DockerEnvironmentVariables(env).checkEnvVariables();
     }
 
     @Test
     public void testTlsDisabledButCertPathPresent() throws Exception {
-        Map<String, String> env = new HashMap<>();
-        env.put(DockerEnvironmentVariables.DOCKER_HOST, "host");
-        env.put(DockerEnvironmentVariables.DOCKER_TLS_VERIFY, "0");
-        env.put(DockerEnvironmentVariables.DOCKER_CERT_PATH, "/path/to/certs");
+        ImmutableMap<String, String> env = ImmutableMap.<String, String>builder()
+                .put(DockerEnvironmentVariables.DOCKER_HOST, "host")
+                .put(DockerEnvironmentVariables.DOCKER_TLS_VERIFY, "0")
+                .put(DockerEnvironmentVariables.DOCKER_CERT_PATH, "/path/to/certs")
+                .build();
 
         expectedException.expect(IllegalStateException.class);
         expectedException.expectMessage(DockerEnvironmentVariables.CERT_PATH_PRESENT_BUT_TLS_VERIFY_DISABLED);
@@ -49,9 +51,10 @@ public class DockerEnvironmentVariablesTest {
 
     @Test
     public void testTlsEnabledButCertPathMissing() throws Exception {
-        Map<String, String> env = new HashMap<>();
-        env.put(DockerEnvironmentVariables.DOCKER_HOST, "host");
-        env.put(DockerEnvironmentVariables.DOCKER_TLS_VERIFY, "1");
+        ImmutableMap<String, String> env = ImmutableMap.<String, String>builder()
+                .put(DockerEnvironmentVariables.DOCKER_HOST, "host")
+                .put(DockerEnvironmentVariables.DOCKER_TLS_VERIFY, "1")
+                .build();
 
         expectedException.expect(IllegalStateException.class);
         expectedException.expectMessage("Missing");
@@ -62,9 +65,10 @@ public class DockerEnvironmentVariablesTest {
 
     @Test
     public void testMissingHostWithTlsVerifyDisabledAndCertPathPresent() throws Exception {
-        Map<String, String> env = new HashMap<>();
-        env.put(DockerEnvironmentVariables.DOCKER_TLS_VERIFY, "0");
-        env.put(DockerEnvironmentVariables.DOCKER_CERT_PATH, "/path/to/certs");
+        ImmutableMap<String, String> env = ImmutableMap.<String, String>builder()
+                .put(DockerEnvironmentVariables.DOCKER_TLS_VERIFY, "0")
+                .put(DockerEnvironmentVariables.DOCKER_CERT_PATH, "/path/to/certs")
+                .build();
 
         expectedException.expect(IllegalStateException.class);
         expectedException.expectMessage(DockerEnvironmentVariables.CERT_PATH_PRESENT_BUT_TLS_VERIFY_DISABLED);
@@ -73,8 +77,9 @@ public class DockerEnvironmentVariablesTest {
 
     @Test
     public void testMissingHostAndMissingDockerCertPathTlsVerifyDisabled() throws Exception {
-        Map<String, String> env = new HashMap<>();
-        env.put(DockerEnvironmentVariables.DOCKER_TLS_VERIFY, "0");
+        ImmutableMap<String, String> env = ImmutableMap.<String, String>builder()
+                .put(DockerEnvironmentVariables.DOCKER_TLS_VERIFY, "0")
+                .build();
 
         expectedException.expect(IllegalStateException.class);
         expectedException.expectMessage("Missing");
@@ -89,9 +94,10 @@ public class DockerEnvironmentVariablesTest {
         String port = "2376";
         String ipAndPort = String.format("%s:%s", ip, port);
 
-        Map<String, String> env = new HashMap<>();
-        env.put(DockerEnvironmentVariables.DOCKER_HOST, protocol + ipAndPort);
-        env.put(DockerEnvironmentVariables.DOCKER_TLS_VERIFY, "0");
+        ImmutableMap<String, String> env = ImmutableMap.<String, String>builder()
+                .put(DockerEnvironmentVariables.DOCKER_HOST, protocol + ipAndPort)
+                .put(DockerEnvironmentVariables.DOCKER_TLS_VERIFY, "0")
+                .build();
 
         String hostIp = new DockerEnvironmentVariables(env).getDockerHostIp();
 
@@ -103,9 +109,10 @@ public class DockerEnvironmentVariablesTest {
         String protocol = DockerEnvironmentVariables.TCP_PROTOCOL;
         String ip = "192.168.99.100";
 
-        Map<String, String> env = new HashMap<>();
-        env.put(DockerEnvironmentVariables.DOCKER_HOST, protocol + ip);
-        env.put(DockerEnvironmentVariables.DOCKER_TLS_VERIFY, "0");
+        ImmutableMap<String, String> env = ImmutableMap.<String, String>builder()
+                .put(DockerEnvironmentVariables.DOCKER_HOST, protocol + ip)
+                .put(DockerEnvironmentVariables.DOCKER_TLS_VERIFY, "0")
+                .build();
 
         String hostIp = new DockerEnvironmentVariables(env).getDockerHostIp();
 
