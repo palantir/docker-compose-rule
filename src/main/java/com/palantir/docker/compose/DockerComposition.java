@@ -123,9 +123,7 @@ public class DockerComposition extends ExternalResource {
     }
 
     private Container service(String serviceName) {
-        if (!containers.containsKey(serviceName)) {
-            containers.put(serviceName, new Container(serviceName, dockerComposeProcess, dockerMachine));
-        }
+        containers.putIfAbsent(serviceName, new Container(serviceName, dockerComposeProcess, dockerMachine));
         return containers.get(serviceName);
     }
 
