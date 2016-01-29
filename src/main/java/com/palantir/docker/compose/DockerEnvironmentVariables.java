@@ -4,7 +4,6 @@
 
 package com.palantir.docker.compose;
 
-import com.google.common.collect.Lists;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -12,6 +11,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 public class DockerEnvironmentVariables {

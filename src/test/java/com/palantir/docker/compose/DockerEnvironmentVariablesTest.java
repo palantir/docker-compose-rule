@@ -4,14 +4,16 @@
 
 package com.palantir.docker.compose;
 
-import static com.palantir.docker.compose.DockerEnvironmentVariables.TCP_PROTOCOL;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
-import com.google.common.collect.ImmutableMap;
+import static com.palantir.docker.compose.DockerEnvironmentVariables.TCP_PROTOCOL;
+
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+
+import com.google.common.collect.ImmutableMap;
 
 public class DockerEnvironmentVariablesTest {
 
