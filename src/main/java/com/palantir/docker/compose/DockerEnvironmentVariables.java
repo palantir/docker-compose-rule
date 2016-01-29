@@ -4,6 +4,7 @@
 
 package com.palantir.docker.compose;
 
+import com.google.common.collect.Lists;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -46,30 +47,42 @@ public class DockerEnvironmentVariables {
     }
 
     public void checkEnvVariables() {
-        List<String> missingEnvironmentVariables = requiredEnvVariables.stream()
-                .filter(envVariable -> Strings.isNullOrEmpty(env.getOrDefault(envVariable, "")))
-                .collect(Collectors.toList());
-
-        boolean missingCertPath = missingEnvironmentVariables.contains(DOCKER_CERT_PATH);
-        boolean disabledCertVerification =
-                Integer.parseInt(env.getOrDefault(
-                        DOCKER_TLS_VERIFY, "0")) == DISABLE_CERT_VERIFICATION;
-
-        // Allow/Ensure that the DOCKER_CERT_PATH env variable is not set if DOCKER_TLS_VERIFY is missing or set to 0.
-        if (disabledCertVerification) {
-            if (missingCertPath) {
-                missingEnvironmentVariables.remove(DOCKER_TLS_VERIFY);
-                missingEnvironmentVariables.remove(DOCKER_CERT_PATH);
-            } else {
-                throw new IllegalStateException(CERT_PATH_PRESENT_BUT_TLS_VERIFY_DISABLED);
-            }
-        }
+         List<String> missingEnvironmentVariables = getMissingEnvVariables();
 
         if (!missingEnvironmentVariables.isEmpty()) {
             throw new IllegalStateException("Missing required environment variables: '" + missingEnvironmentVariables
                     + "', please run `docker-machine env <machine-name>` and update your IDE run configuration with"
                     + " the variables listed.");
         }
+    }
+
+    private List<String> getMissingEnvVariables() {
+        List<String> missingEnvironmentVariables = requiredEnvVariables.stream()
+                .filter(envVariable -> Strings.isNullOrEmpty(env.getOrDefault(envVariable, "")))
+                .collect(Collectors.toList());
+
+        if (certVerificationDisabled()) {
+            missingEnvironmentVariables = enforceNoCertPath(missingEnvironmentVariables);
+        }
+
+        return missingEnvironmentVariables;
+    }
+
+    private List<String> enforceNoCertPath(List<String> missingEnvironmentVariables) {
+        List<String> missingNonCertVariables = Lists.newArrayList(missingEnvironmentVariables);
+
+        boolean missingCertPath = missingEnvironmentVariables.contains(DOCKER_CERT_PATH);
+        if (missingCertPath) {
+            missingNonCertVariables.remove(DOCKER_TLS_VERIFY);
+            missingNonCertVariables.remove(DOCKER_CERT_PATH);
+            return missingNonCertVariables;
+        } else {
+            throw new IllegalStateException(CERT_PATH_PRESENT_BUT_TLS_VERIFY_DISABLED);
+        }
+    }
+
+    private boolean certVerificationDisabled() {
+        return Integer.parseInt(env.getOrDefault(DOCKER_TLS_VERIFY, "0")) == DISABLE_CERT_VERIFICATION;
     }
 
     public String getDockerHostIp() {
