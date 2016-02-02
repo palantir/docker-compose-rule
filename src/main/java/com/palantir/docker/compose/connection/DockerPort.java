@@ -1,5 +1,6 @@
 package com.palantir.docker.compose.connection;
 
+import com.google.common.base.Function;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -8,13 +9,9 @@ import java.net.Socket;
 import java.net.SocketException;
 import java.net.URL;
 import java.util.Objects;
-
 import javax.net.ssl.SSLHandshakeException;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.base.Function;
 
 public class DockerPort {
 

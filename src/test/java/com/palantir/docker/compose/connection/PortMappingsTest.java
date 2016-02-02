@@ -5,10 +5,7 @@ import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.emptyIterable;
 import static org.hamcrest.Matchers.is;
 
-import com.palantir.docker.compose.connection.PortMapping;
-import com.palantir.docker.compose.connection.PortMappings;
 import java.io.IOException;
-
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;

@@ -3,20 +3,18 @@ package com.palantir.docker.compose.connection;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
-import com.palantir.docker.compose.executing.DockerComposeExecutable;
-import java.io.IOException;
-import java.util.Objects;
-import java.util.concurrent.TimeUnit;
-
-import org.joda.time.Duration;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.google.common.base.Function;
 import com.google.common.base.Supplier;
 import com.google.common.base.Suppliers;
 import com.google.common.base.Throwables;
 import com.jayway.awaitility.Awaitility;
+import com.palantir.docker.compose.executing.DockerComposeExecutable;
+import java.io.IOException;
+import java.util.Objects;
+import java.util.concurrent.TimeUnit;
+import org.joda.time.Duration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Container {
 

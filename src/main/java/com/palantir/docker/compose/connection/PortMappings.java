@@ -1,5 +1,7 @@
 package com.palantir.docker.compose.connection;
 
+import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -8,9 +10,6 @@ import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
-
-import com.google.common.base.Preconditions;
-import com.google.common.base.Strings;
 
 public class PortMappings implements Iterable<PortMapping> {
 

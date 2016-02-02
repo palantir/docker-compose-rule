@@ -1,16 +1,14 @@
 package com.palantir.docker.compose.matchers;
 
+import com.google.common.base.MoreObjects;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.Arrays;
-
 import org.apache.commons.io.FileUtils;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
-
-import com.google.common.base.MoreObjects;
 
 public class IOMatchers {
     private IOMatchers() {
