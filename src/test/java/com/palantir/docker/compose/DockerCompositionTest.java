@@ -22,8 +22,11 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import static com.palantir.docker.compose.matchers.IOMatchers.fileContainingString;
 import static com.palantir.docker.compose.matchers.IOMatchers.fileWithName;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.arrayContaining;
+import static org.hamcrest.core.Is.is;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;

@@ -10,7 +10,9 @@ import java.io.IOException;
 
 import static com.palantir.docker.compose.matchers.IOMatchers.fileContainingString;
 import static com.palantir.docker.compose.matchers.IOMatchers.fileWithName;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.arrayContainingInAnyOrder;
+import static org.hamcrest.core.Is.is;
 
 public class DockerCompositionIntegrationTest {
 

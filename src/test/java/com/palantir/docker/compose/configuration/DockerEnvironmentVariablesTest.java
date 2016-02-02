@@ -6,6 +6,7 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 import static com.palantir.docker.compose.configuration.DockerEnvironmentVariables.TCP_PROTOCOL;
+import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 
 public class DockerEnvironmentVariablesTest {

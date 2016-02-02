@@ -6,7 +6,10 @@ import org.junit.rules.ExpectedException;
 
 import java.io.IOException;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.emptyIterable;
+import static org.hamcrest.core.Is.is;
 
 public class PortMappingsTest {
 
