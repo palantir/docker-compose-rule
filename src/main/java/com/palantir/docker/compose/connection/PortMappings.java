@@ -2,6 +2,7 @@ package com.palantir.docker.compose.connection;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;

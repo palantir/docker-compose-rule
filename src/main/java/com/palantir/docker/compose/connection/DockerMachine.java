@@ -1,8 +1,8 @@
 package com.palantir.docker.compose.connection;
 
-import static java.util.stream.Collectors.toList;
-
 import com.palantir.docker.compose.configuration.DockerEnvironmentVariables;
+
+import static java.util.stream.Collectors.toList;
 
 public class DockerMachine {
     private final String ip;

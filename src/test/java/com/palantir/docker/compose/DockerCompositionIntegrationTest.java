@@ -1,17 +1,16 @@
 package com.palantir.docker.compose;
 
-import static com.palantir.docker.compose.matchers.IOMatchers.fileContainingString;
-import static com.palantir.docker.compose.matchers.IOMatchers.fileWithName;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.arrayContainingInAnyOrder;
-import static org.hamcrest.Matchers.is;
-
-import java.io.File;
-import java.io.IOException;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
+
+import java.io.File;
+import java.io.IOException;
+
+import static com.palantir.docker.compose.matchers.IOMatchers.fileContainingString;
+import static com.palantir.docker.compose.matchers.IOMatchers.fileWithName;
+import static org.hamcrest.Matchers.arrayContainingInAnyOrder;
 
 public class DockerCompositionIntegrationTest {
 

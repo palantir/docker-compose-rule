@@ -1,14 +1,12 @@
 package com.palantir.docker.compose.connection;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.contains;
-import static org.hamcrest.Matchers.emptyIterable;
-import static org.hamcrest.Matchers.is;
-
-import java.io.IOException;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+
+import java.io.IOException;
+
+import static org.hamcrest.Matchers.emptyIterable;
 
 public class PortMappingsTest {
 
