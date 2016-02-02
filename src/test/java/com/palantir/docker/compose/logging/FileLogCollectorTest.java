@@ -16,7 +16,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import com.palantir.docker.compose.connection.ContainerNames;
-import com.palantir.docker.compose.executing.DockerComposeExecutable;
+import com.palantir.docker.compose.execution.DockerComposeExecutable;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;

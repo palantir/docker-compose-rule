@@ -6,7 +6,7 @@ import com.jayway.awaitility.core.ConditionTimeoutException;
 import com.palantir.docker.compose.connection.Container;
 import com.palantir.docker.compose.connection.DockerMachine;
 import com.palantir.docker.compose.connection.DockerPort;
-import com.palantir.docker.compose.executing.DockerComposeExecutable;
+import com.palantir.docker.compose.execution.DockerComposeExecutable;
 import com.palantir.docker.compose.logging.DoNothingLogCollector;
 import com.palantir.docker.compose.logging.FileLogCollector;
 import com.palantir.docker.compose.logging.LogCollector;

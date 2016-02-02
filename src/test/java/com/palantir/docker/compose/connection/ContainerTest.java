@@ -8,7 +8,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import com.palantir.docker.compose.configuration.MockDockerEnvironment;
-import com.palantir.docker.compose.executing.DockerComposeExecutable;
+import com.palantir.docker.compose.execution.DockerComposeExecutable;
 import java.io.IOException;
 import org.joda.time.Duration;
 import org.junit.Rule;

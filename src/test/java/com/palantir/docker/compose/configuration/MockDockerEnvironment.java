@@ -9,7 +9,7 @@ import com.palantir.docker.compose.connection.DockerPort;
 import com.palantir.docker.compose.connection.PortMapping;
 import com.palantir.docker.compose.connection.PortMappings;
 import com.palantir.docker.compose.connection.Ports;
-import com.palantir.docker.compose.executing.DockerComposeExecutable;
+import com.palantir.docker.compose.execution.DockerComposeExecutable;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;

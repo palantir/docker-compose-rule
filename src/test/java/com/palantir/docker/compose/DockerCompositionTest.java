@@ -18,7 +18,7 @@ import com.palantir.docker.compose.configuration.MockDockerEnvironment;
 import com.palantir.docker.compose.connection.ContainerNames;
 import com.palantir.docker.compose.connection.DockerMachine;
 import com.palantir.docker.compose.connection.DockerPort;
-import com.palantir.docker.compose.executing.DockerComposeExecutable;
+import com.palantir.docker.compose.execution.DockerComposeExecutable;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;

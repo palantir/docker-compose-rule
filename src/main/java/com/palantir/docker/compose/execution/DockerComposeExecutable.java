@@ -1,4 +1,4 @@
-package com.palantir.docker.compose.executing;
+package com.palantir.docker.compose.execution;
 
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static java.util.stream.Collectors.joining;

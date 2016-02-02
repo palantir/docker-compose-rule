@@ -1,4 +1,4 @@
-package com.palantir.docker.compose.executing;
+package com.palantir.docker.compose.execution;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
