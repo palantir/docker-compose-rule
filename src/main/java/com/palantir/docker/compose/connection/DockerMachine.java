@@ -1,4 +1,6 @@
-package com.palantir.docker.compose;
+package com.palantir.docker.compose.connection;
+
+import com.palantir.docker.compose.configuration.DockerEnvironmentVariables;
 
 import static java.util.stream.Collectors.toList;
 

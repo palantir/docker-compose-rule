@@ -1,19 +1,13 @@
-/*
- * Copyright 2016 Palantir Technologies, Inc. All rights reserved.
- */
+package com.palantir.docker.compose.configuration;
 
-package com.palantir.docker.compose;
-
-import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertThat;
-
-import static com.palantir.docker.compose.DockerEnvironmentVariables.TCP_PROTOCOL;
-
+import com.google.common.collect.ImmutableMap;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import com.google.common.collect.ImmutableMap;
+import static com.palantir.docker.compose.configuration.DockerEnvironmentVariables.TCP_PROTOCOL;
+import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertThat;
 
 public class DockerEnvironmentVariablesTest {
 

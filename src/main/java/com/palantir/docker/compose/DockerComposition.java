@@ -1,20 +1,26 @@
 package com.palantir.docker.compose;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.TimeUnit;
-
+import com.google.common.base.Function;
+import com.jayway.awaitility.Awaitility;
+import com.jayway.awaitility.core.ConditionTimeoutException;
+import com.palantir.docker.compose.connection.Container;
+import com.palantir.docker.compose.connection.DockerMachine;
+import com.palantir.docker.compose.connection.DockerPort;
+import com.palantir.docker.compose.execution.DockerComposeExecutable;
+import com.palantir.docker.compose.logging.DoNothingLogCollector;
+import com.palantir.docker.compose.logging.FileLogCollector;
+import com.palantir.docker.compose.logging.LogCollector;
 import org.apache.commons.lang3.Validate;
 import org.joda.time.Duration;
 import org.junit.rules.ExternalResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Function;
-import com.jayway.awaitility.Awaitility;
-import com.jayway.awaitility.core.ConditionTimeoutException;
+import java.io.File;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 public class DockerComposition extends ExternalResource {
 

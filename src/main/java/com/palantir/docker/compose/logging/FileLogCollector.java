@@ -1,4 +1,9 @@
-package com.palantir.docker.compose;
+package com.palantir.docker.compose.logging;
+
+import com.palantir.docker.compose.connection.ContainerNames;
+import com.palantir.docker.compose.execution.DockerComposeExecutable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -6,9 +11,6 @@ import java.io.IOException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class FileLogCollector implements LogCollector {
 
