@@ -1,4 +1,4 @@
-package com.palantir.docker.compose;
+package com.palantir.docker.compose.connection;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
@@ -6,6 +6,7 @@ import static java.util.Collections.emptyList;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
+import com.palantir.docker.compose.connection.ContainerNames;
 import org.junit.Test;
 
 public class ContainerNamesTest {

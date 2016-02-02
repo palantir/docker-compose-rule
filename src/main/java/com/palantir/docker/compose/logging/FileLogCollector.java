@@ -1,5 +1,7 @@
-package com.palantir.docker.compose;
+package com.palantir.docker.compose.logging;
 
+import com.palantir.docker.compose.connection.ContainerNames;
+import com.palantir.docker.compose.executing.DockerComposeExecutable;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;

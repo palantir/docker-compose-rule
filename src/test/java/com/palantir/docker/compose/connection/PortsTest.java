@@ -1,4 +1,4 @@
-package com.palantir.docker.compose;
+package com.palantir.docker.compose.connection;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;

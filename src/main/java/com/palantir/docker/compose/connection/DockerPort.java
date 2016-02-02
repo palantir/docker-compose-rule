@@ -1,4 +1,4 @@
-package com.palantir.docker.compose;
+package com.palantir.docker.compose.connection;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;

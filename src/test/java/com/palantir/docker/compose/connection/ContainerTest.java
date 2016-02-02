@@ -1,4 +1,4 @@
-package com.palantir.docker.compose;
+package com.palantir.docker.compose.connection;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -7,8 +7,9 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+import com.palantir.docker.compose.configuration.MockDockerEnvironment;
+import com.palantir.docker.compose.executing.DockerComposeExecutable;
 import java.io.IOException;
-
 import org.joda.time.Duration;
 import org.junit.Rule;
 import org.junit.Test;

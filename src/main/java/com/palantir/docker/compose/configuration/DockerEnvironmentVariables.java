@@ -1,8 +1,4 @@
-/*
- * Copyright 2016 Palantir Technologies, Inc. All rights reserved.
- */
-
-package com.palantir.docker.compose;
+package com.palantir.docker.compose.configuration;
 
 import java.util.List;
 import java.util.Map;
