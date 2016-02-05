@@ -57,7 +57,7 @@ bintray {
 }
 
 bintrayUpload.onlyIf {
-    System.env.BINTRAY_USER && System.env.BINTRAY_KEY && project.version ==~ /\d+\.\d+\.\d+/
+    System.env.BINTRAY_USER && System.env.BINTRAY_KEY && project.version.toString() ==~ /\d+\.\d+\.\d+/
 }
 
 bintrayUpload.dependsOn 'generatePomFileForBintrayPublication', 'build'
