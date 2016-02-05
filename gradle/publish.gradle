@@ -48,8 +48,8 @@ bintray {
     user = System.env.BINTRAY_USER
     key = System.env.BINTRAY_KEY
     pkg {
-        repo = 'releases'
-        name = 'dockercomposition'
+        repo = 'dockercomposition'
+        name = 'docker-compose-rule'
         userOrg = 'hpryce'
         licenses = ['Apache-2.0']
         publications = ['bintray']
@@ -57,6 +57,7 @@ bintray {
 }
 
 bintrayUpload.onlyIf {
+    System.out.println("Publishing with project version: " + project.version.toString())
     System.env.BINTRAY_USER && System.env.BINTRAY_KEY && project.version.toString() ==~ /\d+\.\d+\.\d+/
 }
 
