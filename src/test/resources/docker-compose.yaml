@@ -1,0 +1,18 @@
+db:
+  image: postgres
+  environment:
+    - "POSTGRES_DB=source"
+    - "POSTGRES_USER=palantir"
+    - "POSTGRES_PASSWORD=palantir"
+  ports:
+    - "5433:5432"
+    
+db2:  
+  image: postgres
+  environment:
+    - "POSTGRES_DB=source"
+    - "POSTGRES_USER=palantir"
+    - "POSTGRES_PASSWORD=palantir"
+  ports:
+    - "5432"
+    

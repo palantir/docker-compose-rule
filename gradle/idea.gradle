@@ -1,0 +1,32 @@
+// =============
+// IDEA Settings
+// =============
+apply plugin: "idea"
+
+// -----------------------------------------
+// Set Java Version in the Project + Modules
+// -----------------------------------------
+idea {
+    if (project != null) {
+        project {
+            languageLevel = javaVersion
+        }
+    }
+
+    module {
+        downloadJavadoc = true
+        downloadSources = true
+        inheritOutputDirs = true
+        inheritOutputDirs = true
+        iml {
+            withXml {
+                def rootManager = it.asNode().component.find { it.@name == 'NewModuleRootManager' }
+                rootManager.@LANGUAGE_LEVEL = jdkVersion
+                rootManager.find {it.@type == "jdk" }.@jdkName = "JavaSE-$javaVersion"
+            }
+            whenMerged { module ->
+                module.dependencies.findAll { it.scope == 'TEST' }*.exported = true
+            }
+        }
+    }
+}

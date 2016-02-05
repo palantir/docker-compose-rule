@@ -1,0 +1,62 @@
+buildscript {
+    repositories {
+        mavenCentral()
+        jcenter()
+        maven {
+            url "http://dl.bintray.com/palantir/releases"
+        }
+    }
+    dependencies {
+        classpath 'com.palantir:gradle-baseline-java:0.1.1'
+        classpath 'com.palantir:gradle-gitsemver:0.6.0'
+    }
+}
+
+repositories {
+    mavenCentral()
+    jcenter()
+}
+
+apply from: "gradle/idea.gradle"
+apply plugin: 'java'
+apply plugin: 'gitsemver'
+
+group = 'com.palantir.docker.compose'
+//version semverVersion()
+
+apply plugin: 'com.palantir.baseline-checkstyle'
+apply plugin: 'com.palantir.baseline-eclipse'
+apply plugin: 'com.palantir.baseline-findbugs'
+apply plugin: 'com.palantir.baseline-idea'
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+configurations.all {
+    exclude module: 'slf4j-log4j12'
+    resolutionStrategy.force(
+            "org.slf4j:slf4j-api:$slf4jVersion",
+            "org.slf4j:slf4j-log4j12:$slf4jVersion",
+    )
+}
+
+dependencies {
+    compile "org.slf4j:slf4j-api:$slf4jVersion"
+    compile "org.apache.commons:commons-lang3:3.0"
+    compile "commons-io:commons-io:2.4"
+    compile "com.google.guava:guava:$guavaVersion"
+    compile "joda-time:joda-time:$jodaVersion"
+
+    compile "junit:junit:$junitVersion"
+    compile 'com.jayway.awaitility:awaitility:1.6.5'
+
+    testCompile "org.slf4j:slf4j-log4j12:$slf4jVersion"
+    testCompile "org.apache.logging.log4j:log4j-core:$log4jVersion"
+    testCompile "org.apache.logging.log4j:log4j-slf4j-impl:$log4jVersion"
+
+    testCompile "org.hamcrest:hamcrest-all:$hamcrestVersion"
+    testCompile "org.mockito:mockito-core:$mockitoVersion"
+    testCompile "com.github.tomakehurst:wiremock:2.0.6-beta"
+    testCompile "com.google.code.findbugs:jsr305:3.0.0"
+}
+
