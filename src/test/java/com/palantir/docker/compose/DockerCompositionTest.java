@@ -41,7 +41,7 @@ public class DockerCompositionTest {
     private final DockerMachine dockerMachine = mock(DockerMachine.class);
     private final MockDockerEnvironment env = new MockDockerEnvironment(dockerComposeExecutable, dockerMachine);
     private final DockerComposition dockerComposition = new DockerComposition(dockerComposeExecutable, dockerMachine)
-                                                               .serviceTimeout(Duration.millis(200));
+                                                               .serviceTimeout(Duration.millis(1000));
 
     @Test
     public void dockerComposeBuildAndUpIsCalledBeforeTestsAreRun() throws IOException, InterruptedException {
