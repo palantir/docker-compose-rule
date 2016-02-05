@@ -9,6 +9,8 @@ buildscript {
     dependencies {
         classpath 'com.palantir:gradle-baseline-java:0.1.1'
         classpath 'com.palantir:gradle-gitsemver:0.6.0'
+        classpath "com.jfrog.bintray.gradle:gradle-bintray-plugin:${bintrayPlugin}"
+        classpath "org.jfrog.buildinfo:build-info-extractor-gradle:4.0.0"
     }
 }
 
@@ -22,12 +24,14 @@ apply plugin: 'java'
 apply plugin: 'gitsemver'
 
 group = 'com.palantir.docker.compose'
-//version semverVersion()
+version semverVersion()
 
 apply plugin: 'com.palantir.baseline-checkstyle'
 apply plugin: 'com.palantir.baseline-eclipse'
 apply plugin: 'com.palantir.baseline-findbugs'
 apply plugin: 'com.palantir.baseline-idea'
+apply plugin: 'maven-publish'
+apply plugin: 'com.jfrog.bintray'
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
