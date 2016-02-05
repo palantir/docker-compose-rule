@@ -1,6 +1,8 @@
 machine:
   java:
     version: oraclejdk8 
+  services:
+    - docker
 
 test:
   post:
