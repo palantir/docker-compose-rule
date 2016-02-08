@@ -1,59 +1,58 @@
 package com.palantir.docker.compose;
 
-import com.google.common.base.Function;
-import com.jayway.awaitility.Awaitility;
-import com.jayway.awaitility.core.ConditionTimeoutException;
-import com.palantir.docker.compose.connection.Container;
-import com.palantir.docker.compose.connection.DockerMachine;
-import com.palantir.docker.compose.connection.DockerPort;
-import com.palantir.docker.compose.execution.DockerComposeExecutable;
-import com.palantir.docker.compose.logging.DoNothingLogCollector;
-import com.palantir.docker.compose.logging.FileLogCollector;
-import com.palantir.docker.compose.logging.LogCollector;
-import org.apache.commons.lang3.Validate;
-import org.joda.time.Duration;
-import org.junit.rules.ExternalResource;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.lang3.Validate;
+import org.joda.time.Duration;
+import org.junit.rules.ExternalResource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.google.common.base.Function;
+import com.google.common.collect.ImmutableMap;
+import com.jayway.awaitility.Awaitility;
+import com.jayway.awaitility.core.ConditionTimeoutException;
+import com.palantir.docker.compose.connection.Container;
+import com.palantir.docker.compose.connection.ContainerCache;
+import com.palantir.docker.compose.connection.DockerMachine;
+import com.palantir.docker.compose.connection.DockerPort;
+import com.palantir.docker.compose.execution.DockerComposeExecutable;
+import com.palantir.docker.compose.logging.DoNothingLogCollector;
+import com.palantir.docker.compose.logging.FileLogCollector;
+import com.palantir.docker.compose.logging.LogCollector;
+
 public class DockerComposition extends ExternalResource {
 
     private static final Logger log = LoggerFactory.getLogger(DockerComposition.class);
 
     private final DockerComposeExecutable dockerComposeProcess;
-    private final DockerMachine dockerMachine;
-    private final Map<String, Container> containers;
+    private final ContainerCache containers;
     private final Map<Container, Function<Container, Boolean>> servicesToWaitFor;
     private final Duration serviceTimeout;
     private final LogCollector logCollector;
 
-    public DockerComposition(String dockerComposeFile) {
-        this(new DockerComposeExecutable(new File(dockerComposeFile)), DockerMachine.fromEnvironment());
-        log.debug("Using docker-compose file '{}'", dockerComposeFile);
+    public static DockerCompositionBuilder of(DockerComposeExecutable dockerComposeExecutable) {
+        return new DockerCompositionBuilder(dockerComposeExecutable);
     }
 
-    public DockerComposition(DockerComposeExecutable dockerComposeProcess, DockerMachine dockerMachine) {
-        this(dockerComposeProcess, dockerMachine, new HashMap<>(), Duration.standardMinutes(2), new DoNothingLogCollector(), new HashMap<>());
+    public static DockerCompositionBuilder of(String dockerComposeFile) {
+        return DockerComposition.of(new DockerComposeExecutable(new File(dockerComposeFile), DockerMachine.fromEnvironment()));
     }
 
     private DockerComposition(DockerComposeExecutable dockerComposeProcess,
-                              DockerMachine dockerMachine,
                               Map<Container, Function<Container, Boolean>> servicesToWaitFor,
                               Duration serviceTimeout,
                               LogCollector logCollector,
-                              Map<String, Container> containers) {
-                this.dockerComposeProcess = dockerComposeProcess;
-                this.dockerMachine = dockerMachine;
-                this.servicesToWaitFor = servicesToWaitFor;
-                this.serviceTimeout = serviceTimeout;
-                this.logCollector = logCollector;
-                this.containers = new HashMap<>(containers);
+                              ContainerCache containers) {
+        this.dockerComposeProcess = dockerComposeProcess;
+        this.servicesToWaitFor = ImmutableMap.copyOf(servicesToWaitFor);
+        this.serviceTimeout = serviceTimeout;
+        this.logCollector = logCollector;
+        this.containers = containers;
     }
 
     @Override
@@ -93,59 +92,58 @@ public class DockerComposition extends ExternalResource {
     }
 
     public DockerPort portOnContainerWithExternalMapping(String container, int portNumber) throws IOException, InterruptedException {
-        return service(container).portMappedExternallyTo(portNumber);
+        return containers.get(container).portMappedExternallyTo(portNumber);
     }
 
     public DockerPort portOnContainerWithInternalMapping(String container, int portNumber) throws IOException, InterruptedException {
-        return service(container).portMappedInternallyTo(portNumber);
+        return containers.get(container).portMappedInternallyTo(portNumber);
     }
 
-    public DockerComposition waitingForService(String serviceName) {
-        return waitingForService(serviceName, (container) -> container.waitForPorts(serviceTimeout));
-    }
+    public static class DockerCompositionBuilder {
 
-    public DockerComposition waitingForHttpService(String serviceName, int internalPort, Function<DockerPort, String> urlFunction) {
-        return waitingForService(serviceName, (container) -> container.waitForHttpPort(internalPort, urlFunction, serviceTimeout));
-    }
+        private final DockerComposeExecutable dockerComposeProcess;
+        private final ContainerCache containers;
+        private final Map<Container, Function<Container, Boolean>> servicesToWaitFor = new HashMap<>();
+        private Duration serviceTimeout = Duration.standardMinutes(2);
+        private LogCollector logCollector = new DoNothingLogCollector();
 
-    public DockerComposition waitingForService(String serviceName, Function<Container, Boolean> check) {
-        Map<Container, Function<Container, Boolean>> services = new HashMap<>(servicesToWaitFor);
-        services.put(service(serviceName), check);
-        return new DockerComposition(dockerComposeProcess,
-                                     dockerMachine,
-                                     services,
-                                     serviceTimeout,
-                                     logCollector,
-                                     containers);
-    }
-
-    public DockerComposition serviceTimeout(Duration timeout) {
-        return new DockerComposition(dockerComposeProcess,
-                                     dockerMachine,
-                                     servicesToWaitFor,
-                                     timeout,
-                                     logCollector,
-                                     containers);
-    }
-
-    private Container service(String serviceName) {
-        containers.putIfAbsent(serviceName, new Container(serviceName, dockerComposeProcess, dockerMachine));
-        return containers.get(serviceName);
-    }
-
-    public DockerComposition saveLogsTo(String path) {
-        File logDirectory = new File(path);
-        Validate.isTrue(!logDirectory.isFile(), "Log directory cannot be a file");
-        if (!logDirectory.exists()) {
-            Validate.isTrue(logDirectory.mkdirs(), "Error making log directory");
+        public DockerCompositionBuilder(DockerComposeExecutable dockerComposeProcess) {
+            this.dockerComposeProcess = dockerComposeProcess;
+            this.containers = new ContainerCache(dockerComposeProcess);
         }
-        FileLogCollector newLogCollector = new FileLogCollector(logDirectory);
-        return new DockerComposition(dockerComposeProcess,
-                                     dockerMachine,
-                                     servicesToWaitFor,
-                                     serviceTimeout,
-                                     newLogCollector,
-                                     containers);
+
+        public DockerCompositionBuilder waitingForService(String serviceName) {
+            return waitingForService(serviceName, (container) -> container.waitForPorts(serviceTimeout));
+        }
+
+        public DockerCompositionBuilder waitingForHttpService(String serviceName, int internalPort, Function<DockerPort, String> urlFunction) {
+            return waitingForService(serviceName, (container) -> container.waitForHttpPort(internalPort, urlFunction, serviceTimeout));
+        }
+
+        public DockerCompositionBuilder waitingForService(String serviceName, Function<Container, Boolean> check) {
+            servicesToWaitFor.put(containers.get(serviceName), check);
+            return this;
+        }
+
+        public DockerCompositionBuilder serviceTimeout(Duration timeout) {
+            this.serviceTimeout = timeout;
+            return this;
+        }
+
+        public DockerCompositionBuilder saveLogsTo(String path) {
+            File logDirectory = new File(path);
+            Validate.isTrue(!logDirectory.isFile(), "Log directory cannot be a file");
+            if (!logDirectory.exists()) {
+                Validate.isTrue(logDirectory.mkdirs(), "Error making log directory");
+            }
+            this.logCollector = new FileLogCollector(logDirectory);
+            return this;
+        }
+
+        public DockerComposition build() {
+            return new DockerComposition(dockerComposeProcess, servicesToWaitFor, serviceTimeout, logCollector, containers);
+        }
+
     }
 
 }

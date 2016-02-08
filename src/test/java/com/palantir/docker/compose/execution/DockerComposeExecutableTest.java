@@ -1,18 +1,5 @@
 package com.palantir.docker.compose.execution;
 
-import com.palantir.docker.compose.connection.ContainerNames;
-import com.palantir.docker.compose.connection.PortMapping;
-import com.palantir.docker.compose.connection.PortMappings;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
-
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.mockito.Matchers.anyVararg;
@@ -20,13 +7,29 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.ExpectedException;
+
+import com.palantir.docker.compose.connection.ContainerNames;
+import com.palantir.docker.compose.connection.DockerMachine;
+import com.palantir.docker.compose.connection.PortMapping;
+import com.palantir.docker.compose.connection.PortMappings;
+
 public class DockerComposeExecutableTest {
 
     @Rule
     public ExpectedException exception = ExpectedException.none();
 
     private final DockerComposeExecutor executor = mock(DockerComposeExecutor.class);
-    private final DockerComposeExecutable compose = new DockerComposeExecutable(executor);
+    private final DockerMachine dockerMachine = mock(DockerMachine.class);
+    private final DockerComposeExecutable compose = new DockerComposeExecutable(executor, dockerMachine);
 
     private final Process executedProcess = mock(Process.class);
 
