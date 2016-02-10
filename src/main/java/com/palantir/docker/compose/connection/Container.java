@@ -1,21 +1,22 @@
 package com.palantir.docker.compose.connection;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.Is.is;
+
+import java.io.IOException;
+import java.util.Objects;
+import java.util.concurrent.TimeUnit;
+
+import org.joda.time.Duration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.google.common.base.Function;
 import com.google.common.base.Supplier;
 import com.google.common.base.Suppliers;
 import com.google.common.base.Throwables;
 import com.jayway.awaitility.Awaitility;
 import com.palantir.docker.compose.execution.DockerComposeExecutable;
-import org.joda.time.Duration;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.io.IOException;
-import java.util.Objects;
-import java.util.concurrent.TimeUnit;
-
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.Is.is;
 
 public class Container {
 
@@ -23,16 +24,13 @@ public class Container {
 
     private final String containerName;
     private final DockerComposeExecutable dockerComposeProcess;
-    private final DockerMachine dockerMachine;
 
-    private final Supplier<PortMappings> portMappings = Suppliers.memoize(this::getDockerPorts);
+    private final Supplier<Ports> portMappings = Suppliers.memoize(this::getDockerPorts);
 
     public Container(String containerName,
-                    DockerComposeExecutable dockerComposeProcess,
-                    DockerMachine dockerMachine) {
+                     DockerComposeExecutable dockerComposeProcess) {
         this.containerName = containerName;
         this.dockerComposeProcess = dockerComposeProcess;
-        this.dockerMachine = dockerMachine;
     }
 
     public String getContainerName() {
@@ -41,8 +39,8 @@ public class Container {
 
     public boolean waitForPorts(Duration timeout) {
         try {
-            PortMappings exposedPorts = portMappings.get();
-            dockerMachine.portsFor(exposedPorts).waitToBeListeningWithin(timeout);
+            Ports exposedPorts = portMappings.get();
+            exposedPorts.waitToBeListeningWithin(timeout);
             return true;
         } catch (Exception e) {
             log.warn("Container '" + containerName + "' failed to come up: " + e.getMessage(), e);
@@ -56,7 +54,9 @@ public class Container {
             Awaitility.await()
                 .pollInterval(50, TimeUnit.MILLISECONDS)
                 .atMost(timeout.getMillis(), TimeUnit.MILLISECONDS)
-                .until(() -> assertThat(port.isListeningNow() && port.isHttpResponding(urlFunction), is(true)));
+                .until(() ->
+                               assertThat(port.isListeningNow() && port.isHttpResponding(urlFunction), is(true))
+                );
             return true;
         } catch (Exception e) {
             log.warn("Container '" + containerName + "' failed to come up: " + e.getMessage(), e);
@@ -67,7 +67,6 @@ public class Container {
     public DockerPort portMappedExternallyTo(int externalPort) throws IOException, InterruptedException {
         return portMappings.get()
                            .stream()
-                           .map(dockerMachine::getPort)
                            .filter(port -> port.getExternalPort() == externalPort)
                            .findFirst()
                            .orElseThrow(() -> new IllegalArgumentException("No port mapped externally to '" + externalPort + "' for container '" + containerName + "'"));
@@ -76,13 +75,12 @@ public class Container {
     public DockerPort portMappedInternallyTo(int internalPort) throws IOException, InterruptedException {
         return portMappings.get()
                            .stream()
-                           .map(dockerMachine::getPort)
                            .filter(port -> port.getInternalPort() == internalPort)
                            .findFirst()
                            .orElseThrow(() -> new IllegalArgumentException("No internal port '" + internalPort + "' for container '" + containerName + "'"));
     }
 
-    private PortMappings getDockerPorts() {
+    private Ports getDockerPorts() {
         try {
             return dockerComposeProcess.ports(containerName);
         } catch (IOException | InterruptedException e) {
@@ -91,32 +89,26 @@ public class Container {
     }
 
     @Override
-    public int hashCode() {
-        return Objects.hash(containerName, dockerComposeProcess, dockerMachine);
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        Container container = (Container) o;
+        return Objects.equals(containerName, container.containerName);
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        Container other = (Container) obj;
-        return Objects.equals(containerName, other.containerName) &&
-               Objects.equals(dockerComposeProcess, other.dockerComposeProcess) &&
-               Objects.equals(dockerMachine, other.dockerMachine);
+    public int hashCode() {
+        return Objects.hash(containerName);
     }
 
     @Override
     public String toString() {
-        return "Service [serviceName=" + containerName
-                + ", dockerComposeProcess=" + dockerComposeProcess
-                + ", dockerMachine=" + dockerMachine + "]";
+        return "Container{" +
+                "containerName='" + containerName + '\'' +
+                '}';
     }
-
 }

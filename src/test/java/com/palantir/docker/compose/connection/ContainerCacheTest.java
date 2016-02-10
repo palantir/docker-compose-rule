@@ -16,18 +16,17 @@ public class ContainerCacheTest {
     private static final String CONTAINER_NAME = "container";
 
     private final DockerComposeExecutable dockerComposeExecutable = mock(DockerComposeExecutable.class);
-    private final DockerMachine dockerMachine = mock(DockerMachine.class);
     private final ContainerCache containers = new ContainerCache(dockerComposeExecutable);
 
     @Before
     public void setup() {
-        when(dockerComposeExecutable.container(CONTAINER_NAME)).thenReturn(new Container(CONTAINER_NAME, dockerComposeExecutable, dockerMachine));
+        when(dockerComposeExecutable.container(CONTAINER_NAME)).thenReturn(new Container(CONTAINER_NAME, dockerComposeExecutable));
     }
 
     @Test
     public void gettingANewContainerReturnsAContainerWithTheSpecifiedName() {
         Container container = containers.get(CONTAINER_NAME);
-        assertThat(container, is(new Container(CONTAINER_NAME, dockerComposeExecutable, dockerMachine)));
+        assertThat(container, is(new Container(CONTAINER_NAME, dockerComposeExecutable)));
     }
 
     @Test

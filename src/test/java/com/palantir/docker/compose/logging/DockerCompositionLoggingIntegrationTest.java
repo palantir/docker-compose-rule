@@ -22,28 +22,26 @@ public class DockerCompositionLoggingIntegrationTest {
     @Rule
     public TemporaryFolder logFolder = new TemporaryFolder();
 
-    @Rule
-    public DockerComposition loggingComposition;
-
-    private File logLocation;
+    private DockerComposition loggingComposition;
 
     @Before
     public void setUp() throws Exception {
-        logLocation = logFolder.newFolder();
         loggingComposition = DockerComposition.of("src/test/resources/docker-compose.yaml")
                                               .waitingForService("db")
                                               .waitingForService("db2")
-                                              .saveLogsTo(logLocation.getAbsolutePath())
+                                              .saveLogsTo(logFolder.getRoot()
+                                                                   .getAbsolutePath())
                                               .build();
     }
 
     @SuppressWarnings("unchecked")
     @Test
     public void logsCanBeSavedToADirectory() throws IOException, InterruptedException {
+        loggingComposition.before();
         loggingComposition.after();
-        assertThat(logLocation.listFiles(), arrayContainingInAnyOrder(fileWithName("db.log"), fileWithName("db2.log")));
-        assertThat(new File(logLocation, "db.log"), is(fileContainingString("Attaching to resources_db_1")));
-        assertThat(new File(logLocation, "db2.log"), is(fileContainingString("Attaching to resources_db2_1")));
+        assertThat(logFolder.getRoot().listFiles(), arrayContainingInAnyOrder(fileWithName("db.log"), fileWithName("db2.log")));
+        assertThat(new File(logFolder.getRoot(), "db.log"), is(fileContainingString("Attaching to resources_db_1")));
+        assertThat(new File(logFolder.getRoot(), "db2.log"), is(fileContainingString("Attaching to resources_db2_1")));
     }
 
 }

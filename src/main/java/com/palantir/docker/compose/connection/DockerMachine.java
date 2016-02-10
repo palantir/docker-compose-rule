@@ -2,8 +2,6 @@ package com.palantir.docker.compose.connection;
 
 import com.palantir.docker.compose.configuration.DockerEnvironmentVariables;
 
-import static java.util.stream.Collectors.toList;
-
 public class DockerMachine {
     private final String ip;
 
@@ -13,20 +11,11 @@ public class DockerMachine {
 
     public static DockerMachine fromEnvironment() {
         DockerEnvironmentVariables envVars = new DockerEnvironmentVariables(System.getenv());
-
         return new DockerMachine(envVars.getDockerHostIp());
     }
 
     public String getIp() {
         return ip;
-    }
-
-    public DockerPort getPort(PortMapping portMapping) {
-        return new DockerPort(ip, portMapping.getExternalPort(), portMapping.getInternalPort());
-    }
-
-    public Ports portsFor(PortMappings exposedPorts) {
-        return new Ports(exposedPorts.stream().map(this::getPort).collect(toList()));
     }
 
 }

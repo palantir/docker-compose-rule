@@ -1,75 +1,62 @@
 package com.palantir.docker.compose.configuration;
 
-import com.palantir.docker.compose.connection.DockerMachine;
-import com.palantir.docker.compose.connection.DockerPort;
-import com.palantir.docker.compose.connection.PortMapping;
-import com.palantir.docker.compose.connection.PortMappings;
-import com.palantir.docker.compose.connection.Ports;
-import com.palantir.docker.compose.execution.DockerComposeExecutable;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.when;
 
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import com.palantir.docker.compose.connection.DockerPort;
+import com.palantir.docker.compose.connection.Ports;
+import com.palantir.docker.compose.execution.DockerComposeExecutable;
 
 public class MockDockerEnvironment {
 
     private final DockerComposeExecutable dockerComposeProcess;
-    private final DockerMachine dockerMachine;
 
-    public MockDockerEnvironment(DockerComposeExecutable dockerComposeProcess,
-                                 DockerMachine dockerMachine) {
+    public MockDockerEnvironment(DockerComposeExecutable dockerComposeProcess) {
         this.dockerComposeProcess = dockerComposeProcess;
-        this.dockerMachine = dockerMachine;
     }
 
-    public DockerPort availableService(String service, int externalPortNumber, int internalPortNumber) throws IOException, InterruptedException {
-        DockerPort port = port(service, externalPortNumber, internalPortNumber);
-        when(port.isListeningNow()).thenReturn(true);
+    public DockerPort availableService(String service, String ip, int externalPortNumber, int internalPortNumber) throws IOException, InterruptedException {
+        DockerPort port = port(service, ip, externalPortNumber, internalPortNumber);
+        doReturn(true).when(port).isListeningNow();
         return port;
     }
 
-    public DockerPort availableHttpService(String service, int externalPortNumber, int internalPortNumber) throws IOException, InterruptedException {
-        DockerPort port = availableService(service, externalPortNumber, internalPortNumber);
-        when(port.isHttpResponding(any())).thenReturn(true);
+    public DockerPort availableHttpService(String service, String ip, int externalPortNumber, int internalPortNumber) throws IOException, InterruptedException {
+        DockerPort port = availableService(service, ip, externalPortNumber, internalPortNumber);
+        doReturn(true).when(port).isHttpResponding(any());
         return port;
     }
 
-    public DockerPort unavailableService(String service, int externalPortNumber, int internalPortNumber) throws IOException, InterruptedException {
-        DockerPort port = port(service, externalPortNumber, internalPortNumber);
-        when(port.isListeningNow()).thenReturn(false);
+    public DockerPort unavailableService(String service, String ip, int externalPortNumber, int internalPortNumber) throws IOException, InterruptedException {
+        DockerPort port = port(service, ip, externalPortNumber, internalPortNumber);
+        doReturn(false).when(port).isListeningNow();
         return port;
     }
 
-    public DockerPort port(String service, int externalPortNumber, int internalPortNumber) throws IOException, InterruptedException {
-        DockerPort port = mockDockerPort(externalPortNumber, internalPortNumber);
-        PortMapping portMapping = new PortMapping(externalPortNumber, internalPortNumber);
-        when(dockerComposeProcess.ports(service)).thenReturn(new PortMappings(portMapping));
-        when(dockerMachine.portsFor(new PortMappings(portMapping))).thenReturn(new Ports(port));
+    public DockerPort port(String service, String ip, int externalPortNumber, int internalPortNumber) throws IOException, InterruptedException {
+        DockerPort port = dockerPortSpy(ip, externalPortNumber, internalPortNumber);
+        when(dockerComposeProcess.ports(service)).thenReturn(new Ports(port));
         return port;
     }
 
-    public void ports(String service, int... portNumbers) throws IOException, InterruptedException {
-        List<DockerPort> ports = new ArrayList<>();
-        List<PortMapping> portMappings = new ArrayList<>();
-        for (int portNumber : portNumbers) {
-            DockerPort port = mockDockerPort(portNumber, portNumber);
-            ports.add(port);
-            portMappings.add(new PortMapping(portNumber, portNumber));
-        }
-        when(dockerComposeProcess.ports(service)).thenReturn(new PortMappings(portMappings));
-        when(dockerMachine.portsFor(new PortMappings(portMappings))).thenReturn(new Ports(ports));
+    public void ports(String service, String ip, Integer... portNumbers) throws IOException, InterruptedException {
+        List<DockerPort> ports = Arrays.asList(portNumbers)
+                                         .stream()
+                                         .map(portNumber -> dockerPortSpy(ip, portNumber, portNumber))
+                                         .collect(Collectors.toList());
+        when(dockerComposeProcess.ports(service)).thenReturn(new Ports(ports));
     }
 
-    private DockerPort mockDockerPort(int externalPortNumber, int internalPortNumber) {
-        DockerPort port = mock(DockerPort.class);
-        when(port.getExternalPort()).thenReturn(externalPortNumber);
-        when(port.getInternalPort()).thenReturn(internalPortNumber);
-        when(dockerMachine.getPort(new PortMapping(externalPortNumber, internalPortNumber))).thenReturn(port);
-        return port;
+    private DockerPort dockerPortSpy(String ip, int externalPortNumber, int internalPortNumber) {
+        DockerPort port = new DockerPort(ip, externalPortNumber, internalPortNumber);
+        return spy(port);
     }
 
 }

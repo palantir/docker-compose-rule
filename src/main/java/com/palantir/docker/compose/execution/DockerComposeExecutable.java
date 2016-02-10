@@ -18,7 +18,7 @@ import com.google.common.base.Strings;
 import com.palantir.docker.compose.connection.Container;
 import com.palantir.docker.compose.connection.ContainerNames;
 import com.palantir.docker.compose.connection.DockerMachine;
-import com.palantir.docker.compose.connection.PortMappings;
+import com.palantir.docker.compose.connection.Ports;
 
 
 public class DockerComposeExecutable {
@@ -59,7 +59,7 @@ public class DockerComposeExecutable {
     }
 
     public Container container(String containerName) {
-        return new Container(containerName, this, dockerMachine);
+        return new Container(containerName, this);
     }
 
     /**
@@ -77,10 +77,10 @@ public class DockerComposeExecutable {
         return true;
     }
 
-    public PortMappings ports(String service) throws IOException, InterruptedException {
+    public Ports ports(String service) throws IOException, InterruptedException {
         String psOutput = executeDockerComposeCommand("ps", service);
         validState(!Strings.isNullOrEmpty(psOutput), "No container with name '" + service + "' found");
-        return PortMappings.parseFromDockerComposePs(psOutput);
+        return Ports.parseFromDockerComposePs(psOutput, dockerMachine.getIp());
     }
 
     private String executeDockerComposeCommand(String... commands) throws IOException, InterruptedException {

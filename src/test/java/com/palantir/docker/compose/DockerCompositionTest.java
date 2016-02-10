@@ -33,11 +33,12 @@ import com.palantir.docker.compose.DockerComposition.DockerCompositionBuilder;
 import com.palantir.docker.compose.configuration.MockDockerEnvironment;
 import com.palantir.docker.compose.connection.Container;
 import com.palantir.docker.compose.connection.ContainerNames;
-import com.palantir.docker.compose.connection.DockerMachine;
 import com.palantir.docker.compose.connection.DockerPort;
 import com.palantir.docker.compose.execution.DockerComposeExecutable;
 
 public class DockerCompositionTest {
+
+    private static final String IP = "127.0.0.1";
 
     @Rule
     public ExpectedException exception = ExpectedException.none();
@@ -45,8 +46,7 @@ public class DockerCompositionTest {
     public TemporaryFolder logFolder = new TemporaryFolder();
 
     private final DockerComposeExecutable dockerComposeExecutable = mock(DockerComposeExecutable.class);
-    private final DockerMachine dockerMachine = mock(DockerMachine.class);
-    private final MockDockerEnvironment env = new MockDockerEnvironment(dockerComposeExecutable, dockerMachine);
+    private final MockDockerEnvironment env = new MockDockerEnvironment(dockerComposeExecutable);
     private final DockerCompositionBuilder dockerComposition = DockerComposition.of(dockerComposeExecutable)
                                                                                 .serviceTimeout(Duration.millis(200));
 
@@ -66,7 +66,7 @@ public class DockerCompositionTest {
 
     @Test
     public void dockerComposeWaitForServiceWithSinglePortWaitsForPortToBeAvailableBeforeTestsAreRun() throws IOException, InterruptedException {
-        DockerPort port = env.availableService("db", 5432, 5432);
+        DockerPort port = env.availableService("db", IP, 5432, 5432);
         withComposeExecutableReturningContainerFor("db");
         dockerComposition.waitingForService("db").build().before();
         verify(port, atLeastOnce()).isListeningNow();
@@ -74,7 +74,7 @@ public class DockerCompositionTest {
 
     @Test
     public void dockerComposeWaitForHttpServiceWaitsForAddressToBeAvailableBeforeTestsAreRun() throws IOException, InterruptedException {
-        DockerPort httpPort = env.availableHttpService("http", 8080, 8080);
+        DockerPort httpPort = env.availableHttpService("http", IP, 8080, 8080);
         Function<DockerPort, String> urlFunction = (port) -> "url";
         withComposeExecutableReturningContainerFor("http");
         dockerComposition.waitingForHttpService("http", 8080, urlFunction).build().before();
@@ -108,7 +108,7 @@ public class DockerCompositionTest {
 
     @Test
     public void dockerComposeWaitForServiceThrowsAnExceptionWhenThePortIsUnavailable() throws IOException, InterruptedException {
-        env.unavailableService("db", 5432, 5432);
+        env.unavailableService("db", IP, 5432, 5432);
         exception.expect(IllegalStateException.class);
         exception.expectMessage("Container 'db' failed to pass startup check");
         withComposeExecutableReturningContainerFor("db");
@@ -117,8 +117,8 @@ public class DockerCompositionTest {
 
     @Test
     public void dockerComposeWaitForTwoServicesWithSinglePortWaitsForPortToBeAvailableBeforeTestsAreRun() throws IOException, InterruptedException {
-        DockerPort firstDbPort = env.availableService("db", 5432, 5432);
-        DockerPort secondDbPort = env.availableService("otherDb", 5433, 5432);
+        DockerPort firstDbPort = env.availableService("db", IP, 5432, 5432);
+        DockerPort secondDbPort = env.availableService("otherDb", IP, 5433, 5432);
         withComposeExecutableReturningContainerFor("db");
         withComposeExecutableReturningContainerFor("otherDb");
         dockerComposition.waitingForService("db").waitingForService("otherDb").build().before();
@@ -128,7 +128,7 @@ public class DockerCompositionTest {
 
     @Test
     public void portForContainerCanBeRetrievedByExternalMapping() throws IOException, InterruptedException {
-        DockerPort expectedPort = env.port("db", 5433, 5432);
+        DockerPort expectedPort = env.port("db", IP, 5433, 5432);
         withComposeExecutableReturningContainerFor("db");
         DockerPort actualPort = dockerComposition.build().portOnContainerWithExternalMapping("db", 5433);
         assertThat(actualPort, is(expectedPort));
@@ -136,7 +136,7 @@ public class DockerCompositionTest {
 
     @Test
     public void portForContainerCanBeRetrievedByInternalMapping() throws IOException, InterruptedException {
-        DockerPort expectedPort = env.port("db", 5433, 5432);
+        DockerPort expectedPort = env.port("db", IP, 5433, 5432);
         withComposeExecutableReturningContainerFor("db");
         DockerPort actualPort = dockerComposition.build().portOnContainerWithInternalMapping("db", 5432);
         assertThat(actualPort, is(expectedPort));
@@ -144,7 +144,7 @@ public class DockerCompositionTest {
 
     @Test
     public void whenTwoExternalPortsOnAContainerAreRequestedDockerComposePsIsOnlyExecutedOnce() throws IOException, InterruptedException {
-        env.ports("db", 5432, 8080);
+        env.ports("db", IP, 5432, 8080);
         withComposeExecutableReturningContainerFor("db");
         DockerComposition composition = dockerComposition.build();
         composition.portOnContainerWithInternalMapping("db", 5432);
@@ -163,7 +163,7 @@ public class DockerCompositionTest {
     }
 
     @SuppressWarnings("unchecked")
-    @Test // TODO(fdesouza) MOVEEEE
+    @Test
     public void logsCanBeSavedToADirectoryWhileContainersAreRunning() throws IOException, InterruptedException {
         File logLocation = logFolder.newFolder();
         DockerComposition loggingComposition = dockerComposition.saveLogsTo(logLocation.getAbsolutePath()).build();
@@ -183,7 +183,7 @@ public class DockerCompositionTest {
     }
 
     public void withComposeExecutableReturningContainerFor(String containerName) {
-        when(dockerComposeExecutable.container(containerName)).thenReturn(new Container(containerName, dockerComposeExecutable, dockerMachine));
+        when(dockerComposeExecutable.container(containerName)).thenReturn(new Container(containerName, dockerComposeExecutable));
     }
 
 }

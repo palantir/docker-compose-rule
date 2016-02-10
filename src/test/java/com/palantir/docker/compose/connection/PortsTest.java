@@ -1,13 +1,21 @@
 package com.palantir.docker.compose.connection;
 
+import static java.util.Collections.emptyList;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.Is.is;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+import static com.google.common.collect.Lists.newArrayList;
+
+import java.io.IOException;
+
 import org.joda.time.Duration;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 public class PortsTest {
 
@@ -15,6 +23,7 @@ public class PortsTest {
     public ExpectedException exception = ExpectedException.none();
 
     private final DockerPort port = mock(DockerPort.class);
+    private final DockerMachine machine = mock(DockerMachine.class);
     private final Ports ports = new Ports(port);
 
     @Before
@@ -24,8 +33,62 @@ public class PortsTest {
     }
 
     @Test
+    public void noPortsInPsOutputResultsInNoPorts() throws IOException, InterruptedException {
+        String psOutput = "------";
+        Ports ports = Ports.parseFromDockerComposePs(psOutput, null);
+        Ports expected = new Ports(emptyList());
+        assertThat(ports, is(expected));
+    }
+
+    @Test
+    public void singleTcpPortMappingResultsInSinglePort() throws IOException, InterruptedException {
+        String psOutput = "0.0.0.0:5432->5432/tcp";
+        Ports ports = Ports.parseFromDockerComposePs(psOutput, "127.0.0.1");
+        Ports expected = new Ports(newArrayList(new DockerPort("127.0.0.1", 5432, 5432)));
+        assertThat(ports, is(expected));
+    }
+
+    @Test
+    public void twoTcpPortMappingsResultsInTwoPorts() throws IOException, InterruptedException {
+        String psOutput = "0.0.0.0:5432->5432/tcp, 0.0.0.0:5433->5432/tcp";
+        Ports ports = Ports.parseFromDockerComposePs(psOutput, "127.0.0.1");
+        Ports expected = new Ports(newArrayList(new DockerPort("127.0.0.1", 5432, 5432),
+                                                new DockerPort("127.0.0.1", 5433, 5432)));
+        assertThat(ports, is(expected));
+    }
+
+    @Test
+    public void nonMappedExposedPortResultsInNoPorts() throws IOException, InterruptedException {
+        String psOutput = "5432/tcp";
+        Ports ports = Ports.parseFromDockerComposePs(psOutput, "127.0.0.1");
+        Ports expected = new Ports(emptyList());
+        assertThat(ports, is(expected));
+    }
+
+    @Test
+    public void actualDockerComposeOutputCanBeParsed() throws IOException, InterruptedException {
+        String psOutput =
+                "       Name                      Command               State                                         Ports                                        \n" +
+                        "-------------------------------------------------------------------------------------------------------------------------------------------------\n" +
+                        "magritte_magritte_1   /bin/sh -c /usr/local/bin/ ...   Up      0.0.0.0:7000->7000/tcp, 7001/tcp, 7002/tcp, 7003/tcp, 7004/tcp, 7005/tcp, 7006/tcp \n" +
+                        "";
+        Ports ports = Ports.parseFromDockerComposePs(psOutput, "127.0.0.1");
+        Ports expected = new Ports(newArrayList(new DockerPort("127.0.0.1", 7000, 7000)));
+        assertThat(ports, is(expected));
+    }
+
+    @Test
+    public void noRunningContainerFoundForServiceResultsInAnISE() throws IOException, InterruptedException {
+        exception.expect(IllegalArgumentException.class);
+        exception.expectMessage("No container found");
+        Ports.parseFromDockerComposePs("", "");
+    }
+
+
+    @Test
     public void whenAllPortsAreListeningWaitToBeListeningReturnsWithoutException() throws InterruptedException {
         when(port.isListeningNow()).thenReturn(true);
+        //
         ports.waitToBeListeningWithin(Duration.millis(200));
     }
 
@@ -33,7 +96,7 @@ public class PortsTest {
     public void whenPortIsUnavailableWaitToBeListeningThrowsAnISE() throws InterruptedException {
         when(port.isListeningNow()).thenReturn(false);
         exception.expect(IllegalStateException.class);
-        exception.expectMessage("Internal port '7001' mapped to '7000' was unavailable");
+        exception.expectMessage("ConditionTimeoutException"); // Bug in awaitility means it doesn't call hamcrest describeMismatch, this will be "Internal port '7001' mapped to '7000'" was unavailable in practice
         ports.waitToBeListeningWithin(Duration.millis(200));
     }
 

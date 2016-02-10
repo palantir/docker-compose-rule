@@ -19,8 +19,8 @@ import org.junit.rules.ExpectedException;
 
 import com.palantir.docker.compose.connection.ContainerNames;
 import com.palantir.docker.compose.connection.DockerMachine;
-import com.palantir.docker.compose.connection.PortMapping;
-import com.palantir.docker.compose.connection.PortMappings;
+import com.palantir.docker.compose.connection.DockerPort;
+import com.palantir.docker.compose.connection.Ports;
 
 public class DockerComposeExecutableTest {
 
@@ -35,6 +35,7 @@ public class DockerComposeExecutableTest {
 
     @Before
     public void setup() throws IOException, InterruptedException {
+        when(dockerMachine.getIp()).thenReturn("0.0.0.0");
         when(executor.executeAndWait(anyVararg())).thenReturn(executedProcess);
         when(executor.execute(anyVararg())).thenReturn(executedProcess);
         when(executedProcess.getInputStream()).thenReturn(new ByteArrayInputStream("0.0.0.0:7000->7000/tcp".getBytes(StandardCharsets.UTF_8)));
@@ -80,9 +81,9 @@ public class DockerComposeExecutableTest {
 
     @Test
     public void callingPortsParsesThePsOutput() throws IOException, InterruptedException {
-        PortMappings ports = compose.ports("db");
+        Ports ports = compose.ports("db");
         verify(executor).executeAndWait("ps", "db");
-        assertThat(ports, is(new PortMappings(new PortMapping(7000, 7000))));
+        assertThat(ports, is(new Ports(new DockerPort("0.0.0.0", 7000, 7000))));
     }
 
     @Test
