@@ -2,8 +2,7 @@ package com.palantir.docker.compose;
 
 import static java.util.stream.Collectors.joining;
 
-import java.util.Collections;
-import java.util.List;
+import java.util.Iterator;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
@@ -11,6 +10,7 @@ import org.joda.time.Duration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.collect.ImmutableList;
 import com.jayway.awaitility.Awaitility;
 import com.jayway.awaitility.core.ConditionTimeoutException;
 
@@ -18,14 +18,18 @@ public class Ports {
 
     private static final Logger log = LoggerFactory.getLogger(Ports.class);
 
-    private final List<DockerPort> ports;
+    private final ImmutableList<DockerPort> ports;
 
-    public Ports(List<DockerPort> ports) {
-        this.ports = ports;
+    public Ports(Iterable<DockerPort> ports) {
+        this.ports = ImmutableList.copyOf(ports);
+    }
+
+    public Ports(Iterator<DockerPort> ports) {
+        this.ports = ImmutableList.copyOf(ports);
     }
 
     public Ports(DockerPort port) {
-        this(Collections.singletonList(port));
+        this(ImmutableList.of(port));
     }
 
     public void waitToBeListeningWithin(Duration timeout) {

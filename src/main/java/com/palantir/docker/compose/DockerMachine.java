@@ -1,7 +1,5 @@
 package com.palantir.docker.compose;
 
-import static java.util.stream.Collectors.toList;
-
 public class DockerMachine {
     private final String ip;
 
@@ -24,7 +22,7 @@ public class DockerMachine {
     }
 
     public Ports portsFor(PortMappings exposedPorts) {
-        return new Ports(exposedPorts.stream().map(this::getPort).collect(toList()));
+        return new Ports(exposedPorts.stream().map(this::getPort).iterator());
     }
 
 }
