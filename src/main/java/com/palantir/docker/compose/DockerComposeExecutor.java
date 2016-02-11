@@ -40,7 +40,6 @@ public class DockerComposeExecutor {
         List<String> args = Lists.newArrayList(getDockerComposePath(), "-f", dockerComposeFile.getAbsolutePath());
         Collections.addAll(args, commands);
         ProcessBuilder process = new ProcessBuilder().command(args).redirectErrorStream(true);
-        process.environment().clear();
         process.environment().putAll(env.getVariables());
         return process.start();
     }
