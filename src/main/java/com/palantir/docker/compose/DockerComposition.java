@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory;
 import com.google.common.base.Function;
 import com.jayway.awaitility.Awaitility;
 import com.jayway.awaitility.core.ConditionTimeoutException;
+import com.palantir.docker.compose.resolve.DockerNameService;
 
 public class DockerComposition extends ExternalResource {
 
@@ -64,6 +65,9 @@ public class DockerComposition extends ExternalResource {
         log.debug("Waiting for services");
         servicesToWaitFor.entrySet().forEach(serviceCheck -> waitForService(serviceCheck.getKey(), serviceCheck.getValue()));
         log.debug("docker-compose cluster started");
+
+        log.debug("Registering containers for DNS resolution");
+        DockerNameService.register(dockerMachine, containers.values());
     }
 
     private void waitForService(Container service, Function<Container, Boolean> serviceCheck) {
@@ -81,6 +85,9 @@ public class DockerComposition extends ExternalResource {
     @Override
     public void after() {
         try {
+            log.debug("Unregistering containers from DNS resolution");
+            DockerNameService.unregister(containers.values());
+
             log.debug("Killing docker-compose cluster");
             dockerComposeProcess.kill();
             dockerComposeProcess.rm();

@@ -113,3 +113,14 @@ To record the logs from your containers specify a location:
   }
 
 This will automatically record logs for all containers in real time to the specified directory. Collection will stop when the containers terminate.
+
+Accessing services in a container with TLS
+------------------------------------------
+
+When your containerised service is configured to use TLS, it's difficult to communicate with it, because cert validation will generally fail. There is an optional feature that replaces the internal Java `NameService` with a cert. To use it, set the system property `sun.net.spi.nameservice.provider.1` to `dns,docker-compose-rule`. When set, one can communicate with container `foo` at hostname `foo`.
+
+An example of this (with Gradle) is:
+
+    test {
+        systemProperty "sun.net.spi.nameservice.provider.1", "dns,docker-compose-rule"
+    } 

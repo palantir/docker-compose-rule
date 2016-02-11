@@ -23,6 +23,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.io.IOUtils;
 import org.joda.time.Duration;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -55,6 +56,11 @@ public class DockerCompositionTest {
         dockerComposition.after();
         verify(dockerComposeExecutable).kill();
         verify(dockerComposeExecutable).rm();
+    }
+
+    @Before
+    public void before() {
+        when(dockerMachine.getIp()).thenReturn("fake ip");
     }
 
     @Test
