@@ -83,7 +83,7 @@ public class DockerComposeExecutable {
         return output;
     }
 
-    private String constructNonZeroExitErrorMessage(int exitCode, String... commands) {
+    private static String constructNonZeroExitErrorMessage(int exitCode, String... commands) {
         return "'docker-compose " + Arrays.stream(commands).collect(joining(" ")) + "' returned exit code " + exitCode;
     }
 

@@ -7,6 +7,7 @@ package com.palantir.docker.compose;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+
 import org.apache.commons.lang3.StringUtils;
 
 import com.google.common.base.Strings;
@@ -68,7 +69,7 @@ public class DockerEnvironmentVariables {
         return missingEnvironmentVariables;
     }
 
-    private List<String> enforceNoCertPath(List<String> missingEnvironmentVariables) {
+    private static List<String> enforceNoCertPath(List<String> missingEnvironmentVariables) {
         List<String> missingNonCertVariables = Lists.newArrayList(missingEnvironmentVariables);
 
         boolean missingCertPath = missingEnvironmentVariables.contains(DOCKER_CERT_PATH);

@@ -43,7 +43,7 @@ public class DockerComposeExecutor {
     }
 
 
-    private String getDockerComposePath() {
+    private static String getDockerComposePath() {
         return dockerComposeLocations.stream()
                                      .filter(StringUtils::isNotBlank)
                                      .filter(path -> new File(path).exists())
