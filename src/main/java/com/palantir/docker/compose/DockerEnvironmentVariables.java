@@ -97,4 +97,8 @@ public class DockerEnvironmentVariables {
 
         return LOCALHOST;
     }
+
+    public Map<String, String> getVariables() {
+        return env;
+    }
 }

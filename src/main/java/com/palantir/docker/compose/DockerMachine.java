@@ -7,10 +7,8 @@ public class DockerMachine {
         this.ip = ip;
     }
 
-    public static DockerMachine fromEnvironment() {
-        DockerEnvironmentVariables envVars = new DockerEnvironmentVariables(System.getenv());
-
-        return new DockerMachine(envVars.getDockerHostIp());
+    public static DockerMachine from(DockerEnvironmentVariables env) {
+        return new DockerMachine(env.getDockerHostIp());
     }
 
     public String getIp() {

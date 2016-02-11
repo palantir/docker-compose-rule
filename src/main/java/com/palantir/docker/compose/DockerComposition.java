@@ -28,7 +28,11 @@ public class DockerComposition extends ExternalResource {
     private final LogCollector logCollector;
 
     public DockerComposition(String dockerComposeFile) {
-        this(new DockerComposeExecutable(new File(dockerComposeFile)), DockerMachine.fromEnvironment());
+        this(dockerComposeFile, new DockerEnvironmentVariables(System.getenv()));
+    }
+
+    public DockerComposition(String dockerComposeFile, DockerEnvironmentVariables env) {
+        this(new DockerComposeExecutable(new DockerComposeExecutor(new File(dockerComposeFile), env)), DockerMachine.from(env));
         log.debug("Using docker-compose file '{}'", dockerComposeFile);
     }
 

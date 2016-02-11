@@ -7,7 +7,6 @@ import static org.apache.commons.lang3.Validate.validState;
 
 import static com.palantir.docker.compose.DockerComposeExecutor.COMMAND_TIMEOUT;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Arrays;
@@ -24,10 +23,6 @@ public class DockerComposeExecutable {
     private static final Logger log = LoggerFactory.getLogger(DockerComposeExecutable.class);
 
     private final DockerComposeExecutor executor;
-
-    public DockerComposeExecutable(File dockerComposeFile) {
-        this(new DockerComposeExecutor(dockerComposeFile));
-    }
 
     public DockerComposeExecutable(DockerComposeExecutor executor) {
         this.executor = executor;
