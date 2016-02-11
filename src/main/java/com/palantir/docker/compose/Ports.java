@@ -28,7 +28,7 @@ public class Ports {
         this(Collections.singletonList(port));
     }
 
-    public void waitToBeListeningWithin(Duration timeout) throws InterruptedException {
+    public void waitToBeListeningWithin(Duration timeout) {
         try {
             waitForPorts(timeout);
         } catch (ConditionTimeoutException e) {

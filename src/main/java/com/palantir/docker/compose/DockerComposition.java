@@ -86,11 +86,11 @@ public class DockerComposition extends ExternalResource {
         }
     }
 
-    public DockerPort portOnContainerWithExternalMapping(String container, int portNumber) throws IOException, InterruptedException {
+    public DockerPort portOnContainerWithExternalMapping(String container, int portNumber) {
         return service(container).portMappedExternallyTo(portNumber);
     }
 
-    public DockerPort portOnContainerWithInternalMapping(String container, int portNumber) throws IOException, InterruptedException {
+    public DockerPort portOnContainerWithInternalMapping(String container, int portNumber) {
         return service(container).portMappedInternallyTo(portNumber);
     }
 
