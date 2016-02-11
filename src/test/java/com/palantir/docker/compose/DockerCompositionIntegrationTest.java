@@ -28,18 +28,18 @@ public class DockerCompositionIntegrationTest {
     public TemporaryFolder logFolder = new TemporaryFolder();
 
     @Test
-    public void shouldRunDockerComposeUpUsingTheSpecifiedDockerComposeFileToBringPostgresUp() throws InterruptedException, IOException {
+    public void shouldRunDockerComposeUpUsingTheSpecifiedDockerComposeFileToBringPostgresUp() {
         assertThat(composition.portOnContainerWithExternalMapping("db", 5433).isListeningNow(), is(true));
     }
 
     @Test
-    public void afterTestIsExecutedTheLaunchedPostgresContainerIsNoLongerListening() throws IOException, InterruptedException {
+    public void afterTestIsExecutedTheLaunchedPostgresContainerIsNoLongerListening() {
         composition.after();
         assertThat(composition.portOnContainerWithExternalMapping("db", 5433).isListeningNow(), is(false));
     }
 
     @Test
-    public void canAccessExternalPortForInternalPortOfMachine() throws IOException, InterruptedException {
+    public void canAccessExternalPortForInternalPortOfMachine() {
         assertThat(composition.portOnContainerWithInternalMapping("db", 5432).isListeningNow(), is(true));
     }
 

@@ -56,7 +56,7 @@ public class DockerComposeExecutableTest {
     }
 
     @Test
-    public void logsCallsDockerComposeWithNoColourFlag() throws IOException, InterruptedException {
+    public void logsCallsDockerComposeWithNoColourFlag() throws IOException {
         when(executedProcess.getInputStream()).thenReturn(new ByteArrayInputStream("logs".getBytes(StandardCharsets.UTF_8)));
         ByteArrayOutputStream output = new ByteArrayOutputStream();
         compose.writeLogs("db", output);
