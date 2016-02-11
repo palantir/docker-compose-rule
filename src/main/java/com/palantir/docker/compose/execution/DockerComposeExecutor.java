@@ -1,17 +1,19 @@
 package com.palantir.docker.compose.execution;
 
-import com.google.common.collect.Lists;
-import org.apache.commons.lang3.StringUtils;
-import org.joda.time.Duration;
+import static java.util.Arrays.asList;
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
+
+import static org.joda.time.Duration.standardMinutes;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 
-import static java.util.Arrays.asList;
-import static java.util.concurrent.TimeUnit.MILLISECONDS;
-import static org.joda.time.Duration.standardMinutes;
+import org.apache.commons.lang3.StringUtils;
+import org.joda.time.Duration;
+
+import com.google.common.collect.Lists;
 
 
 public class DockerComposeExecutor {
@@ -40,8 +42,7 @@ public class DockerComposeExecutor {
                                    .start();
     }
 
-
-    private String getDockerComposePath() {
+    private static String getDockerComposePath() {
         return dockerComposeLocations.stream()
                                      .filter(StringUtils::isNotBlank)
                                      .filter(path -> new File(path).exists())

@@ -1,14 +1,22 @@
 package com.palantir.docker.compose.configuration;
 
-import com.google.common.base.Strings;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import org.apache.commons.lang3.StringUtils;
+import static java.util.function.Function.identity;
+import static java.util.stream.Collectors.toMap;
+
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+
+import org.apache.commons.lang3.StringUtils;
+
+import com.google.common.base.Strings;
+import com.google.common.base.Supplier;
+import com.google.common.base.Suppliers;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Lists;
 
 public class DockerEnvironmentVariables {
     private static final int DISABLE_CERT_VERIFICATION = 0;
@@ -33,10 +41,12 @@ public class DockerEnvironmentVariables {
             DOCKER_CERT_PATH);
 
     private final Map<String, String> env;
+    private final Supplier<Map<String, String>> filteredEnvironmentVariables;
 
     public DockerEnvironmentVariables(Map<String, String> env) {
-        this.env = Maps.newHashMap(env);
-
+        this.env = ImmutableMap.copyOf(env);
+        this.filteredEnvironmentVariables = Suppliers.memoize(this::generateDockerEnvironmentVariables);
+        // TODO (fdesouza): a tad dubious about this check, is it ever true, especially on Mac
         if (env.getOrDefault(OS_NAME, "").startsWith(MAC_OS)) {
             checkEnvVariables();
         }
@@ -92,4 +102,16 @@ public class DockerEnvironmentVariables {
 
         return LOCALHOST;
     }
+
+    public Map<String, String> getDockerEnvironmentVariables() {
+        return filteredEnvironmentVariables.get();
+    }
+
+    private Map<String, String> generateDockerEnvironmentVariables() {
+        Map<String, String> filteredVariables = requiredEnvVariables.stream()
+                                                                    .filter(envVariable -> isNotBlank(env.getOrDefault(envVariable, "")))
+                                                                    .collect(toMap(identity(), env::get));
+        return ImmutableMap.copyOf(filteredVariables);
+    }
+
 }
