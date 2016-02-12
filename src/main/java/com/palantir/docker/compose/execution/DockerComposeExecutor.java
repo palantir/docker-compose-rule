@@ -14,6 +14,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.joda.time.Duration;
 
 import com.google.common.collect.Lists;
+import com.palantir.docker.compose.connection.DockerMachine;
 
 
 public class DockerComposeExecutor {
@@ -23,9 +24,11 @@ public class DockerComposeExecutor {
     public static final Duration COMMAND_TIMEOUT = standardMinutes(2);
 
     private final File dockerComposeFile;
+    private final DockerMachine dockerMachine;
 
-    public DockerComposeExecutor(File dockerComposeFile) {
+    public DockerComposeExecutor(File dockerComposeFile, DockerMachine dockerMachine) {
         this.dockerComposeFile = dockerComposeFile;
+        this.dockerMachine = dockerMachine;
     }
 
     public Process executeAndWait(String... commands) throws IOException, InterruptedException {
@@ -37,7 +40,9 @@ public class DockerComposeExecutor {
     public Process execute(String... commands) throws IOException {
         List<String> args = Lists.newArrayList(getDockerComposePath(), "-f", dockerComposeFile.getAbsolutePath());
         Collections.addAll(args, commands);
-        return new ProcessBuilder().command(args)
+        ProcessBuilder processBuilder = new ProcessBuilder();
+        dockerMachine.configDockerComposeProcess(processBuilder);
+        return processBuilder.command(args)
                                    .redirectErrorStream(true)
                                    .start();
     }

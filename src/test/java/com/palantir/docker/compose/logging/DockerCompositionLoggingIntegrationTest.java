@@ -16,6 +16,7 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
 import com.palantir.docker.compose.DockerComposition;
+import com.palantir.docker.compose.connection.DockerMachine;
 
 public class DockerCompositionLoggingIntegrationTest {
 
@@ -26,11 +27,10 @@ public class DockerCompositionLoggingIntegrationTest {
 
     @Before
     public void setUp() throws Exception {
-        loggingComposition = DockerComposition.of("src/test/resources/docker-compose.yaml")
+        loggingComposition = DockerComposition.of("src/test/resources/docker-compose.yaml", DockerMachine.fromEnvironment())
                                               .waitingForService("db")
                                               .waitingForService("db2")
-                                              .saveLogsTo(logFolder.getRoot()
-                                                                   .getAbsolutePath())
+                                              .saveLogsTo(logFolder.getRoot().getAbsolutePath())
                                               .build();
     }
 

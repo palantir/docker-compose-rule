@@ -29,7 +29,7 @@ public class DockerComposeExecutable {
     private final DockerMachine dockerMachine;
 
     public DockerComposeExecutable(File dockerComposeFile, DockerMachine dockerMachine) {
-        this(new DockerComposeExecutor(dockerComposeFile), dockerMachine);
+        this(new DockerComposeExecutor(dockerComposeFile, dockerMachine), dockerMachine);
     }
 
     public DockerComposeExecutable(DockerComposeExecutor executor, DockerMachine dockerMachine) {

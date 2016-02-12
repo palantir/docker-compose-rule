@@ -1,5 +1,7 @@
 package com.palantir.docker.compose;
 
+import static java.util.stream.Collectors.toMap;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
@@ -35,12 +37,12 @@ public class DockerComposition extends ExternalResource {
     private final Duration serviceTimeout;
     private final LogCollector logCollector;
 
-    public static DockerCompositionBuilder of(DockerComposeExecutable dockerComposeExecutable) {
-        return new DockerCompositionBuilder(dockerComposeExecutable);
+    public static DockerCompositionBuilder of(String dockerComposeFile, DockerMachine dockerMachine) {
+        return of(new DockerComposeExecutable(new File(dockerComposeFile), dockerMachine));
     }
 
-    public static DockerCompositionBuilder of(String dockerComposeFile) {
-        return DockerComposition.of(new DockerComposeExecutable(new File(dockerComposeFile), DockerMachine.fromEnvironment()));
+    public static DockerCompositionBuilder of(DockerComposeExecutable executable) {
+        return new DockerCompositionBuilder(executable);
     }
 
     private DockerComposition(DockerComposeExecutable dockerComposeProcess,
@@ -60,7 +62,9 @@ public class DockerComposition extends ExternalResource {
         log.debug("Starting docker-compose cluster");
         dockerComposeProcess.build();
         dockerComposeProcess.up();
+
         log.debug("Starting log collection");
+
         logCollector.startCollecting(dockerComposeProcess);
         log.debug("Waiting for services");
         servicesToWaitFor.entrySet().forEach(serviceCheck -> waitForService(serviceCheck.getKey(), serviceCheck.getValue()));
@@ -92,18 +96,20 @@ public class DockerComposition extends ExternalResource {
     }
 
     public DockerPort portOnContainerWithExternalMapping(String container, int portNumber) throws IOException, InterruptedException {
-        return containers.get(container).portMappedExternallyTo(portNumber);
+        return containers.get(container)
+                         .portMappedExternallyTo(portNumber);
     }
 
     public DockerPort portOnContainerWithInternalMapping(String container, int portNumber) throws IOException, InterruptedException {
-        return containers.get(container).portMappedInternallyTo(portNumber);
+        return containers.get(container)
+                         .portMappedInternallyTo(portNumber);
     }
 
     public static class DockerCompositionBuilder {
 
+        private final Map<String, Function<Container, Boolean>> containersToWaitFor = new HashMap<>();
         private final DockerComposeExecutable dockerComposeProcess;
         private final ContainerCache containers;
-        private final Map<Container, Function<Container, Boolean>> servicesToWaitFor = new HashMap<>();
         private Duration serviceTimeout = Duration.standardMinutes(2);
         private LogCollector logCollector = new DoNothingLogCollector();
 
@@ -121,7 +127,7 @@ public class DockerComposition extends ExternalResource {
         }
 
         public DockerCompositionBuilder waitingForService(String serviceName, Function<Container, Boolean> check) {
-            servicesToWaitFor.put(containers.get(serviceName), check);
+            containersToWaitFor.put(serviceName, check);
             return this;
         }
 
@@ -141,6 +147,9 @@ public class DockerComposition extends ExternalResource {
         }
 
         public DockerComposition build() {
+            Map<Container, Function<Container, Boolean>> servicesToWaitFor = containersToWaitFor.entrySet()
+                                                                                                .stream()
+                                                                                                .collect(toMap(e -> containers.get(e.getKey()), Map.Entry::getValue));
             return new DockerComposition(dockerComposeProcess, servicesToWaitFor, serviceTimeout, logCollector, containers);
         }
 

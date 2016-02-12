@@ -38,7 +38,7 @@ public class DockerComposeExecutableTest {
         when(dockerMachine.getIp()).thenReturn("0.0.0.0");
         when(executor.executeAndWait(anyVararg())).thenReturn(executedProcess);
         when(executor.execute(anyVararg())).thenReturn(executedProcess);
-        when(executedProcess.getInputStream()).thenReturn(new ByteArrayInputStream("0.0.0.0:7000->7000/tcp".getBytes(StandardCharsets.UTF_8)));
+        when(executedProcess.getInputStream()).thenReturn(byteArrayInputStreamOf("0.0.0.0:7000->7000/tcp"));
         when(executedProcess.exitValue()).thenReturn(0);
     }
 
@@ -56,7 +56,7 @@ public class DockerComposeExecutableTest {
 
     @Test
     public void psParsesAndReturnsContainerNames() throws IOException, InterruptedException {
-        when(executedProcess.getInputStream()).thenReturn(new ByteArrayInputStream("ps\n----\ndir_db_1".getBytes(StandardCharsets.UTF_8)));
+        when(executedProcess.getInputStream()).thenReturn(byteArrayInputStreamOf("ps\n----\ndir_db_1"));
         ContainerNames containerNames = compose.ps();
         verify(executor).executeAndWait("ps");
         assertThat(containerNames, is(new ContainerNames("db")));
@@ -64,7 +64,7 @@ public class DockerComposeExecutableTest {
 
     @Test
     public void logsCallsDockerComposeWithNoColourFlag() throws IOException, InterruptedException {
-        when(executedProcess.getInputStream()).thenReturn(new ByteArrayInputStream("logs".getBytes(StandardCharsets.UTF_8)));
+        when(executedProcess.getInputStream()).thenReturn(byteArrayInputStreamOf("logs"));
         ByteArrayOutputStream output = new ByteArrayOutputStream();
         compose.writeLogs("db", output);
         verify(executor).execute("logs", "--no-color", "db");
@@ -88,10 +88,14 @@ public class DockerComposeExecutableTest {
 
     @Test
     public void whenThereIsNoContainerFoundForPortsAnISEIsThrown() throws IOException, InterruptedException {
-        when(executedProcess.getInputStream()).thenReturn(new ByteArrayInputStream("".getBytes(StandardCharsets.UTF_8)));
+        when(executedProcess.getInputStream()).thenReturn(byteArrayInputStreamOf(""));
         exception.expect(IllegalStateException.class);
         exception.expectMessage("No container with name 'db' found");
         compose.ports("db");
+    }
+
+    private static ByteArrayInputStream byteArrayInputStreamOf(String s) {
+        return new ByteArrayInputStream(s.getBytes(StandardCharsets.UTF_8));
     }
 
 }

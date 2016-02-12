@@ -10,10 +10,12 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
 
+import com.palantir.docker.compose.connection.DockerMachine;
+
 public class DockerCompositionIntegrationTest {
 
     @Rule
-    public DockerComposition composition = DockerComposition.of("src/test/resources/docker-compose.yaml")
+    public DockerComposition composition = DockerComposition.of("src/test/resources/docker-compose.yaml", DockerMachine.fromEnvironment())
                                                             .waitingForService("db")
                                                             .waitingForService("db2")
                                                             .build();

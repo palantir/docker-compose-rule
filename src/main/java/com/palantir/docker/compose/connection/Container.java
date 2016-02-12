@@ -27,8 +27,7 @@ public class Container {
 
     private final Supplier<Ports> portMappings = Suppliers.memoize(this::getDockerPorts);
 
-    public Container(String containerName,
-                     DockerComposeExecutable dockerComposeProcess) {
+    public Container(String containerName, DockerComposeExecutable dockerComposeProcess) {
         this.containerName = containerName;
         this.dockerComposeProcess = dockerComposeProcess;
     }
