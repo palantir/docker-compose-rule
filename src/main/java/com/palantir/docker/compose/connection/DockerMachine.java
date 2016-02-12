@@ -90,18 +90,15 @@ public class DockerMachine {
             return this;
         }
 
-        public DockerMachineBuilder certPath(String certPath) {
-            environment.put(DOCKER_CERT_PATH, certPath);
-            return this;
-        }
-
-        public DockerMachineBuilder withTLS() {
+        public DockerMachineBuilder withTLS(String certPath) {
             environment.put(DOCKER_TLS_VERIFY, "1");
+            environment.put(DOCKER_CERT_PATH, certPath);
+
             return this;
         }
 
         public DockerMachineBuilder withoutTLS() {
-            environment.put(DOCKER_TLS_VERIFY, "0");
+            environment.remove(DOCKER_TLS_VERIFY);
             environment.remove(DOCKER_CERT_PATH);
             return this;
         }
