@@ -46,7 +46,7 @@ public class DockerPort {
 
     public boolean isListeningNow() {
         try (Socket socket = new Socket()) {
-            socket.connect(new InetSocketAddress(ip, getExternalPort()), 50);
+            socket.connect(new InetSocketAddress(ip, getExternalPort()), 500);
             log.trace("External Port '{}' on ip '{}' was open", getExternalPort(), ip);
             return true;
         } catch (IOException e) {
