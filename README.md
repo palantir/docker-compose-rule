@@ -1,3 +1,5 @@
+![build status](https://circleci.com/gh/palantir/docker-compose-rule.svg?style=shield&circle-token=ed5bbc06f483e3f7324d1b3440125827c8d355d7)
+
 Docker Compose JUnit Rule
 =========================
 
