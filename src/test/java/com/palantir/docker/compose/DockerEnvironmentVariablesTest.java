@@ -21,7 +21,7 @@ public class DockerEnvironmentVariablesTest {
     public ExpectedException expectedException = ExpectedException.none();
 
     @Test
-    public void testTlsMissingAndCertPathMissing() throws Exception {
+    public void testTlsMissingAndCertPathMissing() {
         ImmutableMap<String, String> env = ImmutableMap.<String, String>builder()
                 .put(DockerEnvironmentVariables.DOCKER_HOST, "host")
                 .build();
@@ -30,7 +30,7 @@ public class DockerEnvironmentVariablesTest {
     }
 
     @Test
-    public void testTlsDisabledAndCertPathMissing() throws Exception {
+    public void testTlsDisabledAndCertPathMissing() {
         ImmutableMap<String, String> env = ImmutableMap.<String, String>builder()
                 .put(DockerEnvironmentVariables.DOCKER_HOST, "host")
                 .put(DockerEnvironmentVariables.DOCKER_TLS_VERIFY, "0")
@@ -40,7 +40,7 @@ public class DockerEnvironmentVariablesTest {
     }
 
     @Test
-    public void testTlsDisabledButCertPathPresent() throws Exception {
+    public void testTlsDisabledButCertPathPresent() {
         ImmutableMap<String, String> env = ImmutableMap.<String, String>builder()
                 .put(DockerEnvironmentVariables.DOCKER_HOST, "host")
                 .put(DockerEnvironmentVariables.DOCKER_TLS_VERIFY, "0")
@@ -53,7 +53,7 @@ public class DockerEnvironmentVariablesTest {
     }
 
     @Test
-    public void testTlsEnabledButCertPathMissing() throws Exception {
+    public void testTlsEnabledButCertPathMissing() {
         ImmutableMap<String, String> env = ImmutableMap.<String, String>builder()
                 .put(DockerEnvironmentVariables.DOCKER_HOST, "host")
                 .put(DockerEnvironmentVariables.DOCKER_TLS_VERIFY, "1")
@@ -67,7 +67,7 @@ public class DockerEnvironmentVariablesTest {
     }
 
     @Test
-    public void testMissingHostWithTlsVerifyDisabledAndCertPathPresent() throws Exception {
+    public void testMissingHostWithTlsVerifyDisabledAndCertPathPresent() {
         ImmutableMap<String, String> env = ImmutableMap.<String, String>builder()
                 .put(DockerEnvironmentVariables.DOCKER_TLS_VERIFY, "0")
                 .put(DockerEnvironmentVariables.DOCKER_CERT_PATH, "/path/to/certs")
@@ -79,7 +79,7 @@ public class DockerEnvironmentVariablesTest {
     }
 
     @Test
-    public void testMissingHostAndMissingDockerCertPathTlsVerifyDisabled() throws Exception {
+    public void testMissingHostAndMissingDockerCertPathTlsVerifyDisabled() {
         ImmutableMap<String, String> env = ImmutableMap.<String, String>builder()
                 .put(DockerEnvironmentVariables.DOCKER_TLS_VERIFY, "0")
                 .build();
@@ -91,7 +91,7 @@ public class DockerEnvironmentVariablesTest {
     }
 
     @Test
-    public void testGetHostIpWithPort() throws Exception {
+    public void testGetHostIpWithPort() {
         String ip = "192.168.99.100";
         String port = "2376";
         String ipAndPort = String.format("%s:%s", ip, port);
@@ -107,7 +107,7 @@ public class DockerEnvironmentVariablesTest {
     }
 
     @Test
-    public void testGetHostIpWithoutPort() throws Exception {
+    public void testGetHostIpWithoutPort() {
         String ip = "192.168.99.100";
 
         ImmutableMap<String, String> env = ImmutableMap.<String, String>builder()

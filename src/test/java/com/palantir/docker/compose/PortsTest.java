@@ -24,13 +24,13 @@ public class PortsTest {
     }
 
     @Test
-    public void whenAllPortsAreListeningWaitToBeListeningReturnsWithoutException() throws InterruptedException {
+    public void whenAllPortsAreListeningWaitToBeListeningReturnsWithoutException() {
         when(port.isListeningNow()).thenReturn(true);
         ports.waitToBeListeningWithin(Duration.millis(200));
     }
 
     @Test
-    public void whenPortIsUnavailableWaitToBeListeningThrowsAnISE() throws InterruptedException {
+    public void whenPortIsUnavailableWaitToBeListeningThrowsAnISE() {
         when(port.isListeningNow()).thenReturn(false);
         exception.expect(IllegalStateException.class);
         exception.expectMessage("Internal port '7001' mapped to '7000' was unavailable");
@@ -38,7 +38,7 @@ public class PortsTest {
     }
 
     @Test
-    public void whenPortBecomesAvailableAfterAWaitWaitToBeListeningReturnsWithoutException() throws InterruptedException {
+    public void whenPortBecomesAvailableAfterAWaitWaitToBeListeningReturnsWithoutException() {
         when(port.isListeningNow()).thenReturn(false, true);
         ports.waitToBeListeningWithin(Duration.millis(200));
     }

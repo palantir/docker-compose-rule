@@ -23,9 +23,11 @@ public class DockerComposeExecutor {
     public static final Duration COMMAND_TIMEOUT = standardMinutes(2);
 
     private final File dockerComposeFile;
+    private final DockerEnvironmentVariables env;
 
-    public DockerComposeExecutor(File dockerComposeFile) {
+    public DockerComposeExecutor(File dockerComposeFile, DockerEnvironmentVariables env) {
         this.dockerComposeFile = dockerComposeFile;
+        this.env = env;
     }
 
     public Process executeAndWait(String... commands) throws IOException, InterruptedException {
@@ -37,13 +39,13 @@ public class DockerComposeExecutor {
     public Process execute(String... commands) throws IOException {
         List<String> args = Lists.newArrayList(getDockerComposePath(), "-f", dockerComposeFile.getAbsolutePath());
         Collections.addAll(args, commands);
-        return new ProcessBuilder().command(args)
-                                   .redirectErrorStream(true)
-                                   .start();
+        ProcessBuilder process = new ProcessBuilder().command(args).redirectErrorStream(true);
+        process.environment().putAll(env.getVariables());
+        return process.start();
     }
 
 
-    private String getDockerComposePath() {
+    private static String getDockerComposePath() {
         return dockerComposeLocations.stream()
                                      .filter(StringUtils::isNotBlank)
                                      .filter(path -> new File(path).exists())
