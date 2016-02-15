@@ -23,8 +23,6 @@ public class PortsTest {
     public ExpectedException exception = ExpectedException.none();
 
     private final DockerPort port = mock(DockerPort.class);
-    private final DockerMachine machine = mock(DockerMachine.class);
-    private final Ports ports = new Ports(port);
 
     @Before
     public void setup() {
@@ -88,8 +86,7 @@ public class PortsTest {
     @Test
     public void whenAllPortsAreListeningWaitToBeListeningReturnsWithoutException() throws InterruptedException {
         when(port.isListeningNow()).thenReturn(true);
-        //
-        ports.waitToBeListeningWithin(Duration.millis(200));
+        new Ports(port).waitToBeListeningWithin(Duration.millis(200));
     }
 
     @Test
@@ -97,13 +94,13 @@ public class PortsTest {
         when(port.isListeningNow()).thenReturn(false);
         exception.expect(IllegalStateException.class);
         exception.expectMessage("ConditionTimeoutException"); // Bug in awaitility means it doesn't call hamcrest describeMismatch, this will be "Internal port '7001' mapped to '7000'" was unavailable in practice
-        ports.waitToBeListeningWithin(Duration.millis(200));
+        new Ports(port).waitToBeListeningWithin(Duration.millis(200));
     }
 
     @Test
     public void whenPortBecomesAvailableAfterAWaitWaitToBeListeningReturnsWithoutException() throws InterruptedException {
         when(port.isListeningNow()).thenReturn(false, true);
-        ports.waitToBeListeningWithin(Duration.millis(200));
+        new Ports(port).waitToBeListeningWithin(Duration.millis(200));
     }
 
 }

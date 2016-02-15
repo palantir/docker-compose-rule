@@ -108,8 +108,8 @@ public class DockerMachine {
             return this;
         }
 
-        public DockerMachineBuilder withEnvironment(Map<String, String> additionalEnvironment) {
-            this.additionalEnvironment = firstNonNull(additionalEnvironment, newHashMap());
+        public DockerMachineBuilder withEnvironment(Map<String, String> newEnvironment) {
+            this.additionalEnvironment = firstNonNull(newEnvironment, newHashMap());
             return this;
         }
 

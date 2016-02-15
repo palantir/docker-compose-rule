@@ -1,8 +1,8 @@
 package com.palantir.docker.compose.logging;
 
-import com.palantir.docker.compose.execution.DockerComposeExecutable;
-
 import java.io.IOException;
+
+import com.palantir.docker.compose.execution.DockerComposeExecutable;
 
 public class DoNothingLogCollector implements LogCollector {
 
