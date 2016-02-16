@@ -37,8 +37,11 @@ public class DockerCompositionLoggingIntegrationTest {
     @SuppressWarnings("unchecked")
     @Test
     public void logsCanBeSavedToADirectory() throws IOException, InterruptedException {
-        loggingComposition.before();
-        loggingComposition.after();
+        try {
+            loggingComposition.before();
+        } finally {
+            loggingComposition.after();
+        }
         assertThat(logFolder.getRoot().listFiles(), arrayContainingInAnyOrder(fileWithName("db.log"), fileWithName("db2.log")));
         assertThat(new File(logFolder.getRoot(), "db.log"), is(fileContainingString("Attaching to resources_db_1")));
         assertThat(new File(logFolder.getRoot(), "db2.log"), is(fileContainingString("Attaching to resources_db2_1")));

@@ -32,9 +32,12 @@ public class DockerComposeExecutorIntegrationTest {
                                                                .waitingForService("env-test")
                                                                .saveLogsTo(temporaryFolder.getRoot().getAbsolutePath())
                                                                .build();
+        try {
+            dockerComposition.before();
+        } finally {
+            dockerComposition.after();
+        }
 
-        dockerComposition.before();
-        dockerComposition.after();
         Path logLocation = temporaryFolder.getRoot()
                                           .toPath()
                                           .resolve("env-test.log");
