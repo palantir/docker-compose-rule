@@ -53,9 +53,7 @@ public class Container {
             Awaitility.await()
                 .pollInterval(50, TimeUnit.MILLISECONDS)
                 .atMost(timeout.getMillis(), TimeUnit.MILLISECONDS)
-                .until(() ->
-                               assertThat(port.isListeningNow() && port.isHttpResponding(urlFunction), is(true))
-                );
+                .until(() -> assertThat(port.isListeningNow() && port.isHttpResponding(urlFunction), is(true)));
             return true;
         } catch (Exception e) {
             log.warn("Container '" + containerName + "' failed to come up: " + e.getMessage(), e);
