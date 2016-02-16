@@ -1,7 +1,5 @@
 package com.palantir.docker.compose.connection;
 
-import javax.net.ssl.SSLHandshakeException;
-
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -11,6 +9,8 @@ import java.net.SocketException;
 import java.net.URL;
 import java.util.Objects;
 import java.util.function.Function;
+
+import javax.net.ssl.SSLHandshakeException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
