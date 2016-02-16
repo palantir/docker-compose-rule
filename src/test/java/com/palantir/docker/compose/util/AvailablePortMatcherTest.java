@@ -21,13 +21,13 @@ public class AvailablePortMatcherTest {
     public ExpectedException exception = ExpectedException.none();
 
     @Test
-    public void testNoUnavailablePortsResultsInTestPass() throws Exception {
+    public void noUnavailablePortsIsGood() throws Exception {
         List<DockerPort> unavailablePorts = emptyList();
         assertThat(unavailablePorts, areAvailable());
     }
 
     @Test
-    public void testUnavailablePortsMessage() throws Exception {
+    public void someUnavailablePortsResultsInUsefulErrorMessages() throws Exception {
         List<DockerPort> unavailablePorts = newArrayList(new DockerPort("0.0.0.0", 1234, 1234),
                                                          new DockerPort("1.2.3.4", 2345, 3456));
         exception.expect(AssertionError.class);

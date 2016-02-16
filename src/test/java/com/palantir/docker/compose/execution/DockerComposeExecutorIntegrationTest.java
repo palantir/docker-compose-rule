@@ -20,7 +20,7 @@ public class DockerComposeExecutorIntegrationTest {
     public TemporaryFolder temporaryFolder = new TemporaryFolder();
 
     @Test
-    public void testEnvironmentVariablesGetPassedToDockerComposeProcess() throws Exception {
+    public void dockerComposeGetsEnvironmentVariablesFromDockerMachineAndPassesItIntoATestContainer() throws Exception {
         DockerMachine dockerMachine = DockerMachine.builder()
                                                    .host("tcp://192.168.99.100:2376")
                                                    .withoutTLS()

@@ -20,7 +20,7 @@ public class DockerMachineBuilderTest {
     public ExpectedException exception = ExpectedException.none();
 
     @Test
-    public void testBuildMachineWithoutHostResultsInError() throws Exception {
+    public void aDockerMachineBuiltWithoutAHostResultsInAnError() throws Exception {
         exception.expect(IllegalStateException.class);
         exception.expectMessage("Missing required environment variables");
         exception.expectMessage("DOCKER_HOST");
@@ -30,7 +30,7 @@ public class DockerMachineBuilderTest {
     }
 
     @Test
-    public void testDockerMachineGeneratesCorrectEnvironmentVariables_noTLS() throws Exception {
+    public void aDockerMachineBuiltWithoutTLSHasNoTLSEnvironmentVariables() throws Exception {
         DockerMachine dockerMachine = DockerMachine.builder()
                                                    .host("tcp://192.168.99.100")
                                                    .withoutTLS()
@@ -44,7 +44,7 @@ public class DockerMachineBuilderTest {
     }
 
     @Test
-    public void testDockerMachineGeneratesCorrectEnvironmentVariables_withTLS() throws Exception {
+    public void aDockerMachineBuiltWithTLSHasTLSEnvironmentVariablesSet() throws Exception {
         DockerMachine dockerMachine = DockerMachine.builder()
                                                    .host("tcp://192.168.99.100")
                                                    .withTLS("/path/to/certs")
@@ -58,7 +58,7 @@ public class DockerMachineBuilderTest {
     }
 
     @Test
-    public void testDockerMachineGeneratesDockerEnvironmentWithAdditionalEnvironment() throws Exception {
+    public void aDockerMachineBuiltWithAdditionalEnvironmentVariables() throws Exception {
         DockerMachine dockerMachine = DockerMachine.builder()
                                                    .host("tcp://192.168.99.100")
                                                    .withoutTLS()
