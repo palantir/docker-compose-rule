@@ -87,6 +87,7 @@ public class DockerComposition extends ExternalResource {
     public void after() {
         try {
             log.debug("Killing docker-compose cluster");
+            dockerComposeProcess.down();
             dockerComposeProcess.kill();
             dockerComposeProcess.rm();
             logCollector.stopCollecting();

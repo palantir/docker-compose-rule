@@ -41,6 +41,10 @@ public class DockerComposeExecutable {
         executeDockerComposeCommand("build");
     }
 
+    public void down() throws IOException, InterruptedException {
+        executeDockerComposeCommand("down");
+    }
+
     public void up() throws IOException, InterruptedException {
         executeDockerComposeCommand("up",  "-d");
     }
