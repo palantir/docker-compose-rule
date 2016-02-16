@@ -19,6 +19,7 @@ import org.junit.rules.ExpectedException;
 
 public class PortsTest {
 
+    public static final String LOCALHOST_IP = "127.0.0.1";
     @Rule
     public ExpectedException exception = ExpectedException.none();
 
@@ -41,24 +42,32 @@ public class PortsTest {
     @Test
     public void singleTcpPortMappingResultsInSinglePort() throws IOException, InterruptedException {
         String psOutput = "0.0.0.0:5432->5432/tcp";
-        Ports ports = Ports.parseFromDockerComposePs(psOutput, "127.0.0.1");
-        Ports expected = new Ports(newArrayList(new DockerPort("127.0.0.1", 5432, 5432)));
+        Ports ports = Ports.parseFromDockerComposePs(psOutput, LOCALHOST_IP);
+        Ports expected = new Ports(newArrayList(new DockerPort(LOCALHOST_IP, 5432, 5432)));
+        assertThat(ports, is(expected));
+    }
+
+    @Test
+    public void singleTcpPortMappingResultsInSinglePortWithIpOtherThanLocalhost() throws IOException, InterruptedException {
+        String psOutput = "10.0.1.2:1234->2345/tcp";
+        Ports ports = Ports.parseFromDockerComposePs(psOutput, LOCALHOST_IP);
+        Ports expected = new Ports(newArrayList(new DockerPort("10.0.1.2", 1234, 2345)));
         assertThat(ports, is(expected));
     }
 
     @Test
     public void twoTcpPortMappingsResultsInTwoPorts() throws IOException, InterruptedException {
         String psOutput = "0.0.0.0:5432->5432/tcp, 0.0.0.0:5433->5432/tcp";
-        Ports ports = Ports.parseFromDockerComposePs(psOutput, "127.0.0.1");
-        Ports expected = new Ports(newArrayList(new DockerPort("127.0.0.1", 5432, 5432),
-                                                new DockerPort("127.0.0.1", 5433, 5432)));
+        Ports ports = Ports.parseFromDockerComposePs(psOutput, LOCALHOST_IP);
+        Ports expected = new Ports(newArrayList(new DockerPort(LOCALHOST_IP, 5432, 5432),
+                                                new DockerPort(LOCALHOST_IP, 5433, 5432)));
         assertThat(ports, is(expected));
     }
 
     @Test
     public void nonMappedExposedPortResultsInNoPorts() throws IOException, InterruptedException {
         String psOutput = "5432/tcp";
-        Ports ports = Ports.parseFromDockerComposePs(psOutput, "127.0.0.1");
+        Ports ports = Ports.parseFromDockerComposePs(psOutput, LOCALHOST_IP);
         Ports expected = new Ports(emptyList());
         assertThat(ports, is(expected));
     }
@@ -70,8 +79,8 @@ public class PortsTest {
                         "-------------------------------------------------------------------------------------------------------------------------------------------------\n" +
                         "magritte_magritte_1   /bin/sh -c /usr/local/bin/ ...   Up      0.0.0.0:7000->7000/tcp, 7001/tcp, 7002/tcp, 7003/tcp, 7004/tcp, 7005/tcp, 7006/tcp \n" +
                         "";
-        Ports ports = Ports.parseFromDockerComposePs(psOutput, "127.0.0.1");
-        Ports expected = new Ports(newArrayList(new DockerPort("127.0.0.1", 7000, 7000)));
+        Ports ports = Ports.parseFromDockerComposePs(psOutput, LOCALHOST_IP);
+        Ports expected = new Ports(newArrayList(new DockerPort(LOCALHOST_IP, 7000, 7000)));
         assertThat(ports, is(expected));
     }
 
