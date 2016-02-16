@@ -40,11 +40,10 @@ public class DockerComposeExecutor {
     public Process execute(String... commands) throws IOException {
         List<String> args = Lists.newArrayList(getDockerComposePath(), "-f", dockerComposeFile.getAbsolutePath());
         Collections.addAll(args, commands);
-        ProcessBuilder processBuilder = new ProcessBuilder();
-        dockerMachine.configDockerComposeProcess(processBuilder);
-        return processBuilder.command(args)
-                                   .redirectErrorStream(true)
-                                   .start();
+        return dockerMachine.configDockerComposeProcess()
+                            .command(args)
+                            .redirectErrorStream(true)
+                            .start();
     }
 
     private static String getDockerComposePath() {

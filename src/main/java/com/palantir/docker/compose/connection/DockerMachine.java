@@ -39,9 +39,12 @@ public class DockerMachine {
         return machineIp;
     }
 
-    public void configDockerComposeProcess(ProcessBuilder process) {
-        process.environment().putAll(dockerEnvironmentVariables);
-        process.environment().putAll(additionalEnvironmentVariables);
+    public ProcessBuilder configDockerComposeProcess() {
+        ProcessBuilder process = new ProcessBuilder();
+        Map<String, String> environment = process.environment();
+        environment.putAll(dockerEnvironmentVariables);
+        environment.putAll(additionalEnvironmentVariables);
+        return process;
     }
 
     @Override

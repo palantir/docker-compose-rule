@@ -73,10 +73,9 @@ public class DockerMachineBuilderTest {
     }
 
     private void validateEnvironmentConfiguredDirectly(DockerMachine dockerMachine, Map<String, String> expectedEnvironment) {
-        ProcessBuilder processBuilder = new ProcessBuilder();
-        dockerMachine.configDockerComposeProcess(processBuilder);
+        ProcessBuilder process = dockerMachine.configDockerComposeProcess();
 
-        Map<String, String> environment = processBuilder.environment();
+        Map<String, String> environment = process.environment();
         expectedEnvironment.forEach((var, val) -> assertThat(environment, hasEntry(var, val)));
     }
 
