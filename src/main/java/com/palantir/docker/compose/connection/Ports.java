@@ -2,7 +2,7 @@ package com.palantir.docker.compose.connection;
 
 import static java.util.stream.Collectors.toList;
 
-import static com.palantir.docker.compose.util.AvailablePortMatcher.areAvailable;
+import static com.palantir.docker.compose.matchers.AvailablePortMatcher.areAvailable;
 
 import java.util.ArrayList;
 import java.util.Collection;

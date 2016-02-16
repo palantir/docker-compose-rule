@@ -1,11 +1,11 @@
-package com.palantir.docker.compose.util;
+package com.palantir.docker.compose.matchers;
 
 import static java.util.Collections.emptyList;
 
 import static org.junit.Assert.assertThat;
 
 import static com.google.common.collect.Lists.newArrayList;
-import static com.palantir.docker.compose.util.AvailablePortMatcher.areAvailable;
+import static com.palantir.docker.compose.matchers.AvailablePortMatcher.areAvailable;
 
 import java.util.List;
 

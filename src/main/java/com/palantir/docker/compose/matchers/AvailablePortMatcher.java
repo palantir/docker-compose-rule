@@ -1,4 +1,4 @@
-package com.palantir.docker.compose.util;
+package com.palantir.docker.compose.matchers;
 
 import java.util.Collection;
 import java.util.List;
