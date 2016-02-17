@@ -3,11 +3,11 @@ package com.palantir.docker.compose.configuration;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 
-import static com.palantir.docker.compose.configuration.DockerEnvironmentVariables.CERT_PATH_PRESENT_BUT_TLS_VERIFY_DISABLED;
-import static com.palantir.docker.compose.configuration.DockerEnvironmentVariables.DOCKER_CERT_PATH;
-import static com.palantir.docker.compose.configuration.DockerEnvironmentVariables.DOCKER_HOST;
-import static com.palantir.docker.compose.configuration.DockerEnvironmentVariables.DOCKER_TLS_VERIFY;
-import static com.palantir.docker.compose.configuration.DockerEnvironmentVariables.TCP_PROTOCOL;
+import static com.palantir.docker.compose.configuration.EnvironmentVariables.CERT_PATH_PRESENT_BUT_TLS_VERIFY_DISABLED;
+import static com.palantir.docker.compose.configuration.EnvironmentVariables.DOCKER_CERT_PATH;
+import static com.palantir.docker.compose.configuration.EnvironmentVariables.DOCKER_HOST;
+import static com.palantir.docker.compose.configuration.EnvironmentVariables.DOCKER_TLS_VERIFY;
+import static com.palantir.docker.compose.configuration.EnvironmentVariables.TCP_PROTOCOL;
 
 import java.util.Map;
 
@@ -16,8 +16,9 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Maps;
 
-public class DockerEnvironmentVariablesTest {
+public class EnvironmentVariablesTest {
 
     public static final String HOST_IP = "192.168.99.100";
     @Rule
@@ -29,7 +30,7 @@ public class DockerEnvironmentVariablesTest {
                 .put(DOCKER_HOST, "host")
                 .build();
 
-        new DockerEnvironmentVariables(env).checkEnvVariables();
+        new EnvironmentVariables(env).augmentGivenEnvironment(Maps.newHashMap()); // assert that this is the same as or contains the same keys as env
     }
 
     @Test
@@ -39,7 +40,7 @@ public class DockerEnvironmentVariablesTest {
                 .put(DOCKER_TLS_VERIFY, "0")
                 .build();
 
-        new DockerEnvironmentVariables(env).checkEnvVariables();
+        new EnvironmentVariables(env);
     }
 
     @Test
@@ -52,7 +53,7 @@ public class DockerEnvironmentVariablesTest {
 
         expectedException.expect(IllegalStateException.class);
         expectedException.expectMessage(CERT_PATH_PRESENT_BUT_TLS_VERIFY_DISABLED);
-        new DockerEnvironmentVariables(env).checkEnvVariables();
+        new EnvironmentVariables(env);
     }
 
     @Test
@@ -66,7 +67,7 @@ public class DockerEnvironmentVariablesTest {
         expectedException.expectMessage("Missing");
         expectedException.expectMessage(DOCKER_CERT_PATH);
 
-        new DockerEnvironmentVariables(env).checkEnvVariables();
+        new EnvironmentVariables(env);
     }
 
     @Test
@@ -78,7 +79,7 @@ public class DockerEnvironmentVariablesTest {
         expectedException.expect(IllegalStateException.class);
         expectedException.expectMessage("Missing");
         expectedException.expectMessage(DOCKER_HOST);
-        new DockerEnvironmentVariables(env).checkEnvVariables();
+        new EnvironmentVariables(env);
     }
 
     @Test
@@ -90,7 +91,7 @@ public class DockerEnvironmentVariablesTest {
                 .put(DOCKER_TLS_VERIFY, "0")
                 .build();
 
-        String hostIp = new DockerEnvironmentVariables(env).getDockerHostIp();
+        String hostIp = new EnvironmentVariables(env).getDockerHostIp();
 
         assertThat(hostIp, is(HOST_IP));
     }
@@ -110,7 +111,7 @@ public class DockerEnvironmentVariablesTest {
                 .put(DOCKER_TLS_VERIFY, "0")
                 .build();
 
-        Map<String, String> dockerEnvironmentVariables = new DockerEnvironmentVariables(env).getDockerEnvironmentVariables();
+        Map<String, String> dockerEnvironmentVariables = new EnvironmentVariables(env).getDockerEnvironmentVariables();
         assertThat(dockerEnvironmentVariables, is(expected));
     }
 }

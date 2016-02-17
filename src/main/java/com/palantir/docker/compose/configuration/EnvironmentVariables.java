@@ -5,6 +5,8 @@ import static java.util.stream.Collectors.toMap;
 
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
+import static com.google.common.collect.Maps.newHashMap;
+
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -16,7 +18,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 
-public class DockerEnvironmentVariables {
+public class EnvironmentVariables {
     private static final int DISABLE_CERT_VERIFICATION = 0;
 
     private static final String LOCALHOST = "127.0.0.1";
@@ -38,28 +40,36 @@ public class DockerEnvironmentVariables {
             DOCKER_HOST,
             DOCKER_CERT_PATH);
 
-    private final Map<String, String> env;
+    private final Map<String, String> dockerEnvironmentVariables;
+    private final Map<String, String> additionalEnvironmentVariables;
 
-    public DockerEnvironmentVariables(Map<String, String> env) {
-        this.env = ImmutableMap.copyOf(env);
-        if (env.getOrDefault(OS_NAME, "").startsWith(MAC_OS)) {
+    public EnvironmentVariables(Map<String, String> dockerEnvironmentVariables,
+                                Map<String, String> additionalEnvironmentVariables) {
+        this.dockerEnvironmentVariables = ImmutableMap.copyOf(dockerEnvironmentVariables);
+        this.additionalEnvironmentVariables = ImmutableMap.copyOf(additionalEnvironmentVariables);
+
+        // TODO(fdesouza): get rid of this if, pass dockerEnvironmentVariables into a validator which returns the same thing if it's valid, throws if not, similarly additionalEnvironmentVariables
+        if (dockerEnvironmentVariables.getOrDefault(OS_NAME, "").startsWith(MAC_OS)) {
             checkEnvVariables();
         }
     }
 
-    public void checkEnvVariables() {
+    public EnvironmentVariables(Map<String, String> dockerEnvironmentVariables) {
+        this(dockerEnvironmentVariables, newHashMap());
+    }
+
+    private void checkEnvVariables() {
          List<String> missingEnvironmentVariables = getMissingEnvVariables();
 
         if (!missingEnvironmentVariables.isEmpty()) {
             throw new IllegalStateException("Missing required environment variables: '" + missingEnvironmentVariables
-                    + "', please run `docker-machine env <machine-name>` and update your IDE run configuration with"
-                    + " the variables listed.");
+                    + "', please run `docker-machine env <machine-name>` and ensure they are set on the DockerComposition.");
         }
     }
 
     private List<String> getMissingEnvVariables() {
         List<String> missingEnvironmentVariables = requiredEnvVariables.stream()
-                .filter(envVariable -> Strings.isNullOrEmpty(env.getOrDefault(envVariable, "")))
+                .filter(envVariable -> Strings.isNullOrEmpty(dockerEnvironmentVariables.getOrDefault(envVariable, "")))
                 .collect(Collectors.toList());
 
         if (certVerificationDisabled()) {
@@ -83,11 +93,12 @@ public class DockerEnvironmentVariables {
     }
 
     private boolean certVerificationDisabled() {
-        return Integer.parseInt(env.getOrDefault(DOCKER_TLS_VERIFY, "0")) == DISABLE_CERT_VERIFICATION;
+        return Integer.parseInt(dockerEnvironmentVariables.getOrDefault(DOCKER_TLS_VERIFY, "0")) == DISABLE_CERT_VERIFICATION;
     }
 
+    // leave as is
     public String getDockerHostIp() {
-        String dockerHostEnvVariable = env.getOrDefault(DOCKER_HOST, "");
+        String dockerHostEnvVariable = dockerEnvironmentVariables.getOrDefault(DOCKER_HOST, "");
 
         if (!Strings.isNullOrEmpty(dockerHostEnvVariable)) {
             // StringUtils.substringBetween unfortunately returns null if any of the separators does not match
@@ -98,11 +109,17 @@ public class DockerEnvironmentVariables {
         return LOCALHOST;
     }
 
+    // deprecated?
     public Map<String, String> getDockerEnvironmentVariables() {
         Map<String, String> filteredVariables = requiredEnvVariables.stream()
-                                                                    .filter(envVariable -> isNotBlank(env.getOrDefault(envVariable, "")))
-                                                                    .collect(toMap(identity(), env::get));
+                                                                    .filter(envVariable -> isNotBlank(dockerEnvironmentVariables.getOrDefault(envVariable, "")))
+                                                                    .collect(toMap(identity(), dockerEnvironmentVariables::get));
         return ImmutableMap.copyOf(filteredVariables);
+    }
+
+    public void augmentGivenEnvironment(Map<String, String> environmentToAugment) {
+        environmentToAugment.putAll(dockerEnvironmentVariables);
+        environmentToAugment.putAll(additionalEnvironmentVariables);
     }
 
 }

@@ -3,8 +3,8 @@ package com.palantir.docker.compose.connection;
 import static org.hamcrest.collection.IsMapContaining.hasEntry;
 import static org.junit.Assert.assertThat;
 
-import static com.palantir.docker.compose.configuration.DockerEnvironmentVariables.DOCKER_CERT_PATH;
-import static com.palantir.docker.compose.configuration.DockerEnvironmentVariables.DOCKER_HOST;
+import static com.palantir.docker.compose.configuration.EnvironmentVariables.DOCKER_CERT_PATH;
+import static com.palantir.docker.compose.configuration.EnvironmentVariables.DOCKER_HOST;
 
 import java.util.Map;
 
@@ -14,7 +14,7 @@ import org.junit.rules.ExpectedException;
 
 import com.google.common.collect.ImmutableMap;
 
-public class DockerMachineBuilderTest {
+public class RemoteBuilderTest {
 
     @Rule
     public ExpectedException exception = ExpectedException.none();

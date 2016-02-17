@@ -2,127 +2,83 @@ package com.palantir.docker.compose.connection;
 
 import static com.google.common.base.MoreObjects.firstNonNull;
 import static com.google.common.collect.Maps.newHashMap;
-import static com.palantir.docker.compose.configuration.DockerEnvironmentVariables.DOCKER_CERT_PATH;
-import static com.palantir.docker.compose.configuration.DockerEnvironmentVariables.DOCKER_HOST;
-import static com.palantir.docker.compose.configuration.DockerEnvironmentVariables.DOCKER_TLS_VERIFY;
+import static com.palantir.docker.compose.configuration.EnvironmentVariables.DOCKER_CERT_PATH;
+import static com.palantir.docker.compose.configuration.EnvironmentVariables.DOCKER_HOST;
+import static com.palantir.docker.compose.configuration.EnvironmentVariables.DOCKER_TLS_VERIFY;
 
 import java.util.Map;
-import java.util.Objects;
 
-import com.google.common.collect.Maps;
-import com.palantir.docker.compose.configuration.DockerEnvironmentVariables;
+import com.palantir.docker.compose.configuration.EnvironmentVariables;
 
 public class DockerMachine {
 
-    private final String machineIp;
-    private final Map<String, String> dockerEnvironmentVariables;
-    private final Map<String, String> additionalEnvironmentVariables;
+    private final EnvironmentVariables environmentVariables;
 
-    public DockerMachine(DockerEnvironmentVariables dockerEnvironment, Map<String, String> additionalEnvironmentVariables) {
-        dockerEnvironment.checkEnvVariables();
-        this.machineIp = dockerEnvironment.getDockerHostIp();
-        this.dockerEnvironmentVariables = dockerEnvironment.getDockerEnvironmentVariables();
-        this.additionalEnvironmentVariables = additionalEnvironmentVariables;
+    // TODO(fdesouza): make this private/protected or whatever
+    public DockerMachine(EnvironmentVariables environmentVariables) {
+        this.environmentVariables = environmentVariables;
     }
 
-    public DockerMachine(DockerEnvironmentVariables dockerEnvironment) {
-        this(dockerEnvironment, newHashMap());
-    }
-
+    // TODO(fdesouza): createLocalMachine() -> returns DockerMachineBuilder
     public static DockerMachine fromEnvironment() {
-        DockerEnvironmentVariables envVars = new DockerEnvironmentVariables(System.getenv());
-        envVars.checkEnvVariables();
-        return new DockerMachine(envVars);
+        EnvironmentVariables environmentVariables = new EnvironmentVariables(System.getenv());
+        return new DockerMachine(environmentVariables);
     }
 
     public String getIp() {
-        return machineIp;
+        return environmentVariables.getDockerHostIp();
     }
 
     public ProcessBuilder configDockerComposeProcess() {
         ProcessBuilder process = new ProcessBuilder();
-        Map<String, String> environment = process.environment();
-        environment.putAll(dockerEnvironmentVariables);
-        environment.putAll(additionalEnvironmentVariables);
+        environmentVariables.augmentGivenEnvironment(process.environment());
         return process;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        DockerMachine that = (DockerMachine) o;
-        return Objects.equals(machineIp, that.machineIp) &&
-                Objects.equals(dockerEnvironmentVariables, that.dockerEnvironmentVariables) &&
-                Objects.equals(additionalEnvironmentVariables, that.additionalEnvironmentVariables);
+    // The localMachine gets things from the environment
+
+    public static RemoteBuilder builder() {
+        return new RemoteBuilder();
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(machineIp, dockerEnvironmentVariables, additionalEnvironmentVariables);
-    }
+    public static class RemoteBuilder {
 
-    @Override
-    public String toString() {
-        return "DockerMachine{" +
-                "machineIp='" + machineIp + '\'' +
-                ", dockerEnvironmentVariables=" + dockerEnvironmentVariables +
-                ", additionalEnvironmentVariables=" + additionalEnvironmentVariables +
-                '}';
-    }
-
-    public static DockerMachineBuilder builder() {
-        return new DockerMachineBuilder();
-    }
-
-    public static class DockerMachineBuilder {
-
-        private Map<String, String> environment = newHashMap();
+        private Map<String, String> dockerEnvironment = newHashMap();
         private Map<String, String> additionalEnvironment = newHashMap();
 
-        public DockerMachineBuilder() {
-            environment.put(DOCKER_TLS_VERIFY, "0");
-        }
+        // This will take in a validator
+        public RemoteBuilder() {}
 
-        public DockerMachineBuilder host(String hostname) {
-            environment.put(DOCKER_HOST, hostname);
+        public RemoteBuilder host(String hostname) {
+            dockerEnvironment.put(DOCKER_HOST, hostname);
             return this;
         }
 
-        public DockerMachineBuilder withTLS(String certPath) {
-            environment.put(DOCKER_TLS_VERIFY, "1");
-            environment.put(DOCKER_CERT_PATH, certPath);
-
+        public RemoteBuilder withTLS(String certPath) {
+            dockerEnvironment.put(DOCKER_TLS_VERIFY, "1");
+            dockerEnvironment.put(DOCKER_CERT_PATH, certPath);
             return this;
         }
 
-        public DockerMachineBuilder withoutTLS() {
-            environment.remove(DOCKER_TLS_VERIFY);
-            environment.remove(DOCKER_CERT_PATH);
+        public RemoteBuilder withoutTLS() {
+            dockerEnvironment.remove(DOCKER_TLS_VERIFY);
+            dockerEnvironment.remove(DOCKER_CERT_PATH);
             return this;
         }
 
-        public DockerMachineBuilder withAdditionalEnvironmentVariable(String key, String value) {
+        public RemoteBuilder withAdditionalEnvironmentVariable(String key, String value) {
             additionalEnvironment.put(key, value);
             return this;
         }
 
-        public DockerMachineBuilder withEnvironment(Map<String, String> newEnvironment) {
+        public RemoteBuilder withEnvironment(Map<String, String> newEnvironment) {
             this.additionalEnvironment = firstNonNull(newEnvironment, newHashMap());
             return this;
         }
 
         public DockerMachine build() {
-            Map<String, String> combinedEnvironment = Maps.newHashMap(additionalEnvironment);
-            combinedEnvironment.putAll(environment);
-
-            DockerEnvironmentVariables dockerEnvironment = new DockerEnvironmentVariables(combinedEnvironment);
-            dockerEnvironment.checkEnvVariables();
-            return new DockerMachine(dockerEnvironment, additionalEnvironment);
+            EnvironmentVariables environment = new EnvironmentVariables(this.dockerEnvironment, additionalEnvironment);
+            return new DockerMachine(environment);
         }
 
     }
