@@ -9,6 +9,7 @@ import static com.palantir.docker.compose.IOMatchers.fileWithName;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.InetAddress;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -41,6 +42,18 @@ public class DockerCompositionIntegrationTest {
     @Test
     public void canAccessExternalPortForInternalPortOfMachine() {
         assertThat(composition.portOnContainerWithInternalMapping("db", 5432).isListeningNow(), is(true));
+    }
+
+    @Test
+    public void dockerMachineNamesAreCorrectlyRedirected() throws IOException, InterruptedException {
+        assertThat(InetAddress.getByName("db").getHostAddress(),
+                is(composition.portOnContainerWithExternalMapping("db", 5433).getIp()));
+    }
+
+    @Test
+    public void nonDockerMachineNamesAreNotRedirected() throws IOException, InterruptedException {
+        assertThat(InetAddress.getByName("localhost").getHostAddress(),
+                is("127.0.0.1"));
     }
 
     @SuppressWarnings("unchecked")
