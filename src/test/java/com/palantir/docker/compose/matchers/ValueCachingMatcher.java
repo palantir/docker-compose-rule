@@ -1,4 +1,4 @@
-package com.palantir.docker.compose;
+package com.palantir.docker.compose.matchers;
 
 import org.hamcrest.Description;
 import org.hamcrest.TypeSafeMatcher;

@@ -1,4 +1,10 @@
-package com.palantir.docker.compose;
+package com.palantir.docker.compose.machine;
+
+import com.palantir.docker.compose.execution.DockerEnvironmentVariables;
+import com.palantir.docker.compose.machine.ports.DockerPort;
+import com.palantir.docker.compose.machine.ports.PortMapping;
+import com.palantir.docker.compose.machine.ports.PortMappings;
+import com.palantir.docker.compose.machine.ports.Ports;
 
 public class DockerMachine {
     private final String ip;

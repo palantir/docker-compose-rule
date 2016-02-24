@@ -1,5 +1,14 @@
 package com.palantir.docker.compose;
 
+import com.palantir.docker.compose.containers.Container;
+import com.palantir.docker.compose.containers.logging.DoNothingLogCollector;
+import com.palantir.docker.compose.containers.logging.FileLogCollector;
+import com.palantir.docker.compose.containers.LogCollector;
+import com.palantir.docker.compose.execution.DockerComposeExecutable;
+import com.palantir.docker.compose.execution.DockerComposeExecutor;
+import com.palantir.docker.compose.execution.DockerEnvironmentVariables;
+import com.palantir.docker.compose.machine.DockerMachine;
+import com.palantir.docker.compose.machine.ports.DockerPort;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
@@ -27,17 +36,28 @@ public class DockerComposition extends ExternalResource {
     private final Duration serviceTimeout;
     private final LogCollector logCollector;
 
-    public DockerComposition(String dockerComposeFile) {
-        this(dockerComposeFile, new DockerEnvironmentVariables(System.getenv()));
+    public static DockerComposition from(String dockerComposeFile) {
+        DockerEnvironmentVariables environment = new DockerEnvironmentVariables(System.getenv());
+        return DockerComposition.withCustomEnvironment(dockerComposeFile, environment);
     }
 
-    public DockerComposition(String dockerComposeFile, DockerEnvironmentVariables env) {
-        this(new DockerComposeExecutable(new DockerComposeExecutor(new File(dockerComposeFile), env)), DockerMachine.from(env));
+    public static DockerComposition withCustomEnvironment(String dockerComposeFile, DockerEnvironmentVariables env) {
         log.debug("Using docker-compose file '{}'", dockerComposeFile);
+
+        DockerComposeExecutable dockerComposeProcess = new DockerComposeExecutable(
+                new DockerComposeExecutor(new File(dockerComposeFile), env));
+
+        return DockerComposition.create(dockerComposeProcess, DockerMachine.from(env));
     }
 
-    public DockerComposition(DockerComposeExecutable dockerComposeProcess, DockerMachine dockerMachine) {
-        this(dockerComposeProcess, dockerMachine, new HashMap<>(), Duration.standardMinutes(2), new DoNothingLogCollector(), new HashMap<>());
+    public static DockerComposition create(DockerComposeExecutable dockerComposeProcess, DockerMachine dockerMachine) {
+        return new DockerComposition(
+                dockerComposeProcess,
+                dockerMachine,
+                new HashMap<>(),
+                Duration.standardMinutes(2),
+                new DoNothingLogCollector(),
+                new HashMap<>());
     }
 
     private DockerComposition(DockerComposeExecutable dockerComposeProcess,

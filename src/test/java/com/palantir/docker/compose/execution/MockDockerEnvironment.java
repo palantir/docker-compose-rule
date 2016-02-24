@@ -1,9 +1,15 @@
-package com.palantir.docker.compose;
+package com.palantir.docker.compose.execution;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import com.palantir.docker.compose.execution.DockerComposeExecutable;
+import com.palantir.docker.compose.machine.DockerMachine;
+import com.palantir.docker.compose.machine.ports.DockerPort;
+import com.palantir.docker.compose.machine.ports.PortMapping;
+import com.palantir.docker.compose.machine.ports.PortMappings;
+import com.palantir.docker.compose.machine.ports.Ports;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
