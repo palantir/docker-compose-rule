@@ -43,10 +43,6 @@ configurations.all {
     )
 }
 
-test {
-    systemProperty "sun.net.spi.nameservice.provider.1", "dns,docker-compose-rule"
-}
-
 dependencies {
     compile "org.slf4j:slf4j-api:$slf4jVersion"
     compile "org.apache.commons:commons-lang3:3.0"
