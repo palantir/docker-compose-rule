@@ -45,7 +45,7 @@ public class DockerCompositionTest {
     private final DockerComposeExecutable dockerComposeExecutable = mock(DockerComposeExecutable.class);
     private final DockerMachine dockerMachine = mock(DockerMachine.class);
     private final MockDockerEnvironment env = new MockDockerEnvironment(dockerComposeExecutable, dockerMachine);
-    private final DockerComposition dockerComposition = new DockerComposition(dockerComposeExecutable, dockerMachine)
+    private final DockerComposition dockerComposition = DockerComposition.create(dockerComposeExecutable, dockerMachine)
                                                                .serviceTimeout(Duration.millis(1000));
 
     @Test

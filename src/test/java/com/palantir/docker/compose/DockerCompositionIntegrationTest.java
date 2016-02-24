@@ -18,8 +18,8 @@ import org.junit.rules.TemporaryFolder;
 public class DockerCompositionIntegrationTest {
 
     @Rule
-    public DockerComposition composition = new DockerComposition("src/test/resources/docker-compose.yaml")
-                                                .waitingForService("db")
+    public DockerComposition composition = DockerComposition.from("src/test/resources/docker-compose.yaml")
+            .waitingForService("db")
                                                 .waitingForService("db2");
 
     @Rule
