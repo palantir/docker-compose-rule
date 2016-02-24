@@ -11,9 +11,14 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import static com.palantir.docker.compose.IOMatchers.fileContainingString;
-import static com.palantir.docker.compose.IOMatchers.fileWithName;
+import static com.palantir.docker.compose.matchers.IOMatchers.fileContainingString;
+import static com.palantir.docker.compose.matchers.IOMatchers.fileWithName;
 
+import com.palantir.docker.compose.containers.ContainerNames;
+import com.palantir.docker.compose.execution.DockerComposeExecutable;
+import com.palantir.docker.compose.execution.MockDockerEnvironment;
+import com.palantir.docker.compose.machine.DockerMachine;
+import com.palantir.docker.compose.machine.ports.DockerPort;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
