@@ -1,5 +1,14 @@
 package com.palantir.docker.compose;
 
+import com.palantir.docker.compose.containers.Container;
+import com.palantir.docker.compose.containers.logging.DoNothingLogCollector;
+import com.palantir.docker.compose.containers.logging.FileLogCollector;
+import com.palantir.docker.compose.containers.LogCollector;
+import com.palantir.docker.compose.execution.DockerComposeExecutable;
+import com.palantir.docker.compose.execution.DockerComposeExecutor;
+import com.palantir.docker.compose.execution.DockerEnvironmentVariables;
+import com.palantir.docker.compose.machine.DockerMachine;
+import com.palantir.docker.compose.machine.ports.DockerPort;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;

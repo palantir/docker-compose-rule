@@ -1,4 +1,4 @@
-package com.palantir.docker.compose;
+package com.palantir.docker.compose.execution;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
@@ -7,6 +7,11 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.palantir.docker.compose.containers.ContainerNames;
+import com.palantir.docker.compose.execution.DockerComposeExecutable;
+import com.palantir.docker.compose.execution.DockerComposeExecutor;
+import com.palantir.docker.compose.machine.ports.PortMapping;
+import com.palantir.docker.compose.machine.ports.PortMappings;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;

@@ -4,8 +4,8 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.arrayContainingInAnyOrder;
 import static org.hamcrest.Matchers.is;
 
-import static com.palantir.docker.compose.IOMatchers.fileContainingString;
-import static com.palantir.docker.compose.IOMatchers.fileWithName;
+import static com.palantir.docker.compose.matchers.IOMatchers.fileContainingString;
+import static com.palantir.docker.compose.matchers.IOMatchers.fileWithName;
 
 import java.io.File;
 import java.io.IOException;

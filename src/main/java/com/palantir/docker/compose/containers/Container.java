@@ -1,8 +1,12 @@
-package com.palantir.docker.compose;
+package com.palantir.docker.compose.containers;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
+import com.palantir.docker.compose.execution.DockerComposeExecutable;
+import com.palantir.docker.compose.machine.DockerMachine;
+import com.palantir.docker.compose.machine.ports.DockerPort;
+import com.palantir.docker.compose.machine.ports.PortMappings;
 import java.io.IOException;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;

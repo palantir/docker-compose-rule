@@ -1,12 +1,12 @@
-package com.palantir.docker.compose;
+package com.palantir.docker.compose.execution;
 
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static java.util.stream.Collectors.joining;
 
 import static org.apache.commons.lang3.Validate.validState;
 
-import static com.palantir.docker.compose.DockerComposeExecutor.COMMAND_TIMEOUT;
-
+import com.palantir.docker.compose.machine.ports.PortMappings;
+import com.palantir.docker.compose.containers.ContainerNames;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Arrays;
@@ -57,7 +57,7 @@ public class DockerComposeExecutable {
         Process executedProcess = executor.execute("logs", "--no-color", container);
         IOUtils.copy(executedProcess.getInputStream(), output);
         try {
-            executedProcess.waitFor(COMMAND_TIMEOUT.getMillis(), MILLISECONDS);
+            executedProcess.waitFor(DockerComposeExecutor.COMMAND_TIMEOUT.getMillis(), MILLISECONDS);
         } catch (InterruptedException e) {
             return false;
         }

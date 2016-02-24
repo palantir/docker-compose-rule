@@ -1,14 +1,11 @@
-/*
- * Copyright 2016 Palantir Technologies, Inc. All rights reserved.
- */
-
-package com.palantir.docker.compose;
+package com.palantir.docker.compose.execution;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
-import static com.palantir.docker.compose.DockerEnvironmentVariables.TCP_PROTOCOL;
+import static com.palantir.docker.compose.execution.DockerEnvironmentVariables.TCP_PROTOCOL;
 
+import com.palantir.docker.compose.execution.DockerEnvironmentVariables;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;

@@ -1,8 +1,10 @@
-package com.palantir.docker.compose;
+package com.palantir.docker.compose.machine.ports;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import com.palantir.docker.compose.machine.ports.DockerPort;
+import com.palantir.docker.compose.machine.ports.Ports;
 import org.joda.time.Duration;
 import org.junit.Before;
 import org.junit.Rule;

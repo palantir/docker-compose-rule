@@ -1,4 +1,4 @@
-package com.palantir.docker.compose;
+package com.palantir.docker.compose.machine.ports;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;

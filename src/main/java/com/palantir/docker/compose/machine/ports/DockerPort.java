@@ -1,4 +1,4 @@
-package com.palantir.docker.compose;
+package com.palantir.docker.compose.machine.ports;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;

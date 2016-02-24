@@ -1,4 +1,7 @@
-package com.palantir.docker.compose;
+package com.palantir.docker.compose.containers.logging;
+
+import com.palantir.docker.compose.containers.LogCollector;
+import com.palantir.docker.compose.execution.DockerComposeExecutable;
 
 public class DoNothingLogCollector implements LogCollector {
 
