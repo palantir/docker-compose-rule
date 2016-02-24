@@ -3,8 +3,8 @@ package com.palantir.docker.compose.connection;
 import static org.hamcrest.collection.IsMapContaining.hasEntry;
 import static org.junit.Assert.assertThat;
 
-import static com.palantir.docker.compose.configuration.EnvironmentVariables.DOCKER_CERT_PATH;
-import static com.palantir.docker.compose.configuration.EnvironmentVariables.DOCKER_HOST;
+import static com.palantir.docker.compose.configuration.EnvironmentVariables2.DOCKER_CERT_PATH;
+import static com.palantir.docker.compose.configuration.EnvironmentVariables2.DOCKER_HOST;
 
 import java.util.Map;
 
@@ -24,14 +24,14 @@ public class RemoteBuilderTest {
         exception.expect(IllegalStateException.class);
         exception.expectMessage("Missing required environment variables");
         exception.expectMessage("DOCKER_HOST");
-        DockerMachine.builder()
+        DockerMachine.remoteMachine()
                      .withoutTLS()
                      .build();
     }
 
     @Test
     public void aDockerMachineBuiltWithoutTLSHasNoTLSEnvironmentVariables() throws Exception {
-        DockerMachine dockerMachine = DockerMachine.builder()
+        DockerMachine dockerMachine = DockerMachine.remoteMachine()
                                                    .host("tcp://192.168.99.100")
                                                    .withoutTLS()
                                                    .build();
@@ -45,7 +45,7 @@ public class RemoteBuilderTest {
 
     @Test
     public void aDockerMachineBuiltWithTLSHasTLSEnvironmentVariablesSet() throws Exception {
-        DockerMachine dockerMachine = DockerMachine.builder()
+        DockerMachine dockerMachine = DockerMachine.remoteMachine()
                                                    .host("tcp://192.168.99.100")
                                                    .withTLS("/path/to/certs")
                                                    .build();
@@ -59,7 +59,7 @@ public class RemoteBuilderTest {
 
     @Test
     public void aDockerMachineBuiltWithAdditionalEnvironmentVariables() throws Exception {
-        DockerMachine dockerMachine = DockerMachine.builder()
+        DockerMachine dockerMachine = DockerMachine.remoteMachine()
                                                    .host("tcp://192.168.99.100")
                                                    .withoutTLS()
                                                    .withAdditionalEnvironmentVariable("SOME_VARIABLE", "SOME_VALUE")

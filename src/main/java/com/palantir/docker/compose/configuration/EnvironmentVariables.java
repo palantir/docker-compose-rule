@@ -43,23 +43,19 @@ public class EnvironmentVariables {
     private final Map<String, String> dockerEnvironmentVariables;
     private final Map<String, String> additionalEnvironmentVariables;
 
-    public EnvironmentVariables(Map<String, String> dockerEnvironmentVariables,
+    public EnvironmentVariables(EnvironmentValidator validator,
+                                Map<String, String> dockerEnvironmentVariables,
                                 Map<String, String> additionalEnvironmentVariables) {
-        this.dockerEnvironmentVariables = ImmutableMap.copyOf(dockerEnvironmentVariables);
+        this.dockerEnvironmentVariables = validator.validate(ImmutableMap.copyOf(dockerEnvironmentVariables));
         this.additionalEnvironmentVariables = ImmutableMap.copyOf(additionalEnvironmentVariables);
-
-        // TODO(fdesouza): get rid of this if, pass dockerEnvironmentVariables into a validator which returns the same thing if it's valid, throws if not, similarly additionalEnvironmentVariables
-        if (dockerEnvironmentVariables.getOrDefault(OS_NAME, "").startsWith(MAC_OS)) {
-            checkEnvVariables();
-        }
     }
 
-    public EnvironmentVariables(Map<String, String> dockerEnvironmentVariables) {
-        this(dockerEnvironmentVariables, newHashMap());
+    public EnvironmentVariables(EnvironmentValidator validator, Map<String, String> dockerEnvironmentVariables) {
+        this(validator, dockerEnvironmentVariables, newHashMap());
     }
 
     private void checkEnvVariables() {
-         List<String> missingEnvironmentVariables = getMissingEnvVariables();
+        List<String> missingEnvironmentVariables = getMissingEnvVariables();
 
         if (!missingEnvironmentVariables.isEmpty()) {
             throw new IllegalStateException("Missing required environment variables: '" + missingEnvironmentVariables

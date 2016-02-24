@@ -3,11 +3,10 @@ package com.palantir.docker.compose.configuration;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 
-import static com.palantir.docker.compose.configuration.EnvironmentVariables.CERT_PATH_PRESENT_BUT_TLS_VERIFY_DISABLED;
-import static com.palantir.docker.compose.configuration.EnvironmentVariables.DOCKER_CERT_PATH;
-import static com.palantir.docker.compose.configuration.EnvironmentVariables.DOCKER_HOST;
-import static com.palantir.docker.compose.configuration.EnvironmentVariables.DOCKER_TLS_VERIFY;
-import static com.palantir.docker.compose.configuration.EnvironmentVariables.TCP_PROTOCOL;
+import static com.palantir.docker.compose.configuration.EnvironmentVariables2.DOCKER_CERT_PATH;
+import static com.palantir.docker.compose.configuration.EnvironmentVariables2.DOCKER_HOST;
+import static com.palantir.docker.compose.configuration.EnvironmentVariables2.DOCKER_TLS_VERIFY;
+import static com.palantir.docker.compose.configuration.EnvironmentVariables2.TCP_PROTOCOL;
 
 import java.util.Map;
 
@@ -40,19 +39,6 @@ public class EnvironmentVariablesTest {
                 .put(DOCKER_TLS_VERIFY, "0")
                 .build();
 
-        new EnvironmentVariables(env);
-    }
-
-    @Test
-    public void environmentWithTLSDisabledButCertPathPresent() throws Exception {
-        Map<String, String> env = ImmutableMap.<String, String>builder()
-                .put(DOCKER_HOST, "host")
-                .put(DOCKER_TLS_VERIFY, "0")
-                .put(DOCKER_CERT_PATH, "/path/to/certs")
-                .build();
-
-        expectedException.expect(IllegalStateException.class);
-        expectedException.expectMessage(CERT_PATH_PRESENT_BUT_TLS_VERIFY_DISABLED);
         new EnvironmentVariables(env);
     }
 

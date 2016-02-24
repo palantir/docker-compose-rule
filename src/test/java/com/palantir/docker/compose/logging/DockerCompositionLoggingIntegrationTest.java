@@ -27,7 +27,7 @@ public class DockerCompositionLoggingIntegrationTest {
 
     @Before
     public void setUp() throws Exception {
-        loggingComposition = DockerComposition.of("src/test/resources/docker-compose.yaml", DockerMachine.fromEnvironment())
+        loggingComposition = DockerComposition.of("src/test/resources/docker-compose.yaml", DockerMachine.localMachine().build())
                                               .waitingForService("db")
                                               .waitingForService("db2")
                                               .saveLogsTo(logFolder.getRoot().getAbsolutePath())
