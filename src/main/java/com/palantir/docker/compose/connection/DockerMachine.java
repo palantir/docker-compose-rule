@@ -3,24 +3,24 @@ package com.palantir.docker.compose.connection;
 import static com.google.common.base.MoreObjects.firstNonNull;
 import static com.google.common.collect.Maps.newHashMap;
 import static com.palantir.docker.compose.configuration.EnvironmentValidator.getLocalEnvironmentValidator;
-import static com.palantir.docker.compose.configuration.EnvironmentVariables2.DOCKER_CERT_PATH;
-import static com.palantir.docker.compose.configuration.EnvironmentVariables2.DOCKER_HOST;
-import static com.palantir.docker.compose.configuration.EnvironmentVariables2.DOCKER_TLS_VERIFY;
+import static com.palantir.docker.compose.configuration.EnvironmentVariables.DOCKER_CERT_PATH;
+import static com.palantir.docker.compose.configuration.EnvironmentVariables.DOCKER_HOST;
+import static com.palantir.docker.compose.configuration.EnvironmentVariables.DOCKER_TLS_VERIFY;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import com.google.common.collect.ImmutableMap;
 import com.palantir.docker.compose.configuration.EnvironmentValidator;
-import com.palantir.docker.compose.configuration.EnvironmentVariables2;
+import com.palantir.docker.compose.configuration.EnvironmentVariables;
 import com.palantir.docker.compose.configuration.HostIpResolver;
 
 public class DockerMachine {
 
-    private final EnvironmentVariables2 environmentVariables;
+    private final EnvironmentVariables environmentVariables;
 
     // TODO(fdesouza): make this private/protected or whatever
-    public DockerMachine(EnvironmentVariables2 environmentVariables) {
+    public DockerMachine(EnvironmentVariables environmentVariables) {
         this.environmentVariables = environmentVariables;
     }
 
@@ -59,10 +59,10 @@ public class DockerMachine {
         }
 
         public DockerMachine build() {
-            EnvironmentVariables2 environment = new EnvironmentVariables2(getLocalEnvironmentValidator(systemEnvironment),
-                                                                          HostIpResolver.getLocalIpResolver(systemEnvironment),
-                                                                          systemEnvironment,
-                                                                          additionalEnvironment);
+            EnvironmentVariables environment = new EnvironmentVariables(getLocalEnvironmentValidator(),
+                                                                        HostIpResolver.getLocalIpResolver(),
+                                                                        systemEnvironment,
+                                                                        additionalEnvironment);
             return new DockerMachine(environment);
         }
     }
@@ -106,10 +106,10 @@ public class DockerMachine {
         }
 
         public DockerMachine build() {
-            EnvironmentVariables2 environment = new EnvironmentVariables2(EnvironmentValidator.REMOTE,
-                                                                         HostIpResolver.REMOTE,
-                                                                         dockerEnvironment,
-                                                                         additionalEnvironment);
+            EnvironmentVariables environment = new EnvironmentVariables(EnvironmentValidator.REMOTE,
+                                                                        HostIpResolver.REMOTE,
+                                                                        dockerEnvironment,
+                                                                        additionalEnvironment);
             return new DockerMachine(environment);
         }
 

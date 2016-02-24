@@ -3,8 +3,8 @@ package com.palantir.docker.compose.connection;
 import static org.hamcrest.collection.IsMapContaining.hasEntry;
 import static org.junit.Assert.assertThat;
 
-import static com.palantir.docker.compose.configuration.EnvironmentVariables2.DOCKER_CERT_PATH;
-import static com.palantir.docker.compose.configuration.EnvironmentVariables2.DOCKER_HOST;
+import static com.palantir.docker.compose.configuration.EnvironmentVariables.DOCKER_CERT_PATH;
+import static com.palantir.docker.compose.configuration.EnvironmentVariables.DOCKER_HOST;
 
 import java.util.Map;
 

@@ -5,7 +5,10 @@ import static java.util.stream.Collectors.joining;
 
 import static org.apache.commons.lang3.Validate.validState;
 
+import static com.palantir.docker.compose.execution.DockerComposeExecutor.COMMAND_TIMEOUT;
+
 import java.io.File;
+
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Arrays;
@@ -74,7 +77,7 @@ public class DockerComposeExecutable {
         Process executedProcess = executor.execute("logs", "--no-color", container);
         IOUtils.copy(executedProcess.getInputStream(), output);
         try {
-            executedProcess.waitFor(DockerComposeExecutor.COMMAND_TIMEOUT.getMillis(), MILLISECONDS);
+            executedProcess.waitFor(COMMAND_TIMEOUT.getMillis(), MILLISECONDS);
         } catch (InterruptedException e) {
             return false;
         }

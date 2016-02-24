@@ -1,11 +1,10 @@
 package com.palantir.docker.compose.configuration;
 
 import static com.google.common.base.Strings.emptyToNull;
-import static com.palantir.docker.compose.configuration.EnvironmentVariables2.TCP_PROTOCOL;
-import static com.palantir.docker.compose.configuration.EnvironmentVariables2.MAC_OS;
-import static com.palantir.docker.compose.configuration.EnvironmentVariables2.OS_NAME;
+import static com.palantir.docker.compose.configuration.EnvironmentVariables.MAC_OS;
+import static com.palantir.docker.compose.configuration.EnvironmentVariables.OS_NAME;
+import static com.palantir.docker.compose.configuration.EnvironmentVariables.TCP_PROTOCOL;
 
-import java.util.Map;
 import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
@@ -31,8 +30,8 @@ public enum HostIpResolver {
 
     abstract String resolveIp(String dockerHost);
 
-    public static HostIpResolver getLocalIpResolver(Map<String, String> systemEnvironment) {
-        if (systemEnvironment.getOrDefault(OS_NAME, "").startsWith(MAC_OS)) {
+    public static HostIpResolver getLocalIpResolver() {
+        if (System.getProperty(OS_NAME, "").startsWith(MAC_OS)) {
             return REMOTE;
         } else {
             return DAEMON;

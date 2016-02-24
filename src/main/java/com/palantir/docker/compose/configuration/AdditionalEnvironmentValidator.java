@@ -1,8 +1,8 @@
 package com.palantir.docker.compose.configuration;
 
-import static com.palantir.docker.compose.configuration.EnvironmentVariables2.DOCKER_CERT_PATH;
-import static com.palantir.docker.compose.configuration.EnvironmentVariables2.DOCKER_HOST;
-import static com.palantir.docker.compose.configuration.EnvironmentVariables2.DOCKER_TLS_VERIFY;
+import static com.palantir.docker.compose.configuration.EnvironmentVariables.DOCKER_CERT_PATH;
+import static com.palantir.docker.compose.configuration.EnvironmentVariables.DOCKER_HOST;
+import static com.palantir.docker.compose.configuration.EnvironmentVariables.DOCKER_TLS_VERIFY;
 
 import java.util.Map;
 import java.util.Set;

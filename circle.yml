@@ -1,0 +1,26 @@
+machine:
+  java:
+    version: oraclejdk8 
+  services:
+    - docker
+
+test:
+  post:
+    - mkdir -p $CIRCLE_TEST_REPORTS/junit/
+    - find . -type f -regex ".*/build/test-results/.*xml" -exec cp {} $CIRCLE_TEST_REPORTS/junit/ \;
+
+general:
+  artifacts:
+    - build/reports
+
+deployment:
+  develop:
+    branch: develop
+    commands:
+     - ./gradlew -i artifactoryPublish
+  release:
+    tag: /[0-9]+(\.[0-9]+)+/
+    commands:
+      - ./gradlew -i bintrayUpload
+
+
