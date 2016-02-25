@@ -28,7 +28,7 @@ public class LocalBuilderTest {
     public ExpectedException exception = ExpectedException.none();
 
     @Test
-    public void localBuilderWithAdditionalEnvironmentSetTwiceOverridesPreviousEnvironment() throws Exception {
+    public void localBuilderWithAdditionalEnvironmentSetTwiceOverridesPreviousEnvironment_daemon() throws Exception {
         Map<String, String> environment1 = ImmutableMap.of("ENV_1", "VAL_1");
         Map<String, String> environment2 = ImmutableMap.of("ENV_2", "VAL_2");
         DockerMachine localMachine = new LocalBuilder(DAEMON, newHashMap()).withEnvironment(environment1)
@@ -39,7 +39,7 @@ public class LocalBuilderTest {
     }
 
     @Test
-    public void localBuilderWithAdditionalEnvironmentSetAndIndividualEnvironmentIsUnionOfTheTwo() throws Exception {
+    public void localBuilderWithAdditionalEnvironmentSetAndIndividualEnvironmentIsUnionOfTheTwo_daemon() throws Exception {
         Map<String, String> environment = ImmutableMap.<String, String>builder()
                                                        .put("ENV_1", "VAL_1")
                                                        .put("ENV_2", "VAL_2")
@@ -47,6 +47,36 @@ public class LocalBuilderTest {
         DockerMachine localMachine = new LocalBuilder(DAEMON, newHashMap()).withEnvironment(environment)
                                                                            .withAdditionalEnvironmentVariable("ENV_3", "VAL_3")
                                                                            .build();
+        assertThat(localMachine, containsEnvironment(environment));
+        assertThat(localMachine, containsEnvironment(ImmutableMap.of("ENV_3", "VAL_3")));
+    }
+
+    @Test
+    public void localBuilderWithAdditionalEnvironmentSetTwiceOverridesPreviousEnvironment_remote() throws Exception {
+        Map<String, String> dockerVariables = ImmutableMap.<String, String>builder()
+                .put(DOCKER_HOST, "tcp://192.168.99.100:2376")
+                .build();
+        Map<String, String> environment1 = ImmutableMap.of("ENV_1", "VAL_1");
+        Map<String, String> environment2 = ImmutableMap.of("ENV_2", "VAL_2");
+        DockerMachine localMachine = new LocalBuilder(REMOTE, dockerVariables).withEnvironment(environment1)
+                                                                           .withEnvironment(environment2)
+                                                                           .build();
+        assertThat(localMachine, not(containsEnvironment(environment1)));
+        assertThat(localMachine, containsEnvironment(environment2));
+    }
+
+    @Test
+    public void localBuilderWithAdditionalEnvironmentSetAndIndividualEnvironmentIsUnionOfTheTwo_remote() throws Exception {
+        Map<String, String> dockerVariables = ImmutableMap.<String, String>builder()
+                .put(DOCKER_HOST, "tcp://192.168.99.100:2376")
+                .build();
+        Map<String, String> environment = ImmutableMap.<String, String>builder()
+                .put("ENV_1", "VAL_1")
+                .put("ENV_2", "VAL_2")
+                .build();
+        DockerMachine localMachine = new LocalBuilder(REMOTE, dockerVariables).withEnvironment(environment)
+                                                                              .withAdditionalEnvironmentVariable("ENV_3", "VAL_3")
+                                                                              .build();
         assertThat(localMachine, containsEnvironment(environment));
         assertThat(localMachine, containsEnvironment(ImmutableMap.of("ENV_3", "VAL_3")));
     }

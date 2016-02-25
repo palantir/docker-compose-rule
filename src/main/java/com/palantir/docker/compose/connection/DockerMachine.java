@@ -59,7 +59,7 @@ public class DockerMachine {
         }
 
         public LocalBuilder withEnvironment(Map<String, String> newEnvironment) {
-            this.additionalEnvironment = ImmutableMap.copyOf(firstNonNull(newEnvironment, newHashMap()));
+            this.additionalEnvironment = newHashMap(firstNonNull(newEnvironment, newHashMap()));
             return this;
         }
 
@@ -118,7 +118,7 @@ public class DockerMachine {
         }
 
         public RemoteBuilder withEnvironment(Map<String, String> newEnvironment) {
-            this.additionalEnvironment = firstNonNull(newEnvironment, newHashMap());
+            this.additionalEnvironment = newHashMap(firstNonNull(newEnvironment, newHashMap()));
             return this;
         }
 
