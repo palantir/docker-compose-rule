@@ -2,6 +2,7 @@ package com.palantir.docker.compose.configuration;
 
 import static java.util.stream.Collectors.joining;
 
+import static com.google.common.base.Preconditions.checkState;
 import static com.palantir.docker.compose.configuration.EnvironmentVariables.DOCKER_CERT_PATH;
 import static com.palantir.docker.compose.configuration.EnvironmentVariables.DOCKER_HOST;
 import static com.palantir.docker.compose.configuration.EnvironmentVariables.DOCKER_TLS_VERIFY;
@@ -22,15 +23,12 @@ public enum DaemonEnvironmentValidator {
                                                          .filter(dockerEnvironment::containsKey)
                                                          .collect(Collectors.toSet());
 
-        if (invalidVariables.isEmpty()) {
-            return dockerEnvironment;
-        }
-
         String errorMessage = invalidVariables.stream()
                                               .collect(joining(", ",
                                                                "These variables were set: ",
                                                                ". They cannot be set when creating a local docker machine"));
-        throw new IllegalStateException(errorMessage);
+        checkState(invalidVariables.isEmpty(), errorMessage);
+        return dockerEnvironment;
     }
 
 }

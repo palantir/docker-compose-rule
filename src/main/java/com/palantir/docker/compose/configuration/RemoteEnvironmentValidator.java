@@ -1,5 +1,7 @@
 package com.palantir.docker.compose.configuration;
 
+import static java.util.stream.Collectors.joining;
+
 import static com.google.common.collect.Sets.newHashSet;
 import static com.palantir.docker.compose.configuration.EnvironmentVariables.DOCKER_CERT_PATH;
 import static com.palantir.docker.compose.configuration.EnvironmentVariables.DOCKER_HOST;
@@ -10,6 +12,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
@@ -25,14 +28,15 @@ public class RemoteEnvironmentValidator {
     }
 
     public Map<String, String> validate() {
-        Collection<String> missingEnvironmentVariables = getMissingEnvVariables();
+        Collection<String> missingVariables = getMissingEnvVariables();
+        String errorMessage = missingVariables.stream()
+                                              .collect(joining(", ",
+                                                               "Missing required environment variables: ",
+                                                               ". Please run `docker-machine env <machine-name>` and "
+                                                                       + "ensure they are set on the DockerComposition."));
 
-        if (missingEnvironmentVariables.isEmpty()) {
-            return dockerEnvironment;
-        }
-
-        throw new IllegalStateException("Missing required environment variables: '" + missingEnvironmentVariables
-                                                + "', please run `docker-machine env <machine-name>` and ensure they are set on the DockerComposition.");
+        Preconditions.checkState(missingVariables.isEmpty(), errorMessage);
+        return dockerEnvironment;
     }
 
     private Collection<String> getMissingEnvVariables() {
