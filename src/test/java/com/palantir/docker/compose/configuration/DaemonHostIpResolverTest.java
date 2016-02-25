@@ -4,12 +4,11 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
 import static com.palantir.docker.compose.configuration.HostIpResolver.DAEMON;
+import static com.palantir.docker.compose.configuration.HostIpResolver.LOCALHOST;
 
 import org.junit.Test;
 
 public class DaemonHostIpResolverTest {
-
-    private static final String LOCALHOST = "127.0.0.1";
 
     @Test
     public void daemonReturnsLocalHost_withNull() throws Exception {
@@ -25,4 +24,5 @@ public class DaemonHostIpResolverTest {
     public void daemonReturnsLocalHost_withArbitrary() throws Exception {
         assertThat(DAEMON.resolveIp("arbitrary"), is(LOCALHOST));
     }
+
 }

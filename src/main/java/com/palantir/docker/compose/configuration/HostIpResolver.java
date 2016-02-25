@@ -12,7 +12,7 @@ public enum HostIpResolver {
     DAEMON {
         @Override
         public String resolveIp(String dockerHost) {
-            return "127.0.0.1";
+            return LOCALHOST;
         }
     },
 
@@ -25,6 +25,8 @@ public enum HostIpResolver {
                            .orElseThrow(() -> new IllegalArgumentException("DOCKER_HOST cannot be blank/null"));
         }
     };
+
+    public static final String LOCALHOST = "127.0.0.1";
 
     public abstract String resolveIp(String dockerHost);
 
