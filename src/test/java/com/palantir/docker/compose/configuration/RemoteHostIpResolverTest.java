@@ -21,25 +21,25 @@ public class RemoteHostIpResolverTest {
     public void resolvingInvalidDockerHostResultsInError_blank() throws Exception {
         exception.expect(IllegalArgumentException.class);
         exception.expectMessage("DOCKER_HOST cannot be blank/null");
-        HostIpResolver.REMOTE.resolveIp("");
+        new RemoteHostIpResolver().resolveIp("");
     }
 
     @Test
     public void resolvingInvalidDockerHostResultsInError_null() throws Exception {
         exception.expect(IllegalArgumentException.class);
         exception.expectMessage("DOCKER_HOST cannot be blank/null");
-        HostIpResolver.REMOTE.resolveIp(null);
+        new RemoteHostIpResolver().resolveIp(null);
     }
 
     @Test
     public void resolveDockerHost_withPort() throws Exception {
         String dockerHost = String.format("%s%s:%d", TCP_PROTOCOL, IP, PORT);
-        assertThat(HostIpResolver.REMOTE.resolveIp(dockerHost), Matchers.is(IP));
+        assertThat(new RemoteHostIpResolver().resolveIp(dockerHost), Matchers.is(IP));
     }
 
     @Test
     public void resolveDockerHost_withoutPort() throws Exception {
         String dockerHost = String.format("%s%s", TCP_PROTOCOL, IP);
-        assertThat(HostIpResolver.REMOTE.resolveIp(dockerHost), Matchers.is(IP));
+        assertThat(new RemoteHostIpResolver().resolveIp(dockerHost), Matchers.is(IP));
     }
 }

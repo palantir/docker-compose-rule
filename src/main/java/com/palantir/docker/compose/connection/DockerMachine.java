@@ -12,9 +12,11 @@ import java.util.Map;
 import com.google.common.collect.ImmutableMap;
 import com.palantir.docker.compose.configuration.AdditionalEnvironmentValidator;
 import com.palantir.docker.compose.configuration.DaemonEnvironmentValidator;
+import com.palantir.docker.compose.configuration.DaemonHostIpResolver;
 import com.palantir.docker.compose.configuration.DockerType;
 import com.palantir.docker.compose.configuration.HostIpResolver;
 import com.palantir.docker.compose.configuration.RemoteEnvironmentValidator;
+import com.palantir.docker.compose.configuration.RemoteHostIpResolver;
 
 public class DockerMachine {
 
@@ -66,15 +68,13 @@ public class DockerMachine {
         }
 
         public DockerMachine build() {
-            String hostIp;
+            HostIpResolver hostIp;
             if (DockerType.DAEMON == dockerType) {
                 DaemonEnvironmentValidator.validate(systemEnvironment);
-                String dockerHost = systemEnvironment.getOrDefault(DOCKER_HOST, "");
-                hostIp = HostIpResolver.DAEMON.resolveIp(dockerHost);
+                hostIp = new DaemonHostIpResolver();
             } else {
                 RemoteEnvironmentValidator.validate(systemEnvironment);
-                String dockerHost = systemEnvironment.getOrDefault(DOCKER_HOST, "");
-                hostIp = HostIpResolver.REMOTE.resolveIp(dockerHost);
+                hostIp = new RemoteHostIpResolver();
             }
             AdditionalEnvironmentValidator.validate(additionalEnvironment);
             Map<String, String> environment = ImmutableMap.<String, String>builder()
@@ -82,7 +82,8 @@ public class DockerMachine {
                     .putAll(additionalEnvironment)
                     .build();
 
-            return new DockerMachine(hostIp, environment);
+            String dockerHost = systemEnvironment.getOrDefault(DOCKER_HOST, "");
+            return new DockerMachine(hostIp.resolveIp(dockerHost), environment);
         }
     }
 
@@ -126,10 +127,10 @@ public class DockerMachine {
 
         public DockerMachine build() {
             RemoteEnvironmentValidator.validate(dockerEnvironment);
-            AdditionalEnvironmentValidator.validate(additionalEnvironment);;
+            AdditionalEnvironmentValidator.validate(additionalEnvironment);
 
             String dockerHost = dockerEnvironment.getOrDefault(DOCKER_HOST, "");
-            String hostIp = HostIpResolver.REMOTE.resolveIp(dockerHost);
+            String hostIp = new RemoteHostIpResolver().resolveIp(dockerHost);
 
             Map<String, String> environment = ImmutableMap.<String, String>builder()
                                                           .putAll(dockerEnvironment)

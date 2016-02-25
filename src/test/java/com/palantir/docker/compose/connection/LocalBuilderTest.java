@@ -5,12 +5,12 @@ import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertThat;
 
 import static com.google.common.collect.Maps.newHashMap;
+import static com.palantir.docker.compose.configuration.DaemonHostIpResolver.LOCALHOST;
 import static com.palantir.docker.compose.configuration.DockerType.DAEMON;
 import static com.palantir.docker.compose.configuration.DockerType.REMOTE;
 import static com.palantir.docker.compose.configuration.EnvironmentVariables.DOCKER_CERT_PATH;
 import static com.palantir.docker.compose.configuration.EnvironmentVariables.DOCKER_HOST;
 import static com.palantir.docker.compose.configuration.EnvironmentVariables.DOCKER_TLS_VERIFY;
-import static com.palantir.docker.compose.configuration.HostIpResolver.LOCALHOST;
 import static com.palantir.docker.compose.matchers.DockerMachineEnvironmentMatcher.containsEnvironment;
 
 import java.util.Map;
