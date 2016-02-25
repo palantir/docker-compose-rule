@@ -26,7 +26,7 @@ public enum DaemonEnvironmentValidator {
         String errorMessage = invalidVariables.stream()
                                               .collect(joining(", ",
                                                                "These variables were set: ",
-                                                               ". They cannot be set when creating a local docker machine"));
+                                                               ". They cannot be set when connecting to a local docker daemon."));
         checkState(invalidVariables.isEmpty(), errorMessage);
         return dockerEnvironment;
     }
