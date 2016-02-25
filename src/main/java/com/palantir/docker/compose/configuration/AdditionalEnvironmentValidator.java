@@ -1,5 +1,6 @@
 package com.palantir.docker.compose.configuration;
 
+import static com.google.common.base.Preconditions.checkState;
 import static com.palantir.docker.compose.configuration.EnvironmentVariables.DOCKER_CERT_PATH;
 import static com.palantir.docker.compose.configuration.EnvironmentVariables.DOCKER_HOST;
 import static com.palantir.docker.compose.configuration.EnvironmentVariables.DOCKER_TLS_VERIFY;
@@ -18,15 +19,11 @@ public enum AdditionalEnvironmentValidator {
 
     public Map<String, String> validate(Map<String, String> additionalEnvironment) {
         Set<String> invalidVariables = Sets.intersection(additionalEnvironment.keySet(), ILLEGAL_VARIABLES);
-
-        if (invalidVariables.isEmpty()) {
-            return additionalEnvironment;
-        }
-
         String errorMessage = invalidVariables.stream()
                                               .collect(Collectors.joining(", ",
                                                                           "The following variables: ",
                                                                           " cannot exist in your additional environment variable block as they will interfere with Docker."));
-        throw new IllegalArgumentException(errorMessage);
+        checkState(invalidVariables.isEmpty(), errorMessage);
+        return additionalEnvironment;
     }
 }
