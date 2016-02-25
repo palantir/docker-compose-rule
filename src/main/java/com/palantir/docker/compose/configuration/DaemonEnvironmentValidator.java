@@ -13,12 +13,13 @@ import java.util.stream.Collectors;
 
 import com.google.common.collect.ImmutableSet;
 
-public enum DaemonEnvironmentValidator {
-    INSTANCE;
+public class DaemonEnvironmentValidator {
 
     private static final Set<String> ILLEGAL_VARIABLES = ImmutableSet.of(DOCKER_TLS_VERIFY, DOCKER_HOST, DOCKER_CERT_PATH);
 
-    public Map<String, String> validate(Map<String, String> dockerEnvironment) {
+    private DaemonEnvironmentValidator() {}
+
+    public static Map<String, String> validate(Map<String, String> dockerEnvironment) {
         Set<String> invalidVariables = ILLEGAL_VARIABLES.stream()
                                                          .filter(dockerEnvironment::containsKey)
                                                          .collect(Collectors.toSet());

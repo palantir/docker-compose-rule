@@ -54,4 +54,8 @@ public class RemoteEnvironmentValidator {
         return dockerEnvironment.containsKey(DOCKER_TLS_VERIFY);
     }
 
+    public static Map<String, String> validate(Map<String, String> dockerEnvironment) {
+        return new RemoteEnvironmentValidator(dockerEnvironment).validate();
+    }
+
 }

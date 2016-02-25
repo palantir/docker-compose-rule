@@ -12,12 +12,13 @@ import java.util.stream.Collectors;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
 
-public enum AdditionalEnvironmentValidator {
-    INSTANCE;
+public class AdditionalEnvironmentValidator {
 
     private static final Set<String> ILLEGAL_VARIABLES = ImmutableSet.of(DOCKER_TLS_VERIFY, DOCKER_HOST, DOCKER_CERT_PATH);
 
-    public Map<String, String> validate(Map<String, String> additionalEnvironment) {
+    private AdditionalEnvironmentValidator() {}
+
+    public static Map<String, String> validate(Map<String, String> additionalEnvironment) {
         Set<String> invalidVariables = Sets.intersection(additionalEnvironment.keySet(), ILLEGAL_VARIABLES);
         String errorMessage = invalidVariables.stream()
                                               .collect(Collectors.joining(", ",

@@ -25,12 +25,11 @@ public class RemoteEnvironmentValidatorTest {
         Map<String, String> variables = ImmutableMap.<String, String>builder()
                                                     .put("SOME_VARIABLE", "SOME_VALUE")
                                                     .build();
-        RemoteEnvironmentValidator validator = new RemoteEnvironmentValidator(variables);
 
         exception.expect(IllegalStateException.class);
         exception.expectMessage("Missing required environment variables: ");
         exception.expectMessage(DOCKER_HOST);
-        validator.validate();
+        RemoteEnvironmentValidator.validate(variables);
     }
 
     @Test
@@ -44,7 +43,7 @@ public class RemoteEnvironmentValidatorTest {
         exception.expect(IllegalStateException.class);
         exception.expectMessage("Missing required environment variables: ");
         exception.expectMessage(DOCKER_CERT_PATH);
-        validator.validate();
+        RemoteEnvironmentValidator.validate(variables);
     }
 
     @Test
@@ -54,8 +53,7 @@ public class RemoteEnvironmentValidatorTest {
                                                     .put("SOME_VARIABLE", "SOME_VALUE")
                                                     .build();
 
-        RemoteEnvironmentValidator validator = new RemoteEnvironmentValidator(variables);
-        assertThat(validator.validate(), is(variables));
+        assertThat(RemoteEnvironmentValidator.validate(variables), is(variables));
     }
 
     @Test
@@ -67,7 +65,6 @@ public class RemoteEnvironmentValidatorTest {
                 .put("SOME_VARIABLE", "SOME_VALUE")
                 .build();
 
-        RemoteEnvironmentValidator validator = new RemoteEnvironmentValidator(variables);
-        assertThat(validator.validate(), is(variables));
+        assertThat(RemoteEnvironmentValidator.validate(variables), is(variables));
     }
 }

@@ -21,11 +21,11 @@ public class AdditionalEnvironmentValidatorTest {
         Map<String, String> variables = ImmutableMap.<String, String>builder().put("DOCKER_HOST", "tcp://some-host:2376")
                                                                               .put("SOME_VARIABLE" , "Some Value")
                                                                               .build();
-        exception.expect(IllegalArgumentException.class);
+        exception.expect(IllegalStateException.class);
         exception.expectMessage("The following variables");
         exception.expectMessage("DOCKER_HOST");
         exception.expectMessage("cannot exist in your additional environment");
-        AdditionalEnvironmentValidator.INSTANCE.validate(variables);
+        AdditionalEnvironmentValidator.validate(variables);
     }
 
     @Test
@@ -33,6 +33,6 @@ public class AdditionalEnvironmentValidatorTest {
         Map<String, String> variables = ImmutableMap.<String, String>builder().put("SOME_VARIABLE" , "Some Value")
                                                                               .build();
 
-        assertThat(AdditionalEnvironmentValidator.INSTANCE.validate(variables), is(variables));
+        assertThat(AdditionalEnvironmentValidator.validate(variables), is(variables));
     }
 }
