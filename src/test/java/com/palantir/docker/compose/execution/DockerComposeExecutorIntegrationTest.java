@@ -21,9 +21,7 @@ public class DockerComposeExecutorIntegrationTest {
 
     @Test
     public void dockerComposeGetsEnvironmentVariablesFromDockerMachineAndPassesItIntoATestContainer() throws Exception {
-        DockerMachine dockerMachine = DockerMachine.remoteMachine()
-                                                   .host("tcp://192.168.99.100:2376")
-                                                   .withoutTLS()
+        DockerMachine dockerMachine = DockerMachine.localMachine()
                                                    .withAdditionalEnvironmentVariable("SOME_VARIABLE", "SOME_VALUE")
                                                    .build();
 

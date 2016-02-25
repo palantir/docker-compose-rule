@@ -14,8 +14,10 @@ import com.palantir.docker.compose.connection.DockerMachine;
 
 public class DockerCompositionIntegrationTest {
 
+    private final DockerMachine localMachine = DockerMachine.localMachine()
+                                                            .build();
     @Rule
-    public DockerComposition composition = DockerComposition.of("src/test/resources/docker-compose.yaml", DockerMachine.localMachine().build())
+    public DockerComposition composition = DockerComposition.of("src/test/resources/docker-compose.yaml", localMachine)
                                                             .waitingForService("db")
                                                             .waitingForService("db2")
                                                             .build();
