@@ -48,7 +48,7 @@ public class DockerMachine {
         private final Map<String, String> systemEnvironment;
         private Map<String, String> additionalEnvironment = new HashMap<>();
 
-        public LocalBuilder(DockerType dockerType, Map<String, String> systemEnvironment) {
+        LocalBuilder(DockerType dockerType, Map<String, String> systemEnvironment) {
             this.dockerType = dockerType;
             this.systemEnvironment = ImmutableMap.copyOf(systemEnvironment);
         }
