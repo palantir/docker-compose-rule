@@ -2,7 +2,6 @@ package com.palantir.docker.compose.connection;
 
 import static com.google.common.base.MoreObjects.firstNonNull;
 import static com.google.common.collect.Maps.newHashMap;
-import static com.palantir.docker.compose.configuration.EnvironmentValidator.getLocalEnvironmentValidator;
 import static com.palantir.docker.compose.configuration.EnvironmentVariables.DOCKER_CERT_PATH;
 import static com.palantir.docker.compose.configuration.EnvironmentVariables.DOCKER_HOST;
 import static com.palantir.docker.compose.configuration.EnvironmentVariables.DOCKER_TLS_VERIFY;
@@ -11,40 +10,46 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.google.common.collect.ImmutableMap;
+import com.palantir.docker.compose.configuration.DockerType;
 import com.palantir.docker.compose.configuration.EnvironmentValidator;
-import com.palantir.docker.compose.configuration.EnvironmentVariables;
 import com.palantir.docker.compose.configuration.HostIpResolver;
 
 public class DockerMachine {
 
-    private final EnvironmentVariables environmentVariables;
+    private final String hostIp;
+    private final Map<String, String> environment;
 
-    // TODO(fdesouza): make this private/protected or whatever
-    public DockerMachine(EnvironmentVariables environmentVariables) {
-        this.environmentVariables = environmentVariables;
+    public DockerMachine(String hostIp, Map<String, String> environment) {
+        this.hostIp = hostIp;
+        this.environment = environment;
     }
 
     public String getIp() {
-        return environmentVariables.getHostIp();
+        return hostIp;
     }
 
     public ProcessBuilder configDockerComposeProcess() {
         ProcessBuilder process = new ProcessBuilder();
-        environmentVariables.augmentGivenEnvironment(process.environment());
+        augmentGivenEnvironment(process.environment());
         return process;
     }
 
-    // The localMachine gets things from the environment
+    private void augmentGivenEnvironment(Map<String, String> environmentToAugment) {
+        environmentToAugment.putAll(environment);
+    }
+
     public static LocalBuilder localMachine() {
-        return new LocalBuilder(System.getenv());
+        return new LocalBuilder(DockerType.getLocalDockerType(), System.getenv());
     }
 
     public static class LocalBuilder {
 
+        private final DockerType dockerType;
         private final Map<String, String> systemEnvironment;
         private Map<String, String> additionalEnvironment = new HashMap<>();
 
-        public LocalBuilder(Map<String, String> systemEnvironment) {
+        public LocalBuilder(DockerType dockerType, Map<String, String> systemEnvironment) {
+            this.dockerType = dockerType;
             this.systemEnvironment = ImmutableMap.copyOf(systemEnvironment);
         }
 
@@ -59,11 +64,23 @@ public class DockerMachine {
         }
 
         public DockerMachine build() {
-            EnvironmentVariables environment = new EnvironmentVariables(getLocalEnvironmentValidator(),
-                                                                        HostIpResolver.getLocalIpResolver(),
-                                                                        systemEnvironment,
-                                                                        additionalEnvironment);
-            return new DockerMachine(environment);
+            String hostIp;
+            if (DockerType.DAEMON == dockerType) {
+                EnvironmentValidator.DAEMON.validate(systemEnvironment);
+                String dockerHost = systemEnvironment.getOrDefault(DOCKER_HOST, "");
+                hostIp = HostIpResolver.DAEMON.resolveIp(dockerHost);
+            } else {
+                EnvironmentValidator.REMOTE.validate(systemEnvironment);
+                String dockerHost = systemEnvironment.getOrDefault(DOCKER_HOST, "");
+                hostIp = HostIpResolver.REMOTE.resolveIp(dockerHost);
+            }
+            EnvironmentValidator.ADDITIONAL.validate(additionalEnvironment);
+            Map<String, String> environment = ImmutableMap.<String, String>builder()
+                    .putAll(systemEnvironment)
+                    .putAll(additionalEnvironment)
+                    .build();
+
+            return new DockerMachine(hostIp, environment);
         }
     }
 
@@ -106,11 +123,17 @@ public class DockerMachine {
         }
 
         public DockerMachine build() {
-            EnvironmentVariables environment = new EnvironmentVariables(EnvironmentValidator.REMOTE,
-                                                                        HostIpResolver.REMOTE,
-                                                                        dockerEnvironment,
-                                                                        additionalEnvironment);
-            return new DockerMachine(environment);
+            EnvironmentValidator.REMOTE.validate(dockerEnvironment);
+            EnvironmentValidator.ADDITIONAL.validate(additionalEnvironment);
+
+            String dockerHost = dockerEnvironment.getOrDefault(DOCKER_HOST, "");
+            String hostIp = HostIpResolver.REMOTE.resolveIp(dockerHost);
+
+            Map<String, String> environment = ImmutableMap.<String, String>builder()
+                                                          .putAll(dockerEnvironment)
+                                                          .putAll(additionalEnvironment)
+                                                          .build();
+            return new DockerMachine(hostIp, environment);
         }
 
     }
