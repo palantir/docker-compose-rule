@@ -1,8 +1,12 @@
 package com.palantir.docker.compose.connection;
 
-import static java.util.stream.Collectors.toList;
-
-import static com.palantir.docker.compose.matchers.AvailablePortMatcher.areAvailable;
+import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
+import com.jayway.awaitility.Awaitility;
+import com.jayway.awaitility.core.ConditionTimeoutException;
+import org.joda.time.Duration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -14,14 +18,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
-import org.joda.time.Duration;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.google.common.base.Preconditions;
-import com.google.common.base.Strings;
-import com.jayway.awaitility.Awaitility;
-import com.jayway.awaitility.core.ConditionTimeoutException;
+import static com.palantir.docker.compose.matchers.AvailablePortMatcher.areAvailable;
+import static java.util.stream.Collectors.toList;
 
 public class Ports {
 

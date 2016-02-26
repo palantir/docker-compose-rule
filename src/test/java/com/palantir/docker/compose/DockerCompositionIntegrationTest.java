@@ -1,16 +1,15 @@
 package com.palantir.docker.compose;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.Is.is;
-
-import java.io.IOException;
-
+import com.palantir.docker.compose.connection.DockerMachine;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
 
-import com.palantir.docker.compose.connection.DockerMachine;
+import java.io.IOException;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.Is.is;
 
 public class DockerCompositionIntegrationTest {
 

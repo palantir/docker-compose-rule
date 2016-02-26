@@ -1,16 +1,16 @@
 package com.palantir.docker.compose.configuration;
 
-import static com.google.common.base.Preconditions.checkState;
-import static com.palantir.docker.compose.configuration.EnvironmentVariables.DOCKER_CERT_PATH;
-import static com.palantir.docker.compose.configuration.EnvironmentVariables.DOCKER_HOST;
-import static com.palantir.docker.compose.configuration.EnvironmentVariables.DOCKER_TLS_VERIFY;
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Sets;
 
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Sets;
+import static com.google.common.base.Preconditions.checkState;
+import static com.palantir.docker.compose.configuration.EnvironmentVariables.DOCKER_CERT_PATH;
+import static com.palantir.docker.compose.configuration.EnvironmentVariables.DOCKER_HOST;
+import static com.palantir.docker.compose.configuration.EnvironmentVariables.DOCKER_TLS_VERIFY;
 
 public class AdditionalEnvironmentValidator {
 

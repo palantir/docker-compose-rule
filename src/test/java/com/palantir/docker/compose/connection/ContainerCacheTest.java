@@ -1,15 +1,14 @@
 package com.palantir.docker.compose.connection;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.sameInstance;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
+import com.palantir.docker.compose.execution.DockerComposeExecutable;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.palantir.docker.compose.execution.DockerComposeExecutable;
+import static org.hamcrest.Matchers.sameInstance;
+import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class ContainerCacheTest {
 

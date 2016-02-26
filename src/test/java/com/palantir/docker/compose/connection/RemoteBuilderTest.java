@@ -1,18 +1,16 @@
 package com.palantir.docker.compose.connection;
 
-import static org.hamcrest.collection.IsMapContaining.hasEntry;
-import static org.junit.Assert.assertThat;
-
-import static com.palantir.docker.compose.configuration.EnvironmentVariables.DOCKER_CERT_PATH;
-import static com.palantir.docker.compose.configuration.EnvironmentVariables.DOCKER_HOST;
-
-import java.util.Map;
-
+import com.google.common.collect.ImmutableMap;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import com.google.common.collect.ImmutableMap;
+import java.util.Map;
+
+import static com.palantir.docker.compose.configuration.EnvironmentVariables.DOCKER_CERT_PATH;
+import static com.palantir.docker.compose.configuration.EnvironmentVariables.DOCKER_HOST;
+import static org.hamcrest.collection.IsMapContaining.hasEntry;
+import static org.junit.Assert.assertThat;
 
 public class RemoteBuilderTest {
 

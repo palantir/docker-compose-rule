@@ -1,12 +1,11 @@
 package com.palantir.docker.compose.connection;
 
+import org.junit.Test;
+
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
-
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
-
-import org.junit.Test;
+import static org.junit.Assert.assertThat;
 
 public class ContainerNamesTest {
 
