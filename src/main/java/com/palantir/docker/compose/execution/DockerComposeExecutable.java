@@ -1,30 +1,25 @@
 package com.palantir.docker.compose.execution;
 
+import static com.palantir.docker.compose.execution.DockerComposeExecutor.COMMAND_TIMEOUT;
+import static java.lang.System.*;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static java.util.stream.Collectors.joining;
-
 import static org.apache.commons.lang3.Validate.validState;
-
-import static com.palantir.docker.compose.execution.DockerComposeExecutor.COMMAND_TIMEOUT;
-
-import java.io.File;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.util.Arrays;
-import java.util.stream.Collectors;
-
-import org.apache.commons.io.IOUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Strings;
 import com.palantir.docker.compose.connection.Container;
 import com.palantir.docker.compose.connection.ContainerNames;
 import com.palantir.docker.compose.connection.DockerMachine;
 import com.palantir.docker.compose.connection.Ports;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.util.Arrays;
+import org.apache.commons.io.IOUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 public class DockerComposeExecutable {
@@ -102,7 +97,7 @@ public class DockerComposeExecutable {
             output = processOutputReader
                 .lines()
                 .peek(log::debug)
-                .collect(Collectors.joining(System.lineSeparator()));
+                .collect(joining(lineSeparator()));
         }
 
         validState(executedProcess.exitValue() == 0, constructNonZeroExitErrorMessage(executedProcess.exitValue(), commands));

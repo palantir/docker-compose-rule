@@ -72,7 +72,7 @@ public class DockerComposeExecutableTest {
     }
 
     @Test
-    public void whenTheExitValueIsOneAnISEIsThrown() throws IOException, InterruptedException {
+    public void whenKillExitsWithANonZeroExitCodeAnExceptionIsThrown() throws IOException, InterruptedException {
         when(executedProcess.exitValue()).thenReturn(1);
         exception.expect(IllegalStateException.class);
         exception.expectMessage("'docker-compose kill' returned exit code 1");
