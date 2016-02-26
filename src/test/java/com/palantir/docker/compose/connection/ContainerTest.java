@@ -1,21 +1,20 @@
 package com.palantir.docker.compose.connection;
 
+import com.palantir.docker.compose.configuration.MockDockerEnvironment;
+import com.palantir.docker.compose.execution.DockerComposeExecutable;
+import org.joda.time.Duration;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.ExpectedException;
+
+import java.io.IOException;
+
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-
-import java.io.IOException;
-
-import org.joda.time.Duration;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
-
-import com.palantir.docker.compose.configuration.MockDockerEnvironment;
-import com.palantir.docker.compose.execution.DockerComposeExecutable;
 
 public class ContainerTest {
 

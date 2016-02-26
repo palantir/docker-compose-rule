@@ -1,5 +1,28 @@
 package com.palantir.docker.compose;
 
+import com.palantir.docker.compose.DockerComposition.DockerCompositionBuilder;
+import com.palantir.docker.compose.configuration.MockDockerEnvironment;
+import com.palantir.docker.compose.connection.Container;
+import com.palantir.docker.compose.connection.ContainerNames;
+import com.palantir.docker.compose.connection.DockerPort;
+import com.palantir.docker.compose.execution.DockerComposeExecutable;
+import org.apache.commons.io.IOUtils;
+import org.joda.time.Duration;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.ExpectedException;
+import org.junit.rules.TemporaryFolder;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Function;
+
+import static com.palantir.docker.compose.matchers.IOMatchers.fileContainingString;
+import static com.palantir.docker.compose.matchers.IOMatchers.fileWithName;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.arrayContaining;
 import static org.hamcrest.core.Is.is;
@@ -10,31 +33,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-
-import static com.palantir.docker.compose.matchers.IOMatchers.fileContainingString;
-import static com.palantir.docker.compose.matchers.IOMatchers.fileWithName;
-
-import java.io.File;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.Function;
-
-import org.apache.commons.io.IOUtils;
-import org.joda.time.Duration;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
-import org.junit.rules.TemporaryFolder;
-
-import com.palantir.docker.compose.DockerComposition.DockerCompositionBuilder;
-import com.palantir.docker.compose.configuration.MockDockerEnvironment;
-import com.palantir.docker.compose.connection.Container;
-import com.palantir.docker.compose.connection.ContainerNames;
-import com.palantir.docker.compose.connection.DockerPort;
-import com.palantir.docker.compose.execution.DockerComposeExecutable;
 
 public class DockerCompositionTest {
 

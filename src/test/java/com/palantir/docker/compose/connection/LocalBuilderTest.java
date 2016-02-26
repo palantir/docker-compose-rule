@@ -1,8 +1,12 @@
 package com.palantir.docker.compose.connection;
 
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
-import static org.junit.Assert.assertThat;
+import com.google.common.collect.ImmutableMap;
+import com.palantir.docker.compose.connection.DockerMachine.LocalBuilder;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.ExpectedException;
+
+import java.util.Map;
 
 import static com.google.common.collect.Maps.newHashMap;
 import static com.palantir.docker.compose.configuration.DaemonHostIpResolver.LOCALHOST;
@@ -12,15 +16,9 @@ import static com.palantir.docker.compose.configuration.EnvironmentVariables.DOC
 import static com.palantir.docker.compose.configuration.EnvironmentVariables.DOCKER_HOST;
 import static com.palantir.docker.compose.configuration.EnvironmentVariables.DOCKER_TLS_VERIFY;
 import static com.palantir.docker.compose.matchers.DockerMachineEnvironmentMatcher.containsEnvironment;
-
-import java.util.Map;
-
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
-
-import com.google.common.collect.ImmutableMap;
-import com.palantir.docker.compose.connection.DockerMachine.LocalBuilder;
+import static org.hamcrest.Matchers.not;
+import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertThat;
 
 public class LocalBuilderTest {
 

@@ -1,21 +1,19 @@
 package com.palantir.docker.compose.connection;
 
-import static java.util.Collections.emptyList;
-
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.Is.is;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
-import static com.google.common.collect.Lists.newArrayList;
-
-import java.io.IOException;
-
 import org.joda.time.Duration;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+
+import java.io.IOException;
+
+import static com.google.common.collect.Lists.newArrayList;
+import static java.util.Collections.emptyList;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.Is.is;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class PortsTest {
 
