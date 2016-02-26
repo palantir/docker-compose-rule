@@ -1,13 +1,12 @@
 package com.palantir.docker.compose.configuration;
 
-import static org.junit.Assert.assertThat;
-
-import static com.palantir.docker.compose.configuration.EnvironmentVariables.TCP_PROTOCOL;
-
 import org.hamcrest.Matchers;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+
+import static com.palantir.docker.compose.configuration.EnvironmentVariables.TCP_PROTOCOL;
+import static org.junit.Assert.assertThat;
 
 public class RemoteHostIpResolverTest {
 

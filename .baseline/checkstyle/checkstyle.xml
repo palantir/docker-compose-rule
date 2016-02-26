@@ -33,9 +33,11 @@
             <property name="classes" value="java.lang.Byte"/>
         </module>
         <module name="ImportOrder">
-            <property name="groups" value="java,javax,org,com"/>
-            <property name="option" value="top"/>
+            <property name="groups" value="*,javax,java"/>
             <property name="ordered" value="true"/>
+            <property name="separated" value="false"/>
+            <property name="option" value="bottom"/>
+            <property name="sortStaticImportsAlphabetically" value="true"/>
         </module>
         <module name="InnerAssignment"/>
         <module name="MethodLength">

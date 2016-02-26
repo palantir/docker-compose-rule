@@ -1,9 +1,9 @@
 package com.palantir.docker.compose.connection;
 
+import com.palantir.docker.compose.execution.DockerComposeExecutable;
+
 import java.util.HashMap;
 import java.util.Map;
-
-import com.palantir.docker.compose.execution.DockerComposeExecutable;
 
 public class ContainerCache {
 

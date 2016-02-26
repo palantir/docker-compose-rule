@@ -1,18 +1,18 @@
 package com.palantir.docker.compose.configuration;
 
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.when;
+import com.palantir.docker.compose.connection.DockerPort;
+import com.palantir.docker.compose.connection.Ports;
+import com.palantir.docker.compose.execution.DockerComposeExecutable;
 
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.palantir.docker.compose.connection.DockerPort;
-import com.palantir.docker.compose.connection.Ports;
-import com.palantir.docker.compose.execution.DockerComposeExecutable;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.when;
 
 public class MockDockerEnvironment {
 

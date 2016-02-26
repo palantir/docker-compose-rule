@@ -1,14 +1,5 @@
 package com.palantir.docker.compose.connection;
 
-import static com.google.common.base.MoreObjects.firstNonNull;
-import static com.google.common.collect.Maps.newHashMap;
-import static com.palantir.docker.compose.configuration.EnvironmentVariables.DOCKER_CERT_PATH;
-import static com.palantir.docker.compose.configuration.EnvironmentVariables.DOCKER_HOST;
-import static com.palantir.docker.compose.configuration.EnvironmentVariables.DOCKER_TLS_VERIFY;
-
-import java.util.HashMap;
-import java.util.Map;
-
 import com.google.common.collect.ImmutableMap;
 import com.palantir.docker.compose.configuration.AdditionalEnvironmentValidator;
 import com.palantir.docker.compose.configuration.DaemonEnvironmentValidator;
@@ -17,6 +8,15 @@ import com.palantir.docker.compose.configuration.DockerType;
 import com.palantir.docker.compose.configuration.HostIpResolver;
 import com.palantir.docker.compose.configuration.RemoteEnvironmentValidator;
 import com.palantir.docker.compose.configuration.RemoteHostIpResolver;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import static com.google.common.base.MoreObjects.firstNonNull;
+import static com.google.common.collect.Maps.newHashMap;
+import static com.palantir.docker.compose.configuration.EnvironmentVariables.DOCKER_CERT_PATH;
+import static com.palantir.docker.compose.configuration.EnvironmentVariables.DOCKER_HOST;
+import static com.palantir.docker.compose.configuration.EnvironmentVariables.DOCKER_TLS_VERIFY;
 
 public class DockerMachine {
 

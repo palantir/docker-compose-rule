@@ -1,20 +1,18 @@
 package com.palantir.docker.compose.execution;
 
-import static java.util.Arrays.asList;
-import static java.util.concurrent.TimeUnit.MILLISECONDS;
-
-import static org.joda.time.Duration.standardMinutes;
+import com.google.common.collect.Lists;
+import com.palantir.docker.compose.connection.DockerMachine;
+import org.apache.commons.lang3.StringUtils;
+import org.joda.time.Duration;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.commons.lang3.StringUtils;
-import org.joda.time.Duration;
-
-import com.google.common.collect.Lists;
-import com.palantir.docker.compose.connection.DockerMachine;
+import static java.util.Arrays.asList;
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
+import static org.joda.time.Duration.standardMinutes;
 
 
 public class DockerComposeExecutor {
