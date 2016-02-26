@@ -9,9 +9,12 @@ import static com.palantir.docker.compose.execution.DockerComposeExecutor.COMMAN
 
 import java.io.File;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.util.Arrays;
+import java.util.stream.Collectors;
 
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
@@ -92,8 +95,16 @@ public class DockerComposeExecutable {
 
     private String executeDockerComposeCommand(String... commands) throws IOException, InterruptedException {
         Process executedProcess = executor.executeAndWait(commands);
-        String output = IOUtils.toString(executedProcess.getInputStream());
-        log.debug(output);
+        String output;
+
+        try (BufferedReader processOutputReader =
+                new BufferedReader(new InputStreamReader(executedProcess.getInputStream(), "UTF-8"))) {
+            output = processOutputReader
+                .lines()
+                .peek(log::debug)
+                .collect(Collectors.joining(System.lineSeparator()));
+        }
+
         validState(executedProcess.exitValue() == 0, constructNonZeroExitErrorMessage(executedProcess.exitValue(), commands));
         return output;
     }
