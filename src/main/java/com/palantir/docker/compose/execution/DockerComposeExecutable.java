@@ -43,7 +43,15 @@ public class DockerComposeExecutable {
     }
 
     public void down() throws IOException, InterruptedException {
-        executeDockerComposeCommand("down");
+        executeDockerComposeCommand(swallowingDownCommandDoesNotExist(), "down");
+    }
+
+    private ErrorHandler swallowingDownCommandDoesNotExist() {
+        return (exitCode, output, commands) -> {
+            log.debug("It looks like `docker-compose down` didn't work.");
+            log.debug("This probably means your version of docker-compose doesn't support the `down` command");
+            log.debug("Updating to version 1.6+ of docker-compose is likely to fix that issue.");
+        };
     }
 
     public void up() throws IOException, InterruptedException {
@@ -88,7 +96,18 @@ public class DockerComposeExecutable {
         return Ports.parseFromDockerComposePs(psOutput, dockerMachine.getIp());
     }
 
+
     private String executeDockerComposeCommand(String... commands) throws IOException, InterruptedException {
+        return executeDockerComposeCommand(throwingOnError(), commands);
+    }
+
+    private ErrorHandler throwingOnError() {
+        return (exitCode, output, commands) -> {
+            throw new IllegalStateException(constructNonZeroExitErrorMessage(exitCode, commands));
+        };
+    }
+
+    private String executeDockerComposeCommand(ErrorHandler errorHandler, String... commands) throws IOException, InterruptedException {
         Process executedProcess = executor.executeAndWait(commands);
         String output;
 
@@ -100,7 +119,10 @@ public class DockerComposeExecutable {
                 .collect(joining(lineSeparator()));
         }
 
-        validState(executedProcess.exitValue() == 0, constructNonZeroExitErrorMessage(executedProcess.exitValue(), commands));
+        if(executedProcess.exitValue() != 0) {
+            errorHandler.handle(executedProcess.exitValue(), output, commands);
+        }
+
         return output;
     }
 

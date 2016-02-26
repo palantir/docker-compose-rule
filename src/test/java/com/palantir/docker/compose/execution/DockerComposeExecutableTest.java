@@ -80,6 +80,12 @@ public class DockerComposeExecutableTest {
     }
 
     @Test
+    public void whenDownFailsBecauseTheCommandDoesNotExistAnExceptionIsNotThrown() throws IOException, InterruptedException {
+        when(executedProcess.exitValue()).thenReturn(1);
+        compose.down();
+    }
+
+    @Test
     public void callingPortsParsesThePsOutput() throws IOException, InterruptedException {
         Ports ports = compose.ports("db");
         verify(executor).executeAndWait("ps", "db");
