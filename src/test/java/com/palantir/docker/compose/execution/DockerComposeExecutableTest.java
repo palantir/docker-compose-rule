@@ -82,6 +82,17 @@ public class DockerComposeExecutableTest {
     @Test
     public void whenDownFailsBecauseTheCommandDoesNotExistAnExceptionIsNotThrown() throws IOException, InterruptedException {
         when(executedProcess.exitValue()).thenReturn(1);
+        when(executedProcess.getInputStream()).thenReturn(byteArrayInputStreamOf("No such command: down"));
+        compose.down();
+    }
+
+    @Test
+    public void whenDownFailsBecauseForAReasonOtherThanTheCommandNotBeingPresentThenAnExceptionIsThrown() throws IOException, InterruptedException {
+        when(executedProcess.exitValue()).thenReturn(1);
+        when(executedProcess.getInputStream()).thenReturn(byteArrayInputStreamOf(""));
+
+        exception.expect(IllegalStateException.class);
+
         compose.down();
     }
 
