@@ -52,9 +52,9 @@ public class DockerComposeExecutable {
                 throwingOnError().handle(exitCode, output, commands);
             }
 
-            log.debug("It looks like `docker-compose down` didn't work.");
-            log.debug("This probably means your version of docker-compose doesn't support the `down` command");
-            log.debug("Updating to version 1.6+ of docker-compose is likely to fix that issue.");
+            log.warn("It looks like `docker-compose down` didn't work.");
+            log.warn("This probably means your version of docker-compose doesn't support the `down` command");
+            log.warn("Updating to version 1.6+ of docker-compose is likely to fix this issue.");
         };
     }
 
@@ -111,6 +111,9 @@ public class DockerComposeExecutable {
 
     private ErrorHandler throwingOnError() {
         return (exitCode, output, commands) -> {
+            log.warn(constructNonZeroExitErrorMessage(exitCode, commands));
+            log.warn("The output was:");
+            log.warn(output);
             throw new IllegalStateException(constructNonZeroExitErrorMessage(exitCode, commands));
         };
     }
