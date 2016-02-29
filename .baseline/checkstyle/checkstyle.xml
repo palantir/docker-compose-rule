@@ -115,5 +115,9 @@
         <property name="commentFormat" value="noinspection CheckStyle.*"/>
         <property name="influenceFormat" value="1"/>
     </module>
+    <module name="RegexpHeader">
+        <property name="header" value="^/\*$\n^ \* Copyright \d{4} Palantir Technologies, Inc\. All rights reserved\.$"/>
+        <property name="fileExtensions" value=".java,.ts"/>
+    </module>
 </module>
 

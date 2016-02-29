@@ -12,7 +12,7 @@ This is a small library for executing JUnit tests that interact with Docker Comp
 Why should I use this?
 ----------------------
 
-The code here started out as the end to end tests for Magritte. We needed to run Magritte in a variety of different configurations and environments which were mutually incompatible, thus multiple Docker Compose files were needed and so a simplistic model of running `docker-compose up` in Gradle was insufficient.
+The code here started out as the end to end tests for one of our products. We needed to test this product in a variety of different configurations and environments which were mutually incompatible, thus multiple Docker Compose files were needed and so a simplistic model of running `docker-compose up` in Gradle was insufficient.
 
 If you're experiencing any of the following using Docker for your testing this library should hopefully help:
 
