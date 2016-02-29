@@ -29,6 +29,9 @@ apply plugin: 'com.palantir.baseline-findbugs'
 apply plugin: 'com.palantir.baseline-idea'
 apply from: "${rootDir}/gradle/publish.gradle"
 
+version gitVersion()
+group 'com.palantir.docker'
+
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 

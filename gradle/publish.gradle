@@ -48,7 +48,7 @@ bintray {
     user = System.env.BINTRAY_USER
     key = System.env.BINTRAY_KEY
     pkg {
-        repo = 'dockercomposition'
+        repo = 'releases'
         name = 'docker-compose-rule'
         userOrg = 'hpryce'
         licenses = ['Apache-2.0']
