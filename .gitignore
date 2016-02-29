@@ -1,0 +1,15 @@
+/bin/
+build/
+.gradle/
+.checkstyle
+.project
+.classpath
+.settings/
+logs/
+.bin/
+
+# IntelliJ
+**/*.ipr
+**/*.iws
+**/*.iml
+out/

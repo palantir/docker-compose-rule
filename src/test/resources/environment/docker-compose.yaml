@@ -1,0 +1,5 @@
+env-test:
+  image: gliderlabs/alpine
+  environment:
+    SOME_VARIABLE: ${SOME_VARIABLE}
+  command: env

@@ -1,0 +1,123 @@
+<?xml version="1.0"?>
+<!DOCTYPE module PUBLIC "-//Puppy Crawl//DTD Check Configuration 1.3//EN" "http://www.puppycrawl.com/dtds/configuration_1_3.dtd">
+<!-- http://checkstyle.sourceforge.net/ -->
+<module name="Checker">
+    <module name="TreeWalker">
+        <module name="AnnotationUseStyle"/>
+        <module name="ArrayTypeStyle"/>
+        <module name="AvoidNestedBlocks"/>
+        <module name="AvoidStarImport"/>
+        <module name="BooleanExpressionComplexity">
+            <property name="max" value="3"/>
+            <property name="tokens" value="BXOR,LAND,LOR"/>
+        </module>
+        <module name="CovariantEquals"/>
+        <module name="EmptyBlock">
+          <property name="option" value="text"/>
+        </module>
+        <module name="EmptyStatement"/>
+        <module name="EqualsHashCode"/>
+        <module name="FileContentsHolder"/>
+        <module name="GenericWhitespace"/>
+        <module name="HiddenField">
+            <property name="ignoreConstructorParameter" value="true"/>
+            <property name="ignoreSetter" value="true"/>
+        </module>
+        <module name="HideUtilityClassConstructor"/>
+        <module name="IllegalInstantiation">
+            <property name="classes" value="java.lang.Boolean"/>
+            <property name="classes" value="java.lang.Integer"/>
+            <property name="classes" value="java.lang.Long"/>
+            <property name="classes" value="java.lang.Double"/>
+            <property name="classes" value="java.lang.Character"/>
+            <property name="classes" value="java.lang.Byte"/>
+        </module>
+        <module name="ImportOrder">
+            <property name="groups" value="*,javax,java"/>
+            <property name="ordered" value="true"/>
+            <property name="separated" value="false"/>
+            <property name="option" value="bottom"/>
+            <property name="sortStaticImportsAlphabetically" value="true"/>
+        </module>
+        <module name="InnerAssignment"/>
+        <module name="MethodLength">
+            <property name="tokens" value="METHOD_DEF"/>
+            <property name="max" value="300"/>
+        </module>
+        <module name="MissingDeprecated"/>
+        <module name="ModifiedControlVariable"/>
+        <module name="ModifierOrder"/>
+        <module name="MultipleVariableDeclarations"/>
+        <module name="NeedBraces"/>
+        <module name="NestedIfDepth"/>
+        <module name="NestedTryDepth"/>
+        <module name="NoClone"/>
+        <module name="OneStatementPerLine"/>
+        <module name="OuterTypeFilename"/>
+        <module name="PackageDeclaration"/>
+        <module name="ParameterAssignment"/>
+        <module name="RedundantImport"/>
+        <module name="RedundantModifier"/>
+        <module name="SimplifyBooleanExpression"/>
+        <module name="SimplifyBooleanReturn"/>
+        <module name="StringLiteralEquality"/>
+        <module name="UnusedImports">
+            <property name="processJavadoc" value="true"/>
+        </module>
+        <module name="UpperEll"/>
+      <module name="RegexpSinglelineJava">
+        <metadata name="net.sf.eclipsecs.core.comment" value="Use StandardCharsets"/>
+        <property name="id" value="Use StandardCharsets"/>
+        <property name="format" value="\bCharset.forName\(|\bCharsets\."/>
+        <property name="message" value="Use JDK StandardCharsets instead of alternatives"/>
+      </module>
+      <module name="RegexpSinglelineJava">
+        <metadata name="net.sf.eclipsecs.core.comment" value="Don't use default charset"/>
+        <property name="id" value="Use an explicit charset (e.g. StandardCharsets.UTF-8)"/>
+        <property name="format" value="\bCharset.defaultCharset\("/>
+        <property name="message" value="Use explicit charset (e.g. StandardCharsets.UTF-8) instead of default"/>
+      </module>
+      <module name="RegexpSinglelineJava">
+        <metadata name="net.sf.eclipsecs.core.comment" value="SLF4J no percentages"/>
+        <property name="id" value="Slf4JPercentageRegexp"/>
+        <property name="format" value="\.(debug|info|warn|error)\(&quot;[^&quot;%]*%[^&quot;%]*&quot;(,|\))"/>
+        <property name="message" value="Don't use printf-style formatting in SLF4J loggers"/>
+        <property name="ignoreComments" value="true"/>
+      </module>
+      <module name="RegexpSinglelineJava">
+        <metadata name="net.sf.eclipsecs.core.comment" value="Preconditions use printf-style formatting"/>
+        <property name="id" value="PreconditionsPrintfRegexp"/>
+        <property name="format" value="\bPreconditions\.check\w+\(.*\{\}"/>
+        <property name="message" value="Use printf-style formatting in Preconditions"/>
+        <property name="ignoreComments" value="true"/>
+      </module>
+      <module name="RegexpSinglelineJava">
+        <metadata name="net.sf.eclipsecs.core.comment" value="e.printStackTrace()"/>
+        <property name="id" value="PrintStackTraceRegexp"/>
+        <property name="format" value="\.printStackTrace\(\)"/>
+        <property name="message" value="printStackTrace is not generally allowed"/>
+        <property name="ignoreComments" value="true"/>
+      </module>
+      <module name="RegexpSinglelineJava">
+        <metadata name="net.sf.eclipsecs.core.comment" value="No log4j.Logger usage"/>
+        <property name="id" value="Log4JRegexp"/>
+        <property name="format" value="\sLogger\.getLogger\("/>
+        <property name="message" value="Use SLF4J instead: LoggerFactory.getLogger(...)"/>
+        <property name="ignoreComments" value="true"/>
+      </module>
+    </module>
+    <module name="FileLength">
+        <property name="max" value="1500"/>
+        <property name="fileExtensions" value="java"/>
+    </module>
+    <module name="FileTabCharacter"/>
+    <module name="SuppressWithNearbyCommentFilter">
+        <property name="commentFormat" value="noinspection CheckStyle.*"/>
+        <property name="influenceFormat" value="1"/>
+    </module>
+    <module name="RegexpHeader">
+        <property name="header" value="^/\*$\n^ \* Copyright \d{4} Palantir Technologies, Inc\. All rights reserved\.$"/>
+        <property name="fileExtensions" value=".java,.ts"/>
+    </module>
+</module>
+
