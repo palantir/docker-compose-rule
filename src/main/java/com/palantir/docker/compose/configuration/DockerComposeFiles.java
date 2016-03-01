@@ -30,7 +30,6 @@ package com.palantir.docker.compose.configuration;
 import java.io.File;
 import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static com.google.common.base.Preconditions.checkState;
 import static com.google.common.collect.Lists.newArrayList;
@@ -53,18 +52,18 @@ public class DockerComposeFiles {
         return new DockerComposeFiles(dockerComposeFiles);
     }
 
-    public String constructComposeFileCommand() {
+    public List<String> constructComposeFileCommand() {
         return dockerComposeFiles.stream()
                 .map(File::getAbsolutePath)
                 .map(f -> newArrayList("-f", f))
                 .flatMap(Collection::stream)
-                .collect(joining(" "));
+                .collect(toList());
     }
 
     private static void validateComposeFilesExist(List<File> dockerComposeFiles) {
         List<File> missingFiles = dockerComposeFiles.stream()
                                                     .filter(f -> !f.exists())
-                                                    .collect(Collectors.toList());
+                                                    .collect(toList());
 
         String errorMessage = dockerComposeFiles.stream()
                 .map(File::getAbsolutePath)

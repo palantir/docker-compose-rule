@@ -64,7 +64,8 @@ public class DockerComposeExecutor {
     }
 
     public Process execute(String... commands) throws IOException {
-        List<String> args = newArrayList(getDockerComposePath(), dockerComposeFiles.constructComposeFileCommand());
+        List<String> args = newArrayList(getDockerComposePath());
+        args.addAll(dockerComposeFiles.constructComposeFileCommand());
         Collections.addAll(args, commands);
         return dockerMachine.configDockerComposeProcess()
                             .command(args)
