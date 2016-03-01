@@ -42,6 +42,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.util.Arrays;
+import java.util.List;
 
 import static com.palantir.docker.compose.execution.DockerComposeExecutor.COMMAND_TIMEOUT;
 import static java.lang.System.lineSeparator;
@@ -56,8 +57,8 @@ public class DockerComposeExecutable {
     private final DockerComposeExecutor executor;
     private final DockerMachine dockerMachine;
 
-    public DockerComposeExecutable(File dockerComposeFile, DockerMachine dockerMachine) {
-        this(new DockerComposeExecutor(dockerComposeFile, dockerMachine), dockerMachine);
+    public DockerComposeExecutable(List<File> dockerComposeFiles, DockerMachine dockerMachine) {
+        this(new DockerComposeExecutor(dockerComposeFiles, dockerMachine), dockerMachine);
     }
 
     public DockerComposeExecutable(DockerComposeExecutor executor, DockerMachine dockerMachine) {

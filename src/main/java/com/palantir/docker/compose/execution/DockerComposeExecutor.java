@@ -27,18 +27,21 @@
  */
 package com.palantir.docker.compose.execution;
 
-import com.google.common.collect.Lists;
+import com.google.common.collect.ImmutableList;
 import com.palantir.docker.compose.connection.DockerMachine;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.Duration;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+import static com.google.common.collect.Lists.newArrayList;
 import static java.util.Arrays.asList;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
+import static java.util.stream.Collectors.toList;
 import static org.joda.time.Duration.standardMinutes;
 
 
@@ -48,11 +51,11 @@ public class DockerComposeExecutor {
                                                                       System.getenv("DOCKER_COMPOSE_LOCATION"));
     public static final Duration COMMAND_TIMEOUT = standardMinutes(2);
 
-    private final File dockerComposeFile;
+    private final List<String> commandPrefix;
     private final DockerMachine dockerMachine;
 
-    public DockerComposeExecutor(File dockerComposeFile, DockerMachine dockerMachine) {
-        this.dockerComposeFile = dockerComposeFile;
+    public DockerComposeExecutor(List<File> dockerComposeFiles, DockerMachine dockerMachine) {
+        this.commandPrefix = constructCommandPrefix(dockerComposeFiles);
         this.dockerMachine = dockerMachine;
     }
 
@@ -63,7 +66,7 @@ public class DockerComposeExecutor {
     }
 
     public Process execute(String... commands) throws IOException {
-        List<String> args = Lists.newArrayList(getDockerComposePath(), "-f", dockerComposeFile.getAbsolutePath());
+        List<String> args = newArrayList(commandPrefix);
         Collections.addAll(args, commands);
         return dockerMachine.configDockerComposeProcess()
                             .command(args)
@@ -71,12 +74,27 @@ public class DockerComposeExecutor {
                             .start();
     }
 
+    private static List<String> constructCommandPrefix(List<File> dockerComposeFiles) {
+        return ImmutableList.<String>builder()
+                            .add(getDockerComposePath())
+                            .addAll(constructComposeFileCommand(dockerComposeFiles))
+                            .build();
+    }
+
     private static String getDockerComposePath() {
         return dockerComposeLocations.stream()
-                                     .filter(StringUtils::isNotBlank)
-                                     .filter(path -> new File(path).exists())
-                                     .findAny()
-                                     .orElseThrow(() -> new IllegalStateException("Could not find docker-compose, looked in: " + dockerComposeLocations));
+                .filter(StringUtils::isNotBlank)
+                .filter(path -> new File(path).exists())
+                .findAny()
+                .orElseThrow(() -> new IllegalStateException("Could not find docker-compose, looked in: " + dockerComposeLocations));
+    }
+
+    private static List<String> constructComposeFileCommand(List<File> dockerComposeFiles) {
+        return dockerComposeFiles.stream()
+                                 .map(File::getAbsolutePath)
+                                 .map(f -> newArrayList("-f", f))
+                                 .flatMap(Collection::stream)
+                                 .collect(toList());
     }
 
 }
