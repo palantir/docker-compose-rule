@@ -57,7 +57,7 @@ public class DockerComposeFiles {
     public List<String> constructComposeFileCommand() {
         return dockerComposeFiles.stream()
                 .map(File::getAbsolutePath)
-                .map(f -> newArrayList("-f", f))
+                .map(f -> newArrayList("--file", f))
                 .flatMap(Collection::stream)
                 .collect(toList());
     }

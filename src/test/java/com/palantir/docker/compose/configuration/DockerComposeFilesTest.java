@@ -79,7 +79,7 @@ public class DockerComposeFilesTest {
     public void dockerComposeFileCommandGetsGeneratedCorrectly_singleComposeFile() throws Exception {
         File composeFile = tempFolder.newFile("docker-compose.yaml");
         DockerComposeFiles dockerComposeFiles = DockerComposeFiles.from(composeFile.getAbsolutePath());
-        assertThat(dockerComposeFiles.constructComposeFileCommand(), contains("-f", composeFile.getAbsolutePath()));
+        assertThat(dockerComposeFiles.constructComposeFileCommand(), contains("--file", composeFile.getAbsolutePath()));
     }
 
     @Test
@@ -88,7 +88,7 @@ public class DockerComposeFilesTest {
         File composeFile2 = tempFolder.newFile("docker-compose2.yaml");
         DockerComposeFiles dockerComposeFiles = DockerComposeFiles.from(composeFile1.getAbsolutePath(), composeFile2.getAbsolutePath());
         assertThat(dockerComposeFiles.constructComposeFileCommand(), contains(
-                "-f", composeFile1.getAbsolutePath(), "-f", composeFile2.getAbsolutePath()));
+                "--file", composeFile1.getAbsolutePath(), "--file", composeFile2.getAbsolutePath()));
     }
 
 }
