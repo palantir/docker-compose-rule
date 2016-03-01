@@ -28,6 +28,7 @@
 package com.palantir.docker.compose.execution;
 
 import com.google.common.base.Strings;
+import com.palantir.docker.compose.configuration.DockerComposeFiles;
 import com.palantir.docker.compose.connection.Container;
 import com.palantir.docker.compose.connection.ContainerNames;
 import com.palantir.docker.compose.connection.DockerMachine;
@@ -37,7 +38,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
@@ -56,8 +56,8 @@ public class DockerComposeExecutable {
     private final DockerComposeExecutor executor;
     private final DockerMachine dockerMachine;
 
-    public DockerComposeExecutable(File dockerComposeFile, DockerMachine dockerMachine) {
-        this(new DockerComposeExecutor(dockerComposeFile, dockerMachine), dockerMachine);
+    public DockerComposeExecutable(DockerComposeFiles dockerComposeFiles, DockerMachine dockerMachine) {
+        this(new DockerComposeExecutor(dockerComposeFiles, dockerMachine), dockerMachine);
     }
 
     public DockerComposeExecutable(DockerComposeExecutor executor, DockerMachine dockerMachine) {
