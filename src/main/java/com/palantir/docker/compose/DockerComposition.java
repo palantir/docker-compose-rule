@@ -30,6 +30,7 @@ package com.palantir.docker.compose;
 import com.google.common.collect.ImmutableMap;
 import com.jayway.awaitility.Awaitility;
 import com.jayway.awaitility.core.ConditionTimeoutException;
+import com.palantir.docker.compose.configuration.DockerComposeFiles;
 import com.palantir.docker.compose.connection.Container;
 import com.palantir.docker.compose.connection.ContainerCache;
 import com.palantir.docker.compose.connection.DockerMachine;
@@ -47,13 +48,10 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 
-import static java.util.Collections.singletonList;
-import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
 
 public class DockerComposition extends ExternalResource {
@@ -67,23 +65,20 @@ public class DockerComposition extends ExternalResource {
     private final LogCollector logCollector;
 
     public static DockerCompositionBuilder of(String dockerComposeFile) {
-        return of(singletonList(dockerComposeFile));
+        return of(DockerComposeFiles.from(dockerComposeFile));
     }
 
-    public static DockerCompositionBuilder of(List<String> dockerComposeFilenames) {
-        return of(dockerComposeFilenames,
+    public static DockerCompositionBuilder of(DockerComposeFiles dockerComposeFiles) {
+        return of(dockerComposeFiles,
                   DockerMachine.localMachine()
                                .build());
     }
 
     public static DockerCompositionBuilder of(String dockerComposeFile, DockerMachine dockerMachine) {
-        return of(singletonList(dockerComposeFile), dockerMachine);
+        return of(DockerComposeFiles.from(dockerComposeFile), dockerMachine);
     }
 
-    public static DockerCompositionBuilder of(List<String> dockerComposeFilenames, DockerMachine dockerMachine) {
-        List<File> dockerComposeFiles = dockerComposeFilenames.stream()
-                                                              .map(File::new)
-                                                              .collect(toList());
+    public static DockerCompositionBuilder of(DockerComposeFiles dockerComposeFiles, DockerMachine dockerMachine) {
         return of(new DockerComposeExecutable(dockerComposeFiles, dockerMachine));
     }
 
