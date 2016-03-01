@@ -63,6 +63,12 @@ public class DockerComposition extends ExternalResource {
     private final Duration serviceTimeout;
     private final LogCollector logCollector;
 
+    public static DockerCompositionBuilder of(String dockerComposeFile) {
+        return of(dockerComposeFile,
+                  DockerMachine.localMachine()
+                               .build());
+    }
+
     public static DockerCompositionBuilder of(String dockerComposeFile, DockerMachine dockerMachine) {
         return of(new DockerComposeExecutable(new File(dockerComposeFile), dockerMachine));
     }
