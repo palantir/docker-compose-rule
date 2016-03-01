@@ -34,11 +34,10 @@ import org.junit.rules.TemporaryFolder;
 
 import java.io.File;
 
-import static com.google.common.collect.Lists.newArrayList;
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Matchers.contains;
 
 public class DockerComposeFilesTest {
 
@@ -70,7 +69,7 @@ public class DockerComposeFilesTest {
         exception.expectMessage("The following docker-compose files:");
         exception.expectMessage("does-not-exist.yaml");
         exception.expectMessage("do not exist.");
-        exception.expectMessage(not(contains("docker-compose.yaml")));
+        exception.expectMessage(not(containsString("docker-compose.yaml")));
 
         File composeFile = tempFolder.newFile("docker-compose.yaml");
         DockerComposeFiles.from("does-not-exist.yaml", composeFile.getAbsolutePath());
@@ -80,7 +79,7 @@ public class DockerComposeFilesTest {
     public void dockerComposeFileCommandGetsGeneratedCorrectly_singleComposeFile() throws Exception {
         File composeFile = tempFolder.newFile("docker-compose.yaml");
         DockerComposeFiles dockerComposeFiles = DockerComposeFiles.from(composeFile.getAbsolutePath());
-        assertThat(dockerComposeFiles.constructComposeFileCommand(), is(newArrayList("-f", composeFile.getAbsolutePath())));
+        assertThat(dockerComposeFiles.constructComposeFileCommand(), contains("-f", composeFile.getAbsolutePath()));
     }
 
     @Test
@@ -88,8 +87,8 @@ public class DockerComposeFilesTest {
         File composeFile1 = tempFolder.newFile("docker-compose1.yaml");
         File composeFile2 = tempFolder.newFile("docker-compose2.yaml");
         DockerComposeFiles dockerComposeFiles = DockerComposeFiles.from(composeFile1.getAbsolutePath(), composeFile2.getAbsolutePath());
-        assertThat(dockerComposeFiles.constructComposeFileCommand(), is(newArrayList(
-                "-f", composeFile1.getAbsolutePath(), "-f", composeFile2.getAbsolutePath())));
+        assertThat(dockerComposeFiles.constructComposeFileCommand(), contains(
+                "-f", composeFile1.getAbsolutePath(), "-f", composeFile2.getAbsolutePath()));
     }
 
 }
