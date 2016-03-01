@@ -31,6 +31,7 @@ import java.io.File;
 import java.util.Collection;
 import java.util.List;
 
+import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkState;
 import static com.google.common.collect.Lists.newArrayList;
 import static java.util.stream.Collectors.joining;
@@ -48,6 +49,7 @@ public class DockerComposeFiles {
         List<File> dockerComposeFiles = newArrayList(dockerComposeFilenames).stream()
                 .map(File::new)
                 .collect(toList());
+        validateAtLeastOneComposeFileSpecified(dockerComposeFiles);
         validateComposeFilesExist(dockerComposeFiles);
         return new DockerComposeFiles(dockerComposeFiles);
     }
@@ -58,6 +60,10 @@ public class DockerComposeFiles {
                 .map(f -> newArrayList("-f", f))
                 .flatMap(Collection::stream)
                 .collect(toList());
+    }
+
+    private static void validateAtLeastOneComposeFileSpecified(List<File> dockerComposeFiles) {
+        checkArgument(!dockerComposeFiles.isEmpty(), "A docker compose file must be specified.");
     }
 
     private static void validateComposeFilesExist(List<File> dockerComposeFiles) {
