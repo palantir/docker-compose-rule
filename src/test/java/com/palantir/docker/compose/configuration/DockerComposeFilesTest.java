@@ -36,7 +36,9 @@ import java.io.File;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Matchers.contains;
 
 public class DockerComposeFilesTest {
 
@@ -53,6 +55,18 @@ public class DockerComposeFilesTest {
         exception.expectMessage("does-not-exist.yaml");
         exception.expectMessage("do not exist.");
         DockerComposeFiles.from("does-not-exist.yaml");
+    }
+
+    @Test
+    public void aSingleMissingComposeFileWithAnExistingComposeFileThrowsCorrectException() throws Exception {
+        exception.expect(IllegalStateException.class);
+        exception.expectMessage("The following docker-compose files:");
+        exception.expectMessage("does-not-exist.yaml");
+        exception.expectMessage("do not exist.");
+        exception.expectMessage(not(contains("docker-compose.yaml")));
+
+        File composeFile = tempFolder.newFile("docker-compose.yaml");
+        DockerComposeFiles.from("does-not-exist.yaml", composeFile.getAbsolutePath());
     }
 
     @Test

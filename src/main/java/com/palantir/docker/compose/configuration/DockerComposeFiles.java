@@ -65,7 +65,7 @@ public class DockerComposeFiles {
                                                     .filter(f -> !f.exists())
                                                     .collect(toList());
 
-        String errorMessage = dockerComposeFiles.stream()
+        String errorMessage = missingFiles.stream()
                 .map(File::getAbsolutePath)
                 .collect(joining(", ", "The following docker-compose files: ", " do not exist."));
         checkState(missingFiles.isEmpty(), errorMessage);
