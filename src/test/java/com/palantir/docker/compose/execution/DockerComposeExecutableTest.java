@@ -62,7 +62,6 @@ public class DockerComposeExecutableTest {
     @Before
     public void setup() throws IOException, InterruptedException {
         when(dockerMachine.getIp()).thenReturn("0.0.0.0");
-        when(executor.executeAndWait(anyVararg())).thenReturn(executedProcess);
         when(executor.execute(anyVararg())).thenReturn(executedProcess);
         when(executedProcess.getInputStream()).thenReturn(byteArrayInputStreamOf("0.0.0.0:7000->7000/tcp"));
         when(executedProcess.exitValue()).thenReturn(0);
@@ -71,20 +70,20 @@ public class DockerComposeExecutableTest {
     @Test
     public void up_calls_docker_compose_up_with_daemon_flag() throws IOException, InterruptedException {
         compose.up();
-        verify(executor).executeAndWait("up", "-d");
+        verify(executor).execute("up", "-d");
     }
 
     @Test
     public void rm_calls_docker_compose_rm_with_f_flag() throws IOException, InterruptedException {
         compose.rm();
-        verify(executor).executeAndWait("rm", "-f");
+        verify(executor).execute("rm", "-f");
     }
 
     @Test
     public void ps_parses_and_returns_container_names() throws IOException, InterruptedException {
         when(executedProcess.getInputStream()).thenReturn(byteArrayInputStreamOf("ps\n----\ndir_db_1"));
         ContainerNames containerNames = compose.ps();
-        verify(executor).executeAndWait("ps");
+        verify(executor).execute("ps");
         assertThat(containerNames, is(new ContainerNames("db")));
     }
 
@@ -125,7 +124,7 @@ public class DockerComposeExecutableTest {
     @Test
     public void calling_ports_parses_the_ps_output() throws IOException, InterruptedException {
         Ports ports = compose.ports("db");
-        verify(executor).executeAndWait("ps", "db");
+        verify(executor).execute("ps", "db");
         assertThat(ports, is(new Ports(new DockerPort("0.0.0.0", 7000, 7000))));
     }
 

@@ -33,6 +33,7 @@ import com.palantir.docker.compose.connection.ContainerNames;
 import com.palantir.docker.compose.connection.DockerMachine;
 import com.palantir.docker.compose.connection.Ports;
 import org.apache.commons.io.IOUtils;
+import org.joda.time.Duration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,14 +44,15 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.util.Arrays;
 
-import static com.palantir.docker.compose.execution.DockerComposeExecutor.COMMAND_TIMEOUT;
 import static java.lang.System.lineSeparator;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static java.util.stream.Collectors.joining;
 import static org.apache.commons.lang3.Validate.validState;
+import static org.joda.time.Duration.standardMinutes;
 
 public class DockerComposeExecutable {
 
+    private static final Duration COMMAND_TIMEOUT = standardMinutes(2);
     private static final Logger log = LoggerFactory.getLogger(DockerComposeExecutable.class);
 
     private final DockerComposeExecutor executor;
@@ -146,19 +148,21 @@ public class DockerComposeExecutable {
     }
 
     private String executeDockerComposeCommand(ErrorHandler errorHandler, String... commands) throws IOException, InterruptedException {
-        Process executedProcess = executor.executeAndWait(commands);
+        Process dockerCompose = executor.execute(commands);
+        dockerCompose.waitFor(COMMAND_TIMEOUT.getMillis(), MILLISECONDS);
+
         String output;
 
         try (BufferedReader processOutputReader =
-                new BufferedReader(new InputStreamReader(executedProcess.getInputStream(), "UTF-8"))) {
+                new BufferedReader(new InputStreamReader(dockerCompose.getInputStream(), "UTF-8"))) {
             output = processOutputReader
                 .lines()
                 .peek(log::debug)
                 .collect(joining(lineSeparator()));
         }
 
-        if(executedProcess.exitValue() != 0) {
-            errorHandler.handle(executedProcess.exitValue(), output, commands);
+        if(dockerCompose.exitValue() != 0) {
+            errorHandler.handle(dockerCompose.exitValue(), output, commands);
         }
 
         return output;

@@ -39,7 +39,7 @@ import static com.palantir.docker.compose.matchers.IOMatchers.fileContainingStri
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
-public class DockerComposeExecutorIntegrationTest {
+public class EnvironmentVariableIntegrationTest {
 
     @Rule
     public TemporaryFolder temporaryFolder = new TemporaryFolder();
