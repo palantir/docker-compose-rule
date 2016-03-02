@@ -27,7 +27,11 @@
  */
 package com.palantir.docker.compose.execution;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+
+import static java.util.stream.Collectors.joining;
 
 public class SynchronousDockerComposeExecutable {
     private final DockerComposeExecutable dockerComposeExecutable;
@@ -38,6 +42,8 @@ public class SynchronousDockerComposeExecutable {
 
     public ProcessResult run(String... commands) throws IOException {
         Process process = dockerComposeExecutable.execute(commands);
-        return new ProcessResult(process.exitValue());
+        String output = new BufferedReader(new InputStreamReader(process.getInputStream())).lines()
+                .collect(joining(System.lineSeparator()));
+        return new ProcessResult(process.exitValue(), output);
     }
 }

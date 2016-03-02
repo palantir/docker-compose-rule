@@ -29,12 +29,18 @@ package com.palantir.docker.compose.execution;
 
 public class ProcessResult {
     private int exitCode;
+    private final String output;
 
-    public ProcessResult(int exitCode) {
+    public ProcessResult(int exitCode, String output) {
         this.exitCode = exitCode;
+        this.output = output;
     }
 
     public int exitCode() {
         return exitCode;
+    }
+
+    public String output() {
+        return output;
     }
 }

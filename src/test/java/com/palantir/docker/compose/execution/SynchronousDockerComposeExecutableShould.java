@@ -30,9 +30,12 @@ package com.palantir.docker.compose.execution;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
@@ -41,21 +44,37 @@ import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SynchronousDockerComposeExecutableShould {
-    private Process executedProcess;
-    private DockerComposeExecutable dockerComposeExecutable;
+    @Mock private Process executedProcess;
+    @Mock private DockerComposeExecutable dockerComposeExecutable;
     private SynchronousDockerComposeExecutable dockerCompose;
 
     @Before
     public void setup() throws IOException {
         when(dockerComposeExecutable.execute(anyVararg())).thenReturn(executedProcess);
         dockerCompose = new SynchronousDockerComposeExecutable(dockerComposeExecutable);
+
+        givenTheProcessHasOutput("");
+        givenTheProcessTerminatesWithAnExitCodeOf(0);
     }
 
     @Test public void
-    respond_with_the_process_exit_code() throws IOException {
+    respond_with_the_exit_code_of_the_executed_process() throws IOException {
         givenTheProcessTerminatesWithAnExitCodeOf(1);
 
         assertThat(dockerCompose.run("rm", "-f").exitCode(), is(1));
+    }
+
+    @Test public void
+    respond_with_the_output_of_the_executed_process() throws IOException {
+        givenTheProcessHasOutput("some output");
+
+        assertThat(dockerCompose.run("rm", "-f").output(), is("some output"));
+    }
+
+    private void givenTheProcessHasOutput(String output) {
+        byte[] outputBytes = output.getBytes(StandardCharsets.UTF_8);
+        when(executedProcess.getInputStream())
+                .thenReturn(new ByteArrayInputStream(outputBytes));
     }
 
     private void givenTheProcessTerminatesWithAnExitCodeOf(int exitCode) {
