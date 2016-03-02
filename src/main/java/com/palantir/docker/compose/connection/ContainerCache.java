@@ -27,7 +27,7 @@
  */
 package com.palantir.docker.compose.connection;
 
-import com.palantir.docker.compose.execution.DockerComposeExecutable;
+import com.palantir.docker.compose.execution.DockerCompose;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -35,14 +35,14 @@ import java.util.Map;
 public class ContainerCache {
 
     private final Map<String, Container> containers = new HashMap<>();
-    private final DockerComposeExecutable dockerComposeExecutable;
+    private final DockerCompose dockerCompose;
 
-    public ContainerCache(DockerComposeExecutable dockerComposeExecutable) {
-        this.dockerComposeExecutable = dockerComposeExecutable;
+    public ContainerCache(DockerCompose dockerCompose) {
+        this.dockerCompose = dockerCompose;
     }
 
     public Container get(String containerName) {
-        containers.putIfAbsent(containerName, dockerComposeExecutable.container(containerName));
+        containers.putIfAbsent(containerName, dockerCompose.container(containerName));
         return containers.get(containerName);
     }
 

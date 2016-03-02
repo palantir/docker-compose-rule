@@ -28,7 +28,7 @@
 package com.palantir.docker.compose.connection;
 
 import com.palantir.docker.compose.configuration.MockDockerEnvironment;
-import com.palantir.docker.compose.execution.DockerComposeExecutable;
+import com.palantir.docker.compose.execution.DockerCompose;
 import org.joda.time.Duration;
 import org.junit.Rule;
 import org.junit.Test;
@@ -50,7 +50,7 @@ public class ContainerTest {
     @Rule
     public ExpectedException exception = ExpectedException.none();
 
-    private final DockerComposeExecutable dockerComposeProcess = mock(DockerComposeExecutable.class);
+    private final DockerCompose dockerComposeProcess = mock(DockerCompose.class);
     private final MockDockerEnvironment env = new MockDockerEnvironment(dockerComposeProcess);
     private final Container service = new Container("service", dockerComposeProcess);
 

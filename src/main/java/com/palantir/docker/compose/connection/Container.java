@@ -31,7 +31,7 @@ import com.google.common.base.Supplier;
 import com.google.common.base.Suppliers;
 import com.google.common.base.Throwables;
 import com.jayway.awaitility.Awaitility;
-import com.palantir.docker.compose.execution.DockerComposeExecutable;
+import com.palantir.docker.compose.execution.DockerCompose;
 import org.joda.time.Duration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,11 +49,11 @@ public class Container {
     private static final Logger log = LoggerFactory.getLogger(Container.class);
 
     private final String containerName;
-    private final DockerComposeExecutable dockerComposeProcess;
+    private final DockerCompose dockerComposeProcess;
 
     private final Supplier<Ports> portMappings = Suppliers.memoize(this::getDockerPorts);
 
-    public Container(String containerName, DockerComposeExecutable dockerComposeProcess) {
+    public Container(String containerName, DockerCompose dockerComposeProcess) {
         this.containerName = containerName;
         this.dockerComposeProcess = dockerComposeProcess;
     }

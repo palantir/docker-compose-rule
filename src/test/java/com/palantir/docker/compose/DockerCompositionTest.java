@@ -32,7 +32,7 @@ import com.palantir.docker.compose.configuration.MockDockerEnvironment;
 import com.palantir.docker.compose.connection.Container;
 import com.palantir.docker.compose.connection.ContainerNames;
 import com.palantir.docker.compose.connection.DockerPort;
-import com.palantir.docker.compose.execution.DockerComposeExecutable;
+import com.palantir.docker.compose.execution.DockerCompose;
 import org.apache.commons.io.IOUtils;
 import org.joda.time.Duration;
 import org.junit.Rule;
@@ -70,23 +70,23 @@ public class DockerCompositionTest {
     @Rule
     public TemporaryFolder logFolder = new TemporaryFolder();
 
-    private final DockerComposeExecutable dockerComposeExecutable = mock(DockerComposeExecutable.class);
-    private final MockDockerEnvironment env = new MockDockerEnvironment(dockerComposeExecutable);
-    private final DockerCompositionBuilder dockerComposition = DockerComposition.of(dockerComposeExecutable)
+    private final DockerCompose dockerCompose = mock(DockerCompose.class);
+    private final MockDockerEnvironment env = new MockDockerEnvironment(dockerCompose);
+    private final DockerCompositionBuilder dockerComposition = DockerComposition.of(dockerCompose)
                                                                                 .serviceTimeout(Duration.millis(200));
 
     @Test
     public void docker_compose_build_and_up_is_called_before_tests_are_run() throws IOException, InterruptedException {
         dockerComposition.build().before();
-        verify(dockerComposeExecutable).build();
-        verify(dockerComposeExecutable).up();
+        verify(dockerCompose).build();
+        verify(dockerCompose).up();
     }
 
     @Test
     public void docker_compose_kill_and_rm_are_called_after_tests_are_run() throws IOException, InterruptedException {
         dockerComposition.build().after();
-        verify(dockerComposeExecutable).kill();
-        verify(dockerComposeExecutable).rm();
+        verify(dockerCompose).kill();
+        verify(dockerCompose).rm();
     }
 
     @Test
@@ -174,12 +174,12 @@ public class DockerCompositionTest {
         DockerComposition composition = dockerComposition.build();
         composition.portOnContainerWithInternalMapping("db", 5432);
         composition.portOnContainerWithInternalMapping("db", 8080);
-        verify(dockerComposeExecutable, times(1)).ports("db");
+        verify(dockerCompose, times(1)).ports("db");
     }
 
     @Test
     public void waiting_for_service_that_does_not_exist_results_in_an_illegal_state_exception() throws IOException, InterruptedException {
-        when(dockerComposeExecutable.ports("nonExistent"))
+        when(dockerCompose.ports("nonExistent"))
             .thenThrow(new IllegalStateException("No container with name 'nonExistent' found"));
         exception.expect(IllegalStateException.class);
         exception.expectMessage("Container 'nonExistent' failed to pass startup check");
@@ -192,9 +192,9 @@ public class DockerCompositionTest {
     public void logs_can_be_saved_to_a_directory_while_containers_are_running() throws IOException, InterruptedException {
         File logLocation = logFolder.newFolder();
         DockerComposition loggingComposition = dockerComposition.saveLogsTo(logLocation.getAbsolutePath()).build();
-        when(dockerComposeExecutable.ps()).thenReturn(new ContainerNames("db"));
+        when(dockerCompose.ps()).thenReturn(new ContainerNames("db"));
         CountDownLatch latch = new CountDownLatch(1);
-        when(dockerComposeExecutable.writeLogs(eq("db"), any(OutputStream.class))).thenAnswer((args) -> {
+        when(dockerCompose.writeLogs(eq("db"), any(OutputStream.class))).thenAnswer((args) -> {
             OutputStream outputStream = (OutputStream) args.getArguments()[1];
             IOUtils.write("db log", outputStream);
             latch.countDown();
@@ -208,7 +208,7 @@ public class DockerCompositionTest {
     }
 
     public void withComposeExecutableReturningContainerFor(String containerName) {
-        when(dockerComposeExecutable.container(containerName)).thenReturn(new Container(containerName, dockerComposeExecutable));
+        when(dockerCompose.container(containerName)).thenReturn(new Container(containerName, dockerCompose));
     }
 
 }
