@@ -53,31 +53,35 @@ public class SynchronousDockerComposeExecutableShould {
         when(dockerComposeExecutable.execute(anyVararg())).thenReturn(executedProcess);
         dockerCompose = new SynchronousDockerComposeExecutable(dockerComposeExecutable);
 
-        givenTheProcessHasOutput("");
-        givenTheProcessTerminatesWithAnExitCodeOf(0);
+        givenTheUnderlyingProcessHasOutput("");
+        givenTheUnderlyingProcessTerminatesWithAnExitCodeOf(0);
     }
 
     @Test public void
     respond_with_the_exit_code_of_the_executed_process() throws IOException {
-        givenTheProcessTerminatesWithAnExitCodeOf(1);
+        int expectedExitCode = 1;
+        
+        givenTheUnderlyingProcessTerminatesWithAnExitCodeOf(expectedExitCode);
 
-        assertThat(dockerCompose.run("rm", "-f").exitCode(), is(1));
+        assertThat(dockerCompose.run("rm", "-f").exitCode(), is(expectedExitCode));
     }
 
     @Test public void
     respond_with_the_output_of_the_executed_process() throws IOException {
-        givenTheProcessHasOutput("some output");
+        String expectedOutput = "some output";
 
-        assertThat(dockerCompose.run("rm", "-f").output(), is("some output"));
+        givenTheUnderlyingProcessHasOutput(expectedOutput);
+
+        assertThat(dockerCompose.run("rm", "-f").output(), is(expectedOutput));
     }
 
-    private void givenTheProcessHasOutput(String output) {
+    private void givenTheUnderlyingProcessHasOutput(String output) {
         byte[] outputBytes = output.getBytes(StandardCharsets.UTF_8);
         when(executedProcess.getInputStream())
                 .thenReturn(new ByteArrayInputStream(outputBytes));
     }
 
-    private void givenTheProcessTerminatesWithAnExitCodeOf(int exitCode) {
+    private void givenTheUnderlyingProcessTerminatesWithAnExitCodeOf(int exitCode) {
         when(executedProcess.exitValue()).thenReturn(exitCode);
     }
 
