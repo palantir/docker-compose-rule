@@ -27,149 +27,48 @@
  */
 package com.palantir.docker.compose.execution;
 
-import com.google.common.base.Strings;
 import com.palantir.docker.compose.configuration.DockerComposeFiles;
-import com.palantir.docker.compose.connection.Container;
-import com.palantir.docker.compose.connection.ContainerNames;
 import com.palantir.docker.compose.connection.DockerMachine;
-import com.palantir.docker.compose.connection.Ports;
-import org.apache.commons.io.IOUtils;
-import org.joda.time.Duration;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.commons.lang3.StringUtils;
 
-import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
-import static java.lang.System.lineSeparator;
-import static java.util.concurrent.TimeUnit.MILLISECONDS;
-import static java.util.stream.Collectors.joining;
-import static org.apache.commons.lang3.Validate.validState;
-import static org.joda.time.Duration.standardMinutes;
+import static com.google.common.collect.Lists.newArrayList;
+import static java.util.Arrays.asList;
+
 
 public class DockerComposeExecutable {
 
-    private static final Duration COMMAND_TIMEOUT = standardMinutes(2);
-    private static final Logger log = LoggerFactory.getLogger(DockerComposeExecutable.class);
+    private static final List<String> dockerComposeLocations = asList("/usr/local/bin/docker-compose",
+                                                                      System.getenv("DOCKER_COMPOSE_LOCATION"));
 
-    private final DockerComposeExecutor executor;
+    private final DockerComposeFiles dockerComposeFiles;
     private final DockerMachine dockerMachine;
 
     public DockerComposeExecutable(DockerComposeFiles dockerComposeFiles, DockerMachine dockerMachine) {
-        this(new DockerComposeExecutor(dockerComposeFiles, dockerMachine), dockerMachine);
-    }
-
-    public DockerComposeExecutable(DockerComposeExecutor executor, DockerMachine dockerMachine) {
-        this.executor = executor;
+        this.dockerComposeFiles = dockerComposeFiles;
         this.dockerMachine = dockerMachine;
     }
 
-    public void build() throws IOException, InterruptedException {
-        executeDockerComposeCommand("build");
+    public Process execute(String... commands) throws IOException {
+        List<String> args = newArrayList(getDockerComposePath());
+        args.addAll(dockerComposeFiles.constructComposeFileCommand());
+        Collections.addAll(args, commands);
+        return dockerMachine.configDockerComposeProcess()
+                .command(args)
+                .redirectErrorStream(true)
+                .start();
     }
 
-    public void down() throws IOException, InterruptedException {
-        executeDockerComposeCommand(swallowingDownCommandDoesNotExist(), "down");
-    }
-
-    private ErrorHandler swallowingDownCommandDoesNotExist() {
-        return (exitCode, output, commands) -> {
-            if(downCommandWasPresent(output)) {
-                throwingOnError().handle(exitCode, output, commands);
-            }
-
-            log.warn("It looks like `docker-compose down` didn't work.");
-            log.warn("This probably means your version of docker-compose doesn't support the `down` command");
-            log.warn("Updating to version 1.6+ of docker-compose is likely to fix this issue.");
-        };
-    }
-
-    private boolean downCommandWasPresent(String output) {
-        return !output.contains("No such command");
-    }
-
-    public void up() throws IOException, InterruptedException {
-        executeDockerComposeCommand("up",  "-d");
-    }
-
-    public void kill() throws IOException, InterruptedException {
-        executeDockerComposeCommand("kill");
-    }
-
-    public void rm() throws IOException, InterruptedException {
-        executeDockerComposeCommand("rm", "-f");
-    }
-
-    public ContainerNames ps() throws IOException, InterruptedException {
-        String psOutput = executeDockerComposeCommand("ps");
-        return ContainerNames.parseFromDockerComposePs(psOutput);
-    }
-
-    public Container container(String containerName) {
-        return new Container(containerName, this);
-    }
-
-    /**
-     * Blocks until all logs collected from the container.
-     * @return Whether the docker container terminated prior to log collection ending.
-     */
-    public boolean writeLogs(String container, OutputStream output) throws IOException {
-        Process executedProcess = executor.execute("logs", "--no-color", container);
-        IOUtils.copy(executedProcess.getInputStream(), output);
-        try {
-            executedProcess.waitFor(COMMAND_TIMEOUT.getMillis(), MILLISECONDS);
-        } catch (InterruptedException e) {
-            return false;
-        }
-        return true;
-    }
-
-    public Ports ports(String service) throws IOException, InterruptedException {
-        String psOutput = executeDockerComposeCommand("ps", service);
-        validState(!Strings.isNullOrEmpty(psOutput), "No container with name '" + service + "' found");
-        return Ports.parseFromDockerComposePs(psOutput, dockerMachine.getIp());
-    }
-
-
-    private String executeDockerComposeCommand(String... commands) throws IOException, InterruptedException {
-        return executeDockerComposeCommand(throwingOnError(), commands);
-    }
-
-    private ErrorHandler throwingOnError() {
-        return (exitCode, output, commands) -> {
-            log.warn(constructNonZeroExitErrorMessage(exitCode, commands));
-            log.warn("The output was:");
-            log.warn(output);
-            throw new IllegalStateException(constructNonZeroExitErrorMessage(exitCode, commands));
-        };
-    }
-
-    private String executeDockerComposeCommand(ErrorHandler errorHandler, String... commands) throws IOException, InterruptedException {
-        Process dockerCompose = executor.execute(commands);
-        dockerCompose.waitFor(COMMAND_TIMEOUT.getMillis(), MILLISECONDS);
-
-        String output;
-
-        try (BufferedReader processOutputReader =
-                new BufferedReader(new InputStreamReader(dockerCompose.getInputStream(), "UTF-8"))) {
-            output = processOutputReader
-                .lines()
-                .peek(log::debug)
-                .collect(joining(lineSeparator()));
-        }
-
-        if(dockerCompose.exitValue() != 0) {
-            errorHandler.handle(dockerCompose.exitValue(), output, commands);
-        }
-
-        return output;
-    }
-
-    private String constructNonZeroExitErrorMessage(int exitCode, String... commands) {
-        return "'docker-compose " + Arrays.stream(commands).collect(joining(" ")) + "' returned exit code " + exitCode;
+    private static String getDockerComposePath() {
+        return dockerComposeLocations.stream()
+                .filter(StringUtils::isNotBlank)
+                .filter(path -> new File(path).exists())
+                .findAny()
+                .orElseThrow(() -> new IllegalStateException("Could not find docker-compose, looked in: " + dockerComposeLocations));
     }
 
 }

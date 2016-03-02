@@ -29,7 +29,7 @@ package com.palantir.docker.compose.configuration;
 
 import com.palantir.docker.compose.connection.DockerPort;
 import com.palantir.docker.compose.connection.Ports;
-import com.palantir.docker.compose.execution.DockerComposeExecutable;
+import com.palantir.docker.compose.execution.DockerCompose;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -43,9 +43,9 @@ import static org.mockito.Mockito.when;
 
 public class MockDockerEnvironment {
 
-    private final DockerComposeExecutable dockerComposeProcess;
+    private final DockerCompose dockerComposeProcess;
 
-    public MockDockerEnvironment(DockerComposeExecutable dockerComposeProcess) {
+    public MockDockerEnvironment(DockerCompose dockerComposeProcess) {
         this.dockerComposeProcess = dockerComposeProcess;
     }
 

@@ -48,14 +48,14 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-public class DockerComposeExecutableTest {
+public class DockerComposeTest {
 
     @Rule
     public ExpectedException exception = ExpectedException.none();
 
-    private final DockerComposeExecutor executor = mock(DockerComposeExecutor.class);
+    private final DockerComposeExecutable executor = mock(DockerComposeExecutable.class);
     private final DockerMachine dockerMachine = mock(DockerMachine.class);
-    private final DockerComposeExecutable compose = new DockerComposeExecutable(executor, dockerMachine);
+    private final DockerCompose compose = new DockerCompose(executor, dockerMachine);
 
     private final Process executedProcess = mock(Process.class);
 

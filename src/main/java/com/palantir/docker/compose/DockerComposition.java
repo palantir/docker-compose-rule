@@ -35,6 +35,7 @@ import com.palantir.docker.compose.connection.Container;
 import com.palantir.docker.compose.connection.ContainerCache;
 import com.palantir.docker.compose.connection.DockerMachine;
 import com.palantir.docker.compose.connection.DockerPort;
+import com.palantir.docker.compose.execution.DockerCompose;
 import com.palantir.docker.compose.execution.DockerComposeExecutable;
 import com.palantir.docker.compose.logging.DoNothingLogCollector;
 import com.palantir.docker.compose.logging.FileLogCollector;
@@ -58,7 +59,7 @@ public class DockerComposition extends ExternalResource {
 
     private static final Logger log = LoggerFactory.getLogger(DockerComposition.class);
 
-    private final DockerComposeExecutable dockerComposeProcess;
+    private final DockerCompose dockerComposeProcess;
     private final ContainerCache containers;
     private final Map<Container, Function<Container, Boolean>> servicesToWaitFor;
     private final Duration serviceTimeout;
@@ -79,14 +80,14 @@ public class DockerComposition extends ExternalResource {
     }
 
     public static DockerCompositionBuilder of(DockerComposeFiles dockerComposeFiles, DockerMachine dockerMachine) {
-        return of(new DockerComposeExecutable(dockerComposeFiles, dockerMachine));
+        return of(new DockerCompose(dockerComposeFiles, dockerMachine));
     }
 
-    public static DockerCompositionBuilder of(DockerComposeExecutable executable) {
+    public static DockerCompositionBuilder of(DockerCompose executable) {
         return new DockerCompositionBuilder(executable);
     }
 
-    private DockerComposition(DockerComposeExecutable dockerComposeProcess,
+    private DockerComposition(DockerCompose dockerComposeProcess,
                               Map<Container, Function<Container, Boolean>> servicesToWaitFor,
                               Duration serviceTimeout,
                               LogCollector logCollector,
@@ -150,12 +151,12 @@ public class DockerComposition extends ExternalResource {
     public static class DockerCompositionBuilder {
 
         private final Map<String, Function<Container, Boolean>> containersToWaitFor = new HashMap<>();
-        private final DockerComposeExecutable dockerComposeProcess;
+        private final DockerCompose dockerComposeProcess;
         private final ContainerCache containers;
         private Duration serviceTimeout = Duration.standardMinutes(2);
         private LogCollector logCollector = new DoNothingLogCollector();
 
-        public DockerCompositionBuilder(DockerComposeExecutable dockerComposeProcess) {
+        public DockerCompositionBuilder(DockerCompose dockerComposeProcess) {
             this.dockerComposeProcess = dockerComposeProcess;
             this.containers = new ContainerCache(dockerComposeProcess);
         }

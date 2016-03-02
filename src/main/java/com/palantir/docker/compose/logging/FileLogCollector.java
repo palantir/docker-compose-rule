@@ -28,7 +28,7 @@
 package com.palantir.docker.compose.logging;
 
 import com.palantir.docker.compose.connection.ContainerNames;
-import com.palantir.docker.compose.execution.DockerComposeExecutable;
+import com.palantir.docker.compose.execution.DockerCompose;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,7 +54,7 @@ public class FileLogCollector implements LogCollector {
     }
 
     @Override
-    public synchronized void startCollecting(DockerComposeExecutable dockerCompose) throws IOException, InterruptedException {
+    public synchronized void startCollecting(DockerCompose dockerCompose) throws IOException, InterruptedException {
         if (executor != null) {
             throw new RuntimeException("Cannot start collecting the same logs twice");
         }
@@ -67,7 +67,7 @@ public class FileLogCollector implements LogCollector {
                       .forEachOrdered(container -> this.collectLogs(container, dockerCompose));
     }
 
-    private void collectLogs(String container, DockerComposeExecutable dockerCompose)  {
+    private void collectLogs(String container, DockerCompose dockerCompose)  {
         executor.submit(() -> {
             File outputFile = new File(logDirectory, container + ".log");
             log.info("Writing logs for container '{}' to '{}'", container, outputFile.getAbsolutePath());
