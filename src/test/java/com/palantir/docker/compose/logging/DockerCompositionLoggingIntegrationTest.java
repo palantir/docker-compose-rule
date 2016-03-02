@@ -28,7 +28,6 @@
 package com.palantir.docker.compose.logging;
 
 import com.palantir.docker.compose.DockerComposition;
-import com.palantir.docker.compose.connection.DockerMachine;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -50,12 +49,9 @@ public class DockerCompositionLoggingIntegrationTest {
 
     private DockerComposition loggingComposition;
 
-    private final DockerMachine localMachine = DockerMachine.localMachine()
-                                                            .build();
-
     @Before
     public void setUp() throws Exception {
-        loggingComposition = DockerComposition.of("src/test/resources/docker-compose.yaml", localMachine)
+        loggingComposition = DockerComposition.of("src/test/resources/docker-compose.yaml")
                                               .waitingForService("db")
                                               .waitingForService("db2")
                                               .saveLogsTo(logFolder.getRoot().getAbsolutePath())

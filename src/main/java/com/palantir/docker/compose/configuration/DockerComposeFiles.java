@@ -25,60 +25,56 @@
  * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
  * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.palantir.docker.compose.execution;
-
-import com.palantir.docker.compose.configuration.DockerComposeFiles;
-import com.palantir.docker.compose.connection.DockerMachine;
-import org.apache.commons.lang3.StringUtils;
-import org.joda.time.Duration;
+package com.palantir.docker.compose.configuration;
 
 import java.io.File;
-import java.io.IOException;
-import java.util.Collections;
+import java.util.Collection;
 import java.util.List;
 
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkState;
 import static com.google.common.collect.Lists.newArrayList;
-import static java.util.Arrays.asList;
-import static java.util.concurrent.TimeUnit.MILLISECONDS;
-import static org.joda.time.Duration.standardMinutes;
+import static java.util.stream.Collectors.joining;
+import static java.util.stream.Collectors.toList;
 
+public class DockerComposeFiles {
 
-public class DockerComposeExecutor {
+    private final List<File> dockerComposeFiles;
 
-    private static final List<String> dockerComposeLocations = asList("/usr/local/bin/docker-compose",
-                                                                      System.getenv("DOCKER_COMPOSE_LOCATION"));
-    public static final Duration COMMAND_TIMEOUT = standardMinutes(2);
-
-    private final DockerComposeFiles dockerComposeFiles;
-    private final DockerMachine dockerMachine;
-
-    public DockerComposeExecutor(DockerComposeFiles dockerComposeFiles, DockerMachine dockerMachine) {
+    public DockerComposeFiles(List<File> dockerComposeFiles) {
         this.dockerComposeFiles = dockerComposeFiles;
-        this.dockerMachine = dockerMachine;
     }
 
-    public Process executeAndWait(String... commands) throws IOException, InterruptedException {
-        Process dockerCompose = execute(commands);
-        dockerCompose.waitFor(COMMAND_TIMEOUT.getMillis(), MILLISECONDS);
-        return dockerCompose;
+    public static DockerComposeFiles from(String... dockerComposeFilenames) {
+        List<File> dockerComposeFiles = newArrayList(dockerComposeFilenames).stream()
+                .map(File::new)
+                .collect(toList());
+        validateAtLeastOneComposeFileSpecified(dockerComposeFiles);
+        validateComposeFilesExist(dockerComposeFiles);
+        return new DockerComposeFiles(dockerComposeFiles);
     }
 
-    public Process execute(String... commands) throws IOException {
-        List<String> args = newArrayList(getDockerComposePath());
-        args.addAll(dockerComposeFiles.constructComposeFileCommand());
-        Collections.addAll(args, commands);
-        return dockerMachine.configDockerComposeProcess()
-                            .command(args)
-                            .redirectErrorStream(true)
-                            .start();
+    public List<String> constructComposeFileCommand() {
+        return dockerComposeFiles.stream()
+                .map(File::getAbsolutePath)
+                .map(f -> newArrayList("--file", f))
+                .flatMap(Collection::stream)
+                .collect(toList());
     }
 
-    private static String getDockerComposePath() {
-        return dockerComposeLocations.stream()
-                .filter(StringUtils::isNotBlank)
-                .filter(path -> new File(path).exists())
-                .findAny()
-                .orElseThrow(() -> new IllegalStateException("Could not find docker-compose, looked in: " + dockerComposeLocations));
+    private static void validateAtLeastOneComposeFileSpecified(List<File> dockerComposeFiles) {
+        checkArgument(!dockerComposeFiles.isEmpty(), "A docker compose file must be specified.");
+    }
+
+    private static void validateComposeFilesExist(List<File> dockerComposeFiles) {
+        List<File> missingFiles = dockerComposeFiles.stream()
+                                                    .filter(f -> !f.exists())
+                                                    .collect(toList());
+
+        String errorMessage = missingFiles.stream()
+                .map(File::getAbsolutePath)
+                .collect(joining(", ", "The following docker-compose files: ", " do not exist."));
+        checkState(missingFiles.isEmpty(), errorMessage);
     }
 
 }
