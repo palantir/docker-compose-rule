@@ -40,19 +40,22 @@ import static java.util.Arrays.asList;
 
 public class DockerComposeExecutable {
 
-    private static final List<String> dockerComposeLocations = asList("/usr/local/bin/docker-compose",
-                                                                      System.getenv("DOCKER_COMPOSE_LOCATION"));
+    private static final List<String> dockerComposeLocations = asList(
+            "/usr/local/bin/docker-compose",
+            System.getenv("DOCKER_COMPOSE_LOCATION"));
 
     private final File dockerComposeFile;
     private final DockerConfiguration dockerConfiguration;
+    private final String dockerComposePath;
 
     public DockerComposeExecutable(File dockerComposeFile, DockerConfiguration dockerConfiguration) {
+        this.dockerComposePath = findDockerComposePath();
         this.dockerComposeFile = dockerComposeFile;
         this.dockerConfiguration = dockerConfiguration;
     }
 
     public Process execute(String... commands) throws IOException {
-        List<String> args = Lists.newArrayList(getDockerComposePath(), "-f", dockerComposeFile.getAbsolutePath());
+        List<String> args = Lists.newArrayList(dockerComposePath, "-f", dockerComposeFile.getAbsolutePath());
         Collections.addAll(args, commands);
         return dockerConfiguration.configuredDockerComposeProcess()
                 .command(args)
@@ -60,12 +63,13 @@ public class DockerComposeExecutable {
                 .start();
     }
 
-    private static String getDockerComposePath() {
+    private static String findDockerComposePath() {
         return dockerComposeLocations.stream()
-                                     .filter(StringUtils::isNotBlank)
-                                     .filter(path -> new File(path).exists())
-                                     .findAny()
-                                     .orElseThrow(() -> new IllegalStateException("Could not find docker-compose, looked in: " + dockerComposeLocations));
+                .filter(StringUtils::isNotBlank)
+                .filter(path -> new File(path).exists())
+                .findAny()
+                .orElseThrow(() -> new IllegalStateException(
+                        "Could not find docker-compose, looked in: " + dockerComposeLocations));
     }
 
 }
