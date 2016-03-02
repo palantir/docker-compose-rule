@@ -170,7 +170,7 @@ public class FileLogCollectorTest {
     }
 
     @Test
-    public void aStartedCollectorCannotBeStarteda_secondTime() throws IOException, InterruptedException {
+    public void a_started_collector_cannot_be_starteda_second_time() throws IOException, InterruptedException {
         when(compose.ps()).thenReturn(new ContainerNames("db"));
         logCollector.startCollecting(compose);
         exception.expect(RuntimeException.class);
