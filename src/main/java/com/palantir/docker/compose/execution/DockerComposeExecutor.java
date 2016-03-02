@@ -30,7 +30,6 @@ package com.palantir.docker.compose.execution;
 import com.palantir.docker.compose.configuration.DockerComposeFiles;
 import com.palantir.docker.compose.connection.DockerMachine;
 import org.apache.commons.lang3.StringUtils;
-import org.joda.time.Duration;
 
 import java.io.File;
 import java.io.IOException;
@@ -39,15 +38,12 @@ import java.util.List;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static java.util.Arrays.asList;
-import static java.util.concurrent.TimeUnit.MILLISECONDS;
-import static org.joda.time.Duration.standardMinutes;
 
 
 public class DockerComposeExecutor {
 
     private static final List<String> dockerComposeLocations = asList("/usr/local/bin/docker-compose",
                                                                       System.getenv("DOCKER_COMPOSE_LOCATION"));
-    public static final Duration COMMAND_TIMEOUT = standardMinutes(2);
 
     private final DockerComposeFiles dockerComposeFiles;
     private final DockerMachine dockerMachine;
@@ -55,12 +51,6 @@ public class DockerComposeExecutor {
     public DockerComposeExecutor(DockerComposeFiles dockerComposeFiles, DockerMachine dockerMachine) {
         this.dockerComposeFiles = dockerComposeFiles;
         this.dockerMachine = dockerMachine;
-    }
-
-    public Process executeAndWait(String... commands) throws IOException, InterruptedException {
-        Process dockerCompose = execute(commands);
-        dockerCompose.waitFor(COMMAND_TIMEOUT.getMillis(), MILLISECONDS);
-        return dockerCompose;
     }
 
     public Process execute(String... commands) throws IOException {
