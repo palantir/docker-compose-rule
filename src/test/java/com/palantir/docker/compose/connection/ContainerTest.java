@@ -55,47 +55,47 @@ public class ContainerTest {
     private final Container service = new Container("service", dockerComposeProcess);
 
     @Test
-    public void waitingForAContainersPortsWaitsForThePortsFromDockerComposePsToBeAvailable() throws IOException, InterruptedException {
+    public void waiting_for_a_containers_ports_waits_for_the_ports_from_docker_compose_ps_to_be_available() throws IOException, InterruptedException {
         DockerPort port = env.availableService("service", IP, 5433, 5432);
         assertThat(service.waitForPorts(Duration.millis(100)), is(true));
         verify(port, atLeastOnce()).isListeningNow();
     }
 
     @Test
-    public void waitForAContainersPortsReturnsFalseWhenThePortIsUnavailable() throws IOException, InterruptedException {
+    public void wait_for_a_containers_ports_returns_false_when_the_port_is_unavailable() throws IOException, InterruptedException {
         env.unavailableService("service", IP, 5433, 5432);
         assertThat(service.waitForPorts(Duration.millis(100)), is(false));
     }
 
     @Test
-    public void waitingForAContainersHttpPortsWaitsForThePortsFromDockerComposePsToBeAvailable() throws IOException, InterruptedException {
+    public void waiting_for_a_containers_http_ports_waits_for_the_ports_from_docker_compose_ps_to_be_available() throws IOException, InterruptedException {
         DockerPort port = env.availableHttpService("service", IP, 5433, 5432);
         assertThat(service.waitForHttpPort(5432, (p) -> "url", Duration.millis(100)), is(true));
         verify(port, atLeastOnce()).isListeningNow();
     }
 
     @Test
-    public void waitForAContainersHttpPortsReturnsFalseWhenThePortIsUnavailable() throws IOException, InterruptedException {
+    public void wait_for_a_containers_http_ports_returns_false_when_the_port_is_unavailable() throws IOException, InterruptedException {
         env.unavailableService("service", IP, 5433, 5432);
         assertThat(service.waitForHttpPort(5432, (p) -> "url", Duration.millis(100)), is(false));
     }
 
     @Test
-    public void portIsReturnedForContainerWhenExternalPortNumberGiven() throws IOException, InterruptedException {
+    public void port_is_returned_for_container_when_external_port_number_given() throws IOException, InterruptedException {
         DockerPort expected = env.availableService("service", IP, 5433, 5432);
         DockerPort port = service.portMappedExternallyTo(5433);
         assertThat(port, is(expected));
     }
 
     @Test
-    public void portIsReturnedForContainerWhenInternalPortNumberGiven() throws IOException, InterruptedException {
+    public void port_is_returned_for_container_when_internal_port_number_given() throws IOException, InterruptedException {
         DockerPort expected = env.availableService("service", IP, 5433, 5432);
         DockerPort port = service.portMappedInternallyTo(5432);
         assertThat(port, is(expected));
     }
 
     @Test
-    public void whenTwoPortsAreRequestedDockerPortsIsOnlyCalledOnce() throws IOException, InterruptedException {
+    public void when_two_ports_are_requested_docker_ports_is_only_called_once() throws IOException, InterruptedException {
         env.ports("service", IP, 8080, 8081);
         service.portMappedInternallyTo(8080);
         service.portMappedInternallyTo(8081);
@@ -103,7 +103,7 @@ public class ContainerTest {
     }
 
     @Test
-    public void requestedAPortForAnUnknownExternalPortResultsInAnIAE() throws IOException, InterruptedException {
+    public void requested_a_port_for_an_unknown_external_port_results_in_an_illegal_argument_exception() throws IOException, InterruptedException {
         env.availableService("service", IP, 5400, 5400); // Service must have ports otherwise we end up with an exception telling you the service is listening at all
         exception.expect(IllegalArgumentException.class);
         exception.expectMessage("No port mapped externally to '5432' for container 'service'");
@@ -111,7 +111,7 @@ public class ContainerTest {
     }
 
     @Test
-    public void requestedAPortForAnUnknownInternalPortResultsInAnIAE() throws IOException, InterruptedException {
+    public void requested_a_port_for_an_unknown_internal_port_results_in_an_illegal_argument_exception() throws IOException, InterruptedException {
         env.availableService("service", IP, 5400, 5400);
         exception.expect(IllegalArgumentException.class);
         exception.expectMessage("No internal port '5432' for container 'service'");

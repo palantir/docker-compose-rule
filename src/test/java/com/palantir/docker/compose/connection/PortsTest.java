@@ -57,7 +57,7 @@ public class PortsTest {
     }
 
     @Test
-    public void noPortsInPsOutputResultsInNoPorts() throws IOException, InterruptedException {
+    public void no_ports_in_ps_output_results_in_no_ports() throws IOException, InterruptedException {
         String psOutput = "------";
         Ports ports = Ports.parseFromDockerComposePs(psOutput, null);
         Ports expected = new Ports(emptyList());
@@ -65,7 +65,7 @@ public class PortsTest {
     }
 
     @Test
-    public void singleTcpPortMappingResultsInSinglePort() throws IOException, InterruptedException {
+    public void single_tcp_port_mapping_results_in_single_port() throws IOException, InterruptedException {
         String psOutput = "0.0.0.0:5432->5432/tcp";
         Ports ports = Ports.parseFromDockerComposePs(psOutput, LOCALHOST_IP);
         Ports expected = new Ports(newArrayList(new DockerPort(LOCALHOST_IP, 5432, 5432)));
@@ -73,7 +73,7 @@ public class PortsTest {
     }
 
     @Test
-    public void singleTcpPortMappingResultsInSinglePortWithIpOtherThanLocalhost() throws IOException, InterruptedException {
+    public void single_tcp_port_mapping_results_in_single_port_with_ip_other_than_localhost() throws IOException, InterruptedException {
         String psOutput = "10.0.1.2:1234->2345/tcp";
         Ports ports = Ports.parseFromDockerComposePs(psOutput, LOCALHOST_IP);
         Ports expected = new Ports(newArrayList(new DockerPort("10.0.1.2", 1234, 2345)));
@@ -81,7 +81,7 @@ public class PortsTest {
     }
 
     @Test
-    public void twoTcpPortMappingsResultsInTwoPorts() throws IOException, InterruptedException {
+    public void two_tcp_port_mappings_results_in_two_ports() throws IOException, InterruptedException {
         String psOutput = "0.0.0.0:5432->5432/tcp, 0.0.0.0:5433->5432/tcp";
         Ports ports = Ports.parseFromDockerComposePs(psOutput, LOCALHOST_IP);
         Ports expected = new Ports(newArrayList(new DockerPort(LOCALHOST_IP, 5432, 5432),
@@ -90,7 +90,7 @@ public class PortsTest {
     }
 
     @Test
-    public void nonMappedExposedPortResultsInNoPorts() throws IOException, InterruptedException {
+    public void non_mapped_exposed_port_results_in_no_ports() throws IOException, InterruptedException {
         String psOutput = "5432/tcp";
         Ports ports = Ports.parseFromDockerComposePs(psOutput, LOCALHOST_IP);
         Ports expected = new Ports(emptyList());
@@ -98,7 +98,7 @@ public class PortsTest {
     }
 
     @Test
-    public void actualDockerComposeOutputCanBeParsed() throws IOException, InterruptedException {
+    public void actual_docker_compose_output_can_be_parsed() throws IOException, InterruptedException {
         String psOutput =
                 "       Name                      Command               State                                         Ports                                        \n" +
                         "-------------------------------------------------------------------------------------------------------------------------------------------------\n" +
@@ -110,7 +110,7 @@ public class PortsTest {
     }
 
     @Test
-    public void noRunningContainerFoundForServiceResultsInAnISE() throws IOException, InterruptedException {
+    public void no_running_container_found_for_service_results_in_an_illegal_state_exception() throws IOException, InterruptedException {
         exception.expect(IllegalArgumentException.class);
         exception.expectMessage("No container found");
         Ports.parseFromDockerComposePs("", "");
@@ -118,13 +118,13 @@ public class PortsTest {
 
 
     @Test
-    public void whenAllPortsAreListeningWaitToBeListeningReturnsWithoutException() throws InterruptedException {
+    public void when_all_ports_are_listening_wait_to_be_listening_returns_without_exception() throws InterruptedException {
         when(port.isListeningNow()).thenReturn(true);
         new Ports(port).waitToBeListeningWithin(Duration.millis(200));
     }
 
     @Test
-    public void whenPortIsUnavailableWaitToBeListeningThrowsAnISE() throws InterruptedException {
+    public void when_port_is_unavailable_wait_to_be_listening_throws_an_illegal_state_exception() throws InterruptedException {
         when(port.isListeningNow()).thenReturn(false);
         exception.expect(IllegalStateException.class);
         exception.expectMessage("ConditionTimeoutException"); // Bug in awaitility means it doesn't call hamcrest describeMismatch, this will be "Internal port '7001' mapped to '7000'" was unavailable in practice
@@ -132,7 +132,7 @@ public class PortsTest {
     }
 
     @Test
-    public void whenPortBecomesAvailableAfterAWaitWaitToBeListeningReturnsWithoutException() throws InterruptedException {
+    public void when_port_becomes_available_after_a_wait_wait_to_be_listening_returns_without_exception() throws InterruptedException {
         when(port.isListeningNow()).thenReturn(false, true);
         new Ports(port).waitToBeListeningWithin(Duration.millis(200));
     }

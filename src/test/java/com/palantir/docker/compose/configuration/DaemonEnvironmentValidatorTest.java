@@ -46,7 +46,7 @@ public class DaemonEnvironmentValidatorTest {
     public ExpectedException exception = ExpectedException.none();
 
     @Test
-    public void dockerEnvironmentDoesNotContainDockerVariables() throws Exception {
+    public void docker_environment_does_not_contain_docker_variables() throws Exception {
         Map<String, String> variables = ImmutableMap.<String, String>builder()
                                                     .put("SOME_VARIABLE", "SOME_VALUE")
                                                     .put("ANOTHER_VARIABLE", "ANOTHER_VALUE")
@@ -56,7 +56,7 @@ public class DaemonEnvironmentValidatorTest {
     }
 
     @Test
-    public void dockerEnvironmentContainsIllegalDockerVariables() throws Exception {
+    public void docker_environment_contains_illegal_docker_variables() throws Exception {
         Map<String, String> variables = ImmutableMap.<String, String>builder()
                 .put(DOCKER_HOST, "tcp://192.168.99.100:2376")
                 .put(DOCKER_TLS_VERIFY, "1")
