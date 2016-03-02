@@ -61,7 +61,7 @@ public class DockerMachine implements DockerConfiguration {
     }
 
     @Override
-    public ProcessBuilder configDockerComposeProcess() {
+    public ProcessBuilder configuredDockerComposeProcess() {
         ProcessBuilder process = new ProcessBuilder();
         augmentGivenEnvironment(process.environment());
         return process;

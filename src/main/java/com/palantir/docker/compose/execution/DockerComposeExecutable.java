@@ -56,7 +56,7 @@ public class DockerComposeExecutable {
         List<String> args = newArrayList(getDockerComposePath());
         args.addAll(dockerComposeFiles.constructComposeFileCommand());
         Collections.addAll(args, commands);
-        return dockerConfiguration.configDockerComposeProcess()
+        return dockerConfiguration.configuredDockerComposeProcess()
                 .command(args)
                 .redirectErrorStream(true)
                 .start();

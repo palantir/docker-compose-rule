@@ -28,5 +28,5 @@
 package com.palantir.docker.compose.execution;
 
 public interface DockerConfiguration {
-    ProcessBuilder configDockerComposeProcess();
+    ProcessBuilder configuredDockerComposeProcess();
 }
