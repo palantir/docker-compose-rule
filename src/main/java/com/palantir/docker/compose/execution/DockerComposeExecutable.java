@@ -54,7 +54,7 @@ public class DockerComposeExecutable {
     public Process execute(String... commands) throws IOException {
         List<String> args = Lists.newArrayList(getDockerComposePath(), "-f", dockerComposeFile.getAbsolutePath());
         Collections.addAll(args, commands);
-        return dockerConfiguration.configDockerComposeProcess()
+        return dockerConfiguration.configuredDockerComposeProcess()
                 .command(args)
                 .redirectErrorStream(true)
                 .start();
