@@ -27,15 +27,14 @@
  */
 package com.palantir.docker.compose.execution;
 
+import com.google.common.collect.ImmutableList;
 import com.palantir.docker.compose.configuration.DockerComposeFiles;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Collections;
 import java.util.List;
 
-import static com.google.common.collect.Lists.newArrayList;
 import static java.util.Arrays.asList;
 
 
@@ -56,9 +55,12 @@ public class DockerComposeExecutable {
     }
 
     public Process execute(String... commands) throws IOException {
-        List<String> args = newArrayList(dockerComposePath);
-        args.addAll(dockerComposeFiles.constructComposeFileCommand());
-        Collections.addAll(args, commands);
+        List<String> args = ImmutableList.<String>builder()
+                .add(dockerComposePath)
+                .addAll(dockerComposeFiles.constructComposeFileCommand())
+                .add(commands)
+                .build();
+
         return dockerConfiguration.configuredDockerComposeProcess()
                 .command(args)
                 .redirectErrorStream(true)
