@@ -60,7 +60,7 @@ public class DockerCompositionLoggingIntegrationTest {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void logsCanBeSavedToADirectory() throws IOException, InterruptedException {
+    public void logs_can_be_saved_to_a_directory() throws IOException, InterruptedException {
         try {
             loggingComposition.before();
         } finally {

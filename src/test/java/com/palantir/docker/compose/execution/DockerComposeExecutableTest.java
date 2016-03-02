@@ -69,19 +69,19 @@ public class DockerComposeExecutableTest {
     }
 
     @Test
-    public void upCallsDockerComposeUpWithDaemonFlag() throws IOException, InterruptedException {
+    public void up_calls_docker_compose_up_with_daemon_flag() throws IOException, InterruptedException {
         compose.up();
         verify(executor).executeAndWait("up", "-d");
     }
 
     @Test
-    public void rmCallsDockerComposeRmWithFFlag() throws IOException, InterruptedException {
+    public void rm_calls_docker_compose_rm_with_f_flag() throws IOException, InterruptedException {
         compose.rm();
         verify(executor).executeAndWait("rm", "-f");
     }
 
     @Test
-    public void psParsesAndReturnsContainerNames() throws IOException, InterruptedException {
+    public void ps_parses_and_returns_container_names() throws IOException, InterruptedException {
         when(executedProcess.getInputStream()).thenReturn(byteArrayInputStreamOf("ps\n----\ndir_db_1"));
         ContainerNames containerNames = compose.ps();
         verify(executor).executeAndWait("ps");
@@ -89,7 +89,7 @@ public class DockerComposeExecutableTest {
     }
 
     @Test
-    public void logsCallsDockerComposeWithNoColourFlag() throws IOException, InterruptedException {
+    public void logs_calls_docker_compose_with_no_colour_flag() throws IOException, InterruptedException {
         when(executedProcess.getInputStream()).thenReturn(byteArrayInputStreamOf("logs"));
         ByteArrayOutputStream output = new ByteArrayOutputStream();
         compose.writeLogs("db", output);
@@ -98,7 +98,7 @@ public class DockerComposeExecutableTest {
     }
 
     @Test
-    public void whenKillExitsWithANonZeroExitCodeAnExceptionIsThrown() throws IOException, InterruptedException {
+    public void when_kill_exits_with_a_non_zero_exit_code_an_exception_is_thrown() throws IOException, InterruptedException {
         when(executedProcess.exitValue()).thenReturn(1);
         exception.expect(IllegalStateException.class);
         exception.expectMessage("'docker-compose kill' returned exit code 1");
@@ -106,14 +106,14 @@ public class DockerComposeExecutableTest {
     }
 
     @Test
-    public void whenDownFailsBecauseTheCommandDoesNotExistAnExceptionIsNotThrown() throws IOException, InterruptedException {
+    public void when_down_fails_because_the_command_does_not_exist_then_an_exception_is_not_thrown() throws IOException, InterruptedException {
         when(executedProcess.exitValue()).thenReturn(1);
         when(executedProcess.getInputStream()).thenReturn(byteArrayInputStreamOf("No such command: down"));
         compose.down();
     }
 
     @Test
-    public void whenDownFailsBecauseForAReasonOtherThanTheCommandNotBeingPresentThenAnExceptionIsThrown() throws IOException, InterruptedException {
+    public void when_down_fails_for_a_reason_other_than_the_command_not_being_present_then_an_exception_is_thrown() throws IOException, InterruptedException {
         when(executedProcess.exitValue()).thenReturn(1);
         when(executedProcess.getInputStream()).thenReturn(byteArrayInputStreamOf(""));
 
@@ -123,14 +123,14 @@ public class DockerComposeExecutableTest {
     }
 
     @Test
-    public void callingPortsParsesThePsOutput() throws IOException, InterruptedException {
+    public void calling_ports_parses_the_ps_output() throws IOException, InterruptedException {
         Ports ports = compose.ports("db");
         verify(executor).executeAndWait("ps", "db");
         assertThat(ports, is(new Ports(new DockerPort("0.0.0.0", 7000, 7000))));
     }
 
     @Test
-    public void whenThereIsNoContainerFoundForPortsAnISEIsThrown() throws IOException, InterruptedException {
+    public void when_there_is_no_container_found_for_ports_an_i_s_e_is_thrown() throws IOException, InterruptedException {
         when(executedProcess.getInputStream()).thenReturn(byteArrayInputStreamOf(""));
         exception.expect(IllegalStateException.class);
         exception.expectMessage("No container with name 'db' found");

@@ -45,7 +45,7 @@ public class DockerComposeExecutorIntegrationTest {
     public TemporaryFolder temporaryFolder = new TemporaryFolder();
 
     @Test
-    public void dockerComposeGetsEnvironmentVariablesFromDockerMachineAndPassesItIntoATestContainer() throws Exception {
+    public void docker_compose_gets_environment_variables_from_docker_machine_and_passes_it_into_a_test_container() throws Exception {
         DockerMachine dockerMachine = DockerMachine.localMachine()
                                                    .withAdditionalEnvironmentVariable("SOME_VARIABLE", "SOME_VALUE")
                                                    .build();

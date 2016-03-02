@@ -37,31 +37,31 @@ import static org.junit.Assert.assertThat;
 public class ContainerNamesTest {
 
     @Test
-    public void emptyPsOutputResultsInNoContainerNames() {
+    public void empty_ps_output_results_in_no_container_names() {
         ContainerNames names = ContainerNames.parseFromDockerComposePs("\n----\n");
         assertThat(names, is(new ContainerNames(emptyList())));
     }
 
     @Test
-    public void psOutputWithASingleContainerResultsInASingleContainerName() {
+    public void ps_output_with_a_single_container_results_in_a_single_container_name() {
         ContainerNames names = ContainerNames.parseFromDockerComposePs("\n----\ndir_db_1 other line contents");
         assertThat(names, is(new ContainerNames("db")));
     }
 
     @Test
-    public void psOutputWithTwoContainersResultsInATwoContainerName() {
+    public void ps_output_with_two_containers_results_in_a_two_container_name() {
         ContainerNames names = ContainerNames.parseFromDockerComposePs("\n----\ndir_db_1 other line contents\ndir_db2_1 other stuff");
         assertThat(names, is(new ContainerNames(asList("db", "db2"))));
     }
 
     @Test
-    public void anEmptyLineInPsOutputIsIgnored() {
+    public void an_empty_line_in_ps_output_is_ignored() {
         ContainerNames names = ContainerNames.parseFromDockerComposePs("\n----\ndir_db_1 other line contents\n\n");
         assertThat(names, is(new ContainerNames("db")));
     }
 
     @Test
-    public void aLineWithOnySpacesInPsOutputIsIgnored() {
+    public void a_line_with_ony_spaces_in_ps_output_is_ignored() {
         ContainerNames names = ContainerNames.parseFromDockerComposePs("\n----\ndir_db_1 other line contents\n   \n");
         assertThat(names, is(new ContainerNames("db")));
     }
