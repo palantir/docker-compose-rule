@@ -27,29 +27,35 @@
  */
 package com.palantir.docker.compose.execution;
 
+import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.runners.MockitoJUnitRunner;
 
 import java.io.IOException;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.mockito.Matchers.anyVararg;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+@RunWith(MockitoJUnitRunner.class)
 public class SynchronousDockerComposeExecutableShould {
-    private Process executedProcess = mock(Process.class);
+    private Process executedProcess;
+    private DockerComposeExecutable dockerComposeExecutable;
+    private SynchronousDockerComposeExecutable dockerCompose;
+
+    @Before
+    public void setup() throws IOException {
+        when(dockerComposeExecutable.execute(anyVararg())).thenReturn(executedProcess);
+        dockerCompose = new SynchronousDockerComposeExecutable(dockerComposeExecutable);
+    }
 
     @Test public void
     respond_with_the_process_exit_code() throws IOException {
         givenTheProcessTerminatesWithAnExitCodeOf(1);
-        DockerComposeExecutable dockerComposeExecutable = mock(DockerComposeExecutable.class);
-        when(dockerComposeExecutable.execute(anyVararg())).thenReturn(executedProcess);
 
-        SynchronousDockerComposeExecutable dockerCompose = new SynchronousDockerComposeExecutable(dockerComposeExecutable);
-
-        ProcessResult result = dockerCompose.run("rm", "-f");
-        assertThat(result.exitCode(), is(1));
+        assertThat(dockerCompose.run("rm", "-f").exitCode(), is(1));
     }
 
     private void givenTheProcessTerminatesWithAnExitCodeOf(int exitCode) {
