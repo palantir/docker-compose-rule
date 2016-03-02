@@ -68,43 +68,27 @@ public class DockerCompose {
     }
 
     public void build() throws IOException, InterruptedException {
-        executeDockerComposeCommand("build");
+        executeDockerComposeCommand(throwingOnError(), "build");
+    }
+
+    public void up() throws IOException, InterruptedException {
+        executeDockerComposeCommand(throwingOnError(), "up", "-d");
     }
 
     public void down() throws IOException, InterruptedException {
         executeDockerComposeCommand(swallowingDownCommandDoesNotExist(), "down");
     }
 
-    private ErrorHandler swallowingDownCommandDoesNotExist() {
-        return (exitCode, output, commands) -> {
-            if(downCommandWasPresent(output)) {
-                throwingOnError().handle(exitCode, output, commands);
-            }
-
-            log.warn("It looks like `docker-compose down` didn't work.");
-            log.warn("This probably means your version of docker-compose doesn't support the `down` command");
-            log.warn("Updating to version 1.6+ of docker-compose is likely to fix this issue.");
-        };
-    }
-
-    private boolean downCommandWasPresent(String output) {
-        return !output.contains("No such command");
-    }
-
-    public void up() throws IOException, InterruptedException {
-        executeDockerComposeCommand("up",  "-d");
-    }
-
     public void kill() throws IOException, InterruptedException {
-        executeDockerComposeCommand("kill");
+        executeDockerComposeCommand(throwingOnError(), "kill");
     }
 
     public void rm() throws IOException, InterruptedException {
-        executeDockerComposeCommand("rm", "-f");
+        executeDockerComposeCommand(throwingOnError(), "rm", "-f");
     }
 
     public ContainerNames ps() throws IOException, InterruptedException {
-        String psOutput = executeDockerComposeCommand("ps");
+        String psOutput = executeDockerComposeCommand(throwingOnError(), "ps");
         return ContainerNames.parseFromDockerComposePs(psOutput);
     }
 
@@ -128,14 +112,9 @@ public class DockerCompose {
     }
 
     public Ports ports(String service) throws IOException, InterruptedException {
-        String psOutput = executeDockerComposeCommand("ps", service);
+        String psOutput = executeDockerComposeCommand(throwingOnError(), "ps", service);
         validState(!Strings.isNullOrEmpty(psOutput), "No container with name '" + service + "' found");
         return Ports.parseFromDockerComposePs(psOutput, dockerMachine.getIp());
-    }
-
-
-    private String executeDockerComposeCommand(String... commands) throws IOException, InterruptedException {
-        return executeDockerComposeCommand(throwingOnError(), commands);
     }
 
     private ErrorHandler throwingOnError() {
@@ -168,8 +147,25 @@ public class DockerCompose {
         return output;
     }
 
+
     private String constructNonZeroExitErrorMessage(int exitCode, String... commands) {
         return "'docker-compose " + Arrays.stream(commands).collect(joining(" ")) + "' returned exit code " + exitCode;
+    }
+
+    private ErrorHandler swallowingDownCommandDoesNotExist() {
+        return (exitCode, output, commands) -> {
+            if(downCommandWasPresent(output)) {
+                throwingOnError().handle(exitCode, output, commands);
+            }
+
+            log.warn("It looks like `docker-compose down` didn't work.");
+            log.warn("This probably means your version of docker-compose doesn't support the `down` command");
+            log.warn("Updating to version 1.6+ of docker-compose is likely to fix this issue.");
+        };
+    }
+
+    private boolean downCommandWasPresent(String output) {
+        return !output.contains("No such command");
     }
 
 }
