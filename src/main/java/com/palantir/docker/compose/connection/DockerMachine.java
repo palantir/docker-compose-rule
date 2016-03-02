@@ -35,6 +35,7 @@ import com.palantir.docker.compose.configuration.DockerType;
 import com.palantir.docker.compose.configuration.HostIpResolver;
 import com.palantir.docker.compose.configuration.RemoteEnvironmentValidator;
 import com.palantir.docker.compose.configuration.RemoteHostIpResolver;
+import com.palantir.docker.compose.execution.DockerConfiguration;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -45,7 +46,7 @@ import static com.palantir.docker.compose.configuration.EnvironmentVariables.DOC
 import static com.palantir.docker.compose.configuration.EnvironmentVariables.DOCKER_HOST;
 import static com.palantir.docker.compose.configuration.EnvironmentVariables.DOCKER_TLS_VERIFY;
 
-public class DockerMachine {
+public class DockerMachine implements DockerConfiguration {
 
     private final String hostIp;
     private final Map<String, String> environment;
@@ -59,6 +60,7 @@ public class DockerMachine {
         return hostIp;
     }
 
+    @Override
     public ProcessBuilder configDockerComposeProcess() {
         ProcessBuilder process = new ProcessBuilder();
         augmentGivenEnvironment(process.environment());

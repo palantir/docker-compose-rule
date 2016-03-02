@@ -27,47 +27,6 @@
  */
 package com.palantir.docker.compose.execution;
 
-import com.palantir.docker.compose.configuration.DockerComposeFiles;
-import org.apache.commons.lang3.StringUtils;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.Collections;
-import java.util.List;
-
-import static com.google.common.collect.Lists.newArrayList;
-import static java.util.Arrays.asList;
-
-
-public class DockerComposeExecutable {
-
-    private static final List<String> dockerComposeLocations = asList("/usr/local/bin/docker-compose",
-                                                                      System.getenv("DOCKER_COMPOSE_LOCATION"));
-
-    private final DockerComposeFiles dockerComposeFiles;
-    private final DockerConfiguration dockerConfiguration;
-
-    public DockerComposeExecutable(DockerComposeFiles dockerComposeFiles, DockerConfiguration dockerConfiguration) {
-        this.dockerComposeFiles = dockerComposeFiles;
-        this.dockerConfiguration = dockerConfiguration;
-    }
-
-    public Process execute(String... commands) throws IOException {
-        List<String> args = newArrayList(getDockerComposePath());
-        args.addAll(dockerComposeFiles.constructComposeFileCommand());
-        Collections.addAll(args, commands);
-        return dockerConfiguration.configDockerComposeProcess()
-                .command(args)
-                .redirectErrorStream(true)
-                .start();
-    }
-
-    private static String getDockerComposePath() {
-        return dockerComposeLocations.stream()
-                .filter(StringUtils::isNotBlank)
-                .filter(path -> new File(path).exists())
-                .findAny()
-                .orElseThrow(() -> new IllegalStateException("Could not find docker-compose, looked in: " + dockerComposeLocations));
-    }
-
+public interface DockerConfiguration {
+    ProcessBuilder configDockerComposeProcess();
 }
