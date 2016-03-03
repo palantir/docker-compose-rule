@@ -25,50 +25,56 @@
  * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
  * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.palantir.docker.compose.logging;
-
-import com.palantir.docker.compose.DockerComposition;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+package com.palantir.docker.compose.configuration;
 
 import java.io.File;
-import java.io.IOException;
+import java.util.Collection;
+import java.util.List;
 
-import static com.palantir.docker.compose.matchers.IOMatchers.fileContainingString;
-import static com.palantir.docker.compose.matchers.IOMatchers.fileWithName;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.arrayContainingInAnyOrder;
-import static org.hamcrest.core.Is.is;
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkState;
+import static com.google.common.collect.Lists.newArrayList;
+import static java.util.stream.Collectors.joining;
+import static java.util.stream.Collectors.toList;
 
-public class DockerCompositionLoggingIntegrationTest {
+public class DockerComposeFiles {
 
-    @Rule
-    public TemporaryFolder logFolder = new TemporaryFolder();
+    private final List<File> dockerComposeFiles;
 
-    private DockerComposition loggingComposition;
-
-    @Before
-    public void setUp() throws Exception {
-        loggingComposition = DockerComposition.of("src/test/resources/docker-compose.yaml")
-                                              .waitingForService("db")
-                                              .waitingForService("db2")
-                                              .saveLogsTo(logFolder.getRoot().getAbsolutePath())
-                                              .build();
+    public DockerComposeFiles(List<File> dockerComposeFiles) {
+        this.dockerComposeFiles = dockerComposeFiles;
     }
 
-    @SuppressWarnings("unchecked")
-    @Test
-    public void logs_can_be_saved_to_a_directory() throws IOException, InterruptedException {
-        try {
-            loggingComposition.before();
-        } finally {
-            loggingComposition.after();
-        }
-        assertThat(logFolder.getRoot().listFiles(), arrayContainingInAnyOrder(fileWithName("db.log"), fileWithName("db2.log")));
-        assertThat(new File(logFolder.getRoot(), "db.log"), is(fileContainingString("Attaching to resources_db_1")));
-        assertThat(new File(logFolder.getRoot(), "db2.log"), is(fileContainingString("Attaching to resources_db2_1")));
+    public static DockerComposeFiles from(String... dockerComposeFilenames) {
+        List<File> dockerComposeFiles = newArrayList(dockerComposeFilenames).stream()
+                .map(File::new)
+                .collect(toList());
+        validateAtLeastOneComposeFileSpecified(dockerComposeFiles);
+        validateComposeFilesExist(dockerComposeFiles);
+        return new DockerComposeFiles(dockerComposeFiles);
+    }
+
+    public List<String> constructComposeFileCommand() {
+        return dockerComposeFiles.stream()
+                .map(File::getAbsolutePath)
+                .map(f -> newArrayList("--file", f))
+                .flatMap(Collection::stream)
+                .collect(toList());
+    }
+
+    private static void validateAtLeastOneComposeFileSpecified(List<File> dockerComposeFiles) {
+        checkArgument(!dockerComposeFiles.isEmpty(), "A docker compose file must be specified.");
+    }
+
+    private static void validateComposeFilesExist(List<File> dockerComposeFiles) {
+        List<File> missingFiles = dockerComposeFiles.stream()
+                                                    .filter(f -> !f.exists())
+                                                    .collect(toList());
+
+        String errorMessage = missingFiles.stream()
+                .map(File::getAbsolutePath)
+                .collect(joining(", ", "The following docker-compose files: ", " do not exist."));
+        checkState(missingFiles.isEmpty(), errorMessage);
     }
 
 }

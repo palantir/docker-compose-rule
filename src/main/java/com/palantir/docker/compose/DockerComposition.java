@@ -30,6 +30,7 @@ package com.palantir.docker.compose;
 import com.google.common.collect.ImmutableMap;
 import com.jayway.awaitility.Awaitility;
 import com.jayway.awaitility.core.ConditionTimeoutException;
+import com.palantir.docker.compose.configuration.DockerComposeFiles;
 import com.palantir.docker.compose.connection.Container;
 import com.palantir.docker.compose.connection.ContainerCache;
 import com.palantir.docker.compose.connection.DockerMachine;
@@ -64,13 +65,21 @@ public class DockerComposition extends ExternalResource {
     private final LogCollector logCollector;
 
     public static DockerCompositionBuilder of(String dockerComposeFile) {
-        return of(dockerComposeFile,
+        return of(DockerComposeFiles.from(dockerComposeFile));
+    }
+
+    public static DockerCompositionBuilder of(DockerComposeFiles dockerComposeFiles) {
+        return of(dockerComposeFiles,
                   DockerMachine.localMachine()
                                .build());
     }
 
     public static DockerCompositionBuilder of(String dockerComposeFile, DockerMachine dockerMachine) {
-        return of(new DockerCompose(new File(dockerComposeFile), dockerMachine));
+        return of(DockerComposeFiles.from(dockerComposeFile), dockerMachine);
+    }
+
+    public static DockerCompositionBuilder of(DockerComposeFiles dockerComposeFiles, DockerMachine dockerMachine) {
+        return of(new DockerCompose(dockerComposeFiles, dockerMachine));
     }
 
     public static DockerCompositionBuilder of(DockerCompose executable) {

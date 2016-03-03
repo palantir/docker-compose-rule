@@ -27,7 +27,6 @@
  */
 package com.palantir.docker.compose;
 
-import com.palantir.docker.compose.connection.DockerMachine;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -40,10 +39,8 @@ import static org.hamcrest.core.Is.is;
 
 public class DockerCompositionIntegrationTest {
 
-    private final DockerMachine localMachine = DockerMachine.localMachine()
-                                                            .build();
     @Rule
-    public DockerComposition composition = DockerComposition.of("src/test/resources/docker-compose.yaml", localMachine)
+    public DockerComposition composition = DockerComposition.of("src/test/resources/docker-compose.yaml")
                                                             .waitingForService("db")
                                                             .waitingForService("db2")
                                                             .build();

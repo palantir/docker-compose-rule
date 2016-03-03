@@ -28,6 +28,7 @@
 package com.palantir.docker.compose.execution;
 
 import com.google.common.collect.ImmutableList;
+import com.palantir.docker.compose.configuration.DockerComposeFiles;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;
@@ -43,22 +44,23 @@ public class DockerComposeExecutable {
             "/usr/local/bin/docker-compose",
             System.getenv("DOCKER_COMPOSE_LOCATION"));
 
-    private final File dockerComposeFile;
+    private final DockerComposeFiles dockerComposeFiles;
     private final DockerConfiguration dockerConfiguration;
     private final String dockerComposePath;
 
-    public DockerComposeExecutable(File dockerComposeFile, DockerConfiguration dockerConfiguration) {
+    public DockerComposeExecutable(DockerComposeFiles dockerComposeFiles, DockerConfiguration dockerConfiguration) {
         this.dockerComposePath = findDockerComposePath();
-        this.dockerComposeFile = dockerComposeFile;
+        this.dockerComposeFiles = dockerComposeFiles;
         this.dockerConfiguration = dockerConfiguration;
     }
 
     public Process execute(String... commands) throws IOException {
         List<String> args = ImmutableList.<String>builder()
-                .add(dockerComposePath, "-f", dockerComposeFile.getAbsolutePath())
+                .add(dockerComposePath)
+                .addAll(dockerComposeFiles.constructComposeFileCommand())
                 .add(commands)
                 .build();
-        
+
         return dockerConfiguration.configuredDockerComposeProcess()
                 .command(args)
                 .redirectErrorStream(true)
