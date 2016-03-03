@@ -33,13 +33,12 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
+import static org.apache.commons.io.IOUtils.toInputStream;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.core.Is.is;
@@ -91,9 +90,7 @@ public class SynchronousDockerComposeExecutableShould {
     }
 
     private void givenTheUnderlyingProcessHasOutput(String output) {
-        byte[] outputBytes = output.getBytes(StandardCharsets.UTF_8);
-        ByteArrayInputStream inputStream = new ByteArrayInputStream(outputBytes);
-        when(executedProcess.getInputStream()).thenReturn(inputStream);
+        when(executedProcess.getInputStream()).thenReturn(toInputStream(output));
     }
 
     private void givenTheUnderlyingProcessTerminatesWithAnExitCodeOf(int exitCode) {
