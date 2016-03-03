@@ -42,6 +42,8 @@ import static java.util.concurrent.Executors.newSingleThreadExecutor;
 import static java.util.stream.Collectors.joining;
 
 public class SynchronousDockerComposeExecutable {
+    public static final int HOURS_TO_WAIT_FOR_STD_OUT_TO_CLOSE = 12;
+    public static final int MINUTES_TO_WAIT_AFTER_STD_OUT_CLOSES = 1;
     private final DockerComposeExecutable dockerComposeExecutable;
     private final Consumer<String> logConsumer;
 
@@ -59,7 +61,7 @@ public class SynchronousDockerComposeExecutable {
 
         String output = waitForResultFrom(outputProcessing);
 
-        process.waitFor(1, TimeUnit.MINUTES);
+        process.waitFor(MINUTES_TO_WAIT_AFTER_STD_OUT_CLOSES, TimeUnit.MINUTES);
 
         return new ProcessResult(process.exitValue(), output);
     }
@@ -72,7 +74,7 @@ public class SynchronousDockerComposeExecutable {
 
     private String waitForResultFrom(Future<String> outputProcessing) {
         try {
-            return outputProcessing.get(12, TimeUnit.HOURS);
+            return outputProcessing.get(HOURS_TO_WAIT_FOR_STD_OUT_TO_CLOSE, TimeUnit.HOURS);
         } catch (InterruptedException | ExecutionException | TimeoutException e) {
             throw propagate(e);
         }
