@@ -24,10 +24,6 @@ apply plugin: 'java'
 group = 'com.palantir.docker.compose'
 version "git describe --tags --dirty".execute().text.trim()
 
-task version() << {
-    println project.version
-}
-
 apply plugin: 'com.palantir.baseline-checkstyle'
 apply plugin: 'com.palantir.baseline-eclipse'
 apply plugin: 'com.palantir.baseline-findbugs'
