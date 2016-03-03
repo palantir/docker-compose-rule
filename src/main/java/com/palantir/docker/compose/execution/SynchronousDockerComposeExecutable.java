@@ -26,6 +26,7 @@ import java.util.concurrent.TimeoutException;
 import java.util.function.Consumer;
 
 import static com.google.common.base.Throwables.propagate;
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.concurrent.Executors.newSingleThreadExecutor;
 import static java.util.stream.Collectors.joining;
 
@@ -68,5 +69,7 @@ public class SynchronousDockerComposeExecutable {
         }
     }
 
-    private BufferedReader asReader(InputStream inputStream) {return new BufferedReader(new InputStreamReader(inputStream));}
+    private BufferedReader asReader(InputStream inputStream) {
+        return new BufferedReader(new InputStreamReader(inputStream, UTF_8));
+    }
 }
