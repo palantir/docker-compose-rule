@@ -51,13 +51,15 @@ public class SynchronousDockerComposeExecutable {
         this.logConsumer = logConsumer;
     }
 
-    public ProcessResult run(String... commands) throws IOException {
+    public ProcessResult run(String... commands) throws IOException, InterruptedException {
         Process process = dockerComposeExecutable.execute(commands);
 
         Future<String> outputProcessing = newSingleThreadExecutor()
                 .submit(() -> processOutputFrom(process));
 
         String output = waitForResultFrom(outputProcessing);
+
+        process.waitFor(1, TimeUnit.MINUTES);
 
         return new ProcessResult(process.exitValue(), output);
     }

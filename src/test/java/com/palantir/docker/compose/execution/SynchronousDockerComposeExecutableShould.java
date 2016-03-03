@@ -64,7 +64,7 @@ public class SynchronousDockerComposeExecutableShould {
     }
 
     @Test public void
-    respond_with_the_exit_code_of_the_executed_process() throws IOException {
+    respond_with_the_exit_code_of_the_executed_process() throws IOException, InterruptedException {
         int expectedExitCode = 1;
 
         givenTheUnderlyingProcessTerminatesWithAnExitCodeOf(expectedExitCode);
@@ -73,7 +73,7 @@ public class SynchronousDockerComposeExecutableShould {
     }
 
     @Test public void
-    respond_with_the_output_of_the_executed_process() throws IOException {
+    respond_with_the_output_of_the_executed_process() throws IOException, InterruptedException {
         String expectedOutput = "some output";
 
         givenTheUnderlyingProcessHasOutput(expectedOutput);
