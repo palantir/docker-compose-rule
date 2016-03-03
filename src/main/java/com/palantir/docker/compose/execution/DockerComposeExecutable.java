@@ -37,7 +37,6 @@ import java.util.List;
 
 import static java.util.Arrays.asList;
 
-
 public class DockerComposeExecutable {
 
     private static final List<String> dockerComposeLocations = asList(
