@@ -76,21 +76,21 @@ public class DockerCompositionTest {
                                                                                 .serviceTimeout(Duration.millis(200));
 
     @Test
-    public void dockerComposeBuildAndUpIsCalledBeforeTestsAreRun() throws IOException, InterruptedException {
+    public void docker_compose_build_and_up_is_called_before_tests_are_run() throws IOException, InterruptedException {
         dockerComposition.build().before();
         verify(dockerComposeExecutable).build();
         verify(dockerComposeExecutable).up();
     }
 
     @Test
-    public void dockerComposeKillAndRmAreCalledAfterTestsAreRun() throws IOException, InterruptedException {
+    public void docker_compose_kill_and_rm_are_called_after_tests_are_run() throws IOException, InterruptedException {
         dockerComposition.build().after();
         verify(dockerComposeExecutable).kill();
         verify(dockerComposeExecutable).rm();
     }
 
     @Test
-    public void dockerComposeWaitForServiceWithSinglePortWaitsForPortToBeAvailableBeforeTestsAreRun() throws IOException, InterruptedException {
+    public void docker_compose_wait_for_service_with_single_port_waits_for_port_to_be_available_before_tests_are_run() throws IOException, InterruptedException {
         DockerPort port = env.availableService("db", IP, 5432, 5432);
         withComposeExecutableReturningContainerFor("db");
         dockerComposition.waitingForService("db").build().before();
@@ -98,7 +98,7 @@ public class DockerCompositionTest {
     }
 
     @Test
-    public void dockerComposeWaitForHttpServiceWaitsForAddressToBeAvailableBeforeTestsAreRun() throws IOException, InterruptedException {
+    public void docker_compose_wait_for_http_service_waits_for_address_to_be_available_before_tests_are_run() throws IOException, InterruptedException {
         DockerPort httpPort = env.availableHttpService("http", IP, 8080, 8080);
         Function<DockerPort, String> urlFunction = (port) -> "url";
         withComposeExecutableReturningContainerFor("http");
@@ -108,7 +108,7 @@ public class DockerCompositionTest {
     }
 
     @Test
-    public void dockerComposeWaitForServicePassesWhenCheckIsTrue() throws IOException, InterruptedException {
+    public void docker_compose_wait_for_service_passes_when_check_is_true() throws IOException, InterruptedException {
         AtomicInteger timesCheckCalled = new AtomicInteger(0);
         withComposeExecutableReturningContainerFor("db");
         dockerComposition.waitingForService("db", (container) -> timesCheckCalled.incrementAndGet() == 1).build().before();
@@ -116,7 +116,7 @@ public class DockerCompositionTest {
     }
 
     @Test
-    public void dockerComposeWaitForServicePassesWhenCheckIsTrueAfterBeingFalse() throws IOException, InterruptedException {
+    public void docker_compose_wait_for_service_passes_when_check_is_true_after_being_false() throws IOException, InterruptedException {
         AtomicInteger timesCheckCalled = new AtomicInteger(0);
         withComposeExecutableReturningContainerFor("db");
         dockerComposition.waitingForService("db", (container) -> timesCheckCalled.incrementAndGet() == 2).build().before();
@@ -124,7 +124,7 @@ public class DockerCompositionTest {
     }
 
     @Test
-    public void dockerComposeWaitForServiceWithThrowsWhenCheckIsFalse() throws IOException, InterruptedException {
+    public void docker_compose_wait_for_service_with_throws_when_check_is_false() throws IOException, InterruptedException {
         exception.expect(IllegalStateException.class);
         exception.expectMessage("Container 'db' failed to pass startup check");
         withComposeExecutableReturningContainerFor("db");
@@ -132,7 +132,7 @@ public class DockerCompositionTest {
     }
 
     @Test
-    public void dockerComposeWaitForServiceThrowsAnExceptionWhenThePortIsUnavailable() throws IOException, InterruptedException {
+    public void docker_compose_wait_for_service_throws_an_exception_when_the_port_is_unavailable() throws IOException, InterruptedException {
         env.unavailableService("db", IP, 5432, 5432);
         exception.expect(IllegalStateException.class);
         exception.expectMessage("Container 'db' failed to pass startup check");
@@ -141,7 +141,7 @@ public class DockerCompositionTest {
     }
 
     @Test
-    public void dockerComposeWaitForTwoServicesWithSinglePortWaitsForPortToBeAvailableBeforeTestsAreRun() throws IOException, InterruptedException {
+    public void docker_compose_wait_for_two_services_with_single_port_waits_for_port_to_be_available_before_tests_are_run() throws IOException, InterruptedException {
         DockerPort firstDbPort = env.availableService("db", IP, 5432, 5432);
         DockerPort secondDbPort = env.availableService("otherDb", IP, 5433, 5432);
         withComposeExecutableReturningContainerFor("db");
@@ -152,7 +152,7 @@ public class DockerCompositionTest {
     }
 
     @Test
-    public void portForContainerCanBeRetrievedByExternalMapping() throws IOException, InterruptedException {
+    public void port_for_container_can_be_retrieved_by_external_mapping() throws IOException, InterruptedException {
         DockerPort expectedPort = env.port("db", IP, 5433, 5432);
         withComposeExecutableReturningContainerFor("db");
         DockerPort actualPort = dockerComposition.build().portOnContainerWithExternalMapping("db", 5433);
@@ -160,7 +160,7 @@ public class DockerCompositionTest {
     }
 
     @Test
-    public void portForContainerCanBeRetrievedByInternalMapping() throws IOException, InterruptedException {
+    public void port_for_container_can_be_retrieved_by_internal_mapping() throws IOException, InterruptedException {
         DockerPort expectedPort = env.port("db", IP, 5433, 5432);
         withComposeExecutableReturningContainerFor("db");
         DockerPort actualPort = dockerComposition.build().portOnContainerWithInternalMapping("db", 5432);
@@ -168,7 +168,7 @@ public class DockerCompositionTest {
     }
 
     @Test
-    public void whenTwoExternalPortsOnAContainerAreRequestedDockerComposePsIsOnlyExecutedOnce() throws IOException, InterruptedException {
+    public void when_two_external_ports_on_a_container_are_requested_docker_compose_ps_is_only_executed_once() throws IOException, InterruptedException {
         env.ports("db", IP, 5432, 8080);
         withComposeExecutableReturningContainerFor("db");
         DockerComposition composition = dockerComposition.build();
@@ -178,7 +178,7 @@ public class DockerCompositionTest {
     }
 
     @Test
-    public void waitingForServiceThatDoesNotExistResultsInAnIllegalStateException() throws IOException, InterruptedException {
+    public void waiting_for_service_that_does_not_exist_results_in_an_illegal_state_exception() throws IOException, InterruptedException {
         when(dockerComposeExecutable.ports("nonExistent"))
             .thenThrow(new IllegalStateException("No container with name 'nonExistent' found"));
         exception.expect(IllegalStateException.class);
@@ -189,7 +189,7 @@ public class DockerCompositionTest {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void logsCanBeSavedToADirectoryWhileContainersAreRunning() throws IOException, InterruptedException {
+    public void logs_can_be_saved_to_a_directory_while_containers_are_running() throws IOException, InterruptedException {
         File logLocation = logFolder.newFolder();
         DockerComposition loggingComposition = dockerComposition.saveLogsTo(logLocation.getAbsolutePath()).build();
         when(dockerComposeExecutable.ps()).thenReturn(new ContainerNames("db"));

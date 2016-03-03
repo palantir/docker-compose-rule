@@ -76,7 +76,7 @@ public class FileLogCollectorTest {
     }
 
     @Test
-    public void whenNoContainersAreRunningNoLogsAreCollected() throws IOException, InterruptedException {
+    public void when_no_containers_are_running_no_logs_are_collected() throws IOException, InterruptedException {
         when(compose.ps()).thenReturn(new ContainerNames(emptyList()));
         logCollector.startCollecting(compose);
         logCollector.stopCollecting();
@@ -84,7 +84,7 @@ public class FileLogCollectorTest {
     }
 
     @Test
-    public void whenOneContainerIsRunningAndTerminatesBeforeStartCollectingIsRunLogsAreCollected() throws IOException, InterruptedException {
+    public void when_one_container_is_running_and_terminates_before_start_collecting_is_run_logs_are_collected() throws IOException, InterruptedException {
         when(compose.ps()).thenReturn(new ContainerNames("db"));
         when(compose.writeLogs(eq("db"), any(OutputStream.class))).thenAnswer((args) -> {
             OutputStream outputStream = (OutputStream) args.getArguments()[1];
@@ -98,7 +98,7 @@ public class FileLogCollectorTest {
     }
 
     @Test
-    public void whenOneContainerIsRunningAndDoesNotTerminateUntilAfterStartCollectingIsRunLogsAreCollected() throws IOException, InterruptedException {
+    public void when_one_container_is_running_and_does_not_terminate_until_after_start_collecting_is_run_logs_are_collected() throws IOException, InterruptedException {
         when(compose.ps()).thenReturn(new ContainerNames("db"));
         CountDownLatch latch = new CountDownLatch(1);
         when(compose.writeLogs(eq("db"), any(OutputStream.class))).thenAnswer((args) -> {
@@ -117,7 +117,7 @@ public class FileLogCollectorTest {
     }
 
     @Test
-    public void whenOneContainerIsRunningAndDoesNotTerminateTheLogsAreStillCollected() throws IOException, InterruptedException {
+    public void when_one_container_is_running_and_does_not_terminate_the_logs_are_still_collected() throws IOException, InterruptedException {
         when(compose.ps()).thenReturn(new ContainerNames("db"));
         CountDownLatch latch = new CountDownLatch(1);
         when(compose.writeLogs(eq("db"), any(OutputStream.class))).thenAnswer((args) -> {
@@ -141,7 +141,7 @@ public class FileLogCollectorTest {
     }
 
     @Test
-    public void twoContainersHaveLogsCollectedInParallel() throws IOException, InterruptedException {
+    public void two_containers_have_logs_collected_in_parallel() throws IOException, InterruptedException {
         when(compose.ps()).thenReturn(new ContainerNames(asList("db", "db2")));
         CountDownLatch dbLatch = new CountDownLatch(1);
         when(compose.writeLogs(eq("db"), any(OutputStream.class))).thenAnswer((args) -> {
@@ -170,7 +170,7 @@ public class FileLogCollectorTest {
     }
 
     @Test
-    public void aStartedCollectorCannotBeStartedASecondTime() throws IOException, InterruptedException {
+    public void aStartedCollectorCannotBeStarteda_secondTime() throws IOException, InterruptedException {
         when(compose.ps()).thenReturn(new ContainerNames("db"));
         logCollector.startCollecting(compose);
         exception.expect(RuntimeException.class);

@@ -43,7 +43,7 @@ public class AdditionalEnvironmentValidatorTest {
     public ExpectedException exception = ExpectedException.none();
 
     @Test
-    public void additionalEnvironmentVariablesWithDockerVariables() throws Exception {
+    public void additional_environment_variables_with_docker_variables() throws Exception {
         Map<String, String> variables = ImmutableMap.<String, String>builder().put("DOCKER_HOST", "tcp://some-host:2376")
                                                                               .put("SOME_VARIABLE" , "Some Value")
                                                                               .build();
@@ -55,7 +55,7 @@ public class AdditionalEnvironmentValidatorTest {
     }
 
     @Test
-    public void validArbitraryEnvironmentVariables() throws Exception {
+    public void valid_arbitrary_environment_variables() throws Exception {
         Map<String, String> variables = ImmutableMap.<String, String>builder().put("SOME_VARIABLE" , "Some Value")
                                                                               .build();
 

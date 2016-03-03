@@ -189,7 +189,7 @@ public class LocalBuilderTest {
     }
 
     @Test
-    public void localBuilderHasMissingDockerHost_remote() throws Exception {
+    public void local_builder_has_missing_docker_host_remote() throws Exception {
         exception.expect(IllegalStateException.class);
         exception.expectMessage("Missing required environment variables: ");
         exception.expectMessage(DOCKER_HOST);
@@ -197,7 +197,7 @@ public class LocalBuilderTest {
     }
 
     @Test
-    public void localBuilderBuildsWithoutTls_remote() throws Exception {
+    public void local_builder_builds_without_tls_remote() throws Exception {
         Map<String, String> dockerVariables = ImmutableMap.<String, String>builder()
                                                           .put(DOCKER_HOST, "tcp://192.168.99.100:2376")
                                                           .build();
@@ -207,7 +207,7 @@ public class LocalBuilderTest {
     }
 
     @Test
-    public void localBuilderHasMissingCertPath_remote() throws Exception {
+    public void local_builder_has_missing_cert_path_remote() throws Exception {
         Map<String, String> dockerVariables = ImmutableMap.<String, String>builder()
                 .put(DOCKER_HOST, "tcp://192.168.99.100:2376")
                 .put(DOCKER_TLS_VERIFY, "1")
@@ -220,7 +220,7 @@ public class LocalBuilderTest {
     }
 
     @Test
-    public void localBuilderBuildsWithTls_remote() throws Exception {
+    public void local_builder_builds_with_tls_remote() throws Exception {
         Map<String, String> dockerVariables = ImmutableMap.<String, String>builder()
                 .put(DOCKER_HOST, "tcp://192.168.99.100:2376")
                 .put(DOCKER_TLS_VERIFY, "1")
