@@ -25,25 +25,46 @@
  * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
  * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.palantir.docker.compose.connection;
+package com.palantir.docker.compose.execution;
 
-import com.palantir.docker.compose.execution.DockerCompose;
+import com.palantir.docker.compose.DockerComposition;
+import com.palantir.docker.compose.connection.DockerMachine;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.nio.file.Path;
 
-public class ContainerCache {
+import static com.palantir.docker.compose.matchers.IOMatchers.fileContainingString;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
 
-    private final Map<String, Container> containers = new HashMap<>();
-    private final DockerCompose dockerCompose;
+public class EnvironmentVariableIntegrationTest {
 
-    public ContainerCache(DockerCompose dockerCompose) {
-        this.dockerCompose = dockerCompose;
+    @Rule
+    public TemporaryFolder temporaryFolder = new TemporaryFolder();
+
+    @Test
+    public void docker_compose_gets_environment_variables_from_docker_machine_and_passes_it_into_a_test_container() throws Exception {
+        DockerMachine dockerMachine = DockerMachine.localMachine()
+                                                   .withAdditionalEnvironmentVariable("SOME_VARIABLE", "SOME_VALUE")
+                                                   .build();
+
+        DockerComposition dockerComposition = DockerComposition.of("src/test/resources/environment/docker-compose.yaml",
+                                                                   dockerMachine)
+                                                               .waitingForService("env-test")
+                                                               .saveLogsTo(temporaryFolder.getRoot().getAbsolutePath())
+                                                               .build();
+        try {
+            dockerComposition.before();
+        } finally {
+            dockerComposition.after();
+        }
+
+        Path logLocation = temporaryFolder.getRoot()
+                                          .toPath()
+                                          .resolve("env-test.log");
+
+        assertThat(logLocation.toFile(), is(fileContainingString("SOME_VARIABLE=SOME_VALUE")));
     }
-
-    public Container get(String containerName) {
-        containers.putIfAbsent(containerName, dockerCompose.container(containerName));
-        return containers.get(containerName);
-    }
-
 }

@@ -36,11 +36,11 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
+import static org.apache.commons.io.IOUtils.toInputStream;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.anyVararg;
@@ -48,49 +48,48 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-public class DockerComposeExecutableTest {
+public class DockerComposeTest {
 
     @Rule
     public ExpectedException exception = ExpectedException.none();
 
-    private final DockerComposeExecutor executor = mock(DockerComposeExecutor.class);
+    private final DockerComposeExecutable executor = mock(DockerComposeExecutable.class);
     private final DockerMachine dockerMachine = mock(DockerMachine.class);
-    private final DockerComposeExecutable compose = new DockerComposeExecutable(executor, dockerMachine);
+    private final DockerCompose compose = new DockerCompose(executor, dockerMachine);
 
     private final Process executedProcess = mock(Process.class);
 
     @Before
     public void setup() throws IOException, InterruptedException {
         when(dockerMachine.getIp()).thenReturn("0.0.0.0");
-        when(executor.executeAndWait(anyVararg())).thenReturn(executedProcess);
         when(executor.execute(anyVararg())).thenReturn(executedProcess);
-        when(executedProcess.getInputStream()).thenReturn(byteArrayInputStreamOf("0.0.0.0:7000->7000/tcp"));
+        when(executedProcess.getInputStream()).thenReturn(toInputStream("0.0.0.0:7000->7000/tcp"));
         when(executedProcess.exitValue()).thenReturn(0);
     }
 
     @Test
     public void up_calls_docker_compose_up_with_daemon_flag() throws IOException, InterruptedException {
         compose.up();
-        verify(executor).executeAndWait("up", "-d");
+        verify(executor).execute("up", "-d");
     }
 
     @Test
     public void rm_calls_docker_compose_rm_with_f_flag() throws IOException, InterruptedException {
         compose.rm();
-        verify(executor).executeAndWait("rm", "-f");
+        verify(executor).execute("rm", "-f");
     }
 
     @Test
     public void ps_parses_and_returns_container_names() throws IOException, InterruptedException {
-        when(executedProcess.getInputStream()).thenReturn(byteArrayInputStreamOf("ps\n----\ndir_db_1"));
+        when(executedProcess.getInputStream()).thenReturn(toInputStream("ps\n----\ndir_db_1"));
         ContainerNames containerNames = compose.ps();
-        verify(executor).executeAndWait("ps");
+        verify(executor).execute("ps");
         assertThat(containerNames, is(new ContainerNames("db")));
     }
 
     @Test
     public void logs_calls_docker_compose_with_no_colour_flag() throws IOException, InterruptedException {
-        when(executedProcess.getInputStream()).thenReturn(byteArrayInputStreamOf("logs"));
+        when(executedProcess.getInputStream()).thenReturn(toInputStream("logs"));
         ByteArrayOutputStream output = new ByteArrayOutputStream();
         compose.writeLogs("db", output);
         verify(executor).execute("logs", "--no-color", "db");
@@ -108,14 +107,14 @@ public class DockerComposeExecutableTest {
     @Test
     public void when_down_fails_because_the_command_does_not_exist_then_an_exception_is_not_thrown() throws IOException, InterruptedException {
         when(executedProcess.exitValue()).thenReturn(1);
-        when(executedProcess.getInputStream()).thenReturn(byteArrayInputStreamOf("No such command: down"));
+        when(executedProcess.getInputStream()).thenReturn(toInputStream("No such command: down"));
         compose.down();
     }
 
     @Test
     public void when_down_fails_for_a_reason_other_than_the_command_not_being_present_then_an_exception_is_thrown() throws IOException, InterruptedException {
         when(executedProcess.exitValue()).thenReturn(1);
-        when(executedProcess.getInputStream()).thenReturn(byteArrayInputStreamOf(""));
+        when(executedProcess.getInputStream()).thenReturn(toInputStream(""));
 
         exception.expect(IllegalStateException.class);
 
@@ -125,20 +124,16 @@ public class DockerComposeExecutableTest {
     @Test
     public void calling_ports_parses_the_ps_output() throws IOException, InterruptedException {
         Ports ports = compose.ports("db");
-        verify(executor).executeAndWait("ps", "db");
+        verify(executor).execute("ps", "db");
         assertThat(ports, is(new Ports(new DockerPort("0.0.0.0", 7000, 7000))));
     }
 
     @Test
     public void when_there_is_no_container_found_for_ports_an_i_s_e_is_thrown() throws IOException, InterruptedException {
-        when(executedProcess.getInputStream()).thenReturn(byteArrayInputStreamOf(""));
+        when(executedProcess.getInputStream()).thenReturn(toInputStream(""));
         exception.expect(IllegalStateException.class);
         exception.expectMessage("No container with name 'db' found");
         compose.ports("db");
-    }
-
-    private static ByteArrayInputStream byteArrayInputStreamOf(String s) {
-        return new ByteArrayInputStream(s.getBytes(StandardCharsets.UTF_8));
     }
 
 }

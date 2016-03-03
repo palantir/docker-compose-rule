@@ -25,25 +25,22 @@
  * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
  * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package com.palantir.docker.compose.connection;
+package com.palantir.docker.compose.execution;
 
-import com.palantir.docker.compose.execution.DockerCompose;
+public class ProcessResult {
+    private int exitCode;
+    private final String output;
 
-import java.util.HashMap;
-import java.util.Map;
-
-public class ContainerCache {
-
-    private final Map<String, Container> containers = new HashMap<>();
-    private final DockerCompose dockerCompose;
-
-    public ContainerCache(DockerCompose dockerCompose) {
-        this.dockerCompose = dockerCompose;
+    public ProcessResult(int exitCode, String output) {
+        this.exitCode = exitCode;
+        this.output = output;
     }
 
-    public Container get(String containerName) {
-        containers.putIfAbsent(containerName, dockerCompose.container(containerName));
-        return containers.get(containerName);
+    public int exitCode() {
+        return exitCode;
     }
 
+    public String output() {
+        return output;
+    }
 }

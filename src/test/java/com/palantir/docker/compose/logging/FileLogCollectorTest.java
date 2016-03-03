@@ -28,7 +28,7 @@
 package com.palantir.docker.compose.logging;
 
 import com.palantir.docker.compose.connection.ContainerNames;
-import com.palantir.docker.compose.execution.DockerComposeExecutable;
+import com.palantir.docker.compose.execution.DockerCompose;
 import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Rule;
@@ -65,7 +65,7 @@ public class FileLogCollectorTest {
     @Rule
     public ExpectedException exception = ExpectedException.none();
 
-    private final DockerComposeExecutable compose = mock(DockerComposeExecutable.class);
+    private final DockerCompose compose = mock(DockerCompose.class);
     private File logDirectory;
     private LogCollector logCollector;
 
@@ -170,7 +170,7 @@ public class FileLogCollectorTest {
     }
 
     @Test
-    public void aStartedCollectorCannotBeStarteda_secondTime() throws IOException, InterruptedException {
+    public void a_started_collector_cannot_be_starteda_second_time() throws IOException, InterruptedException {
         when(compose.ps()).thenReturn(new ContainerNames("db"));
         logCollector.startCollecting(compose);
         exception.expect(RuntimeException.class);
