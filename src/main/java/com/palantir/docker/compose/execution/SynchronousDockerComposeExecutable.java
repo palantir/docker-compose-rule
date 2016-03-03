@@ -29,21 +29,52 @@ package com.palantir.docker.compose.execution;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+import java.util.function.Consumer;
 
+import static com.google.common.base.Throwables.propagate;
+import static java.util.concurrent.Executors.newSingleThreadExecutor;
 import static java.util.stream.Collectors.joining;
 
 public class SynchronousDockerComposeExecutable {
     private final DockerComposeExecutable dockerComposeExecutable;
+    private final Consumer<String> logConsumer;
 
-    public SynchronousDockerComposeExecutable(DockerComposeExecutable dockerComposeExecutable) {
+    public SynchronousDockerComposeExecutable(DockerComposeExecutable dockerComposeExecutable,
+            Consumer<String> logConsumer) {
         this.dockerComposeExecutable = dockerComposeExecutable;
+        this.logConsumer = logConsumer;
     }
 
     public ProcessResult run(String... commands) throws IOException {
         Process process = dockerComposeExecutable.execute(commands);
-        String output = new BufferedReader(new InputStreamReader(process.getInputStream())).lines()
-                .collect(joining(System.lineSeparator()));
+
+        Future<String> outputProcessing = newSingleThreadExecutor()
+                .submit(() -> processOutputFrom(process));
+
+        String output = waitForResultFrom(outputProcessing);
+
         return new ProcessResult(process.exitValue(), output);
     }
+
+    private String processOutputFrom(Process process) {
+        return asReader(process.getInputStream()).lines()
+                    .peek(logConsumer)
+                    .collect(joining(System.lineSeparator()));
+    }
+
+    private String waitForResultFrom(Future<String> outputProcessing) {
+        try {
+            return outputProcessing.get(12, TimeUnit.HOURS);
+        } catch (InterruptedException | ExecutionException | TimeoutException e) {
+            throw propagate(e);
+        }
+    }
+
+    private BufferedReader asReader(InputStream inputStream) {return new BufferedReader(new InputStreamReader(inputStream));}
 }

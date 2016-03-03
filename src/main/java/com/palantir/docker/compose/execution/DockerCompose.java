@@ -37,14 +37,11 @@ import org.joda.time.Duration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.util.Arrays;
 
-import static java.lang.System.lineSeparator;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static java.util.stream.Collectors.joining;
 import static org.apache.commons.lang3.Validate.validState;
@@ -55,15 +52,17 @@ public class DockerCompose {
     private static final Duration COMMAND_TIMEOUT = standardMinutes(2);
     private static final Logger log = LoggerFactory.getLogger(DockerCompose.class);
 
-    private final DockerComposeExecutable executor;
+    private final SynchronousDockerComposeExecutable executable;
     private final DockerMachine dockerMachine;
+    private final DockerComposeExecutable rawExecutable;
 
     public DockerCompose(File dockerComposeFile, DockerMachine dockerMachine) {
         this(new DockerComposeExecutable(dockerComposeFile, dockerMachine), dockerMachine);
     }
 
-    public DockerCompose(DockerComposeExecutable executor, DockerMachine dockerMachine) {
-        this.executor = executor;
+    public DockerCompose(DockerComposeExecutable rawExecutable, DockerMachine dockerMachine) {
+        this.rawExecutable = rawExecutable;
+        this.executable = new SynchronousDockerComposeExecutable(rawExecutable, log::debug);
         this.dockerMachine = dockerMachine;
     }
 
@@ -101,7 +100,7 @@ public class DockerCompose {
      * @return Whether the docker container terminated prior to log collection ending.
      */
     public boolean writeLogs(String container, OutputStream output) throws IOException {
-        Process executedProcess = executor.execute("logs", "--no-color", container);
+        Process executedProcess = rawExecutable.execute("logs", "--no-color", container);
         IOUtils.copy(executedProcess.getInputStream(), output);
         try {
             executedProcess.waitFor(COMMAND_TIMEOUT.getMillis(), MILLISECONDS);
@@ -127,24 +126,13 @@ public class DockerCompose {
     }
 
     private String executeDockerComposeCommand(ErrorHandler errorHandler, String... commands) throws IOException, InterruptedException {
-        Process dockerCompose = executor.execute(commands);
-        dockerCompose.waitFor(COMMAND_TIMEOUT.getMillis(), MILLISECONDS);
+        ProcessResult result = executable.run(commands);
 
-        String output;
-
-        try (BufferedReader processOutputReader =
-                new BufferedReader(new InputStreamReader(dockerCompose.getInputStream(), "UTF-8"))) {
-            output = processOutputReader
-                .lines()
-                .peek(log::debug)
-                .collect(joining(lineSeparator()));
+        if(result.exitCode() != 0) {
+            errorHandler.handle(result.exitCode(), result.output(), commands);
         }
 
-        if(dockerCompose.exitValue() != 0) {
-            errorHandler.handle(dockerCompose.exitValue(), output, commands);
-        }
-
-        return output;
+        return result.output();
     }
 
 

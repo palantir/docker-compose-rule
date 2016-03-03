@@ -36,8 +36,12 @@ import org.mockito.runners.MockitoJUnitRunner;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Consumer;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.core.Is.is;
 import static org.mockito.Matchers.anyVararg;
 import static org.mockito.Mockito.when;
@@ -47,11 +51,13 @@ public class SynchronousDockerComposeExecutableShould {
     @Mock private Process executedProcess;
     @Mock private DockerComposeExecutable dockerComposeExecutable;
     private SynchronousDockerComposeExecutable dockerCompose;
+    private final List<String> consumedLogLines = new ArrayList<>();
+    private final Consumer<String> logConsumer = s -> consumedLogLines.add(s);
 
     @Before
     public void setup() throws IOException {
         when(dockerComposeExecutable.execute(anyVararg())).thenReturn(executedProcess);
-        dockerCompose = new SynchronousDockerComposeExecutable(dockerComposeExecutable);
+        dockerCompose = new SynchronousDockerComposeExecutable(dockerComposeExecutable, logConsumer);
 
         givenTheUnderlyingProcessHasOutput("");
         givenTheUnderlyingProcessTerminatesWithAnExitCodeOf(0);
@@ -60,7 +66,7 @@ public class SynchronousDockerComposeExecutableShould {
     @Test public void
     respond_with_the_exit_code_of_the_executed_process() throws IOException {
         int expectedExitCode = 1;
-        
+
         givenTheUnderlyingProcessTerminatesWithAnExitCodeOf(expectedExitCode);
 
         assertThat(dockerCompose.run("rm", "-f").exitCode(), is(expectedExitCode));
@@ -75,10 +81,19 @@ public class SynchronousDockerComposeExecutableShould {
         assertThat(dockerCompose.run("rm", "-f").output(), is(expectedOutput));
     }
 
+    @Test public void
+    give_the_output_to_the_specified_consumer_as_it_is_available() throws IOException, InterruptedException {
+        givenTheUnderlyingProcessHasOutput("line 1\nline 2");
+
+        dockerCompose.run("rm", "-f");
+
+        assertThat(consumedLogLines, contains("line 1", "line 2"));
+    }
+
     private void givenTheUnderlyingProcessHasOutput(String output) {
         byte[] outputBytes = output.getBytes(StandardCharsets.UTF_8);
-        when(executedProcess.getInputStream())
-                .thenReturn(new ByteArrayInputStream(outputBytes));
+        ByteArrayInputStream inputStream = new ByteArrayInputStream(outputBytes);
+        when(executedProcess.getInputStream()).thenReturn(inputStream);
     }
 
     private void givenTheUnderlyingProcessTerminatesWithAnExitCodeOf(int exitCode) {
