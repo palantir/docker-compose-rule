@@ -15,22 +15,22 @@
  */
 package com.palantir.docker.compose.execution;
 
-import com.google.common.collect.ImmutableList;
-
 import java.io.File;
+import java.util.List;
 import java.util.Optional;
 
-import static com.google.common.collect.ImmutableList.copyOf;
+import static java.util.Arrays.asList;
 
 public class DockerComposeLocations {
-    private final ImmutableList<String> paths;
+    private final List<String> paths;
 
     public DockerComposeLocations(String... paths) {
-        this.paths = copyOf(paths);
+        this.paths = asList(paths);
     }
 
     public Optional<String> preferredLocation() {
         return paths.stream()
+                .filter(path -> path != null)
                 .filter(path -> new File(path).exists())
                 .findFirst();
     }

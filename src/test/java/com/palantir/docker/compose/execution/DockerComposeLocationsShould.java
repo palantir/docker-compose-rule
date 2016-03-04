@@ -48,4 +48,14 @@ public class DockerComposeLocationsShould {
         assertThat(dockerComposeLocations.preferredLocation().get(),
                 is(goodLocation));
     }
+
+    @Test public void
+    skip_paths_from_environment_variables_that_are_unset() {
+        DockerComposeLocations dockerComposeLocations = new DockerComposeLocations(
+                System.getenv("AN_UNSET_DOCKER_COMPOSE_PATH"),
+                goodLocation);
+
+        assertThat(dockerComposeLocations.preferredLocation().get(),
+                is(goodLocation));
+    }
 }
