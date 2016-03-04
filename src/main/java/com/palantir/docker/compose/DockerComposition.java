@@ -138,8 +138,7 @@ public class DockerComposition extends ExternalResource {
 
     public static class DockerCompositionBuilder {
 
-        private static final Duration DEFAULT_TIMEOUT = standardMinutes(2);
-        private final Map<String, HealthCheck> containersToWaitFor = new HashMap<String, HealthCheck>();
+        private final Map<String, HealthCheck> containersToWaitFor = new HashMap<>();
         private final DockerCompose dockerComposeProcess;
         private final ContainerCache containers;
         private Duration serviceTimeout = standardMinutes(2);
@@ -172,8 +171,8 @@ public class DockerComposition extends ExternalResource {
 
         public DockerComposition build() {
             Map<Container, HealthCheck> servicesToWaitFor = containersToWaitFor.entrySet()
-                                                                                                .stream()
-                                                                                                .collect(toMap(e -> containers.get(e.getKey()), Map.Entry::getValue));
+                    .stream()
+                    .collect(toMap(e -> containers.get(e.getKey()), Map.Entry::getValue));
             return new DockerComposition(dockerComposeProcess, servicesToWaitFor, serviceTimeout, logCollector, containers);
         }
 
