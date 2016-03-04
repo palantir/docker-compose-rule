@@ -18,20 +18,25 @@ package com.palantir.docker.compose.execution;
 import java.io.File;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Predicate;
 
 import static java.util.Arrays.asList;
 
 public class DockerComposeLocations {
-    private final List<String> paths;
+    private static final Predicate<String> IS_NOT_NULL = path -> path != null;
+    private static final Predicate<String> FILE_EXISTS = path -> new File(path).exists();
+    
+    private final List<String> possiblePaths;
 
-    public DockerComposeLocations(String... paths) {
-        this.paths = asList(paths);
+    public DockerComposeLocations(String... possiblePaths) {
+        this.possiblePaths = asList(possiblePaths);
     }
 
     public Optional<String> preferredLocation() {
-        return paths.stream()
-                .filter(path -> path != null)
-                .filter(path -> new File(path).exists())
+
+        return possiblePaths.stream()
+                .filter(IS_NOT_NULL)
+                .filter(FILE_EXISTS)
                 .findFirst();
     }
 }
