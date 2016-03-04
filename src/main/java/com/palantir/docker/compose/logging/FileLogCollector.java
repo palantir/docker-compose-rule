@@ -48,6 +48,10 @@ public class FileLogCollector implements LogCollector {
         this.logDirectory = logDirectory;
     }
 
+    public static LogCollector fromPath(String path) {
+        return new FileLogCollector(new File(path));
+    }
+
     @Override
     public synchronized void startCollecting(DockerCompose dockerCompose) throws IOException, InterruptedException {
         if (executor != null) {

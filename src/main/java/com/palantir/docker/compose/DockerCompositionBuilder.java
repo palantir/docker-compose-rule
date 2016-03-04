@@ -54,12 +54,7 @@ public class DockerCompositionBuilder {
     }
 
     public DockerCompositionBuilder saveLogsTo(String path) {
-        File logDirectory = new File(path);
-        Validate.isTrue(!logDirectory.isFile(), "Log directory cannot be a file");
-        if (!logDirectory.exists()) {
-            Validate.isTrue(logDirectory.mkdirs(), "Error making log directory");
-        }
-        this.logCollector = new FileLogCollector(logDirectory);
+        this.logCollector = FileLogCollector.fromPath(path);
         return this;
     }
 
