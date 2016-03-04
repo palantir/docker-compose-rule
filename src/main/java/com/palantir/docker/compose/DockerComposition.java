@@ -129,6 +129,7 @@ public class DockerComposition extends ExternalResource {
     }
 
     public static class DockerCompositionBuilder {
+        private static final Duration DEFAULT_TIMEOUT = standardMinutes(2);
 
         private final Map<String, HealthCheck> containersToWaitFor = new HashMap<>();
         private final List<ServiceWait> serviceWaits = new ArrayList<>();
@@ -143,12 +144,12 @@ public class DockerComposition extends ExternalResource {
         }
 
         public DockerCompositionBuilder waitingForService(String serviceName, HealthCheck check) {
-            containersToWaitFor.put(serviceName, check);
+            this.containersToWaitFor.put(serviceName, check);
             return this;
         }
 
-        public DockerCompositionBuilder serviceTimeout(Duration timeout) {
-            this.serviceTimeout = timeout;
+        public DockerCompositionBuilder waitingForService(String serviceName, HealthCheck check, Duration timeout) {
+            serviceWaits.add(new ServiceWait(containers.get(serviceName), check, timeout));
             return this;
         }
 
@@ -173,7 +174,6 @@ public class DockerComposition extends ExternalResource {
             serviceWaits.addAll(additionalServiceWaits);
             return new DockerComposition(dockerComposeProcess, serviceWaits, serviceTimeout, logCollector, containers);
         }
-
     }
 
 }

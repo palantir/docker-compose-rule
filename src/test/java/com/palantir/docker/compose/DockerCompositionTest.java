@@ -22,7 +22,6 @@ import com.palantir.docker.compose.connection.ContainerNames;
 import com.palantir.docker.compose.connection.DockerPort;
 import com.palantir.docker.compose.execution.DockerCompose;
 import org.apache.commons.io.IOUtils;
-import org.joda.time.Duration;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -41,6 +40,7 @@ import static com.palantir.docker.compose.matchers.IOMatchers.fileWithName;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.arrayContaining;
 import static org.hamcrest.core.Is.is;
+import static org.joda.time.Duration.millis;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
@@ -59,8 +59,7 @@ public class DockerCompositionTest {
 
     private final DockerCompose dockerCompose = mock(DockerCompose.class);
     private final MockDockerEnvironment env = new MockDockerEnvironment(dockerCompose);
-    private final DockerCompositionBuilder dockerComposition = DockerComposition.of(dockerCompose)
-                                                                                .serviceTimeout(Duration.millis(200));
+    private final DockerCompositionBuilder dockerComposition = DockerComposition.of(dockerCompose);
 
     @Test
     public void docker_compose_build_and_up_is_called_before_tests_are_run() throws IOException, InterruptedException {
@@ -99,7 +98,7 @@ public class DockerCompositionTest {
         exception.expect(IllegalStateException.class);
         exception.expectMessage("Container 'db' failed to pass startup check");
 
-        dockerComposition.waitingForService("db", (container) -> false).build().before();
+        dockerComposition.waitingForService("db", (container) -> false, millis(200)).build().before();
     }
 
     @Test
