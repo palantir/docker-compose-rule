@@ -22,6 +22,7 @@ import org.junit.rules.TemporaryFolder;
 
 import java.io.IOException;
 
+import static java.util.Optional.empty;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 
@@ -57,5 +58,14 @@ public class DockerComposeLocationsShould {
 
         assertThat(dockerComposeLocations.preferredLocation().get(),
                 is(goodLocation));
+    }
+
+    @Test public void
+    have_no_preferred_path_when_all_possible_paths_are_all_invalid() {
+        DockerComposeLocations dockerComposeLocations = new DockerComposeLocations(
+                badLocation);
+
+        assertThat(dockerComposeLocations.preferredLocation(),
+                is(empty()));
     }
 }
