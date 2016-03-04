@@ -113,3 +113,9 @@ To record the logs from your containers specify a location:
   }
 
 This will automatically record logs for all containers in real time to the specified directory. Collection will stop when the containers terminate.
+
+Using a custom version of docker-compose
+---------------
+
+docker-compose-rule tries to use the docker-compose binary located at `/usr/local/bin/docker-compose`. This can be overriden by setting `DOCKER_COMPOSE_LOCATION` to be the path to a valid file.
+
