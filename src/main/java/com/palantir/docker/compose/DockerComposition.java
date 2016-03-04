@@ -16,7 +16,6 @@
 package com.palantir.docker.compose;
 
 import com.palantir.docker.compose.configuration.DockerComposeFiles;
-import com.palantir.docker.compose.connection.Container;
 import com.palantir.docker.compose.connection.ContainerCache;
 import com.palantir.docker.compose.connection.DockerMachine;
 import com.palantir.docker.compose.connection.DockerPort;
@@ -35,13 +34,9 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import static com.google.common.collect.ImmutableList.copyOf;
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toMap;
 import static org.joda.time.Duration.standardMinutes;
 
 public class DockerComposition extends ExternalResource {
@@ -51,7 +46,6 @@ public class DockerComposition extends ExternalResource {
     private final DockerCompose dockerComposeProcess;
     private final ContainerCache containers;
     private final List<ServiceWait> serviceWaits;
-    private final Duration serviceTimeout;
     private final LogCollector logCollector;
 
     public static DockerCompositionBuilder of(String dockerComposeFile) {
@@ -75,13 +69,11 @@ public class DockerComposition extends ExternalResource {
     }
 
     private DockerComposition(DockerCompose dockerComposeProcess,
-                              List<ServiceWait> serviceWaits,
-                              Duration serviceTimeout,
-                              LogCollector logCollector,
-                              ContainerCache containers) {
+            List<ServiceWait> serviceWaits,
+            LogCollector logCollector,
+            ContainerCache containers) {
         this.dockerComposeProcess = dockerComposeProcess;
         this.serviceWaits = copyOf(serviceWaits);
-        this.serviceTimeout = serviceTimeout;
         this.logCollector = logCollector;
         this.containers = containers;
     }
@@ -98,11 +90,6 @@ public class DockerComposition extends ExternalResource {
         log.debug("Waiting for services");
         serviceWaits.forEach(ServiceWait::holdTillServiceIsUp);
         log.debug("docker-compose cluster started");
-    }
-
-    private void waitForService(Container service, HealthCheck healthCheck) {
-        ServiceWait serviceWait = new ServiceWait(service, healthCheck, serviceTimeout);
-        serviceWait.holdTillServiceIsUp();
     }
 
     @Override
@@ -131,11 +118,9 @@ public class DockerComposition extends ExternalResource {
     public static class DockerCompositionBuilder {
         private static final Duration DEFAULT_TIMEOUT = standardMinutes(2);
 
-        private final Map<String, HealthCheck> containersToWaitFor = new HashMap<>();
         private final List<ServiceWait> serviceWaits = new ArrayList<>();
         private final DockerCompose dockerComposeProcess;
         private final ContainerCache containers;
-        private Duration serviceTimeout = standardMinutes(2);
         private LogCollector logCollector = new DoNothingLogCollector();
 
         public DockerCompositionBuilder(DockerCompose dockerComposeProcess) {
@@ -144,8 +129,7 @@ public class DockerComposition extends ExternalResource {
         }
 
         public DockerCompositionBuilder waitingForService(String serviceName, HealthCheck check) {
-            this.containersToWaitFor.put(serviceName, check);
-            return this;
+            return waitingForService(serviceName, check, DEFAULT_TIMEOUT);
         }
 
         public DockerCompositionBuilder waitingForService(String serviceName, HealthCheck check, Duration timeout) {
@@ -164,15 +148,7 @@ public class DockerComposition extends ExternalResource {
         }
 
         public DockerComposition build() {
-            Map<Container, HealthCheck> servicesToWaitFor = containersToWaitFor.entrySet()
-                    .stream()
-                    .collect(toMap(e -> containers.get(e.getKey()), Map.Entry::getValue));
-            List<ServiceWait> additionalServiceWaits = servicesToWaitFor.entrySet().stream()
-                    .map(entry -> new ServiceWait(entry.getKey(), entry.getValue(), serviceTimeout))
-                    .collect(toList());
-
-            serviceWaits.addAll(additionalServiceWaits);
-            return new DockerComposition(dockerComposeProcess, serviceWaits, serviceTimeout, logCollector, containers);
+            return new DockerComposition(dockerComposeProcess, serviceWaits, logCollector, containers);
         }
     }
 
