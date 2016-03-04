@@ -15,7 +15,6 @@
  */
 package com.palantir.docker.compose;
 
-import com.google.common.collect.ImmutableMap;
 import com.jayway.awaitility.Awaitility;
 import com.jayway.awaitility.core.ConditionTimeoutException;
 import com.palantir.docker.compose.configuration.DockerComposeFiles;
@@ -23,6 +22,7 @@ import com.palantir.docker.compose.connection.Container;
 import com.palantir.docker.compose.connection.ContainerCache;
 import com.palantir.docker.compose.connection.DockerMachine;
 import com.palantir.docker.compose.connection.DockerPort;
+import com.palantir.docker.compose.connection.waiting.HealthCheck;
 import com.palantir.docker.compose.execution.DockerCompose;
 import com.palantir.docker.compose.logging.DoNothingLogCollector;
 import com.palantir.docker.compose.logging.FileLogCollector;
@@ -40,6 +40,7 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 
+import static com.google.common.collect.ImmutableMap.copyOf;
 import static java.util.stream.Collectors.toMap;
 import static org.joda.time.Duration.standardMinutes;
 
@@ -49,7 +50,7 @@ public class DockerComposition extends ExternalResource {
 
     private final DockerCompose dockerComposeProcess;
     private final ContainerCache containers;
-    private final Map<Container, Function<Container, Boolean>> servicesToWaitFor;
+    private final Map<Container, HealthCheck> servicesToWaitFor;
     private final Duration serviceTimeout;
     private final LogCollector logCollector;
 
@@ -76,12 +77,12 @@ public class DockerComposition extends ExternalResource {
     }
 
     private DockerComposition(DockerCompose dockerComposeProcess,
-                              Map<Container, Function<Container, Boolean>> servicesToWaitFor,
+                              Map<Container, HealthCheck> servicesToWaitFor,
                               Duration serviceTimeout,
                               LogCollector logCollector,
                               ContainerCache containers) {
         this.dockerComposeProcess = dockerComposeProcess;
-        this.servicesToWaitFor = ImmutableMap.copyOf(servicesToWaitFor);
+        this.servicesToWaitFor = copyOf(servicesToWaitFor);
         this.serviceTimeout = serviceTimeout;
         this.logCollector = logCollector;
         this.containers = containers;
@@ -101,13 +102,13 @@ public class DockerComposition extends ExternalResource {
         log.debug("docker-compose cluster started");
     }
 
-    private void waitForService(Container service, Function<Container, Boolean> serviceCheck) {
+    private void waitForService(Container service, HealthCheck healthCheck) {
         log.debug("Waiting for service '{}'", service);
         try {
             Awaitility.await()
                 .pollInterval(50, TimeUnit.MILLISECONDS)
                 .atMost(serviceTimeout.getMillis(), TimeUnit.MILLISECONDS)
-                .until(() -> serviceCheck.apply(service));
+                .until(() -> healthCheck.isServiceUp(service));
         } catch (ConditionTimeoutException e) {
             throw new IllegalStateException("Container '" + service.getContainerName() + "' failed to pass startup check");
         }
@@ -139,7 +140,7 @@ public class DockerComposition extends ExternalResource {
     public static class DockerCompositionBuilder {
 
         private static final Duration DEFAULT_TIMEOUT = standardMinutes(2);
-        private final Map<String, Function<Container, Boolean>> containersToWaitFor = new HashMap<>();
+        private final Map<String, HealthCheck> containersToWaitFor = new HashMap<String, HealthCheck>();
         private final DockerCompose dockerComposeProcess;
         private final ContainerCache containers;
         private Duration serviceTimeout = standardMinutes(2);
@@ -150,15 +151,15 @@ public class DockerComposition extends ExternalResource {
             this.containers = new ContainerCache(dockerComposeProcess);
         }
 
-        public static Function<Container, Boolean> toHaveAllPortsOpen() {
+        public static HealthCheck toHaveAllPortsOpen() {
             return container -> container.waitForPorts(DEFAULT_TIMEOUT);
         }
 
-        public static Function<Container, Boolean> toRespondOverHttp(int internalPort, Function<DockerPort, String> urlFunction) {
+        public static HealthCheck toRespondOverHttp(int internalPort, Function<DockerPort, String> urlFunction) {
             return (container) -> container.waitForHttpPort(internalPort, urlFunction, DEFAULT_TIMEOUT);
         }
 
-        public DockerCompositionBuilder waitingForService(String serviceName, Function<Container, Boolean> check) {
+        public DockerCompositionBuilder waitingForService(String serviceName, HealthCheck check) {
             containersToWaitFor.put(serviceName, check);
             return this;
         }
@@ -179,7 +180,7 @@ public class DockerComposition extends ExternalResource {
         }
 
         public DockerComposition build() {
-            Map<Container, Function<Container, Boolean>> servicesToWaitFor = containersToWaitFor.entrySet()
+            Map<Container, HealthCheck> servicesToWaitFor = containersToWaitFor.entrySet()
                                                                                                 .stream()
                                                                                                 .collect(toMap(e -> containers.get(e.getKey()), Map.Entry::getValue));
             return new DockerComposition(dockerComposeProcess, servicesToWaitFor, serviceTimeout, logCollector, containers);
