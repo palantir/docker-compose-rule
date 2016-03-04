@@ -39,9 +39,9 @@ public class DockerCompositionLoggingIntegrationTest {
 
     @Before
     public void setUp() throws Exception {
-        loggingComposition = DockerComposition.of("src/test/resources/docker-compose.yaml")
-                                              .waitingForService("db")
-                                              .waitingForService("db2")
+        loggingComposition = DockerComposition.of("src/test/resources/docker-compose.yaml").waitingForService("db",
+                DockerComposition.DockerCompositionBuilder.toHaveAllPortsOpen()).waitingForService("db2",
+                DockerComposition.DockerCompositionBuilder.toHaveAllPortsOpen())
                                               .saveLogsTo(logFolder.getRoot().getAbsolutePath())
                                               .build();
     }

@@ -39,8 +39,8 @@ public class EnvironmentVariableIntegrationTest {
                                                    .build();
 
         DockerComposition dockerComposition = DockerComposition.of("src/test/resources/environment/docker-compose.yaml",
-                                                                   dockerMachine)
-                                                               .waitingForService("env-test")
+                dockerMachine).waitingForService("env-test",
+                DockerComposition.DockerCompositionBuilder.toHaveAllPortsOpen())
                                                                .saveLogsTo(temporaryFolder.getRoot().getAbsolutePath())
                                                                .build();
         try {

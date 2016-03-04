@@ -41,6 +41,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 
 import static java.util.stream.Collectors.toMap;
+import static org.joda.time.Duration.standardMinutes;
 
 public class DockerComposition extends ExternalResource {
 
@@ -137,10 +138,11 @@ public class DockerComposition extends ExternalResource {
 
     public static class DockerCompositionBuilder {
 
+        private static final Duration DEFAULT_TIMEOUT = standardMinutes(2);
         private final Map<String, Function<Container, Boolean>> containersToWaitFor = new HashMap<>();
         private final DockerCompose dockerComposeProcess;
         private final ContainerCache containers;
-        private Duration serviceTimeout = Duration.standardMinutes(2);
+        private Duration serviceTimeout = standardMinutes(2);
         private LogCollector logCollector = new DoNothingLogCollector();
 
         public DockerCompositionBuilder(DockerCompose dockerComposeProcess) {
@@ -148,12 +150,12 @@ public class DockerComposition extends ExternalResource {
             this.containers = new ContainerCache(dockerComposeProcess);
         }
 
-        public DockerCompositionBuilder waitingForService(String serviceName) {
-            return waitingForService(serviceName, (container) -> container.waitForPorts(serviceTimeout));
+        public static Function<Container, Boolean> toHaveAllPortsOpen() {
+            return container -> container.waitForPorts(DEFAULT_TIMEOUT);
         }
 
-        public DockerCompositionBuilder waitingForHttpService(String serviceName, int internalPort, Function<DockerPort, String> urlFunction) {
-            return waitingForService(serviceName, (container) -> container.waitForHttpPort(internalPort, urlFunction, serviceTimeout));
+        public static Function<Container, Boolean> toRespondOverHttp(int internalPort, Function<DockerPort, String> urlFunction) {
+            return (container) -> container.waitForHttpPort(internalPort, urlFunction, DEFAULT_TIMEOUT);
         }
 
         public DockerCompositionBuilder waitingForService(String serviceName, Function<Container, Boolean> check) {
