@@ -27,6 +27,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
+import static com.google.common.base.Preconditions.checkArgument;
+
 public class FileLogCollector implements LogCollector {
 
     private static final Logger log = LoggerFactory.getLogger(FileLogCollector.class);
@@ -38,6 +40,7 @@ public class FileLogCollector implements LogCollector {
     private ExecutorService executor = null;
 
     public FileLogCollector(File logDirectory) {
+        checkArgument(!logDirectory.isFile(), "Log directory cannot be a file");
         this.logDirectory = logDirectory;
     }
 

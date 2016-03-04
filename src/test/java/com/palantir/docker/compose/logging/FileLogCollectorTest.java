@@ -64,6 +64,16 @@ public class FileLogCollectorTest {
     }
 
     @Test
+    public void cannot_be_created_pointing_to_a_file() throws IOException {
+        File file = logDirectoryParent.newFile("cannot-use");
+
+        exception.expect(IllegalArgumentException.class);
+        exception.expectMessage("cannot be a file");
+
+        new FileLogCollector(file);
+    }
+
+    @Test
     public void when_no_containers_are_running_no_logs_are_collected() throws IOException, InterruptedException {
         when(compose.ps()).thenReturn(new ContainerNames(emptyList()));
         logCollector.startCollecting(compose);
