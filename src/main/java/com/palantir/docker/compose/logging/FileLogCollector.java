@@ -17,6 +17,7 @@ package com.palantir.docker.compose.logging;
 
 import com.palantir.docker.compose.connection.ContainerNames;
 import com.palantir.docker.compose.execution.DockerCompose;
+import org.apache.commons.lang3.Validate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,6 +42,9 @@ public class FileLogCollector implements LogCollector {
 
     public FileLogCollector(File logDirectory) {
         checkArgument(!logDirectory.isFile(), "Log directory cannot be a file");
+        if (!logDirectory.exists()) {
+            Validate.isTrue(logDirectory.mkdirs(), "Error making log directory");
+        }
         this.logDirectory = logDirectory;
     }
 

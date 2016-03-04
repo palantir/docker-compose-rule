@@ -74,6 +74,16 @@ public class FileLogCollectorTest {
     }
 
     @Test
+    public void creates_a_directory_that_does_not_exist() throws IOException {
+        File doesNotExistYetDirectory = logDirectoryParent.getRoot()
+                .toPath()
+                .resolve("doesNotExist")
+                .toFile();
+        new FileLogCollector(doesNotExistYetDirectory);
+        assertThat(doesNotExistYetDirectory.exists(), is(true));
+    }
+
+    @Test
     public void when_no_containers_are_running_no_logs_are_collected() throws IOException, InterruptedException {
         when(compose.ps()).thenReturn(new ContainerNames(emptyList()));
         logCollector.startCollecting(compose);
