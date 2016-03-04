@@ -34,10 +34,13 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
-import static com.google.common.collect.ImmutableMap.copyOf;
+import static com.google.common.collect.ImmutableList.copyOf;
+import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
 import static org.joda.time.Duration.standardMinutes;
 
@@ -47,7 +50,7 @@ public class DockerComposition extends ExternalResource {
 
     private final DockerCompose dockerComposeProcess;
     private final ContainerCache containers;
-    private final Map<Container, HealthCheck> servicesToWaitFor;
+    private final List<ServiceWait> serviceWaits;
     private final Duration serviceTimeout;
     private final LogCollector logCollector;
 
@@ -72,12 +75,12 @@ public class DockerComposition extends ExternalResource {
     }
 
     private DockerComposition(DockerCompose dockerComposeProcess,
-                              Map<Container, HealthCheck> servicesToWaitFor,
+                              List<ServiceWait> serviceWaits,
                               Duration serviceTimeout,
                               LogCollector logCollector,
                               ContainerCache containers) {
         this.dockerComposeProcess = dockerComposeProcess;
-        this.servicesToWaitFor = copyOf(servicesToWaitFor);
+        this.serviceWaits = copyOf(serviceWaits);
         this.serviceTimeout = serviceTimeout;
         this.logCollector = logCollector;
         this.containers = containers;
@@ -93,7 +96,7 @@ public class DockerComposition extends ExternalResource {
 
         logCollector.startCollecting(dockerComposeProcess);
         log.debug("Waiting for services");
-        servicesToWaitFor.entrySet().forEach(serviceCheck -> waitForService(serviceCheck.getKey(), serviceCheck.getValue()));
+        serviceWaits.forEach(ServiceWait::holdTillServiceIsUp);
         log.debug("docker-compose cluster started");
     }
 
@@ -128,6 +131,7 @@ public class DockerComposition extends ExternalResource {
     public static class DockerCompositionBuilder {
 
         private final Map<String, HealthCheck> containersToWaitFor = new HashMap<>();
+        private final List<ServiceWait> serviceWaits = new ArrayList<>();
         private final DockerCompose dockerComposeProcess;
         private final ContainerCache containers;
         private Duration serviceTimeout = standardMinutes(2);
@@ -162,7 +166,12 @@ public class DockerComposition extends ExternalResource {
             Map<Container, HealthCheck> servicesToWaitFor = containersToWaitFor.entrySet()
                     .stream()
                     .collect(toMap(e -> containers.get(e.getKey()), Map.Entry::getValue));
-            return new DockerComposition(dockerComposeProcess, servicesToWaitFor, serviceTimeout, logCollector, containers);
+            List<ServiceWait> additionalServiceWaits = servicesToWaitFor.entrySet().stream()
+                    .map(entry -> new ServiceWait(entry.getKey(), entry.getValue(), serviceTimeout))
+                    .collect(toList());
+
+            serviceWaits.addAll(additionalServiceWaits);
+            return new DockerComposition(dockerComposeProcess, serviceWaits, serviceTimeout, logCollector, containers);
         }
 
     }
