@@ -17,20 +17,20 @@ package com.palantir.docker.compose.execution;
 
 import com.google.common.collect.ImmutableList;
 import com.palantir.docker.compose.configuration.DockerComposeFiles;
-import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
-import static java.util.Arrays.asList;
-
 
 public class DockerComposeExecutable {
+    private static final Logger log = LoggerFactory.getLogger(DockerComposeExecutable.class);
 
-    private static final List<String> dockerComposeLocations = asList(
-            "/usr/local/bin/docker-compose",
-            System.getenv("DOCKER_COMPOSE_LOCATION"));
+    private static final DockerComposeLocations DOCKER_COMPOSE_LOCATIONS = new DockerComposeLocations(
+            System.getenv("DOCKER_COMPOSE_LOCATION"),
+            "/usr/local/bin/docker-compose"
+    );
 
     private final DockerComposeFiles dockerComposeFiles;
     private final DockerConfiguration dockerConfiguration;
@@ -56,12 +56,13 @@ public class DockerComposeExecutable {
     }
 
     private static String findDockerComposePath() {
-        return dockerComposeLocations.stream()
-                .filter(StringUtils::isNotBlank)
-                .filter(path -> new File(path).exists())
-                .findAny()
+        String pathToUse = DOCKER_COMPOSE_LOCATIONS.preferredLocation()
                 .orElseThrow(() -> new IllegalStateException(
-                        "Could not find docker-compose, looked in: " + dockerComposeLocations));
+                        "Could not find docker-compose, looked in: " + DOCKER_COMPOSE_LOCATIONS));
+
+        log.debug("Using docker-compose found at " + pathToUse);
+
+        return pathToUse;
     }
 
 }
