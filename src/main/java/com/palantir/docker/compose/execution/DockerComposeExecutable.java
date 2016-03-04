@@ -17,20 +17,17 @@ package com.palantir.docker.compose.execution;
 
 import com.google.common.collect.ImmutableList;
 import com.palantir.docker.compose.configuration.DockerComposeFiles;
-import org.apache.commons.lang3.StringUtils;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.List;
-
-import static java.util.Arrays.asList;
 
 
 public class DockerComposeExecutable {
 
-    private static final List<String> dockerComposeLocations = asList(
+    private static final DockerComposeLocations dockerComposeLocations = new DockerComposeLocations(
             "/usr/local/bin/docker-compose",
-            System.getenv("DOCKER_COMPOSE_LOCATION"));
+            System.getenv("DOCKER_COMPOSE_LOCATION")
+    );
 
     private final DockerComposeFiles dockerComposeFiles;
     private final DockerConfiguration dockerConfiguration;
@@ -56,10 +53,7 @@ public class DockerComposeExecutable {
     }
 
     private static String findDockerComposePath() {
-        return dockerComposeLocations.stream()
-                .filter(StringUtils::isNotBlank)
-                .filter(path -> new File(path).exists())
-                .findAny()
+        return dockerComposeLocations.preferredLocation()
                 .orElseThrow(() -> new IllegalStateException(
                         "Could not find docker-compose, looked in: " + dockerComposeLocations));
     }

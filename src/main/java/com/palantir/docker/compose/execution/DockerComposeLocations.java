@@ -25,7 +25,7 @@ import static java.util.Arrays.asList;
 public class DockerComposeLocations {
     private static final Predicate<String> IS_NOT_NULL = path -> path != null;
     private static final Predicate<String> FILE_EXISTS = path -> new File(path).exists();
-    
+
     private final List<String> possiblePaths;
 
     public DockerComposeLocations(String... possiblePaths) {
@@ -38,5 +38,12 @@ public class DockerComposeLocations {
                 .filter(IS_NOT_NULL)
                 .filter(FILE_EXISTS)
                 .findFirst();
+    }
+
+    @Override
+    public String toString() {
+        return "DockerComposeLocations{" +
+                "possiblePaths=" + possiblePaths +
+                '}';
     }
 }
