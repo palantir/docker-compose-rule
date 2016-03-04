@@ -22,10 +22,8 @@ import com.palantir.docker.compose.execution.DockerCompose;
 import com.palantir.docker.compose.logging.DoNothingLogCollector;
 import com.palantir.docker.compose.logging.FileLogCollector;
 import com.palantir.docker.compose.logging.LogCollector;
-import org.apache.commons.lang3.Validate;
 import org.joda.time.Duration;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
