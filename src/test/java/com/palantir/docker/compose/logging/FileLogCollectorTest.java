@@ -85,10 +85,7 @@ public class FileLogCollectorTest {
 
     @Test
     public void cannot_be_created_if_the_directory_does_not_exist_and_cannot_be_created() throws IOException {
-        File cannotBeCreatedDirectory = mock(File.class);
-        when(cannotBeCreatedDirectory.isFile()).thenReturn(false);
-        when(cannotBeCreatedDirectory.mkdirs()).thenReturn(false);
-        when(cannotBeCreatedDirectory.getAbsolutePath()).thenReturn("cannot/exist/directory");
+        File cannotBeCreatedDirectory = cannotBeCreatedDirectory();
 
         exception.expect(IllegalArgumentException.class);
         exception.expectMessage("Error making");
@@ -198,6 +195,14 @@ public class FileLogCollectorTest {
         exception.expect(RuntimeException.class);
         exception.expectMessage("Cannot start collecting the same logs twice");
         logCollector.startCollecting(compose);
+    }
+
+    private File cannotBeCreatedDirectory() {
+        File cannotBeCreatedDirectory = mock(File.class);
+        when(cannotBeCreatedDirectory.isFile()).thenReturn(false);
+        when(cannotBeCreatedDirectory.mkdirs()).thenReturn(false);
+        when(cannotBeCreatedDirectory.getAbsolutePath()).thenReturn("cannot/exist/directory");
+        return cannotBeCreatedDirectory;
     }
 
 }
