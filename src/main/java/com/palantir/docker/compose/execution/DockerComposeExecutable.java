@@ -24,9 +24,9 @@ import java.util.List;
 
 public class DockerComposeExecutable {
 
-    private static final DockerComposeLocations dockerComposeLocations = new DockerComposeLocations(
-            "/usr/local/bin/docker-compose",
-            System.getenv("DOCKER_COMPOSE_LOCATION")
+    private static final DockerComposeLocations DOCKER_COMPOSE_LOCATIONS = new DockerComposeLocations(
+            System.getenv("DOCKER_COMPOSE_LOCATION"),
+            "/usr/local/bin/docker-compose"
     );
 
     private final DockerComposeFiles dockerComposeFiles;
@@ -53,9 +53,9 @@ public class DockerComposeExecutable {
     }
 
     private static String findDockerComposePath() {
-        return dockerComposeLocations.preferredLocation()
+        return DOCKER_COMPOSE_LOCATIONS.preferredLocation()
                 .orElseThrow(() -> new IllegalStateException(
-                        "Could not find docker-compose, looked in: " + dockerComposeLocations));
+                        "Could not find docker-compose, looked in: " + DOCKER_COMPOSE_LOCATIONS));
     }
 
 }
