@@ -43,7 +43,7 @@ public class FileLogCollector implements LogCollector {
     public FileLogCollector(File logDirectory) {
         checkArgument(!logDirectory.isFile(), "Log directory cannot be a file");
         if (!logDirectory.exists()) {
-            Validate.isTrue(logDirectory.mkdirs(), "Error making log directory");
+            Validate.isTrue(logDirectory.mkdirs(), "Error making log directory: " + logDirectory.getAbsolutePath());
         }
         this.logDirectory = logDirectory;
     }

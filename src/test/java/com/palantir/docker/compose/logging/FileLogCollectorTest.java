@@ -84,6 +84,20 @@ public class FileLogCollectorTest {
     }
 
     @Test
+    public void cannot_be_created_if_the_directory_does_not_exist_and_cannot_be_created() throws IOException {
+        File cannotBeCreatedDirectory = mock(File.class);
+        when(cannotBeCreatedDirectory.isFile()).thenReturn(false);
+        when(cannotBeCreatedDirectory.mkdirs()).thenReturn(false);
+        when(cannotBeCreatedDirectory.getAbsolutePath()).thenReturn("cannot/exist/directory");
+
+        exception.expect(IllegalArgumentException.class);
+        exception.expectMessage("Error making");
+        exception.expectMessage(cannotBeCreatedDirectory.getAbsolutePath());
+
+        new FileLogCollector(cannotBeCreatedDirectory);
+    }
+
+    @Test
     public void when_no_containers_are_running_no_logs_are_collected() throws IOException, InterruptedException {
         when(compose.ps()).thenReturn(new ContainerNames(emptyList()));
         logCollector.startCollecting(compose);
