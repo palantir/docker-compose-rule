@@ -58,9 +58,7 @@ public class DockerComposition extends ExternalResource {
     }
 
     public static DockerCompositionBuilder of(DockerComposeFiles dockerComposeFiles) {
-        return of(dockerComposeFiles,
-                  DockerMachine.localMachine()
-                               .build());
+        return of(dockerComposeFiles, DockerMachine.localMachine().build());
     }
 
     public static DockerCompositionBuilder of(String dockerComposeFile, DockerMachine dockerMachine) {
