@@ -17,6 +17,7 @@ package com.palantir.docker.compose.execution;
 
 import com.google.common.collect.ImmutableList;
 
+import java.io.File;
 import java.util.Optional;
 
 import static com.google.common.collect.ImmutableList.copyOf;
@@ -29,6 +30,8 @@ public class DockerComposeLocations {
     }
 
     public Optional<String> preferredLocation() {
-        return paths.stream().findFirst();
+        return paths.stream()
+                .filter(path -> new File(path).exists())
+                .findFirst();
     }
 }

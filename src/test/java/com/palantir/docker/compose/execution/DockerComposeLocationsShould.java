@@ -26,24 +26,26 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 
 public class DockerComposeLocationsShould {
-    private final String invalidFilePath = "file/that/does/not/exist";
+    private final String badLocation = "file/that/does/not/exist";
+    private final String otherBadLocation = "another/file/that/does/not/exist";
 
     @Rule public TemporaryFolder folder = new TemporaryFolder();
 
-    String validFilePath;
+    String goodLocation;
 
     @Before
     public void setup() throws IOException {
-        validFilePath = folder.newFile("docker-compose.yml").getAbsolutePath();
+        goodLocation = folder.newFile("docker-compose.yml").getAbsolutePath();
     }
 
     @Test public void
     provide_the_first_docker_compose_location_if_it_exists() throws IOException {
         DockerComposeLocations dockerComposeLocations = new DockerComposeLocations(
-                validFilePath,
-                invalidFilePath);
+                badLocation,
+                goodLocation,
+                otherBadLocation);
 
         assertThat(dockerComposeLocations.preferredLocation().get(),
-                is(validFilePath));
+                is(goodLocation));
     }
 }
