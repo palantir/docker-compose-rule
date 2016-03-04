@@ -40,27 +40,8 @@ public class DockerComposition extends ExternalResource {
     private final List<ServiceWait> serviceWaits;
     private final LogCollector logCollector;
 
-    public static DockerCompositionBuilder of(String dockerComposeFile) {
-        return of(DockerComposeFiles.from(dockerComposeFile));
-    }
-
-    public static DockerCompositionBuilder of(DockerComposeFiles dockerComposeFiles) {
-        return of(dockerComposeFiles, DockerMachine.localMachine().build());
-    }
-
-    public static DockerCompositionBuilder of(String dockerComposeFile, DockerMachine dockerMachine) {
-        return of(DockerComposeFiles.from(dockerComposeFile), dockerMachine);
-    }
-
-    public static DockerCompositionBuilder of(DockerComposeFiles dockerComposeFiles, DockerMachine dockerMachine) {
-        return of(new DockerCompose(dockerComposeFiles, dockerMachine));
-    }
-
-    public static DockerCompositionBuilder of(DockerCompose executable) {
-        return new DockerCompositionBuilder(executable);
-    }
-
-    public DockerComposition(DockerCompose dockerComposeProcess,
+    public DockerComposition(
+            DockerCompose dockerComposeProcess,
             List<ServiceWait> serviceWaits,
             LogCollector logCollector,
             ContainerCache containers) {
@@ -105,6 +86,26 @@ public class DockerComposition extends ExternalResource {
     public DockerPort portOnContainerWithInternalMapping(String container, int portNumber) throws IOException, InterruptedException {
         return containers.get(container)
                          .portMappedInternallyTo(portNumber);
+    }
+
+    public static DockerCompositionBuilder of(String dockerComposeFile) {
+        return of(DockerComposeFiles.from(dockerComposeFile));
+    }
+
+    public static DockerCompositionBuilder of(DockerComposeFiles dockerComposeFiles) {
+        return of(dockerComposeFiles, DockerMachine.localMachine().build());
+    }
+
+    public static DockerCompositionBuilder of(String dockerComposeFile, DockerMachine dockerMachine) {
+        return of(DockerComposeFiles.from(dockerComposeFile), dockerMachine);
+    }
+
+    public static DockerCompositionBuilder of(DockerComposeFiles dockerComposeFiles, DockerMachine dockerMachine) {
+        return of(new DockerCompose(dockerComposeFiles, dockerMachine));
+    }
+
+    public static DockerCompositionBuilder of(DockerCompose executable) {
+        return new DockerCompositionBuilder(executable);
     }
 
 }
