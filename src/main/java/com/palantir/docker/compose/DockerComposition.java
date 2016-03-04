@@ -38,7 +38,6 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Function;
 
 import static com.google.common.collect.ImmutableMap.copyOf;
 import static java.util.stream.Collectors.toMap;
@@ -149,14 +148,6 @@ public class DockerComposition extends ExternalResource {
         public DockerCompositionBuilder(DockerCompose dockerComposeProcess) {
             this.dockerComposeProcess = dockerComposeProcess;
             this.containers = new ContainerCache(dockerComposeProcess);
-        }
-
-        public static HealthCheck toHaveAllPortsOpen() {
-            return container -> container.waitForPorts(DEFAULT_TIMEOUT);
-        }
-
-        public static HealthCheck toRespondOverHttp(int internalPort, Function<DockerPort, String> urlFunction) {
-            return (container) -> container.waitForHttpPort(internalPort, urlFunction, DEFAULT_TIMEOUT);
         }
 
         public DockerCompositionBuilder waitingForService(String serviceName, HealthCheck check) {

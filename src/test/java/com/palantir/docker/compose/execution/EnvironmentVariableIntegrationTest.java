@@ -23,6 +23,7 @@ import org.junit.rules.TemporaryFolder;
 
 import java.nio.file.Path;
 
+import static com.palantir.docker.compose.connection.waiting.HealthChecks.toHaveAllPortsOpen;
 import static com.palantir.docker.compose.matchers.IOMatchers.fileContainingString;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
@@ -38,11 +39,11 @@ public class EnvironmentVariableIntegrationTest {
                                                    .withAdditionalEnvironmentVariable("SOME_VARIABLE", "SOME_VALUE")
                                                    .build();
 
-        DockerComposition dockerComposition = DockerComposition.of("src/test/resources/environment/docker-compose.yaml",
-                dockerMachine).waitingForService("env-test",
-                DockerComposition.DockerCompositionBuilder.toHaveAllPortsOpen())
-                                                               .saveLogsTo(temporaryFolder.getRoot().getAbsolutePath())
-                                                               .build();
+        DockerComposition dockerComposition =
+                DockerComposition.of("src/test/resources/environment/docker-compose.yaml", dockerMachine)
+                        .waitingForService("env-test", toHaveAllPortsOpen())
+                        .saveLogsTo(temporaryFolder.getRoot().getAbsolutePath())
+                        .build();
         try {
             dockerComposition.before();
         } finally {

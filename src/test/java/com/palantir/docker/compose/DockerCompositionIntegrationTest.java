@@ -22,7 +22,7 @@ import org.junit.rules.TemporaryFolder;
 
 import java.io.IOException;
 
-import static com.palantir.docker.compose.DockerComposition.DockerCompositionBuilder.toHaveAllPortsOpen;
+import static com.palantir.docker.compose.connection.waiting.HealthChecks.toHaveAllPortsOpen;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 
