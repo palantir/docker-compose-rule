@@ -1,5 +1,5 @@
 db:
-  image: postgres
+  image: kiasaki/alpine-postgres
   environment:
     - "POSTGRES_DB=source"
     - "POSTGRES_USER=palantir"
@@ -8,7 +8,7 @@ db:
     - "5433:5432"
     
 db2:  
-  image: postgres
+  image: kiasaki/alpine-postgres
   environment:
     - "POSTGRES_DB=source"
     - "POSTGRES_USER=palantir"
