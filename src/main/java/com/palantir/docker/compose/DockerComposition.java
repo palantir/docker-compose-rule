@@ -19,25 +19,17 @@ import com.palantir.docker.compose.configuration.DockerComposeFiles;
 import com.palantir.docker.compose.connection.ContainerCache;
 import com.palantir.docker.compose.connection.DockerMachine;
 import com.palantir.docker.compose.connection.DockerPort;
-import com.palantir.docker.compose.connection.waiting.HealthCheck;
 import com.palantir.docker.compose.connection.waiting.ServiceWait;
 import com.palantir.docker.compose.execution.DockerCompose;
-import com.palantir.docker.compose.logging.DoNothingLogCollector;
-import com.palantir.docker.compose.logging.FileLogCollector;
 import com.palantir.docker.compose.logging.LogCollector;
-import org.apache.commons.lang3.Validate;
-import org.joda.time.Duration;
 import org.junit.rules.ExternalResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 import static com.google.common.collect.ImmutableList.copyOf;
-import static org.joda.time.Duration.standardMinutes;
 
 public class DockerComposition extends ExternalResource {
 
@@ -68,7 +60,7 @@ public class DockerComposition extends ExternalResource {
         return new DockerCompositionBuilder(executable);
     }
 
-    private DockerComposition(DockerCompose dockerComposeProcess,
+    public DockerComposition(DockerCompose dockerComposeProcess,
             List<ServiceWait> serviceWaits,
             LogCollector logCollector,
             ContainerCache containers) {
@@ -113,43 +105,6 @@ public class DockerComposition extends ExternalResource {
     public DockerPort portOnContainerWithInternalMapping(String container, int portNumber) throws IOException, InterruptedException {
         return containers.get(container)
                          .portMappedInternallyTo(portNumber);
-    }
-
-    public static class DockerCompositionBuilder {
-        private static final Duration DEFAULT_TIMEOUT = standardMinutes(2);
-
-        private final List<ServiceWait> serviceWaits = new ArrayList<>();
-        private final DockerCompose dockerComposeProcess;
-        private final ContainerCache containers;
-        private LogCollector logCollector = new DoNothingLogCollector();
-
-        public DockerCompositionBuilder(DockerCompose dockerComposeProcess) {
-            this.dockerComposeProcess = dockerComposeProcess;
-            this.containers = new ContainerCache(dockerComposeProcess);
-        }
-
-        public DockerCompositionBuilder waitingForService(String serviceName, HealthCheck check) {
-            return waitingForService(serviceName, check, DEFAULT_TIMEOUT);
-        }
-
-        public DockerCompositionBuilder waitingForService(String serviceName, HealthCheck check, Duration timeout) {
-            serviceWaits.add(new ServiceWait(containers.get(serviceName), check, timeout));
-            return this;
-        }
-
-        public DockerCompositionBuilder saveLogsTo(String path) {
-            File logDirectory = new File(path);
-            Validate.isTrue(!logDirectory.isFile(), "Log directory cannot be a file");
-            if (!logDirectory.exists()) {
-                Validate.isTrue(logDirectory.mkdirs(), "Error making log directory");
-            }
-            this.logCollector = new FileLogCollector(logDirectory);
-            return this;
-        }
-
-        public DockerComposition build() {
-            return new DockerComposition(dockerComposeProcess, serviceWaits, logCollector, containers);
-        }
     }
 
 }

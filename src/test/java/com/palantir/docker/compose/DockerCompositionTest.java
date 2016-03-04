@@ -15,7 +15,6 @@
  */
 package com.palantir.docker.compose;
 
-import com.palantir.docker.compose.DockerComposition.DockerCompositionBuilder;
 import com.palantir.docker.compose.configuration.MockDockerEnvironment;
 import com.palantir.docker.compose.connection.Container;
 import com.palantir.docker.compose.connection.ContainerNames;
