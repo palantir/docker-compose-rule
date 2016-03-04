@@ -27,8 +27,8 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 
 public class DockerComposeLocationsShould {
-    private final String badLocation = "file/that/does/not/exist";
-    private final String otherBadLocation = "another/file/that/does/not/exist";
+    private static final String badLocation = "file/that/does/not/exist";
+    private static final String otherBadLocation = "another/file/that/does/not/exist";
 
     @Rule public TemporaryFolder folder = new TemporaryFolder();
 
