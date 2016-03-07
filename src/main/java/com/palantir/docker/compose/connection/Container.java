@@ -61,6 +61,7 @@ public class Container {
         }
     }
 
+
     public boolean waitForHttpPort(int internalPort, Function<DockerPort, String> urlFunction, Duration timeout) {
         try {
             DockerPort port = portMappedInternallyTo(internalPort);
@@ -121,5 +122,13 @@ public class Container {
         return "Container{" +
                 "containerName='" + containerName + '\'' +
                 '}';
+    }
+
+    public boolean areAllPortsOpen() {
+        long numberOfUnavailablePorts = portMappings.get().stream()
+                .filter(port -> !port.isListeningNow())
+                .count();
+
+        return numberOfUnavailablePorts == 0;
     }
 }

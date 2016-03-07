@@ -16,6 +16,7 @@
 
 package com.palantir.docker.compose.connection.waiting;
 
+import com.palantir.docker.compose.connection.Container;
 import com.palantir.docker.compose.connection.DockerPort;
 import org.joda.time.Duration;
 
@@ -31,6 +32,6 @@ public class HealthChecks {
     }
 
     public static HealthCheck toHaveAllPortsOpen() {
-        return container -> container.waitForPorts(DEFAULT_TIMEOUT);
+        return Container::areAllPortsOpen;
     }
 }
