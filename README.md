@@ -26,18 +26,17 @@ Simple Use
 
 For the most basic use simply add a `DockerComposition` object as a `@ClassRule` or `@Rule` in a JUnit test class.
 
-  public class DockerCompositionTest {
-
-      @ClassRule
-      public DockerComposition composition = new DockerComposition("src/test/resources/docker-compose.yml");
-
-      @Test
-      public void testThatDependsOnDockerComposition() throws InterruptedException, IOException {
-         ...
-      }
-
-
-  }
+    public class DockerCompositionTest {
+  
+        @ClassRule
+        public DockerComposition composition = new DockerComposition("src/test/resources/docker-compose.yml");
+  
+        @Test
+        public void testThatDependsOnDockerComposition() throws InterruptedException, IOException {
+           ...
+        }
+  
+    }
 
 This will cause the containers defined in `src/test/resources/docker-compose.yml` to be started by Docker Compose before the test executes and then the containers will be killed once the test has finished executing.
 
@@ -56,21 +55,20 @@ Waiting for a service to be available
 
 To wait for services to be available before executing tests use the following methods on the DockerComposition object:
 
-  public class DockerCompositionTest {
-
-      @ClassRule
-      public DockerComposition composition = new DockerComposition("src/test/resources/docker-compose.yml")
-                                                    .waitingForService("db")
-                                                    .waitingForHttpService("web", 8080, (port) -> "https://" + port.getIp() + ":" + port.getExternalPort());
-                                                    .waitingForService("other", (port) -> customServiceCheck(port))
-
-      @Test
-      public void testThatDependsServicesHavingStarted() throws InterruptedException, IOException {
-         ...
-      }
-
-
-  }
+    public class DockerCompositionTest {
+  
+        @ClassRule
+        public DockerComposition composition = new DockerComposition("src/test/resources/docker-compose.yml")
+                                                      .waitingForService("db")
+                                                      .waitingForHttpService("web", 8080, (port) -> "https://" + port.getIp() + ":" + port.getExternalPort());
+                                                      .waitingForService("other", (port) -> customServiceCheck(port))
+  
+        @Test
+        public void testThatDependsServicesHavingStarted() throws InterruptedException, IOException {
+           ...
+        }
+  
+    }
 
 The simple `waitingForService(String container)` method will ensure all ports exposed in the Docker compose file will be open before the tests are run. Note that this is likely insufficient - the port will be opened by Docker before the service started by the container might actually be listening.
 
@@ -98,19 +96,18 @@ Collecting logs
 
 To record the logs from your containers specify a location:
 
-  public class DockerCompositionTest {
-
-      @ClassRule
-      public DockerComposition composition = new DockerComposition("src/test/resources/docker-compose.yml")
-                                                    .saveLogsTo("build/dockerLogs/dockerCompositionTest");
-
-      @Test
-      public void testRecordsLogs() throws InterruptedException, IOException {
-         ...
-      }
-
-
-  }
+    public class DockerCompositionTest {
+  
+        @ClassRule
+        public DockerComposition composition = new DockerComposition("src/test/resources/docker-compose.yml")
+                                                      .saveLogsTo("build/dockerLogs/dockerCompositionTest");
+  
+        @Test
+        public void testRecordsLogs() throws InterruptedException, IOException {
+           ...
+        }
+  
+    }
 
 This will automatically record logs for all containers in real time to the specified directory. Collection will stop when the containers terminate.
 
