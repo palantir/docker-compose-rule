@@ -17,6 +17,7 @@ package com.palantir.docker.compose.logging;
 
 import com.palantir.docker.compose.connection.ContainerNames;
 import com.palantir.docker.compose.execution.DockerCompose;
+import org.apache.commons.lang3.Validate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,6 +27,8 @@ import java.io.IOException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+
+import static com.google.common.base.Preconditions.checkArgument;
 
 public class FileLogCollector implements LogCollector {
 
@@ -38,7 +41,15 @@ public class FileLogCollector implements LogCollector {
     private ExecutorService executor = null;
 
     public FileLogCollector(File logDirectory) {
+        checkArgument(!logDirectory.isFile(), "Log directory cannot be a file");
+        if (!logDirectory.exists()) {
+            Validate.isTrue(logDirectory.mkdirs(), "Error making log directory: " + logDirectory.getAbsolutePath());
+        }
         this.logDirectory = logDirectory;
+    }
+
+    public static LogCollector fromPath(String path) {
+        return new FileLogCollector(new File(path));
     }
 
     @Override

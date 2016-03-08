@@ -56,25 +56,22 @@ Waiting for a service to be available
 To wait for services to be available before executing tests use the following methods on the DockerComposition object:
 
     public class DockerCompositionTest {
-  
+
         @ClassRule
         public DockerComposition composition = new DockerComposition("src/test/resources/docker-compose.yml")
-                                                      .waitingForService("db")
-                                                      .waitingForHttpService("web", 8080, (port) -> "https://" + port.getIp() + ":" + port.getExternalPort());
-                                                      .waitingForService("other", (port) -> customServiceCheck(port))
-  
+            .waitingForService("db", toHaveAllPortsOpen())
+            .waitingForService("web", toRespondOverHttp(8080, (port) -> "https://" + port.getIp() + ":" + port.getExternalPort()))
+            .waitingForService("other", (container) -> customServiceCheck(container), Duration.standardMinutes(2))
+
         @Test
         public void testThatDependsServicesHavingStarted() throws InterruptedException, IOException {
-           ...
+            ...
         }
-  
-    }
 
-The simple `waitingForService(String container)` method will ensure all ports exposed in the Docker compose file will be open before the tests are run. Note that this is likely insufficient - the port will be opened by Docker before the service started by the container might actually be listening.
+The entrypoint method `waitingForService(String container, HealthCheck check[, Duration timeout])` will make sure the healthcheck passes for that container before the tests start. We provide 2 default healthChecks in the HealthChecks class:
 
-`waitingForHttpService(String container, int internalPort, Function<DockerPort, String> urlFunction)` will wait until a HTTP response is received when connecting to the service. `internalPort` should reference the port the Docker container exposes, not an external port that might be exposed in the Docker Compose file. The `urlFunction` will be provided with the actual port mapping at runtime and should return the URL that should be used to connect. For more information about port mappings see the section below.
-
-`waitingForService(String container, Function<DockerPort, Boolean> check)` allows arbitrary checks to be executed. If the function provided returns false then the test setup will fail and JUnit will not execute any tests.
+1. `toHaveAllPortsOpen` - this waits till all ports can be connected to that are exposed on the container
+2. `toRespondOverHttp` - which waits till the specified URL responds to a HTTP request.
 
 Accessing services in containers from outside a container
 ---------------------------------------------------------

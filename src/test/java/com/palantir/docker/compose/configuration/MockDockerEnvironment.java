@@ -43,15 +43,21 @@ public class MockDockerEnvironment {
         return port;
     }
 
+    public DockerPort unavailableService(String service, String ip, int externalPortNumber, int internalPortNumber) throws IOException, InterruptedException {
+        DockerPort port = port(service, ip, externalPortNumber, internalPortNumber);
+        doReturn(false).when(port).isListeningNow();
+        return port;
+    }
+
     public DockerPort availableHttpService(String service, String ip, int externalPortNumber, int internalPortNumber) throws IOException, InterruptedException {
         DockerPort port = availableService(service, ip, externalPortNumber, internalPortNumber);
         doReturn(true).when(port).isHttpResponding(any());
         return port;
     }
 
-    public DockerPort unavailableService(String service, String ip, int externalPortNumber, int internalPortNumber) throws IOException, InterruptedException {
-        DockerPort port = port(service, ip, externalPortNumber, internalPortNumber);
-        doReturn(false).when(port).isListeningNow();
+    public DockerPort unavailableHttpService(String service, String ip, int externalPortNumber, int internalPortNumber) throws IOException, InterruptedException {
+        DockerPort port = availableService(service, ip, externalPortNumber, internalPortNumber);
+        doReturn(false).when(port).isHttpResponding(any());
         return port;
     }
 
@@ -73,5 +79,4 @@ public class MockDockerEnvironment {
         DockerPort port = new DockerPort(ip, externalPortNumber, internalPortNumber);
         return spy(port);
     }
-
 }

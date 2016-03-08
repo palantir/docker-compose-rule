@@ -17,7 +17,6 @@ package com.palantir.docker.compose.connection;
 
 import com.palantir.docker.compose.configuration.MockDockerEnvironment;
 import com.palantir.docker.compose.execution.DockerCompose;
-import org.joda.time.Duration;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -26,7 +25,6 @@ import java.io.IOException;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
-import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -40,53 +38,27 @@ public class ContainerTest {
 
     private final DockerCompose dockerComposeProcess = mock(DockerCompose.class);
     private final MockDockerEnvironment env = new MockDockerEnvironment(dockerComposeProcess);
-    private final Container service = new Container("service", dockerComposeProcess);
-
-    @Test
-    public void waiting_for_a_containers_ports_waits_for_the_ports_from_docker_compose_ps_to_be_available() throws IOException, InterruptedException {
-        DockerPort port = env.availableService("service", IP, 5433, 5432);
-        assertThat(service.waitForPorts(Duration.millis(100)), is(true));
-        verify(port, atLeastOnce()).isListeningNow();
-    }
-
-    @Test
-    public void wait_for_a_containers_ports_returns_false_when_the_port_is_unavailable() throws IOException, InterruptedException {
-        env.unavailableService("service", IP, 5433, 5432);
-        assertThat(service.waitForPorts(Duration.millis(100)), is(false));
-    }
-
-    @Test
-    public void waiting_for_a_containers_http_ports_waits_for_the_ports_from_docker_compose_ps_to_be_available() throws IOException, InterruptedException {
-        DockerPort port = env.availableHttpService("service", IP, 5433, 5432);
-        assertThat(service.waitForHttpPort(5432, (p) -> "url", Duration.millis(100)), is(true));
-        verify(port, atLeastOnce()).isListeningNow();
-    }
-
-    @Test
-    public void wait_for_a_containers_http_ports_returns_false_when_the_port_is_unavailable() throws IOException, InterruptedException {
-        env.unavailableService("service", IP, 5433, 5432);
-        assertThat(service.waitForHttpPort(5432, (p) -> "url", Duration.millis(100)), is(false));
-    }
+    private final Container container = new Container("service", dockerComposeProcess);
 
     @Test
     public void port_is_returned_for_container_when_external_port_number_given() throws IOException, InterruptedException {
         DockerPort expected = env.availableService("service", IP, 5433, 5432);
-        DockerPort port = service.portMappedExternallyTo(5433);
+        DockerPort port = container.portMappedExternallyTo(5433);
         assertThat(port, is(expected));
     }
 
     @Test
     public void port_is_returned_for_container_when_internal_port_number_given() throws IOException, InterruptedException {
         DockerPort expected = env.availableService("service", IP, 5433, 5432);
-        DockerPort port = service.portMappedInternallyTo(5432);
+        DockerPort port = container.portMappedInternallyTo(5432);
         assertThat(port, is(expected));
     }
 
     @Test
     public void when_two_ports_are_requested_docker_ports_is_only_called_once() throws IOException, InterruptedException {
         env.ports("service", IP, 8080, 8081);
-        service.portMappedInternallyTo(8080);
-        service.portMappedInternallyTo(8081);
+        container.portMappedInternallyTo(8080);
+        container.portMappedInternallyTo(8081);
         verify(dockerComposeProcess, times(1)).ports("service");
     }
 
@@ -95,7 +67,7 @@ public class ContainerTest {
         env.availableService("service", IP, 5400, 5400); // Service must have ports otherwise we end up with an exception telling you the service is listening at all
         exception.expect(IllegalArgumentException.class);
         exception.expectMessage("No port mapped externally to '5432' for container 'service'");
-        service.portMappedExternallyTo(5432);
+        container.portMappedExternallyTo(5432);
     }
 
     @Test
@@ -103,7 +75,40 @@ public class ContainerTest {
         env.availableService("service", IP, 5400, 5400);
         exception.expect(IllegalArgumentException.class);
         exception.expectMessage("No internal port '5432' for container 'service'");
-        service.portMappedInternallyTo(5432);
+        container.portMappedInternallyTo(5432);
+    }
+
+    @Test
+    public void have_all_ports_open_if_all_exposed_ports_are_open() throws IOException, InterruptedException {
+        env.availableHttpService("service", IP, 1234, 1234);
+
+        assertThat(container.areAllPortsOpen(), is(true));
+    }
+
+    @Test
+    public void not_have_all_ports_open_if_has_at_least_one_closed_port() throws IOException, InterruptedException {
+        env.availableService("service", IP, 1234, 1234);
+        env.unavailableService("service", IP, 4321, 4321);
+
+        assertThat(container.areAllPortsOpen(), is(false));
+    }
+
+    @Test
+    public void be_listening_on_http_when_the_port_is() throws IOException, InterruptedException {
+        env.availableHttpService("service", IP, 1234, 2345);
+
+        assertThat(
+                container.portIsListeningOnHttp(2345, port -> "http://some.url:" + port),
+                is(true));
+    }
+
+    @Test
+    public void not_be_listening_on_http_when_the_port_is_not() throws IOException, InterruptedException {
+        env.unavailableHttpService("service", IP, 1234, 1234);
+
+        assertThat(
+                container.portIsListeningOnHttp(2345, port -> "http://some.url:" + port),
+                is(false));
     }
 
 }

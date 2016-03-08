@@ -22,6 +22,7 @@ import org.junit.rules.TemporaryFolder;
 
 import java.io.IOException;
 
+import static com.palantir.docker.compose.connection.waiting.HealthChecks.toHaveAllPortsOpen;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 
@@ -29,8 +30,8 @@ public class DockerCompositionIntegrationTest {
 
     @Rule
     public DockerComposition composition = DockerComposition.of("src/test/resources/docker-compose.yaml")
-                                                            .waitingForService("db")
-                                                            .waitingForService("db2")
+                                                            .waitingForService("db", toHaveAllPortsOpen())
+                                                            .waitingForService("db2", toHaveAllPortsOpen())
                                                             .build();
 
     @Rule

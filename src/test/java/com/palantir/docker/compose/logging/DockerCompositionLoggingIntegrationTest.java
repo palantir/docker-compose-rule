@@ -24,6 +24,7 @@ import org.junit.rules.TemporaryFolder;
 import java.io.File;
 import java.io.IOException;
 
+import static com.palantir.docker.compose.connection.waiting.HealthChecks.toHaveAllPortsOpen;
 import static com.palantir.docker.compose.matchers.IOMatchers.fileContainingString;
 import static com.palantir.docker.compose.matchers.IOMatchers.fileWithName;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -40,10 +41,10 @@ public class DockerCompositionLoggingIntegrationTest {
     @Before
     public void setUp() throws Exception {
         loggingComposition = DockerComposition.of("src/test/resources/docker-compose.yaml")
-                                              .waitingForService("db")
-                                              .waitingForService("db2")
-                                              .saveLogsTo(logFolder.getRoot().getAbsolutePath())
-                                              .build();
+                .waitingForService("db", toHaveAllPortsOpen())
+                .waitingForService("db2", toHaveAllPortsOpen())
+                .saveLogsTo(logFolder.getRoot().getAbsolutePath())
+                .build();
     }
 
     @SuppressWarnings("unchecked")

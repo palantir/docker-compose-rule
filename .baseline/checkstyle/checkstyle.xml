@@ -23,7 +23,6 @@
             <property name="ignoreConstructorParameter" value="true"/>
             <property name="ignoreSetter" value="true"/>
         </module>
-        <module name="HideUtilityClassConstructor"/>
         <module name="IllegalInstantiation">
             <property name="classes" value="java.lang.Boolean"/>
             <property name="classes" value="java.lang.Integer"/>

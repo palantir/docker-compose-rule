@@ -64,6 +64,37 @@ public class FileLogCollectorTest {
     }
 
     @Test
+    public void cannot_be_created_when_trying_to_use_a_file_as_the_log_directory() throws IOException {
+        File file = logDirectoryParent.newFile("cannot-use");
+
+        exception.expect(IllegalArgumentException.class);
+        exception.expectMessage("cannot be a file");
+
+        new FileLogCollector(file);
+    }
+
+    @Test
+    public void creates_the_log_directory_if_it_does_not_already_exist() throws IOException {
+        File doesNotExistYetDirectory = logDirectoryParent.getRoot()
+                .toPath()
+                .resolve("doesNotExist")
+                .toFile();
+        new FileLogCollector(doesNotExistYetDirectory);
+        assertThat(doesNotExistYetDirectory.exists(), is(true));
+    }
+
+    @Test
+    public void cannot_be_created_if_the_log_directory_does_not_exist_and_cannot_be_created() throws IOException {
+        File cannotBeCreatedDirectory = cannotBeCreatedDirectory();
+
+        exception.expect(IllegalArgumentException.class);
+        exception.expectMessage("Error making");
+        exception.expectMessage(cannotBeCreatedDirectory.getAbsolutePath());
+
+        new FileLogCollector(cannotBeCreatedDirectory);
+    }
+
+    @Test
     public void when_no_containers_are_running_no_logs_are_collected() throws IOException, InterruptedException {
         when(compose.ps()).thenReturn(new ContainerNames(emptyList()));
         logCollector.startCollecting(compose);
@@ -164,6 +195,14 @@ public class FileLogCollectorTest {
         exception.expect(RuntimeException.class);
         exception.expectMessage("Cannot start collecting the same logs twice");
         logCollector.startCollecting(compose);
+    }
+
+    private File cannotBeCreatedDirectory() {
+        File cannotBeCreatedDirectory = mock(File.class);
+        when(cannotBeCreatedDirectory.isFile()).thenReturn(false);
+        when(cannotBeCreatedDirectory.mkdirs()).thenReturn(false);
+        when(cannotBeCreatedDirectory.getAbsolutePath()).thenReturn("cannot/exist/directory");
+        return cannotBeCreatedDirectory;
     }
 
 }
