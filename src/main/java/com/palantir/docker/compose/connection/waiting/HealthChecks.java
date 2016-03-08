@@ -18,17 +18,12 @@ package com.palantir.docker.compose.connection.waiting;
 
 import com.palantir.docker.compose.connection.Container;
 import com.palantir.docker.compose.connection.DockerPort;
-import org.joda.time.Duration;
 
 import java.util.function.Function;
 
-import static org.joda.time.Duration.standardMinutes;
-
 public class HealthChecks {
-    private static final Duration DEFAULT_TIMEOUT = standardMinutes(2);
-
     public static HealthCheck toRespondOverHttp(int internalPort, Function<DockerPort, String> urlFunction) {
-        return (container) -> container.waitForHttpPort(internalPort, urlFunction, DEFAULT_TIMEOUT);
+        return container -> container.portIsListeningOnHttp(internalPort, urlFunction);
     }
 
     public static HealthCheck toHaveAllPortsOpen() {

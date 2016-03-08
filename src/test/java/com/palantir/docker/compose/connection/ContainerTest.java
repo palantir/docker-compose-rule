@@ -56,19 +56,6 @@ public class ContainerTest {
     }
 
     @Test
-    public void waiting_for_a_containers_http_ports_waits_for_the_ports_from_docker_compose_ps_to_be_available() throws IOException, InterruptedException {
-        DockerPort port = env.availableHttpService("service", IP, 5433, 5432);
-        assertThat(service.waitForHttpPort(5432, (p) -> "url", Duration.millis(100)), is(true));
-        verify(port, atLeastOnce()).isListeningNow();
-    }
-
-    @Test
-    public void wait_for_a_containers_http_ports_returns_false_when_the_port_is_unavailable() throws IOException, InterruptedException {
-        env.unavailableService("service", IP, 5433, 5432);
-        assertThat(service.waitForHttpPort(5432, (p) -> "url", Duration.millis(100)), is(false));
-    }
-
-    @Test
     public void port_is_returned_for_container_when_external_port_number_given() throws IOException, InterruptedException {
         DockerPort expected = env.availableService("service", IP, 5433, 5432);
         DockerPort port = service.portMappedExternallyTo(5433);
