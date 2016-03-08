@@ -30,7 +30,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 
 import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertThat;
 
 public class Container {
 
@@ -61,14 +60,22 @@ public class Container {
         }
     }
 
+    public boolean portIsListeningOnHttp(int internalPort, Function<DockerPort, String> urlFunction) {
+        try {
+            DockerPort port = portMappedInternallyTo(internalPort);
+            return port.isListeningNow() && port.isHttpResponding(urlFunction);
+        } catch (Exception e) {
+            log.warn("Container '" + containerName + "' failed to come up: " + e.getMessage(), e);
+            return false;
+        }
+    }
 
     public boolean waitForHttpPort(int internalPort, Function<DockerPort, String> urlFunction, Duration timeout) {
         try {
-            DockerPort port = portMappedInternallyTo(internalPort);
             Awaitility.await()
                 .pollInterval(50, TimeUnit.MILLISECONDS)
                 .atMost(timeout.getMillis(), TimeUnit.MILLISECONDS)
-                .until(() -> assertThat(port.isListeningNow() && port.isHttpResponding(urlFunction), is(true)));
+                .until(() -> portIsListeningOnHttp(internalPort, urlFunction), is(true));
             return true;
         } catch (Exception e) {
             log.warn("Container '" + containerName + "' failed to come up: " + e.getMessage(), e);
