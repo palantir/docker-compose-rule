@@ -54,6 +54,7 @@ bintray {
         licenses = ['Apache-2.0']
         publications = ['bintray']
     }
+    publish = true;
 }
 
 bintrayUpload.onlyIf {
