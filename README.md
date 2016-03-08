@@ -26,18 +26,17 @@ Simple Use
 
 For the most basic use simply add a `DockerComposition` object as a `@ClassRule` or `@Rule` in a JUnit test class.
 
-  public class DockerCompositionTest {
-
-      @ClassRule
-      public DockerComposition composition = new DockerComposition("src/test/resources/docker-compose.yml");
-
-      @Test
-      public void testThatDependsOnDockerComposition() throws InterruptedException, IOException {
-         ...
-      }
-
-
-  }
+    public class DockerCompositionTest {
+  
+        @ClassRule
+        public DockerComposition composition = new DockerComposition("src/test/resources/docker-compose.yml");
+  
+        @Test
+        public void testThatDependsOnDockerComposition() throws InterruptedException, IOException {
+           ...
+        }
+  
+    }
 
 This will cause the containers defined in `src/test/resources/docker-compose.yml` to be started by Docker Compose before the test executes and then the containers will be killed once the test has finished executing.
 
@@ -56,21 +55,18 @@ Waiting for a service to be available
 
 To wait for services to be available before executing tests use the following methods on the DockerComposition object:
 
-  public class DockerCompositionTest {
+    public class DockerCompositionTest {
 
-      @ClassRule
-      public DockerComposition composition = new DockerComposition("src/test/resources/docker-compose.yml")
+        @ClassRule
+        public DockerComposition composition = new DockerComposition("src/test/resources/docker-compose.yml")
             .waitingForService("db", toHaveAllPortsOpen())
             .waitingForService("web", toRespondOverHttp(8080, (port) -> "https://" + port.getIp() + ":" + port.getExternalPort()))
             .waitingForService("other", (container) -> customServiceCheck(container), Duration.standardMinutes(2))
 
-      @Test
-      public void testThatDependsServicesHavingStarted() throws InterruptedException, IOException {
-         ...
-      }
-
-
-  }
+        @Test
+        public void testThatDependsServicesHavingStarted() throws InterruptedException, IOException {
+            ...
+        }
 
 The entrypoint method `waitingForService(String container, HealthCheck check[, Duration timeout])` will make sure the healthcheck passes for that container before the tests start. We provide 2 default healthChecks in the HealthChecks class:
 
@@ -97,19 +93,18 @@ Collecting logs
 
 To record the logs from your containers specify a location:
 
-  public class DockerCompositionTest {
-
-      @ClassRule
-      public DockerComposition composition = new DockerComposition("src/test/resources/docker-compose.yml")
-                                                    .saveLogsTo("build/dockerLogs/dockerCompositionTest");
-
-      @Test
-      public void testRecordsLogs() throws InterruptedException, IOException {
-         ...
-      }
-
-
-  }
+    public class DockerCompositionTest {
+  
+        @ClassRule
+        public DockerComposition composition = new DockerComposition("src/test/resources/docker-compose.yml")
+                                                      .saveLogsTo("build/dockerLogs/dockerCompositionTest");
+  
+        @Test
+        public void testRecordsLogs() throws InterruptedException, IOException {
+           ...
+        }
+  
+    }
 
 This will automatically record logs for all containers in real time to the specified directory. Collection will stop when the containers terminate.
 
