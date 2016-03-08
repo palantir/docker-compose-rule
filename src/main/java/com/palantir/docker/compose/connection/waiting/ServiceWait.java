@@ -36,7 +36,7 @@ public class ServiceWait {
         this.timeout = timeout;
     }
 
-    public void holdTillServiceIsUp() {
+    public void waitTillServiceIsUp() {
         log.debug("Waiting for service '{}'", service);
         try {
             Awaitility.await()

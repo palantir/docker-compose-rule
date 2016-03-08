@@ -61,7 +61,7 @@ public class DockerComposition extends ExternalResource {
 
         logCollector.startCollecting(dockerComposeProcess);
         log.debug("Waiting for services");
-        serviceWaits.forEach(ServiceWait::holdTillServiceIsUp);
+        serviceWaits.forEach(ServiceWait::waitTillServiceIsUp);
         log.debug("docker-compose cluster started");
     }
 
