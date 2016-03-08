@@ -134,14 +134,15 @@ public class DockerCompositionTest {
 
     @Test
     public void waiting_for_service_that_does_not_exist_results_in_an_illegal_state_exception() throws IOException, InterruptedException {
-        when(dockerCompose.ports("nonExistent"))
+        String nonExistentContainer = "nonExistent";
+        when(dockerCompose.ports(nonExistentContainer))
             .thenThrow(new IllegalStateException("No container with name 'nonExistent' found"));
-        withComposeExecutableReturningContainerFor("nonExistent");
+        withComposeExecutableReturningContainerFor(nonExistentContainer);
 
         exception.expect(IllegalStateException.class);
-        exception.expectMessage("Container 'nonExistent' failed to pass startup check");
+        exception.expectMessage(nonExistentContainer);
 
-        dockerComposition.waitingForService("nonExistent", toHaveAllPortsOpen()).build().before();
+        dockerComposition.waitingForService(nonExistentContainer, toHaveAllPortsOpen()).build().before();
     }
 
     @SuppressWarnings("unchecked")
