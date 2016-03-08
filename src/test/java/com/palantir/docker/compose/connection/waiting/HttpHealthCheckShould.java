@@ -22,7 +22,7 @@ import org.junit.Test;
 
 import java.util.function.Function;
 
-import static com.palantir.docker.compose.connection.waiting.HealthChecks.*;
+import static com.palantir.docker.compose.connection.waiting.HealthChecks.toRespondOverHttp;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.mockito.Mockito.mock;
