@@ -64,7 +64,7 @@ public class FileLogCollectorTest {
     }
 
     @Test
-    public void cannot_be_created_pointing_to_a_file() throws IOException {
+    public void cannot_be_created_when_trying_to_use_a_file_as_the_log_directory() throws IOException {
         File file = logDirectoryParent.newFile("cannot-use");
 
         exception.expect(IllegalArgumentException.class);
@@ -74,7 +74,7 @@ public class FileLogCollectorTest {
     }
 
     @Test
-    public void creates_a_directory_that_does_not_exist() throws IOException {
+    public void creates_the_log_directory_if_it_does_not_already_exist() throws IOException {
         File doesNotExistYetDirectory = logDirectoryParent.getRoot()
                 .toPath()
                 .resolve("doesNotExist")
@@ -84,7 +84,7 @@ public class FileLogCollectorTest {
     }
 
     @Test
-    public void cannot_be_created_if_the_directory_does_not_exist_and_cannot_be_created() throws IOException {
+    public void cannot_be_created_if_the_log_directory_does_not_exist_and_cannot_be_created() throws IOException {
         File cannotBeCreatedDirectory = cannotBeCreatedDirectory();
 
         exception.expect(IllegalArgumentException.class);
