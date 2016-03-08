@@ -19,7 +19,6 @@ import com.google.common.base.Supplier;
 import com.google.common.base.Suppliers;
 import com.google.common.base.Throwables;
 import com.palantir.docker.compose.execution.DockerCompose;
-import org.joda.time.Duration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,17 +42,6 @@ public class Container {
 
     public String getContainerName() {
         return containerName;
-    }
-
-    public boolean waitForPorts(Duration timeout) {
-        try {
-            Ports exposedPorts = portMappings.get();
-            exposedPorts.waitToBeListeningWithin(timeout);
-            return true;
-        } catch (Exception e) {
-            log.warn("Container '" + containerName + "' failed to come up: " + e.getMessage(), e);
-            return false;
-        }
     }
 
     public boolean portIsListeningOnHttp(int internalPort, Function<DockerPort, String> urlFunction) {

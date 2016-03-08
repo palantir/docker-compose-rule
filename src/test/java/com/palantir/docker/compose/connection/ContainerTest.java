@@ -17,7 +17,6 @@ package com.palantir.docker.compose.connection;
 
 import com.palantir.docker.compose.configuration.MockDockerEnvironment;
 import com.palantir.docker.compose.execution.DockerCompose;
-import org.joda.time.Duration;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -26,7 +25,6 @@ import java.io.IOException;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
-import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -41,19 +39,6 @@ public class ContainerTest {
     private final DockerCompose dockerComposeProcess = mock(DockerCompose.class);
     private final MockDockerEnvironment env = new MockDockerEnvironment(dockerComposeProcess);
     private final Container service = new Container("service", dockerComposeProcess);
-
-    @Test
-    public void waiting_for_a_containers_ports_waits_for_the_ports_from_docker_compose_ps_to_be_available() throws IOException, InterruptedException {
-        DockerPort port = env.availableService("service", IP, 5433, 5432);
-        assertThat(service.waitForPorts(Duration.millis(100)), is(true));
-        verify(port, atLeastOnce()).isListeningNow();
-    }
-
-    @Test
-    public void wait_for_a_containers_ports_returns_false_when_the_port_is_unavailable() throws IOException, InterruptedException {
-        env.unavailableService("service", IP, 5433, 5432);
-        assertThat(service.waitForPorts(Duration.millis(100)), is(false));
-    }
 
     @Test
     public void port_is_returned_for_container_when_external_port_number_given() throws IOException, InterruptedException {

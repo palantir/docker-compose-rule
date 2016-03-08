@@ -15,7 +15,6 @@
  */
 package com.palantir.docker.compose.connection;
 
-import org.joda.time.Duration;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -103,26 +102,4 @@ public class PortsTest {
         exception.expectMessage("No container found");
         Ports.parseFromDockerComposePs("", "");
     }
-
-
-    @Test
-    public void when_all_ports_are_listening_wait_to_be_listening_returns_without_exception() throws InterruptedException {
-        when(port.isListeningNow()).thenReturn(true);
-        new Ports(port).waitToBeListeningWithin(Duration.millis(200));
-    }
-
-    @Test
-    public void when_port_is_unavailable_wait_to_be_listening_throws_an_illegal_state_exception() throws InterruptedException {
-        when(port.isListeningNow()).thenReturn(false);
-        exception.expect(IllegalStateException.class);
-        exception.expectMessage("ConditionTimeoutException"); // Bug in awaitility means it doesn't call hamcrest describeMismatch, this will be "Internal port '7001' mapped to '7000'" was unavailable in practice
-        new Ports(port).waitToBeListeningWithin(Duration.millis(200));
-    }
-
-    @Test
-    public void when_port_becomes_available_after_a_wait_wait_to_be_listening_returns_without_exception() throws InterruptedException {
-        when(port.isListeningNow()).thenReturn(false, true);
-        new Ports(port).waitToBeListeningWithin(Duration.millis(200));
-    }
-
 }
