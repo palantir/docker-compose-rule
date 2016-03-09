@@ -3,6 +3,8 @@ machine:
     version: oraclejdk8 
   services:
     - docker
+  environment:
+    TERM: dumb
 
 test:
   pre:
