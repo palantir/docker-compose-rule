@@ -1,4 +1,4 @@
-[![build status](https://circleci.com/gh/palantir/docker-compose-rule.svg?style=shield&circle-token=ed5bbc06f483e3f7324d1b3440125827c8d355d7)](https://circleci.com/gh/palantir/docker-compose-rule)
+[![build status](https://circleci.com/gh/palantir/docker-compose-rule.svg?style=shield&circle-token=ed5bbc06f483e3f7324d1b3440125827c8d355d7)](https://circleci.com/gh/palantir/docker-compose-rule) [ ![Download](https://api.bintray.com/packages/palantir/releases/docker-compose-rule/images/download.svg) ](https://bintray.com/palantir/releases/docker-compose-rule/_latestVersion)
 
 Docker Compose JUnit Rule
 =========================
@@ -23,6 +23,19 @@ If you're experiencing any of the following using Docker for your testing this l
 
 Simple Use
 ----------
+
+Add a dependency to your project. For example, in gradle:
+
+```groovy
+repositories {
+    maven {
+        url 'https://dl.bintray.com/palantir/releases' // docker-compose-rule is published on bintray
+    }
+}    
+dependencies {
+    compile 'com.palantir.docker.compose:docker-compose-rule:<latest-tag-from-bintray>'
+}
+```
 
 For the most basic use simply add a `DockerComposition` object as a `@ClassRule` or `@Rule` in a JUnit test class.
 
@@ -112,4 +125,3 @@ Using a custom version of docker-compose
 ---------------
 
 docker-compose-rule tries to use the docker-compose binary located at `/usr/local/bin/docker-compose`. This can be overriden by setting `DOCKER_COMPOSE_LOCATION` to be the path to a valid file.
-
