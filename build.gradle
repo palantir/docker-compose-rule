@@ -22,7 +22,7 @@ apply from: "gradle/idea.gradle"
 apply plugin: 'java'
 
 group = 'com.palantir.docker.compose'
-version "git describe --tags --dirty".execute().text.trim()
+version "git describe --tags --dirty".execute().text.trim().replaceAll(/^v/, '')
 
 apply plugin: 'com.palantir.baseline-checkstyle'
 apply plugin: 'com.palantir.baseline-eclipse'
