@@ -35,36 +35,36 @@ public class DockerService {
 
     private static final Duration DEFAULT_TIMEOUT = standardMinutes(2);
 
-    private final Optional<File> dockerComposeFile;
+    private final ServiceDefinition serviceDefinition;
     private final Map<String, HealthCheck> healthChecks;
     private final Duration timeout;
 
-    private DockerService(Optional<File> dockerComposeFile, Map<String, HealthCheck> healthChecks, Duration timeout) {
-        this.dockerComposeFile = dockerComposeFile;
+    private DockerService(ServiceDefinition serviceDefinition, Map<String, HealthCheck> healthChecks, Duration timeout) {
+        this.serviceDefinition = serviceDefinition;
         this.healthChecks = healthChecks;
         this.timeout = timeout;
     }
 
     public static DockerService fromDockerCompositionFile(String dockerComposeFile) {
-        return new DockerService(Optional.of(new File(dockerComposeFile)), emptyMap(), DEFAULT_TIMEOUT);
+        return new DockerService(ServiceDefinition.fromFile(dockerComposeFile), emptyMap(), DEFAULT_TIMEOUT);
     }
 
     public static DockerService externallyDefined() {
-        return new DockerService(Optional.empty(), emptyMap(), DEFAULT_TIMEOUT);
+        return new DockerService(ServiceDefinition.external(), emptyMap(), DEFAULT_TIMEOUT);
     }
 
     public DockerService withTimeout(Duration newTimeout) {
-        return new DockerService(dockerComposeFile, healthChecks, newTimeout);
+        return new DockerService(serviceDefinition, healthChecks, newTimeout);
     }
 
     public DockerService withHealthCheck(String serviceName, HealthCheck healthCheck) {
         Map<String, HealthCheck> newHealthChecks = new HashMap<>(healthChecks);
         newHealthChecks.put(serviceName, healthCheck);
-        return new DockerService(dockerComposeFile, newHealthChecks, timeout);
+        return new DockerService(serviceDefinition, newHealthChecks, timeout);
     }
 
-    public Optional<File> getDockerComposeFileLocation() {
-        return dockerComposeFile;
+    public Optional<File> dockerComposeFileLocation() {
+        return serviceDefinition.dockerComposeFileLocation();
     }
 
     public List<ServiceWait> waits(ContainerCache containerCache) {

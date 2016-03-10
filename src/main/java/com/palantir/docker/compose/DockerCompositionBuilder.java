@@ -57,7 +57,7 @@ public class DockerCompositionBuilder {
 
     public DockerCompositionBuilder withService(DockerService service) {
         services.add(service);
-        Optional<File> additionalFile = service.getDockerComposeFileLocation();
+        Optional<File> additionalFile = service.dockerComposeFileLocation();
         if (additionalFile.isPresent()) {
             dockerComposeProcess = dockerComposeProcess.withAdditionalComposeFile(additionalFile.get());
         }
