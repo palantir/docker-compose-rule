@@ -26,6 +26,7 @@ Simple Use
 
 For the most basic use simply add a `DockerComposition` object as a `@ClassRule` or `@Rule` in a JUnit test class.
 
+```java
     public class DockerCompositionTest {
   
         @ClassRule
@@ -37,6 +38,7 @@ For the most basic use simply add a `DockerComposition` object as a `@ClassRule`
         }
   
     }
+```
 
 This will cause the containers defined in `src/test/resources/docker-compose.yml` to be started by Docker Compose before the test executes and then the containers will be killed once the test has finished executing.
 
@@ -55,6 +57,7 @@ Waiting for a service to be available
 
 To wait for services to be available before executing tests use the following methods on the DockerComposition object:
 
+```java
     public class DockerCompositionTest {
 
         @ClassRule
@@ -67,6 +70,8 @@ To wait for services to be available before executing tests use the following me
         public void testThatDependsServicesHavingStarted() throws InterruptedException, IOException {
             ...
         }
+    }
+```
 
 The entrypoint method `waitingForService(String container, HealthCheck check[, Duration timeout])` will make sure the healthcheck passes for that container before the tests start. We provide 2 default healthChecks in the HealthChecks class:
 
@@ -82,9 +87,11 @@ It is recommended to only specify internal ports in the `docker-compose.yml` as 
 
 There are then two methods for accessing port information:
 
+```java
     DockerPort portOnContainerWithExternalMapping(String container, int portNumber)
 
     DockerPort portOnContainerWithInternalMapping(String container, int portNumber)
+```
 
 In both cases the port in the Docker compose file must be referenced. Using the latter method no external port needs to be declared, this will be allocated by Docker at runtime and the DockerPort object contains the dynamic port and IP assignment.
 
@@ -93,6 +100,7 @@ Collecting logs
 
 To record the logs from your containers specify a location:
 
+```java
     public class DockerCompositionTest {
   
         @ClassRule
@@ -105,6 +113,7 @@ To record the logs from your containers specify a location:
         }
   
     }
+```
 
 This will automatically record logs for all containers in real time to the specified directory. Collection will stop when the containers terminate.
 
