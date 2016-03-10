@@ -58,8 +58,16 @@ bintray {
 }
 
 bintrayUpload.onlyIf {
-    System.out.println("Publishing with project version: " + project.version.toString())
-    System.env.BINTRAY_USER && System.env.BINTRAY_KEY && project.version.toString() ==~ /v?\d+\.\d+\.\d+/
+    println "Attempting to publish with project version: " + project.version.toString()
+
+    def versionIsInCorrectFormat = project.version.toString() ==~ /\d+\.\d+\.\d+/
+
+    if (!versionIsInCorrectFormat) {
+      println "Cannot publish project with version " + project.version.toString() + 
+              "; it must be in form 'major.minor.patch'"
+    }
+
+    System.env.BINTRAY_USER && System.env.BINTRAY_KEY && versionIsInCorrectFormat
 }
 
 bintrayUpload.dependsOn 'generatePomFileForBintrayPublication', 'build'
