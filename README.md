@@ -108,6 +108,90 @@ To record the logs from your containers specify a location:
 
 This will automatically record logs for all containers in real time to the specified directory. Collection will stop when the containers terminate.
 
+Docker Machine
+--------------
+
+Docker is able to connect to daemon's that either live on the machine where the client is running, or somewhere remote.
+Using the `docker` client, you are able to control which daemon to connect to using the `DOCKER_HOST` environment
+variable.
+
+We introduce the concept of a Local Machine and a Remote Machine, to make the choice about which Docker daemon you're
+connecting to more explicit.
+
+Local Machine
+=============
+
+The default out-of-the-box behaviour will configure `docker-compose` to connect to a Docker daemon that is running
+*locally*. That is, if you're on Linux, it will use the Docker daemon that exposes its socket. In the case of Mac OS X -
+which doesn't support Docker natively - we have to connect to a technically "remote" (but local) Docker daemon which is
+running in a virtual machine via `docker-machine` and `boot2docker`. Essentially delegating to what the `docker` client
+will connect to.
+
+If you're on Mac OS X, the `docker` cli expects the following environment variables:
+
+ - `DOCKER_HOST`
+ - If the Docker daemon is secured by TLS, `DOCKER_TLS_VERIFY` and `DOCKER_CERT_PATH` need to be set.
+
+Similarly, if you're using a Local Machine, you need to ensure the Run Configuration (in your IDE, command line etc.)
+has those same variables set.
+
+An example of creating a `DockerMachine` that connects to a local docker daemon:
+
+```java
+DockerMachine.localMachine()
+             .build()
+```
+
+Remote Machine
+==============
+
+You may not always want to connect to a Docker daemon that is running on your local computer or a virtual machine
+running on your local computer.
+
+An example of this would be running containers in a clustered manner with Docker Swarm. Since Docker Swarm implements
+the Docker API, setting the right environment variables would allow us to use Docker containers on the swarm.
+
+An example of connecting to a remote Docker daemon that has also been secured by TLS:
+
+```java
+DockerMachine.remoteMachine()
+             .host("tcp://docker-host:2376")
+             .withTLS("/path/to/cert")
+             .build()
+```
+
+Additional Environment Variables
+================================
+
+It may also be useful to pass environment variables to the process that will call `docker-compose`.
+
+You can do so in the following manner:
+
+```java
+DockerMachine.localMachine()
+             .withEnvironmentVariable("SOME_VARIABLE", "SOME_VALUE")
+             .build()
+```
+
+The variable "SOME_VARIABLE" will be available when `docker-compose` is called, and can be used in Variable Interpolation in the compose file.
+
+How to use a `DockerMachine`
+============================
+
+When creating a `DockerComposition` an additional parameter may be specified. That being the custom `DockerMachine`,
+by default - if no `dockerMachine` parameter is specified - `DockerComposition` will use connect to the local Docker
+daemon, similarly to how the `docker` cli works.
+
+```java
+private final DockerMachine dockerMachine = DockerMachine.localMachine()
+                                                         .withAdditionalEnvironmentVariable("SOME_VARIABLE", "SOME_VALUE")
+                                                         .build();
+
+@Rule
+DockerComposition composition = DockerComposition.of("docker-compose.yaml", dockerMachine)
+                                                 .build();
+```
+
 Using a custom version of docker-compose
 ---------------
 
