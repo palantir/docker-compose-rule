@@ -16,6 +16,7 @@
 
 package com.palantir.docker.compose.service;
 
+
 import com.palantir.docker.compose.connection.ContainerCache;
 import com.palantir.docker.compose.connection.waiting.HealthCheck;
 import com.palantir.docker.compose.connection.waiting.ServiceWait;
@@ -26,6 +27,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import static java.util.Collections.emptyMap;
 import static org.joda.time.Duration.standardMinutes;
@@ -34,31 +36,42 @@ public class DockerService {
 
     private static final Duration DEFAULT_TIMEOUT = standardMinutes(2);
 
-    private final File dockerComposeFile;
+    private final Optional<File> dockerComposeFile;
     private final Map<String, HealthCheck> healthChecks;
+    private final Duration timeout;
 
-    private DockerService(File dockerComposeFile, Map<String, HealthCheck> healthChecks) {
+    private DockerService(Optional<File> dockerComposeFile, Map<String, HealthCheck> healthChecks, Duration timeout) {
         this.dockerComposeFile = dockerComposeFile;
         this.healthChecks = healthChecks;
+        this.timeout = timeout;
     }
 
     public static DockerService fromDockerCompositionFile(String dockerComposeFile) {
-        return new DockerService(new File(dockerComposeFile), emptyMap());
+        return new DockerService(Optional.of(new File(dockerComposeFile)), emptyMap(), DEFAULT_TIMEOUT);
+    }
+
+    public static DockerService externallyDefined() {
+        return new DockerService(Optional.empty(), emptyMap(), DEFAULT_TIMEOUT);
+    }
+
+    public DockerService withTimeout(Duration newTimeout) {
+        return new DockerService(dockerComposeFile, healthChecks, newTimeout);
     }
 
     public DockerService withHealthCheck(String serviceName, HealthCheck healthCheck) {
         Map<String, HealthCheck> newHealthChecks = new HashMap<>(healthChecks);
         newHealthChecks.put(serviceName, healthCheck);
-        return new DockerService(dockerComposeFile, newHealthChecks);
+        return new DockerService(dockerComposeFile, newHealthChecks, timeout);
     }
 
-    public File getDockerComposeFileLocation() {
+    public Optional<File> getDockerComposeFileLocation() {
         return dockerComposeFile;
     }
 
     public List<ServiceWait> waits(ContainerCache containerCache) {
         List<ServiceWait> serviceWaits = new ArrayList<>();
-        healthChecks.forEach((serviceName, healthCheck) -> serviceWaits.add(new ServiceWait(containerCache.get(serviceName), healthCheck, DEFAULT_TIMEOUT)));
+        healthChecks.forEach((serviceName, healthCheck) -> serviceWaits.add(new ServiceWait(containerCache.get(serviceName), healthCheck, timeout)));
         return serviceWaits;
     }
+
 }

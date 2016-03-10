@@ -25,31 +25,28 @@ import com.palantir.docker.compose.logging.LogCollector;
 import com.palantir.docker.compose.service.DockerService;
 import org.joda.time.Duration;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-
-import static org.joda.time.Duration.standardMinutes;
+import java.util.Optional;
 
 public class DockerCompositionBuilder {
-    private static final Duration DEFAULT_TIMEOUT = standardMinutes(2);
 
     private final List<DockerService> services = new ArrayList<>();
-    private final List<ServiceWait> serviceWaits = new ArrayList<>();
-    private final DockerCompose dockerComposeProcess;
-    private final ContainerCache containers;
+    private DockerCompose dockerComposeProcess;
     private LogCollector logCollector = new DoNothingLogCollector();
 
     public DockerCompositionBuilder(DockerCompose dockerComposeProcess) {
         this.dockerComposeProcess = dockerComposeProcess;
-        this.containers = new ContainerCache(dockerComposeProcess);
     }
 
     public DockerCompositionBuilder waitingForService(String serviceName, HealthCheck check) {
-        return waitingForService(serviceName, check, DEFAULT_TIMEOUT);
+        services.add(DockerService.externallyDefined().withHealthCheck(serviceName, check));
+        return this;
     }
 
     public DockerCompositionBuilder waitingForService(String serviceName, HealthCheck check, Duration timeout) {
-        serviceWaits.add(new ServiceWait(containers.get(serviceName), check, timeout));
+        services.add(DockerService.externallyDefined().withTimeout(timeout).withHealthCheck(serviceName, check));
         return this;
     }
 
@@ -60,18 +57,18 @@ public class DockerCompositionBuilder {
 
     public DockerCompositionBuilder withService(DockerService service) {
         services.add(service);
+        Optional<File> additionalFile = service.getDockerComposeFileLocation();
+        if (additionalFile.isPresent()) {
+            dockerComposeProcess = dockerComposeProcess.withAdditionalComposeFile(additionalFile.get());
+        }
         return this;
     }
 
     public DockerComposition build() {
-        DockerCompose processWithServices = dockerComposeProcess;
-        for (DockerService service : services) {
-            processWithServices = processWithServices.withAdditionalComposeFile(service.getDockerComposeFileLocation());
-        }
-        ContainerCache containerCache = new ContainerCache(processWithServices);
-        List<ServiceWait> allServiceWaits = new ArrayList<>(serviceWaits);
-        services.forEach(service -> allServiceWaits.addAll(service.waits(containerCache)));
-        return new DockerComposition(processWithServices, allServiceWaits, logCollector, containers);
+        ContainerCache containerCache = new ContainerCache(dockerComposeProcess);
+        List<ServiceWait> serviceWaits = new ArrayList<>();
+        services.forEach(service -> serviceWaits.addAll(service.waits(containerCache)));
+        return new DockerComposition(dockerComposeProcess, serviceWaits, logCollector, containerCache);
     }
 
 }
