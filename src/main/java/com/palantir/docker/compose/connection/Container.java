@@ -54,7 +54,7 @@ public class Container {
         }
     }
 
-    public DockerPort portMappedExternallyTo(int externalPort) throws IOException, InterruptedException {
+    public DockerPort portMappedExternallyTo(int externalPort) {
         return portMappings.get()
                            .stream()
                            .filter(port -> port.getExternalPort() == externalPort)
@@ -62,7 +62,7 @@ public class Container {
                            .orElseThrow(() -> new IllegalArgumentException("No port mapped externally to '" + externalPort + "' for container '" + containerName + "'"));
     }
 
-    public DockerPort portMappedInternallyTo(int internalPort) throws IOException, InterruptedException {
+    public DockerPort portMappedInternallyTo(int internalPort) {
         return portMappings.get()
                            .stream()
                            .filter(port -> port.getInternalPort() == internalPort)
