@@ -201,6 +201,23 @@ DockerComposition composition = DockerComposition.of("docker-compose.yaml", dock
                                                  .build();
 ```
 
+Composing docker compose files
+------------------------------
+
+`docker-compose` (at least as of version 1.5.0) allows us to "compose" Docker compose files. On the command line, you
+can do this with this example command:
+
+    docker-compose -f file1.yml -f file2.yml -f file3.yml
+
+Subsequent files override previous declarations of services and also add new services to the composition.
+
+To use this functionality inside docker-compose-rule, supply extra files to your `DockerComposition.of(...)` builder
+
+```java
+DockerComposition composition = DockerComposition.of("file1.yml", "file2.yml")
+   ...
+```
+
 Using a custom version of docker-compose
 ---------------
 
