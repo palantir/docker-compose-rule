@@ -15,16 +15,17 @@
  */
 package com.palantir.docker.compose.connection;
 
+import java.io.IOException;
+import java.util.Objects;
+import java.util.function.Function;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.google.common.base.Supplier;
 import com.google.common.base.Suppliers;
 import com.google.common.base.Throwables;
 import com.palantir.docker.compose.execution.DockerCompose;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.io.IOException;
-import java.util.Objects;
-import java.util.function.Function;
 
 public class Container {
 
@@ -54,7 +55,7 @@ public class Container {
         }
     }
 
-    public DockerPort portMappedExternallyTo(int externalPort) throws IOException, InterruptedException {
+    public DockerPort portMappedExternallyTo(int externalPort) {
         return portMappings.get()
                            .stream()
                            .filter(port -> port.getExternalPort() == externalPort)
@@ -62,7 +63,7 @@ public class Container {
                            .orElseThrow(() -> new IllegalArgumentException("No port mapped externally to '" + externalPort + "' for container '" + containerName + "'"));
     }
 
-    public DockerPort portMappedInternallyTo(int internalPort) throws IOException, InterruptedException {
+    public DockerPort portMappedInternallyTo(int internalPort) {
         return portMappings.get()
                            .stream()
                            .filter(port -> port.getInternalPort() == internalPort)
