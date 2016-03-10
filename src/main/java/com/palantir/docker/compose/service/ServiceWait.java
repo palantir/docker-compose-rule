@@ -13,11 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.palantir.docker.compose.connection.waiting;
+package com.palantir.docker.compose.service;
 
 import com.jayway.awaitility.Awaitility;
 import com.jayway.awaitility.core.ConditionTimeoutException;
 import com.palantir.docker.compose.connection.Container;
+import com.palantir.docker.compose.connection.waiting.HealthCheck;
 import org.joda.time.Duration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

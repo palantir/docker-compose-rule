@@ -17,12 +17,12 @@ package com.palantir.docker.compose;
 
 import com.palantir.docker.compose.connection.ContainerCache;
 import com.palantir.docker.compose.connection.waiting.HealthCheck;
-import com.palantir.docker.compose.connection.waiting.ServiceWait;
 import com.palantir.docker.compose.execution.DockerCompose;
 import com.palantir.docker.compose.logging.DoNothingLogCollector;
 import com.palantir.docker.compose.logging.FileLogCollector;
 import com.palantir.docker.compose.logging.LogCollector;
 import com.palantir.docker.compose.service.DockerService;
+import com.palantir.docker.compose.service.ServiceWait;
 import org.joda.time.Duration;
 
 import java.io.File;

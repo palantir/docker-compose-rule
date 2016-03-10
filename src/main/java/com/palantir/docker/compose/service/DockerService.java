@@ -19,7 +19,6 @@ package com.palantir.docker.compose.service;
 
 import com.palantir.docker.compose.connection.ContainerCache;
 import com.palantir.docker.compose.connection.waiting.HealthCheck;
-import com.palantir.docker.compose.connection.waiting.ServiceWait;
 import org.joda.time.Duration;
 
 import java.io.File;
