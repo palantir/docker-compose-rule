@@ -20,6 +20,7 @@ import com.palantir.docker.compose.connection.Container;
 import com.palantir.docker.compose.connection.ContainerNames;
 import com.palantir.docker.compose.connection.DockerPort;
 import com.palantir.docker.compose.execution.DockerCompose;
+import com.palantir.docker.compose.service.DockerService;
 import org.apache.commons.io.IOUtils;
 import org.junit.Rule;
 import org.junit.Test;
@@ -45,6 +46,7 @@ import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 public class DockerCompositionTest {
@@ -65,6 +67,21 @@ public class DockerCompositionTest {
         dockerComposition.build().before();
         verify(dockerCompose).build();
         verify(dockerCompose).up();
+    }
+
+    @Test
+    public void with_service_adds_an_additional_file_to_docker_compose_commands() throws IOException, InterruptedException {
+        DockerService service = DockerService.fromDockerCompositionFile("testFile");
+        DockerCompose dockerComposeWithExtraFile = mock(DockerCompose.class);
+        File testFile = new File("testFile");
+        when(dockerCompose.withAdditionalComposeFile(testFile)).thenReturn(dockerComposeWithExtraFile);
+
+        dockerComposition.withService(service).build().before();
+
+        verify(dockerComposeWithExtraFile).build();
+        verify(dockerComposeWithExtraFile).up();
+        verify(dockerCompose).withAdditionalComposeFile(testFile);
+        verifyNoMoreInteractions(dockerCompose);
     }
 
     @Test

@@ -22,6 +22,7 @@ import com.palantir.docker.compose.execution.DockerCompose;
 import com.palantir.docker.compose.logging.DoNothingLogCollector;
 import com.palantir.docker.compose.logging.FileLogCollector;
 import com.palantir.docker.compose.logging.LogCollector;
+import com.palantir.docker.compose.service.DockerService;
 import org.joda.time.Duration;
 
 import java.util.ArrayList;
@@ -32,6 +33,7 @@ import static org.joda.time.Duration.standardMinutes;
 public class DockerCompositionBuilder {
     private static final Duration DEFAULT_TIMEOUT = standardMinutes(2);
 
+    private final List<DockerService> services = new ArrayList<>();
     private final List<ServiceWait> serviceWaits = new ArrayList<>();
     private final DockerCompose dockerComposeProcess;
     private final ContainerCache containers;
@@ -56,7 +58,17 @@ public class DockerCompositionBuilder {
         return this;
     }
 
-    public DockerComposition build() {
-        return new DockerComposition(dockerComposeProcess, serviceWaits, logCollector, containers);
+    public DockerCompositionBuilder withService(DockerService service) {
+        services.add(service);
+        return this;
     }
+
+    public DockerComposition build() {
+        DockerCompose processWithServices = dockerComposeProcess;
+        for (DockerService service : services) {
+            processWithServices = processWithServices.withAdditionalComposeFile(service.getDockerComposeFileLocation());
+        }
+        return new DockerComposition(processWithServices, serviceWaits, logCollector, containers);
+    }
+
 }

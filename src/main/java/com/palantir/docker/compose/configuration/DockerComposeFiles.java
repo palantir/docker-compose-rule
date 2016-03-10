@@ -16,6 +16,7 @@
 package com.palantir.docker.compose.configuration;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -31,6 +32,7 @@ public class DockerComposeFiles {
 
     public DockerComposeFiles(List<File> dockerComposeFiles) {
         this.dockerComposeFiles = dockerComposeFiles;
+        validateComposeFilesExist(dockerComposeFiles);
     }
 
     public static DockerComposeFiles from(String... dockerComposeFilenames) {
@@ -38,8 +40,13 @@ public class DockerComposeFiles {
                 .map(File::new)
                 .collect(toList());
         validateAtLeastOneComposeFileSpecified(dockerComposeFiles);
-        validateComposeFilesExist(dockerComposeFiles);
         return new DockerComposeFiles(dockerComposeFiles);
+    }
+
+    public DockerComposeFiles withAdditionalFile(File composeFile) {
+        List<File> combinedFiles = new ArrayList<>(dockerComposeFiles);
+        combinedFiles.add(composeFile);
+        return new DockerComposeFiles(combinedFiles);
     }
 
     public List<String> constructComposeFileCommand() {

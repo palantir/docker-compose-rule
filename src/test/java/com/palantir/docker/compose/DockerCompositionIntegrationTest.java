@@ -15,6 +15,7 @@
  */
 package com.palantir.docker.compose;
 
+import com.palantir.docker.compose.service.DockerService;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -28,10 +29,13 @@ import static org.hamcrest.core.Is.is;
 
 public class DockerCompositionIntegrationTest {
 
+    private final DockerService postgres = DockerService.fromDockerCompositionFile("src/test/resources/postgres-service.yaml");
+
     @Rule
     public DockerComposition composition = DockerComposition.of("src/test/resources/docker-compose.yaml")
                                                             .waitingForService("db", toHaveAllPortsOpen())
                                                             .waitingForService("db2", toHaveAllPortsOpen())
+                                                            .withService(postgres)
                                                             .build();
 
     @Rule
@@ -53,6 +57,11 @@ public class DockerCompositionIntegrationTest {
     @Test
     public void can_access_external_port_for_internal_port_of_machine() throws IOException, InterruptedException {
         assertThat(composition.portOnContainerWithInternalMapping("db", 5432).isListeningNow(), is(true));
+    }
+
+    @Test
+    public void should_run_docker_compose_up_with_docker_compose_files_from_additional_services() throws IOException, InterruptedException {
+        assertThat(composition.portOnContainerWithInternalMapping("postgres", 5432).isListeningNow(), is(true));
     }
 
 }

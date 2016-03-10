@@ -1,0 +1,9 @@
+postgres:
+  image: kiasaki/alpine-postgres
+  environment:
+    - "POSTGRES_DB=source"
+    - "POSTGRES_USER=palantir"
+    - "POSTGRES_PASSWORD=palantir"
+  ports:
+    - "5432"
+    

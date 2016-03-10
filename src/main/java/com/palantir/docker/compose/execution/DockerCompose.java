@@ -26,6 +26,7 @@ import org.joda.time.Duration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Arrays;
@@ -52,6 +53,11 @@ public class DockerCompose {
         this.rawExecutable = rawExecutable;
         this.executable = new SynchronousDockerComposeExecutable(rawExecutable, log::debug);
         this.dockerMachine = dockerMachine;
+    }
+
+    public DockerCompose withAdditionalComposeFile(File composeFile) {
+        DockerComposeFiles dockerComposeFiles = rawExecutable.dockerComposeFiles().withAdditionalFile(composeFile);
+        return new DockerCompose(dockerComposeFiles, dockerMachine);
     }
 
     public void build() throws IOException, InterruptedException {
