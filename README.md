@@ -127,8 +127,7 @@ variable.
 We introduce the concept of a Local Machine and a Remote Machine, to make the choice about which Docker daemon you're
 connecting to more explicit.
 
-Local Machine
-*************
+### Local Machine
 
 The default out-of-the-box behaviour will configure `docker-compose` to connect to a Docker daemon that is running
 *locally*. That is, if you're on Linux, it will use the Docker daemon that exposes its socket. In the case of Mac OS X -
@@ -151,8 +150,7 @@ DockerMachine.localMachine()
              .build()
 ```
 
-Remote Machine
-**************
+### Remote Machine
 
 You may not always want to connect to a Docker daemon that is running on your local computer or a virtual machine
 running on your local computer.
@@ -169,8 +167,7 @@ DockerMachine.remoteMachine()
              .build()
 ```
 
-Additional Environment Variables
-********************************
+### Additional Environment Variables
 
 It may also be useful to pass environment variables to the process that will call `docker-compose`.
 
@@ -184,8 +181,7 @@ DockerMachine.localMachine()
 
 The variable "SOME_VARIABLE" will be available when `docker-compose` is called, and can be used in Variable Interpolation in the compose file.
 
-How to use a `DockerMachine`
-****************************
+### How to use a `DockerMachine`
 
 When creating a `DockerComposition` an additional parameter may be specified. That being the custom `DockerMachine`,
 by default - if no `dockerMachine` parameter is specified - `DockerComposition` will use connect to the local Docker
