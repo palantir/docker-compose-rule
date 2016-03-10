@@ -68,7 +68,10 @@ public class DockerCompositionBuilder {
         for (DockerService service : services) {
             processWithServices = processWithServices.withAdditionalComposeFile(service.getDockerComposeFileLocation());
         }
-        return new DockerComposition(processWithServices, serviceWaits, logCollector, containers);
+        ContainerCache containerCache = new ContainerCache(processWithServices);
+        List<ServiceWait> allServiceWaits = new ArrayList<>(serviceWaits);
+        services.forEach(service -> allServiceWaits.addAll(service.waits(containerCache)));
+        return new DockerComposition(processWithServices, allServiceWaits, logCollector, containers);
     }
 
 }

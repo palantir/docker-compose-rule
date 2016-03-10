@@ -19,6 +19,7 @@ import com.palantir.docker.compose.configuration.MockDockerEnvironment;
 import com.palantir.docker.compose.connection.Container;
 import com.palantir.docker.compose.connection.ContainerNames;
 import com.palantir.docker.compose.connection.DockerPort;
+import com.palantir.docker.compose.connection.waiting.HealthCheck;
 import com.palantir.docker.compose.execution.DockerCompose;
 import com.palantir.docker.compose.service.DockerService;
 import org.apache.commons.io.IOUtils;
@@ -82,6 +83,20 @@ public class DockerCompositionTest {
         verify(dockerComposeWithExtraFile).up();
         verify(dockerCompose).withAdditionalComposeFile(testFile);
         verifyNoMoreInteractions(dockerCompose);
+    }
+
+    @Test
+    public void docker_compose_wait_for_service_passes_when_checkes_pass() throws IOException, InterruptedException {
+        HealthCheck healthCheck = mock(HealthCheck.class);
+        when(healthCheck.isServiceUp(new Container("service", dockerCompose))).thenReturn(true);
+        DockerService service = DockerService.fromDockerCompositionFile("testFile")
+                                             .withHealthCheck("service", healthCheck);
+        when(dockerCompose.withAdditionalComposeFile(any())).thenReturn(dockerCompose);
+        withComposeExecutableReturningContainerFor("service");
+
+        dockerComposition.withService(service).build().before();
+
+        verify(healthCheck).isServiceUp(new Container("service", dockerCompose));
     }
 
     @Test
