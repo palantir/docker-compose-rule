@@ -31,7 +31,7 @@ public class DockerCompositionIntegrationTest {
 
     private final DockerService postgresFromComposeFileSnippet = DockerService.fromDockerCompositionFile("src/test/resources/postgres-service.yaml");
     private final DockerService postgresDefinedInline = DockerService.fromImage("kiasaki/alpine-postgres", "inlinePostgres")
-                                                                     .withPortMapping("5432")
+                                                                     .withPortMapping(5432)
                                                                      .build();
 
     @Rule
