@@ -12,6 +12,10 @@ public interface ServiceDefinition {
     Optional<File> dockerComposeFileLocation();
 
     static ServiceDefinition fromFile(String dockerComposeFile) {
+        return fromFile(new File(dockerComposeFile));
+    }
+
+    static ServiceDefinition fromFile(File dockerComposeFile) {
         return new DockerComposeFileBasedServiceDefinition(dockerComposeFile);
     }
 

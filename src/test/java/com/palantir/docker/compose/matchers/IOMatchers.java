@@ -94,15 +94,19 @@ public class IOMatchers {
             protected void describeMismatchSafely(File item, Description mismatchDescription) {
                 mismatchDescription.appendText("file ")
                                    .appendValue(item)
-                                   .appendText(" did not contain " + contents);
+                                   .appendText(" contained " + safelyReadFile());
             }
 
             @Override
             protected boolean matchesSafely() {
+                return safelyReadFile().contains(contents);
+            }
+
+            private String safelyReadFile() {
                 try {
-                    return FileUtils.readFileToString(value, StandardCharsets.UTF_8).contains(contents);
+                    return FileUtils.readFileToString(value, StandardCharsets.UTF_8);
                 } catch (IOException e) {
-                    throw new RuntimeException("Error reading log file", e);
+                    throw new RuntimeException("Error reading file", e);
                 }
             }
         };

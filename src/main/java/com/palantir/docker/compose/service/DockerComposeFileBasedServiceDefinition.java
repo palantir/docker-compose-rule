@@ -11,8 +11,8 @@ public class DockerComposeFileBasedServiceDefinition implements ServiceDefinitio
 
     private final File dockerComposeFile;
 
-    public DockerComposeFileBasedServiceDefinition(String dockerComposeFile) {
-        this.dockerComposeFile = new File(dockerComposeFile);
+    public DockerComposeFileBasedServiceDefinition(File dockerComposeFile) {
+        this.dockerComposeFile = dockerComposeFile;
     }
 
     @Override
