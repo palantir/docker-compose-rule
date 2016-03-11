@@ -16,7 +16,7 @@ public class InlineDockerServiceBuilder {
 
     private final String imageName;
     private final String serviceName;
-    private final List<Integer> ports = new ArrayList<>();
+    private final List<ComposePortDefinition> ports = new ArrayList<>();
 
     public InlineDockerServiceBuilder(String imageName, String serviceName) {
         this.imageName = imageName;
@@ -24,7 +24,7 @@ public class InlineDockerServiceBuilder {
     }
 
     public InlineDockerServiceBuilder withPortMapping(int port) {
-        ports.add(port);
+        ports.add(new ComposePortDefinition(port));
         return this;
     }
 
@@ -54,8 +54,8 @@ public class InlineDockerServiceBuilder {
             return "";
         }
         StringBuilder portString = new StringBuilder("    ports:\n");
-        for (int port : ports) {
-            portString.append("        - \"" + port + "\"\n");
+        for (ComposePortDefinition port : ports) {
+            portString.append("        - " + port.toString() + "\n");
         }
         return portString.toString();
     }
