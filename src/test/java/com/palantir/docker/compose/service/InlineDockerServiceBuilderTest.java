@@ -42,4 +42,22 @@ public class InlineDockerServiceBuilderTest {
         )));
     }
 
+    @Test
+    public void inline_service_generates_a_docker_compose_file_with_an_internal_port_and_an_external_port() {
+        InlineDockerServiceBuilder builder = new InlineDockerServiceBuilder("imageName", "service")
+            .withPortMapping(1234)
+            .withPortMapping(1235, 1234);
+        Optional<File> dockerComposeFile = builder.build().dockerComposeFileLocation();
+
+        assertThat(dockerComposeFile.isPresent(), is(true));
+        assertThat(dockerComposeFile.get(), is(IOMatchers.fileContainingString(
+            "service:\n" +
+            "    image: imageName\n" +
+            "    ports:\n" +
+            "        - \"1234\"\n" +
+            "        - \"1235:1234\"\n"
+        )));
+    }
+
+
 }

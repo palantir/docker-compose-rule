@@ -4,19 +4,18 @@
 
 package com.palantir.docker.compose.service;
 
+import com.palantir.docker.compose.connection.waiting.HealthCheck;
 import org.apache.commons.io.FileUtils;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 
 public class InlineDockerServiceBuilder {
 
     private final String imageName;
     private final String serviceName;
-    private final List<ComposePortDefinition> ports = new ArrayList<>();
+    private ComposePortMappings ports = new ComposePortMappings();
 
     public InlineDockerServiceBuilder(String imageName, String serviceName) {
         this.imageName = imageName;
@@ -24,13 +23,23 @@ public class InlineDockerServiceBuilder {
     }
 
     public InlineDockerServiceBuilder withPortMapping(int port) {
-        ports.add(new ComposePortDefinition(port));
+        ports = ports.withPort(new ComposePortDefinition(port));
+        return this;
+    }
+
+    public InlineDockerServiceBuilder withPortMapping(int internalPort, int externalPort) {
+        ports = ports.withPort(new ComposePortDefinition(internalPort, externalPort));
         return this;
     }
 
     public DockerService build() {
         File dockerComposeFile = buildDockerComposeFile();
         return DockerService.fromDockerCompositionFile(dockerComposeFile);
+    }
+
+    public DockerService withHealthCheck(HealthCheck healthCheck) {
+        DockerService service = build();
+        return service.withHealthCheck(serviceName, healthCheck);
     }
 
     private File buildDockerComposeFile() {
@@ -46,18 +55,11 @@ public class InlineDockerServiceBuilder {
     private String buildDockerComposeFileContents() {
         return serviceName + ":\n"
                 + "    image: " + imageName + "\n"
-                + buildPorts();
+                + indent(ports.toString());
     }
 
-    private String buildPorts() {
-        if (ports.isEmpty()) {
-            return "";
-        }
-        StringBuilder portString = new StringBuilder("    ports:\n");
-        for (ComposePortDefinition port : ports) {
-            portString.append("        - " + port.toString() + "\n");
-        }
-        return portString.toString();
+    private String indent(String yaml) {
+        return yaml.replaceAll("^", "    ").replaceAll("\n ", "\n     ");
     }
 
     private File createTemporaryDockerComposeFile() {
