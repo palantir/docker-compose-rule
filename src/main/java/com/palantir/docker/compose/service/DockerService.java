@@ -17,6 +17,7 @@
 package com.palantir.docker.compose.service;
 
 
+import com.palantir.docker.compose.DockerCompositionBuilder;
 import com.palantir.docker.compose.connection.ContainerCache;
 import com.palantir.docker.compose.connection.waiting.HealthCheck;
 import org.joda.time.Duration;
@@ -33,7 +34,7 @@ import static org.joda.time.Duration.standardMinutes;
 
 public class DockerService {
 
-    private static final Duration DEFAULT_TIMEOUT = standardMinutes(2);
+    public static final Duration DEFAULT_TIMEOUT = standardMinutes(2);
 
     private final ServiceDefinition serviceDefinition;
     private final Map<String, HealthCheck> healthChecks;
@@ -79,6 +80,10 @@ public class DockerService {
         List<ServiceWait> serviceWaits = new ArrayList<>();
         healthChecks.forEach((serviceName, healthCheck) -> serviceWaits.add(new ServiceWait(containerCache.get(serviceName), healthCheck, timeout)));
         return serviceWaits;
+    }
+
+    public void addWaits(DockerCompositionBuilder builder) {
+        healthChecks.forEach((serviceName, healthCheck) -> builder.waitingForService(serviceName, healthCheck, timeout));
     }
 
 }

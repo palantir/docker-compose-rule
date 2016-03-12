@@ -22,6 +22,7 @@ import com.palantir.docker.compose.connection.DockerPort;
 import com.palantir.docker.compose.connection.waiting.HealthCheck;
 import com.palantir.docker.compose.execution.DockerCompose;
 import com.palantir.docker.compose.service.DockerService;
+import com.palantir.docker.compose.service.ServiceCluster;
 import org.apache.commons.io.IOUtils;
 import org.junit.Rule;
 import org.junit.Test;
@@ -111,6 +112,17 @@ public class DockerCompositionTest {
         AtomicInteger timesCheckCalled = new AtomicInteger(0);
         withComposeExecutableReturningContainerFor("db");
         dockerComposition.waitingForService("db", (container) -> timesCheckCalled.incrementAndGet() == 1).build().before();
+        assertThat(timesCheckCalled.get(), is(1));
+    }
+
+    @Test
+    public void docker_compose_wait_for_service_waits_for_healthchecks_from_a_service_cluster() throws IOException, InterruptedException {
+        AtomicInteger timesCheckCalled = new AtomicInteger(0);
+        withComposeExecutableReturningContainerFor("db");
+        DockerService service = DockerService.fromDockerCompositionFile("src/test/resources/docker-compose.yaml")
+                                             .withHealthCheck("db", (container) -> timesCheckCalled.incrementAndGet() == 1);
+        ServiceCluster cluster = ServiceCluster.of(service);
+        DockerComposition.fromServiceCluster(dockerCompose, cluster).build().before();
         assertThat(timesCheckCalled.get(), is(1));
     }
 
