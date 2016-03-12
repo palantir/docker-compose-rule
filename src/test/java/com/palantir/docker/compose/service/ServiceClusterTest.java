@@ -19,7 +19,7 @@ public class ServiceClusterTest {
     @Test
     public void service_cluster_with_one_service_adds_healthchecks_from_that_service_to_a_docker_composition() {
         HealthCheck healthCheck = mock(HealthCheck.class);
-        DockerService service = DockerService.externallyDefined()
+        DockerService service = DockerService.fromDockerCompositionFile("src/test/resources/docker-compose.yaml")
                                              .withHealthCheck("service", healthCheck);
         ServiceCluster cluster = ServiceCluster.of(service);
 
@@ -40,11 +40,11 @@ public class ServiceClusterTest {
     @Test
     public void service_cluster_with_two_services_add_both_healthchecks_from_those_services() {
         HealthCheck firstServiceHealthCheck = mock(HealthCheck.class);
-        DockerService firstService = DockerService.externallyDefined()
-                                             .withHealthCheck("firstService", firstServiceHealthCheck);
+        DockerService firstService = DockerService.fromDockerCompositionFile("src/test/resources/docker-compose.yaml")
+                                                  .withHealthCheck("firstService", firstServiceHealthCheck);
         HealthCheck secondServiceHealthCheck = mock(HealthCheck.class);
-        DockerService secondService = DockerService.externallyDefined()
-                                             .withHealthCheck("secondService", secondServiceHealthCheck);
+        DockerService secondService = DockerService.fromDockerCompositionFile("src/test/resources/docker-compose.yaml")
+                                                   .withHealthCheck("secondService", secondServiceHealthCheck);
         ServiceCluster cluster = ServiceCluster.of(firstService, secondService);
 
         DockerCompositionBuilder composition = mock(DockerCompositionBuilder.class);

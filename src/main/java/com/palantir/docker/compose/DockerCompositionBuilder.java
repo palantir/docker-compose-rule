@@ -30,21 +30,22 @@ import java.util.List;
 
 public class DockerCompositionBuilder {
 
-    private final List<DockerService> services = new ArrayList<>();
+    private final List<ServiceWait> serviceWaits = new ArrayList<>();
     private final DockerCompose dockerComposeProcess;
     private LogCollector logCollector = new DoNothingLogCollector();
+    private final ContainerCache containers;
 
     public DockerCompositionBuilder(DockerCompose dockerComposeProcess) {
         this.dockerComposeProcess = dockerComposeProcess;
+        this.containers = new ContainerCache(dockerComposeProcess);
     }
 
     public DockerCompositionBuilder waitingForService(String serviceName, HealthCheck check) {
-        services.add(DockerService.externallyDefined().withHealthCheck(serviceName, check));
-        return this;
+        return waitingForService(serviceName, check, DockerService.DEFAULT_TIMEOUT);
     }
 
     public DockerCompositionBuilder waitingForService(String serviceName, HealthCheck check, Duration timeout) {
-        services.add(DockerService.externallyDefined().withTimeout(timeout).withHealthCheck(serviceName, check));
+        serviceWaits.add(new ServiceWait(containers.get(serviceName), check, timeout));
         return this;
     }
 
@@ -54,10 +55,7 @@ public class DockerCompositionBuilder {
     }
 
     public DockerComposition build() {
-        ContainerCache containerCache = new ContainerCache(dockerComposeProcess);
-        List<ServiceWait> serviceWaits = new ArrayList<>();
-        services.forEach(service -> serviceWaits.addAll(service.waits(containerCache)));
-        return new DockerComposition(dockerComposeProcess, serviceWaits, logCollector, containerCache);
+        return new DockerComposition(dockerComposeProcess, serviceWaits, logCollector, containers);
     }
 
 }

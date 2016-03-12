@@ -19,8 +19,4 @@ public interface ServiceDefinition {
         return new DockerComposeFileBasedServiceDefinition(dockerComposeFile);
     }
 
-    static ServiceDefinition external() {
-        return new ExternalServiceDefinition();
-    }
-
 }

@@ -54,10 +54,6 @@ public class DockerService {
         return new DockerService(ServiceDefinition.fromFile(dockerComposeFile), emptyMap(), DEFAULT_TIMEOUT);
     }
 
-    public static DockerService externallyDefined() {
-        return new DockerService(ServiceDefinition.external(), emptyMap(), DEFAULT_TIMEOUT);
-    }
-
     public static InlineDockerServiceBuilder fromImage(String imageName, String serviceName) {
         return new InlineDockerServiceBuilder(imageName, serviceName);
     }
