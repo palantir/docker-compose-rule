@@ -55,10 +55,6 @@ public class DockerComposeExecutable {
                 .start();
     }
 
-    public DockerComposeFiles dockerComposeFiles() {
-        return dockerComposeFiles;
-    }
-
     private static String findDockerComposePath() {
         String pathToUse = DOCKER_COMPOSE_LOCATIONS.preferredLocation()
                 .orElseThrow(() -> new IllegalStateException(

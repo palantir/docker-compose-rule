@@ -25,15 +25,13 @@ import com.palantir.docker.compose.service.DockerService;
 import com.palantir.docker.compose.service.ServiceWait;
 import org.joda.time.Duration;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 public class DockerCompositionBuilder {
 
     private final List<DockerService> services = new ArrayList<>();
-    private DockerCompose dockerComposeProcess;
+    private final DockerCompose dockerComposeProcess;
     private LogCollector logCollector = new DoNothingLogCollector();
 
     public DockerCompositionBuilder(DockerCompose dockerComposeProcess) {
@@ -52,15 +50,6 @@ public class DockerCompositionBuilder {
 
     public DockerCompositionBuilder saveLogsTo(String path) {
         this.logCollector = FileLogCollector.fromPath(path);
-        return this;
-    }
-
-    public DockerCompositionBuilder withService(DockerService service) {
-        services.add(service);
-        Optional<File> additionalFile = service.dockerComposeFileLocation();
-        if (additionalFile.isPresent()) {
-            dockerComposeProcess = dockerComposeProcess.withAdditionalComposeFile(additionalFile.get());
-        }
         return this;
     }
 
