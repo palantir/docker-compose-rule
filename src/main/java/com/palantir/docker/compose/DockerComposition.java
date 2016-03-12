@@ -21,6 +21,7 @@ import com.palantir.docker.compose.connection.DockerMachine;
 import com.palantir.docker.compose.connection.DockerPort;
 import com.palantir.docker.compose.execution.DockerCompose;
 import com.palantir.docker.compose.logging.LogCollector;
+import com.palantir.docker.compose.service.DockerService;
 import com.palantir.docker.compose.service.ServiceCluster;
 import com.palantir.docker.compose.service.ServiceWait;
 import org.junit.rules.ExternalResource;
@@ -107,6 +108,14 @@ public class DockerComposition extends ExternalResource {
 
     public static DockerCompositionBuilder of(DockerCompose executable) {
         return new DockerCompositionBuilder(executable);
+    }
+
+    public static DockerCompositionBuilder fromService(DockerService service) {
+        return fromServiceCluster(ServiceCluster.of(service));
+    }
+
+    public static DockerCompositionBuilder fromService(DockerService service, DockerMachine dockerMachine) {
+        return fromServiceCluster(ServiceCluster.of(service), dockerMachine);
     }
 
     public static DockerCompositionBuilder fromServiceCluster(ServiceCluster services) {
