@@ -19,9 +19,11 @@ import com.palantir.docker.compose.configuration.DockerComposeFiles;
 import com.palantir.docker.compose.connection.ContainerCache;
 import com.palantir.docker.compose.connection.DockerMachine;
 import com.palantir.docker.compose.connection.DockerPort;
-import com.palantir.docker.compose.connection.waiting.ServiceWait;
 import com.palantir.docker.compose.execution.DockerCompose;
 import com.palantir.docker.compose.logging.LogCollector;
+import com.palantir.docker.compose.service.DockerService;
+import com.palantir.docker.compose.service.ServiceCluster;
+import com.palantir.docker.compose.service.ServiceWait;
 import org.junit.rules.ExternalResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -108,4 +110,25 @@ public class DockerComposition extends ExternalResource {
         return new DockerCompositionBuilder(executable);
     }
 
+    public static DockerCompositionBuilder fromService(DockerService service) {
+        return fromServiceCluster(ServiceCluster.of(service));
+    }
+
+    public static DockerCompositionBuilder fromService(DockerService service, DockerMachine dockerMachine) {
+        return fromServiceCluster(ServiceCluster.of(service), dockerMachine);
+    }
+
+    public static DockerCompositionBuilder fromServiceCluster(ServiceCluster services) {
+        return fromServiceCluster(services, DockerMachine.localMachine().build());
+    }
+
+    public static DockerCompositionBuilder fromServiceCluster(ServiceCluster services, DockerMachine dockerMachine) {
+        return fromServiceCluster(new DockerCompose(services.dockerComposeFiles(), dockerMachine), services);
+    }
+
+    public static DockerCompositionBuilder fromServiceCluster(DockerCompose executable, ServiceCluster services) {
+        DockerCompositionBuilder builder = new DockerCompositionBuilder(executable);
+        services.addToComposition(builder);
+        return builder;
+    }
 }

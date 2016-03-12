@@ -17,25 +17,23 @@ package com.palantir.docker.compose;
 
 import com.palantir.docker.compose.connection.ContainerCache;
 import com.palantir.docker.compose.connection.waiting.HealthCheck;
-import com.palantir.docker.compose.connection.waiting.ServiceWait;
 import com.palantir.docker.compose.execution.DockerCompose;
 import com.palantir.docker.compose.logging.DoNothingLogCollector;
 import com.palantir.docker.compose.logging.FileLogCollector;
 import com.palantir.docker.compose.logging.LogCollector;
+import com.palantir.docker.compose.service.DockerService;
+import com.palantir.docker.compose.service.ServiceWait;
 import org.joda.time.Duration;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.joda.time.Duration.standardMinutes;
-
 public class DockerCompositionBuilder {
-    private static final Duration DEFAULT_TIMEOUT = standardMinutes(2);
 
     private final List<ServiceWait> serviceWaits = new ArrayList<>();
     private final DockerCompose dockerComposeProcess;
-    private final ContainerCache containers;
     private LogCollector logCollector = new DoNothingLogCollector();
+    private final ContainerCache containers;
 
     public DockerCompositionBuilder(DockerCompose dockerComposeProcess) {
         this.dockerComposeProcess = dockerComposeProcess;
@@ -43,7 +41,7 @@ public class DockerCompositionBuilder {
     }
 
     public DockerCompositionBuilder waitingForService(String serviceName, HealthCheck check) {
-        return waitingForService(serviceName, check, DEFAULT_TIMEOUT);
+        return waitingForService(serviceName, check, DockerService.DEFAULT_TIMEOUT);
     }
 
     public DockerCompositionBuilder waitingForService(String serviceName, HealthCheck check, Duration timeout) {
@@ -59,4 +57,5 @@ public class DockerCompositionBuilder {
     public DockerComposition build() {
         return new DockerComposition(dockerComposeProcess, serviceWaits, logCollector, containers);
     }
+
 }

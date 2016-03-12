@@ -16,8 +16,10 @@
 package com.palantir.docker.compose.configuration;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkState;
@@ -31,6 +33,7 @@ public class DockerComposeFiles {
 
     public DockerComposeFiles(List<File> dockerComposeFiles) {
         this.dockerComposeFiles = dockerComposeFiles;
+        validateComposeFilesExist(dockerComposeFiles);
     }
 
     public static DockerComposeFiles from(String... dockerComposeFilenames) {
@@ -38,8 +41,13 @@ public class DockerComposeFiles {
                 .map(File::new)
                 .collect(toList());
         validateAtLeastOneComposeFileSpecified(dockerComposeFiles);
-        validateComposeFilesExist(dockerComposeFiles);
         return new DockerComposeFiles(dockerComposeFiles);
+    }
+
+    public DockerComposeFiles withAdditionalFile(File composeFile) {
+        List<File> combinedFiles = new ArrayList<>(dockerComposeFiles);
+        combinedFiles.add(composeFile);
+        return new DockerComposeFiles(combinedFiles);
     }
 
     public List<String> constructComposeFileCommand() {
@@ -63,6 +71,32 @@ public class DockerComposeFiles {
                 .map(File::getAbsolutePath)
                 .collect(joining(", ", "The following docker-compose files: ", " do not exist."));
         checkState(missingFiles.isEmpty(), errorMessage);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(dockerComposeFiles);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        DockerComposeFiles other = (DockerComposeFiles) obj;
+        return Objects.equals(dockerComposeFiles, other.dockerComposeFiles);
+    }
+
+    @Override
+    public String toString() {
+        return "DockerComposeFiles [dockerComposeFiles=" + dockerComposeFiles
+                + "]";
     }
 
 }
