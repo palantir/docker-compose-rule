@@ -17,14 +17,16 @@ package com.palantir.docker.compose.execution;
 
 import com.google.common.collect.ImmutableList;
 import com.palantir.docker.compose.configuration.DockerComposeFiles;
+import com.palantir.docker.compose.configuration.DockerComposeProjectName;
+import org.immutables.value.Value;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.List;
 
-
-public class DockerComposeExecutable {
+@Value.Immutable
+public abstract class DockerComposeExecutable {
     private static final Logger log = LoggerFactory.getLogger(DockerComposeExecutable.class);
 
     private static final DockerComposeLocations DOCKER_COMPOSE_LOCATIONS = new DockerComposeLocations(
@@ -32,37 +34,41 @@ public class DockerComposeExecutable {
             "/usr/local/bin/docker-compose"
     );
 
-    private final DockerComposeFiles dockerComposeFiles;
-    private final DockerConfiguration dockerConfiguration;
-    private final String dockerComposePath;
+    @Value.Parameter protected abstract DockerComposeFiles dockerComposeFiles();
+    @Value.Parameter protected abstract DockerConfiguration dockerConfiguration();
 
-    public DockerComposeExecutable(DockerComposeFiles dockerComposeFiles, DockerConfiguration dockerConfiguration) {
-        this.dockerComposePath = findDockerComposePath();
-        this.dockerComposeFiles = dockerComposeFiles;
-        this.dockerConfiguration = dockerConfiguration;
+    @Value.Default protected DockerComposeProjectName projectName() {
+        return new DockerComposeProjectName();
     }
 
-    public Process execute(String... commands) throws IOException {
-        List<String> args = ImmutableList.<String>builder()
-                .add(dockerComposePath)
-                .addAll(dockerComposeFiles.constructComposeFileCommand())
-                .add(commands)
-                .build();
-
-        return dockerConfiguration.configuredDockerComposeProcess()
-                .command(args)
-                .redirectErrorStream(true)
-                .start();
-    }
-
-    private static String findDockerComposePath() {
+    @Value.Derived
+    protected String dockerComposePath() {
         String pathToUse = DOCKER_COMPOSE_LOCATIONS.preferredLocation()
-                .orElseThrow(() -> new IllegalStateException(
-                        "Could not find docker-compose, looked in: " + DOCKER_COMPOSE_LOCATIONS));
+            .orElseThrow(() -> new IllegalStateException(
+                "Could not find docker-compose, looked in: " + DOCKER_COMPOSE_LOCATIONS));
 
         log.debug("Using docker-compose found at " + pathToUse);
 
         return pathToUse;
     }
 
+    public Process execute(String... commands) throws IOException {
+        List<String> args = ImmutableList.<String>builder()
+                .add(dockerComposePath())
+                .addAll(projectName().constructComposeFileCommand())
+                .addAll(dockerComposeFiles().constructComposeFileCommand())
+                .add(commands)
+                .build();
+
+        return dockerConfiguration().configuredDockerComposeProcess()
+                .command(args)
+                .redirectErrorStream(true)
+                .start();
+    }
+
+    public static class Builder extends ImmutableDockerComposeExecutable.Builder {}
+
+    public static Builder builder() {
+        return ImmutableDockerComposeExecutable.builder();
+    }
 }
