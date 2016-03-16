@@ -18,13 +18,18 @@ package com.palantir.docker.compose.matchers;
 import com.google.common.base.MoreObjects;
 import org.apache.commons.io.FileUtils;
 import org.hamcrest.Description;
+import org.hamcrest.FeatureMatcher;
 import org.hamcrest.Matcher;
+import org.hamcrest.TypeSafeDiagnosingMatcher;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.Arrays;
+import java.util.regex.Pattern;
+
+import static org.hamcrest.Matchers.containsString;
 
 public class IOMatchers {
     private IOMatchers() {
@@ -81,28 +86,37 @@ public class IOMatchers {
     }
 
     public static Matcher<File> fileContainingString(String contents) {
-        return new ValueCachingMatcher<File>() {
+        return file(containsString(contents));
+    }
+
+    public static Matcher<String> matchingPattern(String patternStr) {
+        return new TypeSafeDiagnosingMatcher<String>() {
+            @Override
+            protected boolean matchesSafely(String text, Description mismatchDescription) {
+                Pattern pattern = Pattern.compile(patternStr, Pattern.DOTALL);
+                boolean matches = pattern.matcher(text).matches();
+                if (!matches) {
+                    mismatchDescription.appendText("not matching " + patternStr);
+                }
+                return matches;
+            }
 
             @Override
             public void describeTo(Description description) {
-                description.appendText("file ")
-                           .appendValue(value)
-                           .appendText(" to contain " + contents);
+                description.appendText("matching '" + patternStr + "'");
             }
+        };
+    }
+
+    public static Matcher<File> file(Matcher<String> contentsMatcher) {
+        return new FeatureMatcher<File, String>(contentsMatcher, "file contents", "file contents") {
 
             @Override
-            protected void describeMismatchSafely(File item, Description mismatchDescription) {
-                mismatchDescription.appendText("file ")
-                                   .appendValue(item)
-                                   .appendText(" did not contain " + contents);
-            }
-
-            @Override
-            protected boolean matchesSafely() {
+            protected String featureValueOf(File file) {
                 try {
-                    return FileUtils.readFileToString(value, StandardCharsets.UTF_8).contains(contents);
+                    return FileUtils.readFileToString(file, StandardCharsets.UTF_8);
                 } catch (IOException e) {
-                    throw new RuntimeException("Error reading log file", e);
+                    throw new RuntimeException(e);
                 }
             }
         };
