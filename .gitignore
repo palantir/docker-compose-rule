@@ -12,4 +12,9 @@ logs/
 **/*.ipr
 **/*.iws
 **/*.iml
+.idea/
 out/
+classes/
+
+generated_src/
+generated_testSrc/

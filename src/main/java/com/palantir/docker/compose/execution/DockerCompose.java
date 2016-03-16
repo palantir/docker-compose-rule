@@ -45,7 +45,10 @@ public class DockerCompose {
     private final DockerComposeExecutable rawExecutable;
 
     public DockerCompose(DockerComposeFiles dockerComposeFiles, DockerMachine dockerMachine) {
-        this(new DockerComposeExecutable(dockerComposeFiles, dockerMachine), dockerMachine);
+        this(DockerComposeExecutable.builder()
+            .dockerComposeFiles(dockerComposeFiles)
+            .dockerConfiguration(dockerMachine)
+            .build(), dockerMachine);
     }
 
     public DockerCompose(DockerComposeExecutable rawExecutable, DockerMachine dockerMachine) {
