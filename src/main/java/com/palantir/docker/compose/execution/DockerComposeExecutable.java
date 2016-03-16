@@ -66,9 +66,7 @@ public abstract class DockerComposeExecutable {
                 .start();
     }
 
-    public static class Builder extends ImmutableDockerComposeExecutable.Builder {}
-
-    public static Builder builder() {
+    public static ImmutableDockerComposeExecutable.Builder builder() {
         return ImmutableDockerComposeExecutable.builder();
     }
 }
