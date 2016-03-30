@@ -124,23 +124,19 @@ Docker is able to connect to daemon's that either live on the machine where the 
 Using the `docker` client, you are able to control which daemon to connect to using the `DOCKER_HOST` environment
 variable.
 
-We introduce the concept of a Local Machine and a Remote Machine, to make the choice about which Docker daemon you're
-connecting to more explicit.
-
 ### Local Machine
 
 The default out-of-the-box behaviour will configure `docker-compose` to connect to a Docker daemon that is running
 *locally*. That is, if you're on Linux, it will use the Docker daemon that exposes its socket. In the case of Mac OS X -
 which doesn't support Docker natively - we have to connect to a technically "remote" (but local) Docker daemon which is
-running in a virtual machine via `docker-machine` and `boot2docker`. Essentially delegating to what the `docker` client
-will connect to.
+running in a virtual machine via `docker-machine`.
 
 If you're on Mac OS X, the `docker` cli expects the following environment variables:
 
  - `DOCKER_HOST`
  - If the Docker daemon is secured by TLS, `DOCKER_TLS_VERIFY` and `DOCKER_CERT_PATH` need to be set.
 
-Similarly, if you're using a Local Machine, you need to ensure the Run Configuration (in your IDE, command line etc.)
+Similarly, if you're using a `LocalMachine`, you need to ensure the Run Configuration (in your IDE, command line etc.)
 has those same variables set.
 
 An example of creating a `DockerMachine` that connects to a local docker daemon:
@@ -162,7 +158,7 @@ An example of connecting to a remote Docker daemon that has also been secured by
 
 ```java
 DockerMachine.remoteMachine()
-             .host("tcp://docker-host:2376")
+             .host("tcp://remote-docker-host:2376")
              .withTLS("/path/to/cert")
              .build()
 ```
@@ -179,7 +175,7 @@ DockerMachine.localMachine()
              .build()
 ```
 
-The variable "SOME_VARIABLE" will be available when `docker-compose` is called, and can be used in Variable Interpolation in the compose file.
+The variable `SOME_VARIABLE` will be available in the process that calls `docker-compose`, and can be used for Variable Interpolation inside the compose file.
 
 ### How to use a `DockerMachine`
 
@@ -200,12 +196,12 @@ DockerComposition composition = DockerComposition.of("docker-compose.yaml", dock
 Composing docker compose files
 ------------------------------
 
-`docker-compose` (at least as of version 1.5.0) allows us to "compose" Docker compose files. On the command line, you
+`docker-compose` (at least as of version 1.5.0) allows us to specify multiple docker-compose files. On the command line, you
 can do this with this example command:
 
     docker-compose -f file1.yml -f file2.yml -f file3.yml
 
-Subsequent files override previous declarations of services and also add new services to the composition.
+Semantics of how this works is explained here: [Docker compose reference](https://docs.docker.com/compose/reference/overview/)
 
 To use this functionality inside docker-compose-rule, supply extra files to your `DockerComposition.of(...)` builder
 
