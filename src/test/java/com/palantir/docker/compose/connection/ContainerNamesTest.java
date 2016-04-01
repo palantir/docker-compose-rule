@@ -37,6 +37,12 @@ public class ContainerNamesTest {
     }
 
     @Test
+    public void containers_with_underscores_in_their_naem_are_allowed() {
+        ContainerNames names = ContainerNames.parseFromDockerComposePs("\n----\ndir_left_right_1 other line contents");
+        assertThat(names, is(new ContainerNames("left_right")));
+    }
+
+    @Test
     public void ps_output_with_two_containers_results_in_a_two_container_name() {
         ContainerNames names = ContainerNames.parseFromDockerComposePs("\n----\ndir_db_1 other line contents\ndir_db2_1 other stuff");
         assertThat(names, is(new ContainerNames(asList("db", "db2"))));
