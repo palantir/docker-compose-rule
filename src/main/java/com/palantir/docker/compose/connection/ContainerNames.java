@@ -19,10 +19,12 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Function;
 import java.util.stream.Stream;
 
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
+import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
 
 public class ContainerNames implements Iterable<String> {
@@ -51,10 +53,23 @@ public class ContainerNames implements Iterable<String> {
                      .filter(line -> !line.isEmpty())
                      .map(line -> line.split(" "))
                      .map(psColumns -> psColumns[0])
-                     .map(name -> name.split("_"))
-                     .filter(nameComponents -> nameComponents.length == 3)
-                     .map(nameComponents -> nameComponents[1])
+                     .map(withoutDirectory().andThen(withoutScaleNumber()))
                      .collect(toList());
+    }
+
+    public static Function<String, String> withoutDirectory() {
+        return fullname -> Arrays.stream(fullname.split("_"))
+                .skip(1)
+                .collect(joining("_"));
+    }
+
+    public static Function<String, String> withoutScaleNumber() {
+        return fullname -> {
+            final String[] components = fullname.split("_");
+            return Arrays.stream(components)
+                    .limit(components.length - 1)
+                    .collect(joining("_"));
+        };
     }
 
     @Override
