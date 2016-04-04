@@ -2,6 +2,8 @@ package com.palantir.docker.compose.connection.waiting;
 
 import org.junit.Test;
 
+import java.util.Optional;
+
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 
@@ -18,11 +20,6 @@ public class SuccessOrFailureShould {
 
     @Test
     public void return_the_failure_message_if_set() {
-        assertThat(SuccessOrFailure.failure("oops").failureMessage(), is("oops"));
-    }
-
-    @Test(expected = RuntimeException.class)
-    public void throw_an_exception_if_trying_to_get_the_failure_message_for_a_success() {
-        SuccessOrFailure.success().failureMessage();
+        assertThat(SuccessOrFailure.failure("oops").failureMessage(), is(Optional.of("oops")));
     }
 }

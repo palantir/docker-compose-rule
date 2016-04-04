@@ -39,7 +39,7 @@ public class HttpHealthCheckShould {
 
         assertThat(
                 toRespondOverHttp(PORT, URL_FUNCTION).isServiceUp(container),
-                is(true));
+                is(SuccessOrFailure.success()));
     }
 
     @Test
@@ -47,8 +47,8 @@ public class HttpHealthCheckShould {
         whenTheContainerIsNotListeningOnHttpTo(PORT, URL_FUNCTION);
 
         assertThat(
-                toRespondOverHttp(PORT, URL_FUNCTION).isServiceUp(container),
-                is(false));
+                toRespondOverHttp(PORT, URL_FUNCTION).isServiceUp(container).failed(),
+                is(true));
     }
 
     private void whenTheContainerIsListeningOnHttpTo(int port, Function<DockerPort, String> urlFunction) {
