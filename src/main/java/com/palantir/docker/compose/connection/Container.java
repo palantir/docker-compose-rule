@@ -52,7 +52,6 @@ public class Container {
             DockerPort port = portMappedInternallyTo(internalPort);
             return port.isListeningNow() && port.isHttpResponding(urlFunction);
         } catch (Exception e) {
-            log.warn("Container '" + containerName + "' failed to come up: " + e.getMessage(), e);
             return false;
         }
     }
