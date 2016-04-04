@@ -23,7 +23,7 @@ import java.util.function.Function;
 
 public class HealthChecks {
     public static HealthCheck toRespondOverHttp(int internalPort, Function<DockerPort, String> urlFunction) {
-        return container -> SuccessOrFailure.fromBoolean(container.portIsListeningOnHttp(internalPort, urlFunction), "Http no work");
+        return container -> container.portIsListeningOnHttp(internalPort, urlFunction);
     }
 
     public static HealthCheck toHaveAllPortsOpen() {

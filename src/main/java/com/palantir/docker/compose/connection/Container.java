@@ -47,12 +47,18 @@ public class Container {
         return containerName;
     }
 
-    public boolean portIsListeningOnHttp(int internalPort, Function<DockerPort, String> urlFunction) {
+    public SuccessOrFailure portIsListeningOnHttp(int internalPort, Function<DockerPort, String> urlFunction) {
         try {
             DockerPort port = portMappedInternallyTo(internalPort);
-            return port.isListeningNow() && port.isHttpResponding(urlFunction);
+            if (!port.isListeningNow()) {
+                return SuccessOrFailure.failure(internalPort + " is not listening");
+            }
+            if (!port.isHttpResponding(urlFunction)) {
+                return SuccessOrFailure.failure(internalPort + " does not have a http response from " + urlFunction.apply(port));
+            }
+            return SuccessOrFailure.success();
         } catch (Exception e) {
-            return false;
+            return SuccessOrFailure.fromException(e);
         }
     }
 

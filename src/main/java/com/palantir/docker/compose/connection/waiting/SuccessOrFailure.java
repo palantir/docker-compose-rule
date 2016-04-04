@@ -1,5 +1,6 @@
 package com.palantir.docker.compose.connection.waiting;
 
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.immutables.value.Value;
 
 import java.util.Optional;
@@ -38,5 +39,9 @@ public abstract class SuccessOrFailure {
 
     public Optional<String> toOptionalFailureMessage() {
         return optionalFailureMessage();
+    }
+
+    public static SuccessOrFailure fromException(Exception exception) {
+        return SuccessOrFailure.failure("Encountered an exception: " + ExceptionUtils.getStackTrace(exception));
     }
 }
