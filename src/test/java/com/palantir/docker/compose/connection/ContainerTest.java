@@ -23,7 +23,11 @@ import org.junit.rules.ExpectedException;
 
 import java.io.IOException;
 
+import static com.palantir.docker.compose.connection.waiting.SuccessOrFailureMatchers.failureWithMessage;
+import static com.palantir.docker.compose.connection.waiting.SuccessOrFailureMatchers.successful;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.both;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.core.Is.is;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -82,15 +86,18 @@ public class ContainerTest {
     public void have_all_ports_open_if_all_exposed_ports_are_open() throws IOException, InterruptedException {
         env.availableHttpService("service", IP, 1234, 1234);
 
-        assertThat(container.areAllPortsOpen(), is(true));
+        assertThat(container.areAllPortsOpen(), is(successful()));
     }
 
     @Test
-    public void not_have_all_ports_open_if_has_at_least_one_closed_port() throws IOException, InterruptedException {
-        env.availableService("service", IP, 1234, 1234);
-        env.unavailableService("service", IP, 4321, 4321);
+    public void not_have_all_ports_open_if_has_at_least_one_closed_port_and_report_the_name_of_the_port() throws IOException, InterruptedException {
+        int unavailablePort = 4321;
+        String unavailablePortString = Integer.toString(unavailablePort);
 
-        assertThat(container.areAllPortsOpen(), is(false));
+        env.availableService("service", IP, 1234, 1234);
+        env.unavailableService("service", IP, unavailablePort, unavailablePort);
+
+        assertThat(container.areAllPortsOpen(), is(failureWithMessage(containsString(unavailablePortString))));
     }
 
     @Test
@@ -99,16 +106,22 @@ public class ContainerTest {
 
         assertThat(
                 container.portIsListeningOnHttp(2345, port -> "http://some.url:" + port),
-                is(true));
+                is(successful()));
     }
 
     @Test
-    public void not_be_listening_on_http_when_the_port_is_not() throws IOException, InterruptedException {
-        env.unavailableHttpService("service", IP, 1234, 1234);
+    public void not_be_listening_on_http_when_the_port_is_not_and_reports_the_port_number_and_url() throws IOException, InterruptedException {
+        int unavailablePort = 1234;
+        String unvaliablePortString = Integer.toString(unavailablePort);
+
+        env.unavailableHttpService("service", IP, unavailablePort, unavailablePort);
 
         assertThat(
-                container.portIsListeningOnHttp(2345, port -> "http://some.url:" + port),
-                is(false));
+                container.portIsListeningOnHttp(unavailablePort, port -> "http://some.url:" + port.getInternalPort()),
+                is(failureWithMessage(both(
+                    containsString(unvaliablePortString)).and(
+                    containsString("http://some.url:" + unvaliablePortString)
+                ))));
     }
 
 }

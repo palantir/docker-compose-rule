@@ -18,13 +18,16 @@ package com.palantir.docker.compose.connection;
 import com.google.common.base.Supplier;
 import com.google.common.base.Suppliers;
 import com.google.common.base.Throwables;
+import com.palantir.docker.compose.connection.waiting.SuccessOrFailure;
 import com.palantir.docker.compose.execution.DockerCompose;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class Container {
 
@@ -44,13 +47,18 @@ public class Container {
         return containerName;
     }
 
-    public boolean portIsListeningOnHttp(int internalPort, Function<DockerPort, String> urlFunction) {
+    public SuccessOrFailure portIsListeningOnHttp(int internalPort, Function<DockerPort, String> urlFunction) {
         try {
             DockerPort port = portMappedInternallyTo(internalPort);
-            return port.isListeningNow() && port.isHttpResponding(urlFunction);
+            if (!port.isListeningNow()) {
+                return SuccessOrFailure.failure(internalPort + " is not listening");
+            }
+            if (!port.isHttpResponding(urlFunction)) {
+                return SuccessOrFailure.failure(internalPort + " does not have a http response from " + urlFunction.apply(port));
+            }
+            return SuccessOrFailure.success();
         } catch (Exception e) {
-            log.warn("Container '" + containerName + "' failed to come up: " + e.getMessage(), e);
-            return false;
+            return SuccessOrFailure.fromException(e);
         }
     }
 
@@ -102,11 +110,15 @@ public class Container {
                 '}';
     }
 
-    public boolean areAllPortsOpen() {
-        long numberOfUnavailablePorts = portMappings.get().stream()
+    public SuccessOrFailure areAllPortsOpen() {
+        List<Integer> unavaliablePorts = portMappings.get().stream()
                 .filter(port -> !port.isListeningNow())
-                .count();
+                .map(DockerPort::getInternalPort)
+                .collect(Collectors.toList());
 
-        return numberOfUnavailablePorts == 0;
+        boolean allPortsOpen = unavaliablePorts.isEmpty();
+        String failureMessage = "The following ports failed to open: " + unavaliablePorts;
+
+        return SuccessOrFailure.fromBoolean(allPortsOpen, failureMessage);
     }
 }

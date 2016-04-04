@@ -15,39 +15,39 @@
  */
 package com.palantir.docker.compose.connection.waiting;
 
-import com.palantir.docker.compose.connection.Container;
 import org.junit.Test;
 
 import static com.palantir.docker.compose.connection.waiting.SuccessOrFailureMatchers.failure;
+import static com.palantir.docker.compose.connection.waiting.SuccessOrFailureMatchers.failureWithMessage;
 import static com.palantir.docker.compose.connection.waiting.SuccessOrFailureMatchers.successful;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.both;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.core.Is.is;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
-public class PortsHealthCheckShould {
-    private final HealthCheck healthCheck = HealthChecks.toHaveAllPortsOpen();
-    private final Container container = mock(Container.class);
-
+public class SuccessOrFailureShould {
     @Test
-    public void be_healthy_when_all_ports_are_listening() {
-        whenTheContainerHasAllPortsOpen();
-
-        assertThat(healthCheck.isServiceUp(container), is(successful()));
+    public void not_have_failed_if_actually_a_success() {
+        assertThat(SuccessOrFailure.success(), is(successful()));
     }
 
     @Test
-    public void be_unhealthy_when_all_ports_are_not_listening() {
-        whenTheContainerDoesNotHaveAllPortsOpen();
-
-        assertThat(healthCheck.isServiceUp(container), is(failure()));
+    public void have_failed_if_actually_a_failure() {
+        assertThat(SuccessOrFailure.failure("oops"), is(failure()));
     }
 
-    private void whenTheContainerDoesNotHaveAllPortsOpen() {
-        when(container.areAllPortsOpen()).thenReturn(SuccessOrFailure.failure("not all ports open"));
+    @Test
+    public void return_the_failure_message_if_set() {
+        assertThat(SuccessOrFailure.failure("oops"), is(failureWithMessage("oops")));
     }
 
-    private void whenTheContainerHasAllPortsOpen() {
-        when(container.areAllPortsOpen()).thenReturn(SuccessOrFailure.success());
+    @Test
+    public void fail_from_an_exception() {
+        Exception exception = new RuntimeException("oh no");
+        assertThat(SuccessOrFailure.fromException(exception),
+            is(failureWithMessage(both(
+                containsString("RuntimeException")).and(
+                containsString("oh no")
+            ))));
     }
 }

@@ -22,7 +22,10 @@ import org.joda.time.Duration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Optional;
+import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class ServiceWait {
     private static final Logger log = LoggerFactory.getLogger(ServiceWait.class);
@@ -38,13 +41,32 @@ public class ServiceWait {
 
     public void waitTillServiceIsUp() {
         log.debug("Waiting for service '{}'", service);
+        final AtomicReference<Optional<SuccessOrFailure>> lastSuccessOrFailure = new AtomicReference<>(Optional.empty());
         try {
             Awaitility.await()
                     .pollInterval(50, TimeUnit.MILLISECONDS)
                     .atMost(timeout.getMillis(), TimeUnit.MILLISECONDS)
-                    .until(() -> healthCheck.isServiceUp(service));
+                    .until(weHaveSuccess(lastSuccessOrFailure));
         } catch (ConditionTimeoutException e) {
-            throw new IllegalStateException("Container '" + service.getContainerName() + "' failed to pass startup check");
+            throw new IllegalStateException(serviceDidNotStartupExceptionMessage(lastSuccessOrFailure));
         }
+    }
+
+    private Callable<Boolean> weHaveSuccess(AtomicReference<Optional<SuccessOrFailure>> lastSuccessOrFailure) {
+        return () -> {
+            SuccessOrFailure successOrFailure = healthCheck.isServiceUp(service);
+            lastSuccessOrFailure.set(Optional.of(successOrFailure));
+            return successOrFailure.succeeded();
+        };
+    }
+
+    private String serviceDidNotStartupExceptionMessage(AtomicReference<Optional<SuccessOrFailure>> lastSuccessOrFailure) {
+        String healthcheckFailureMessage = lastSuccessOrFailure.get()
+            .flatMap(SuccessOrFailure::toOptionalFailureMessage)
+            .orElse("The healthcheck did not finish before the timeout");
+
+        return String.format("Container '%s' failed to pass startup check:%n%s",
+            service.getContainerName(),
+            healthcheckFailureMessage);
     }
 }

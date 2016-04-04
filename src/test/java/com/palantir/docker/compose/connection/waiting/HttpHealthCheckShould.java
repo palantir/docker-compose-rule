@@ -22,7 +22,8 @@ import org.junit.Test;
 
 import java.util.function.Function;
 
-import static com.palantir.docker.compose.connection.waiting.HealthChecks.toRespondOverHttp;
+import static com.palantir.docker.compose.connection.waiting.SuccessOrFailureMatchers.failure;
+import static com.palantir.docker.compose.connection.waiting.SuccessOrFailureMatchers.successful;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.mockito.Mockito.mock;
@@ -38,8 +39,8 @@ public class HttpHealthCheckShould {
         whenTheContainerIsListeningOnHttpTo(PORT, URL_FUNCTION);
 
         assertThat(
-                toRespondOverHttp(PORT, URL_FUNCTION).isServiceUp(container),
-                is(true));
+                HealthChecks.toRespondOverHttp(PORT, URL_FUNCTION).isServiceUp(container),
+                is(successful()));
     }
 
     @Test
@@ -47,16 +48,16 @@ public class HttpHealthCheckShould {
         whenTheContainerIsNotListeningOnHttpTo(PORT, URL_FUNCTION);
 
         assertThat(
-                toRespondOverHttp(PORT, URL_FUNCTION).isServiceUp(container),
-                is(false));
+                HealthChecks.toRespondOverHttp(PORT, URL_FUNCTION).isServiceUp(container),
+                is(failure()));
     }
 
     private void whenTheContainerIsListeningOnHttpTo(int port, Function<DockerPort, String> urlFunction) {
-        when(container.portIsListeningOnHttp(port, urlFunction)).thenReturn(true);
+        when(container.portIsListeningOnHttp(port, urlFunction)).thenReturn(SuccessOrFailure.success());
     }
 
     private void whenTheContainerIsNotListeningOnHttpTo(int port, Function<DockerPort, String> urlFunction) {
-        when(container.portIsListeningOnHttp(port, urlFunction)).thenReturn(false);
+        when(container.portIsListeningOnHttp(port, urlFunction)).thenReturn(SuccessOrFailure.failure("not listening"));
     }
 
 }
