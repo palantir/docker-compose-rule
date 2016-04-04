@@ -23,6 +23,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Optional;
+import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -45,25 +46,27 @@ public class ServiceWait {
             Awaitility.await()
                     .pollInterval(50, TimeUnit.MILLISECONDS)
                     .atMost(timeout.getMillis(), TimeUnit.MILLISECONDS)
-                    .until(() -> {
-                        SuccessOrFailure successOrFailure = healthCheck.isServiceUp(service);
-                        lastSuccessOrFailure.set(Optional.of(successOrFailure));
-                        return successOrFailure.succeeded();
-                    });
+                    .until(weHaveSuccess(lastSuccessOrFailure));
         } catch (ConditionTimeoutException e) {
-            StringBuilder execptionMessage = new StringBuilder();
-            execptionMessage
-                .append("Container '")
-                .append(service.getContainerName())
-                .append("' failed to pass startup check:\n");
-
-            String errorMessage = lastSuccessOrFailure.get()
-                .flatMap(SuccessOrFailure::toOptionalFailureMessage)
-                .orElse("The healthcheck did not finish before the timeout");
-
-            execptionMessage.append(errorMessage);
-
-            throw new IllegalStateException(execptionMessage.toString());
+            throw new IllegalStateException(serviceDidNotStartupExceptionMessage(lastSuccessOrFailure));
         }
+    }
+
+    private Callable<Boolean> weHaveSuccess(AtomicReference<Optional<SuccessOrFailure>> lastSuccessOrFailure) {
+        return () -> {
+            SuccessOrFailure successOrFailure = healthCheck.isServiceUp(service);
+            lastSuccessOrFailure.set(Optional.of(successOrFailure));
+            return successOrFailure.succeeded();
+        };
+    }
+
+    private String serviceDidNotStartupExceptionMessage(AtomicReference<Optional<SuccessOrFailure>> lastSuccessOrFailure) {
+        String healthcheckFailureMessage = lastSuccessOrFailure.get()
+            .flatMap(SuccessOrFailure::toOptionalFailureMessage)
+            .orElse("The healthcheck did not finish before the timeout");
+
+        return String.format("Container '%s' failed to pass startup check:\n%s",
+            service.getContainerName(),
+            healthcheckFailureMessage);
     }
 }
