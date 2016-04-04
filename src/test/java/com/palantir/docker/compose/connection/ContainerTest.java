@@ -23,7 +23,10 @@ import org.junit.rules.ExpectedException;
 
 import java.io.IOException;
 
+import static com.palantir.docker.compose.connection.waiting.SuccessOrFailureMatchers.failureWithMessage;
+import static com.palantir.docker.compose.connection.waiting.SuccessOrFailureMatchers.successful;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.core.Is.is;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -82,15 +85,18 @@ public class ContainerTest {
     public void have_all_ports_open_if_all_exposed_ports_are_open() throws IOException, InterruptedException {
         env.availableHttpService("service", IP, 1234, 1234);
 
-        assertThat(container.areAllPortsOpen(), is(true));
+        assertThat(container.areAllPortsOpen(), is(successful()));
     }
 
     @Test
-    public void not_have_all_ports_open_if_has_at_least_one_closed_port() throws IOException, InterruptedException {
-        env.availableService("service", IP, 1234, 1234);
-        env.unavailableService("service", IP, 4321, 4321);
+    public void not_have_all_ports_open_if_has_at_least_one_closed_port_and_report_the_name_of_the_port() throws IOException, InterruptedException {
+        int unavailablePort = 4321;
+        String unavailablePortString = Integer.toString(unavailablePort);
 
-        assertThat(container.areAllPortsOpen(), is(false));
+        env.availableService("service", IP, 1234, 1234);
+        env.unavailableService("service", IP, unavailablePort, unavailablePort);
+
+        assertThat(container.areAllPortsOpen(), is(failureWithMessage(containsString(unavailablePortString))));
     }
 
     @Test
