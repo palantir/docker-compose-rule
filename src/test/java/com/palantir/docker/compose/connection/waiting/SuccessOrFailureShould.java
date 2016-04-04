@@ -10,4 +10,9 @@ public class SuccessOrFailureShould {
     public void not_have_failed_if_actually_a_success() {
         assertThat(SuccessOrFailure.success().failed(), is(false));
     }
+
+    @Test
+    public void have_failed_if_actually_a_failure() {
+        assertThat(SuccessOrFailure.failure("oops").failed(), is(true));
+    }
 }

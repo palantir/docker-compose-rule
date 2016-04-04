@@ -17,6 +17,6 @@ public abstract class SuccessOrFailure {
     }
 
     public boolean failed() {
-        return false;
+        return optionalErrorMessage().isPresent();
     }
 }
