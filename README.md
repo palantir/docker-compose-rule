@@ -31,7 +31,7 @@ repositories {
     maven {
         url 'https://dl.bintray.com/palantir/releases' // docker-compose-rule is published on bintray
     }
-}    
+}
 dependencies {
     compile 'com.palantir.docker.compose:docker-compose-rule:<latest-tag-from-bintray>'
 }
@@ -43,7 +43,7 @@ For the most basic use simply add a `DockerComposition` object as a `@ClassRule`
 public class DockerCompositionTest {
 
     @ClassRule
-    public DockerComposition composition = new DockerComposition("src/test/resources/docker-compose.yml");
+    public DockerComposition composition = DockerComposition.of("src/test/resources/docker-compose.yml").build();
 
     @Test
     public void testThatDependsOnDockerComposition() throws InterruptedException, IOException {
@@ -74,10 +74,11 @@ To wait for services to be available before executing tests use the following me
 public class DockerCompositionTest {
 
     @ClassRule
-    public DockerComposition composition = new DockerComposition("src/test/resources/docker-compose.yml")
-        .waitingForService("db", toHaveAllPortsOpen())
-        .waitingForService("web", toRespondOverHttp(8080, (port) -> "https://" + port.getIp() + ":" + port.getExternalPort()))
+    public DockerComposition composition = DockerComposition.of("src/test/resources/docker-compose.yml")
+        .waitingForService("db", HealthChecks.toHaveAllPortsOpen())
+        .waitingForService("web", HealthChecks.toRespondOverHttp(8080, (port) -> "https://" + port.getIp() + ":" + port.getExternalPort()))
         .waitingForService("other", (container) -> customServiceCheck(container), Duration.standardMinutes(2))
+        .build();
 
     @Test
     public void testThatDependsServicesHavingStarted() throws InterruptedException, IOException {
@@ -117,8 +118,9 @@ To record the logs from your containers specify a location:
 public class DockerCompositionTest {
 
     @ClassRule
-    public DockerComposition composition = new DockerComposition("src/test/resources/docker-compose.yml")
-                                                  .saveLogsTo("build/dockerLogs/dockerCompositionTest");
+    public DockerComposition composition = DockerComposition.of("src/test/resources/docker-compose.yml")
+                                                .saveLogsTo("build/dockerLogs/dockerCompositionTest")
+                                                .build();
 
     @Test
     public void testRecordsLogs() throws InterruptedException, IOException {
