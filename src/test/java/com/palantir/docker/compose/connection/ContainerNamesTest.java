@@ -37,7 +37,7 @@ public class ContainerNamesTest {
     }
 
     @Test
-    public void containers_with_underscores_in_their_naem_are_allowed() {
+    public void containers_with_underscores_in_their_name_are_allowed() {
         ContainerNames names = ContainerNames.parseFromDockerComposePs("\n----\ndir_left_right_1 other line contents");
         assertThat(names, is(new ContainerNames("left_right")));
     }
