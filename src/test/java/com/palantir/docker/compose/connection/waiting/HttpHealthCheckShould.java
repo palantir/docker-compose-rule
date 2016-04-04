@@ -22,7 +22,6 @@ import org.junit.Test;
 
 import java.util.function.Function;
 
-import static com.palantir.docker.compose.connection.waiting.HealthChecks.toRespondOverHttp;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.mockito.Mockito.mock;
@@ -38,7 +37,7 @@ public class HttpHealthCheckShould {
         whenTheContainerIsListeningOnHttpTo(PORT, URL_FUNCTION);
 
         assertThat(
-                toRespondOverHttp(PORT, URL_FUNCTION).isServiceUp(container),
+                HealthChecks.toRespondOverHttp(PORT, URL_FUNCTION).isServiceUp(container),
                 is(SuccessOrFailure.success()));
     }
 
@@ -47,7 +46,7 @@ public class HttpHealthCheckShould {
         whenTheContainerIsNotListeningOnHttpTo(PORT, URL_FUNCTION);
 
         assertThat(
-                toRespondOverHttp(PORT, URL_FUNCTION).isServiceUp(container).failed(),
+                HealthChecks.toRespondOverHttp(PORT, URL_FUNCTION).isServiceUp(container).failed(),
                 is(true));
     }
 
