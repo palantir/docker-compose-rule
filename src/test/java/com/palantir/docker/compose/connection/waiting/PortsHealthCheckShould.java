@@ -18,6 +18,8 @@ package com.palantir.docker.compose.connection.waiting;
 import com.palantir.docker.compose.connection.Container;
 import org.junit.Test;
 
+import static com.palantir.docker.compose.connection.waiting.SuccessOrFailureMatchers.failure;
+import static com.palantir.docker.compose.connection.waiting.SuccessOrFailureMatchers.successful;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.mockito.Mockito.mock;
@@ -31,21 +33,21 @@ public class PortsHealthCheckShould {
     public void be_healthy_when_all_ports_are_listening() {
         whenTheContainerHasAllPortsOpen();
 
-        assertThat(healthCheck.isServiceUp(container), is(SuccessOrFailure.success()));
+        assertThat(healthCheck.isServiceUp(container), is(successful()));
     }
 
     @Test
     public void be_unhealthy_when_all_ports_are_not_listening() {
         whenTheContainerDoesNotHaveAllPortsOpen();
 
-        assertThat(healthCheck.isServiceUp(container).failed(), is(true));
+        assertThat(healthCheck.isServiceUp(container), is(failure()));
     }
 
     private void whenTheContainerDoesNotHaveAllPortsOpen() {
-        when(container.areAllPortsOpen()).thenReturn(false);
+        when(container.areAllPortsOpen()).thenReturn(SuccessOrFailure.failure("not all ports open"));
     }
 
     private void whenTheContainerHasAllPortsOpen() {
-        when(container.areAllPortsOpen()).thenReturn(true);
+        when(container.areAllPortsOpen()).thenReturn(SuccessOrFailure.success());
     }
 }

@@ -16,6 +16,14 @@ public abstract class SuccessOrFailure {
         return ImmutableSuccessOrFailure.of(Optional.of(message));
     }
 
+    public static SuccessOrFailure fromBoolean(boolean succeeded, String possibleFailureMessage) {
+        if (succeeded) {
+            return success();
+        } else {
+            return failure(possibleFailureMessage);
+        }
+    }
+
     public boolean failed() {
         return optionalFailureMessage().isPresent();
     }
@@ -24,15 +32,11 @@ public abstract class SuccessOrFailure {
         return !failed();
     }
 
-    public Optional<String> failureMessage() {
-        return optionalFailureMessage();
+    public String failureMessage() {
+        return optionalFailureMessage().get();
     }
 
-    public static SuccessOrFailure fromBoolean(boolean succeeded, String possibleFailureMessage) {
-        if (succeeded) {
-            return success();
-        } else {
-            return failure(possibleFailureMessage);
-        }
+    public Optional<String> toOptionalFailureMessage() {
+        return optionalFailureMessage();
     }
 }

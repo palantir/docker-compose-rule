@@ -16,6 +16,7 @@
 
 package com.palantir.docker.compose.connection.waiting;
 
+import com.palantir.docker.compose.connection.Container;
 import com.palantir.docker.compose.connection.DockerPort;
 
 import java.util.function.Function;
@@ -26,6 +27,6 @@ public class HealthChecks {
     }
 
     public static HealthCheck toHaveAllPortsOpen() {
-        return container -> SuccessOrFailure.fromBoolean(container.areAllPortsOpen(), "better message please");
+        return Container::areAllPortsOpen;
     }
 }

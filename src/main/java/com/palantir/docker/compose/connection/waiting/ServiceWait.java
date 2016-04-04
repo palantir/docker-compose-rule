@@ -58,7 +58,7 @@ public class ServiceWait {
                 .append("' failed to pass startup check:\n");
 
             String errorMessage = lastSuccessOrFailure.get()
-                .flatMap(SuccessOrFailure::failureMessage)
+                .flatMap(SuccessOrFailure::toOptionalFailureMessage)
                 .orElse("The healthcheck did not finish before the timeout");
 
             execptionMessage.append(errorMessage);
