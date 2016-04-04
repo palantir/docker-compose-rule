@@ -6,7 +6,7 @@ import java.util.Optional;
 
 @Value.Immutable
 public abstract class SuccessOrFailure {
-    @Value.Parameter protected abstract Optional<String> optionalErrorMessage();
+    @Value.Parameter protected abstract Optional<String> optionalFailureMessage();
 
     public static SuccessOrFailure success() {
         return ImmutableSuccessOrFailure.of(Optional.empty());
@@ -17,6 +17,10 @@ public abstract class SuccessOrFailure {
     }
 
     public boolean failed() {
-        return optionalErrorMessage().isPresent();
+        return optionalFailureMessage().isPresent();
+    }
+
+    public String failureMessage() {
+        return optionalFailureMessage().get();
     }
 }

@@ -15,4 +15,14 @@ public class SuccessOrFailureShould {
     public void have_failed_if_actually_a_failure() {
         assertThat(SuccessOrFailure.failure("oops").failed(), is(true));
     }
+
+    @Test
+    public void return_the_failure_message_if_set() {
+        assertThat(SuccessOrFailure.failure("oops").failureMessage(), is("oops"));
+    }
+
+    @Test(expected = RuntimeException.class)
+    public void throw_an_exception_if_trying_to_get_the_failure_message_for_a_success() {
+        SuccessOrFailure.success().failureMessage();
+    }
 }
