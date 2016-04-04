@@ -19,6 +19,8 @@ import com.palantir.docker.compose.configuration.MockDockerEnvironment;
 import com.palantir.docker.compose.connection.Container;
 import com.palantir.docker.compose.connection.ContainerNames;
 import com.palantir.docker.compose.connection.DockerPort;
+import com.palantir.docker.compose.connection.waiting.HealthCheck;
+import com.palantir.docker.compose.connection.waiting.SuccessOrFailure;
 import com.palantir.docker.compose.execution.DockerCompose;
 import org.apache.commons.io.IOUtils;
 import org.junit.Rule;
@@ -78,7 +80,8 @@ public class DockerCompositionTest {
     public void docker_compose_wait_for_service_passes_when_check_is_true() throws IOException, InterruptedException {
         AtomicInteger timesCheckCalled = new AtomicInteger(0);
         withComposeExecutableReturningContainerFor("db");
-        dockerComposition.waitingForService("db", (container) -> timesCheckCalled.incrementAndGet() == 1).build().before();
+        HealthCheck checkCalledOnce = (container) -> SuccessOrFailure.fromBoolean(timesCheckCalled.incrementAndGet() == 1, "not called once yet");
+        dockerComposition.waitingForService("db", checkCalledOnce).build().before();
         assertThat(timesCheckCalled.get(), is(1));
     }
 
@@ -86,7 +89,8 @@ public class DockerCompositionTest {
     public void docker_compose_wait_for_service_passes_when_check_is_true_after_being_false() throws IOException, InterruptedException {
         AtomicInteger timesCheckCalled = new AtomicInteger(0);
         withComposeExecutableReturningContainerFor("db");
-        dockerComposition.waitingForService("db", (container) -> timesCheckCalled.incrementAndGet() == 2).build().before();
+        HealthCheck checkCalledTwice = (container) -> SuccessOrFailure.fromBoolean(timesCheckCalled.incrementAndGet() == 2, "not called twice yet");
+        dockerComposition.waitingForService("db", checkCalledTwice).build().before();
         assertThat(timesCheckCalled.get(), is(2));
     }
 
@@ -95,9 +99,9 @@ public class DockerCompositionTest {
         withComposeExecutableReturningContainerFor("db");
 
         exception.expect(IllegalStateException.class);
-        exception.expectMessage("Container 'db' failed to pass startup check");
+        exception.expectMessage("Container 'db' failed to pass startup check:\noops");
 
-        dockerComposition.waitingForService("db", (container) -> false, millis(200)).build().before();
+        dockerComposition.waitingForService("db", (container) -> SuccessOrFailure.failure("oops"), millis(200)).build().before();
     }
 
     @Test

@@ -31,14 +31,14 @@ public class PortsHealthCheckShould {
     public void be_healthy_when_all_ports_are_listening() {
         whenTheContainerHasAllPortsOpen();
 
-        assertThat(healthCheck.isServiceUp(container), is(true));
+        assertThat(healthCheck.isServiceUp(container), is(SuccessOrFailure.success()));
     }
 
     @Test
     public void be_unhealthy_when_all_ports_are_not_listening() {
         whenTheContainerDoesNotHaveAllPortsOpen();
 
-        assertThat(healthCheck.isServiceUp(container), is(false));
+        assertThat(healthCheck.isServiceUp(container).failed(), is(true));
     }
 
     private void whenTheContainerDoesNotHaveAllPortsOpen() {

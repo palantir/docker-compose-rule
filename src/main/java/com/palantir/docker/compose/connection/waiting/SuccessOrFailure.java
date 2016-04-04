@@ -20,7 +20,19 @@ public abstract class SuccessOrFailure {
         return optionalFailureMessage().isPresent();
     }
 
-    public String failureMessage() {
-        return optionalFailureMessage().get();
+    public boolean succeeded() {
+        return !failed();
+    }
+
+    public Optional<String> failureMessage() {
+        return optionalFailureMessage();
+    }
+
+    public static SuccessOrFailure fromBoolean(boolean succeeded, String possibleFailureMessage) {
+        if (succeeded) {
+            return success();
+        } else {
+            return failure(possibleFailureMessage);
+        }
     }
 }

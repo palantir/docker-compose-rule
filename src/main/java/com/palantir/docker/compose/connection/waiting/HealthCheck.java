@@ -20,5 +20,5 @@ import com.palantir.docker.compose.connection.Container;
 
 @FunctionalInterface
 public interface HealthCheck {
-    boolean isServiceUp(Container container);
+    SuccessOrFailure isServiceUp(Container container);
 }

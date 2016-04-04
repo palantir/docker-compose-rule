@@ -16,17 +16,16 @@
 
 package com.palantir.docker.compose.connection.waiting;
 
-import com.palantir.docker.compose.connection.Container;
 import com.palantir.docker.compose.connection.DockerPort;
 
 import java.util.function.Function;
 
 public class HealthChecks {
     public static HealthCheck toRespondOverHttp(int internalPort, Function<DockerPort, String> urlFunction) {
-        return container -> container.portIsListeningOnHttp(internalPort, urlFunction);
+        return container -> SuccessOrFailure.fromBoolean(container.portIsListeningOnHttp(internalPort, urlFunction), "Http no work");
     }
 
     public static HealthCheck toHaveAllPortsOpen() {
-        return Container::areAllPortsOpen;
+        return container -> SuccessOrFailure.fromBoolean(container.areAllPortsOpen(), "better message please");
     }
 }
