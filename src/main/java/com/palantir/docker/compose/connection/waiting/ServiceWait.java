@@ -65,7 +65,7 @@ public class ServiceWait {
             .flatMap(SuccessOrFailure::toOptionalFailureMessage)
             .orElse("The healthcheck did not finish before the timeout");
 
-        return String.format("Container '%s' failed to pass startup check:\n%s",
+        return String.format("Container '%s' failed to pass startup check:%n%s",
             service.getContainerName(),
             healthcheckFailureMessage);
     }
