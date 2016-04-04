@@ -39,17 +39,19 @@ dependencies {
 
 For the most basic use simply add a `DockerComposition` object as a `@ClassRule` or `@Rule` in a JUnit test class.
 
-    public class DockerCompositionTest {
-  
-        @ClassRule
-        public DockerComposition composition = new DockerComposition("src/test/resources/docker-compose.yml");
-  
-        @Test
-        public void testThatDependsOnDockerComposition() throws InterruptedException, IOException {
-           ...
-        }
-  
+```java
+public class DockerCompositionTest {
+
+    @ClassRule
+    public DockerComposition composition = new DockerComposition("src/test/resources/docker-compose.yml");
+
+    @Test
+    public void testThatDependsOnDockerComposition() throws InterruptedException, IOException {
+       ...
     }
+
+}
+```
 
 This will cause the containers defined in `src/test/resources/docker-compose.yml` to be started by Docker Compose before the test executes and then the containers will be killed once the test has finished executing.
 
@@ -68,18 +70,21 @@ Waiting for a service to be available
 
 To wait for services to be available before executing tests use the following methods on the DockerComposition object:
 
-    public class DockerCompositionTest {
+```java
+public class DockerCompositionTest {
 
-        @ClassRule
-        public DockerComposition composition = new DockerComposition("src/test/resources/docker-compose.yml")
-            .waitingForService("db", toHaveAllPortsOpen())
-            .waitingForService("web", toRespondOverHttp(8080, (port) -> "https://" + port.getIp() + ":" + port.getExternalPort()))
-            .waitingForService("other", (container) -> customServiceCheck(container), Duration.standardMinutes(2))
+    @ClassRule
+    public DockerComposition composition = new DockerComposition("src/test/resources/docker-compose.yml")
+        .waitingForService("db", toHaveAllPortsOpen())
+        .waitingForService("web", toRespondOverHttp(8080, (port) -> "https://" + port.getIp() + ":" + port.getExternalPort()))
+        .waitingForService("other", (container) -> customServiceCheck(container), Duration.standardMinutes(2))
 
-        @Test
-        public void testThatDependsServicesHavingStarted() throws InterruptedException, IOException {
-            ...
-        }
+    @Test
+    public void testThatDependsServicesHavingStarted() throws InterruptedException, IOException {
+        ...
+    }
+}
+```
 
 The entrypoint method `waitingForService(String container, HealthCheck check[, Duration timeout])` will make sure the healthcheck passes for that container before the tests start. We provide 2 default healthChecks in the HealthChecks class:
 
@@ -95,9 +100,11 @@ It is recommended to only specify internal ports in the `docker-compose.yml` as 
 
 There are then two methods for accessing port information:
 
-    DockerPort portOnContainerWithExternalMapping(String container, int portNumber)
+```java
+DockerPort portOnContainerWithExternalMapping(String container, int portNumber)
 
-    DockerPort portOnContainerWithInternalMapping(String container, int portNumber)
+DockerPort portOnContainerWithInternalMapping(String container, int portNumber)
+```
 
 In both cases the port in the Docker compose file must be referenced. Using the latter method no external port needs to be declared, this will be allocated by Docker at runtime and the DockerPort object contains the dynamic port and IP assignment.
 
@@ -106,20 +113,115 @@ Collecting logs
 
 To record the logs from your containers specify a location:
 
-    public class DockerCompositionTest {
-  
-        @ClassRule
-        public DockerComposition composition = new DockerComposition("src/test/resources/docker-compose.yml")
-                                                      .saveLogsTo("build/dockerLogs/dockerCompositionTest");
-  
-        @Test
-        public void testRecordsLogs() throws InterruptedException, IOException {
-           ...
-        }
-  
+```java
+public class DockerCompositionTest {
+
+    @ClassRule
+    public DockerComposition composition = new DockerComposition("src/test/resources/docker-compose.yml")
+                                                  .saveLogsTo("build/dockerLogs/dockerCompositionTest");
+
+    @Test
+    public void testRecordsLogs() throws InterruptedException, IOException {
+       ...
     }
 
+}
+```
+
 This will automatically record logs for all containers in real time to the specified directory. Collection will stop when the containers terminate.
+
+Docker Machine
+--------------
+
+Docker is able to connect to daemon's that either live on the machine where the client is running, or somewhere remote.
+Using the `docker` client, you are able to control which daemon to connect to using the `DOCKER_HOST` environment
+variable.
+
+### Local Machine
+
+The default out-of-the-box behaviour will configure `docker-compose` to connect to a Docker daemon that is running
+*locally*. That is, if you're on Linux, it will use the Docker daemon that exposes its socket. In the case of Mac OS X -
+which doesn't support Docker natively - we have to connect to a technically "remote" (but local) Docker daemon which is
+running in a virtual machine via `docker-machine`.
+
+If you're on Mac OS X, the `docker` cli expects the following environment variables:
+
+ - `DOCKER_HOST`
+ - If the Docker daemon is secured by TLS, `DOCKER_TLS_VERIFY` and `DOCKER_CERT_PATH` need to be set.
+
+Similarly, if you're using a `LocalMachine`, you need to ensure the Run Configuration (in your IDE, command line etc.)
+has those same variables set.
+
+An example of creating a `DockerMachine` that connects to a local docker daemon:
+
+```java
+DockerMachine.localMachine()
+             .build()
+```
+
+### Remote Machine
+
+You may not always want to connect to a Docker daemon that is running on your local computer or a virtual machine
+running on your local computer.
+
+An example of this would be running containers in a clustered manner with Docker Swarm. Since Docker Swarm implements
+the Docker API, setting the right environment variables would allow us to use Docker containers on the swarm.
+
+An example of connecting to a remote Docker daemon that has also been secured by TLS:
+
+```java
+DockerMachine.remoteMachine()
+             .host("tcp://remote-docker-host:2376")
+             .withTLS("/path/to/cert")
+             .build()
+```
+
+### Additional Environment Variables
+
+It may also be useful to pass environment variables to the process that will call `docker-compose`.
+
+You can do so in the following manner:
+
+```java
+DockerMachine.localMachine()
+             .withEnvironmentVariable("SOME_VARIABLE", "SOME_VALUE")
+             .build()
+```
+
+The variable `SOME_VARIABLE` will be available in the process that calls `docker-compose`, and can be used for Variable Interpolation inside the compose file.
+
+### How to use a `DockerMachine`
+
+When creating a `DockerComposition` an additional parameter may be specified. That being the custom `DockerMachine`,
+by default - if no `dockerMachine` parameter is specified - `DockerComposition` will use connect to the local Docker
+daemon, similarly to how the `docker` cli works.
+
+```java
+private final DockerMachine dockerMachine = DockerMachine.localMachine()
+                                                         .withAdditionalEnvironmentVariable("SOME_VARIABLE", "SOME_VALUE")
+                                                         .build();
+
+@Rule
+DockerComposition composition = DockerComposition.of("docker-compose.yaml", dockerMachine)
+                                                 .build();
+```
+
+Composing docker compose files
+------------------------------
+
+`docker-compose` (at least as of version 1.5.0) allows us to specify multiple docker-compose files. On the command line, you
+can do this with this example command:
+
+    docker-compose -f file1.yml -f file2.yml -f file3.yml
+
+Semantics of how this works is explained here: [Docker compose reference](https://docs.docker.com/compose/reference/overview/)
+
+To use this functionality inside docker-compose-rule, supply extra files to your `DockerComposition.of(...)` builder
+
+```java
+DockerComposition composition = DockerComposition.of("file1.yml", "file2.yml")
+   ...
+```
 
 Using a custom version of docker-compose
 ---------------
