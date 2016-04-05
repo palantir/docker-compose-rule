@@ -27,6 +27,7 @@ import static org.mockito.Mockito.when;
 public class MultiServiceHealthCheckShould {
 
     private static final Container CONTAINER = mock(Container.class);
+    private static final Container OTHER_CONTAINER = mock(Container.class);
 
     private final SingleServiceHealthCheck delegate = mock(SingleServiceHealthCheck.class);
     private final MultiServiceHealthCheck healthCheck = MultiServiceHealthCheck.fromSingleServiceHealthCheck(delegate);
@@ -39,4 +40,15 @@ public class MultiServiceHealthCheckShould {
                 healthCheck.areServicesUp(ImmutableList.of(CONTAINER)),
                 is(delegate.isServiceUp(CONTAINER)));
     }
+
+    @Test(expected = IllegalArgumentException.class) public void
+    throw_an_error_when_a_wrapped_health_check_is_passed_more_than_1_argument() {
+        healthCheck.areServicesUp(ImmutableList.of(CONTAINER, OTHER_CONTAINER));
+    }
+
+    @Test(expected = IllegalArgumentException.class) public void
+    throw_an_error_when_a_wrapped_health_check_is_passed_0_arguments() {
+        healthCheck.areServicesUp(ImmutableList.of(CONTAINER, OTHER_CONTAINER));
+    }
+
 }
