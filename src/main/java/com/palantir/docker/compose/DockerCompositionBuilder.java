@@ -17,7 +17,8 @@ package com.palantir.docker.compose;
 
 import com.palantir.docker.compose.connection.Container;
 import com.palantir.docker.compose.connection.ContainerCache;
-import com.palantir.docker.compose.connection.waiting.HealthCheck;
+import com.palantir.docker.compose.connection.waiting.SingleServiceHealthCheck;
+import com.palantir.docker.compose.connection.waiting.MultiServiceHealthCheck;
 import com.palantir.docker.compose.connection.waiting.ServiceWait;
 import com.palantir.docker.compose.execution.DockerCompose;
 import com.palantir.docker.compose.logging.DoNothingLogCollector;
@@ -44,11 +45,11 @@ public class DockerCompositionBuilder {
         this.containers = new ContainerCache(dockerComposeProcess);
     }
 
-    public DockerCompositionBuilder waitingForService(String serviceName, HealthCheck check) {
+    public DockerCompositionBuilder waitingForService(String serviceName, SingleServiceHealthCheck check) {
         return waitingForService(serviceName, check, DEFAULT_TIMEOUT);
     }
 
-    public DockerCompositionBuilder waitingForService(List<String> services, MultiHealthCheck check) {
+    public DockerCompositionBuilder waitingForService(List<String> services, MultiServiceHealthCheck check) {
         List<Container> containersToWaitFor = services.stream()
                 .map(containers::get)
                 .collect(toList());
@@ -56,7 +57,7 @@ public class DockerCompositionBuilder {
         return this;
     }
 
-    public DockerCompositionBuilder waitingForService(String serviceName, HealthCheck check, Duration timeout) {
+    public DockerCompositionBuilder waitingForService(String serviceName, SingleServiceHealthCheck check, Duration timeout) {
         serviceWaits.add(new ServiceWait(containers.get(serviceName), check, timeout));
         return this;
     }

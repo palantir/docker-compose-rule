@@ -26,7 +26,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class PortsHealthCheckShould {
-    private final HealthCheck healthCheck = HealthChecks.toHaveAllPortsOpen();
+    private final SingleServiceHealthCheck healthCheck = HealthChecks.toHaveAllPortsOpen();
     private final Container container = mock(Container.class);
 
     @Test

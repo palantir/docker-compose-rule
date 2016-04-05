@@ -22,11 +22,11 @@ import com.palantir.docker.compose.connection.DockerPort;
 import java.util.function.Function;
 
 public class HealthChecks {
-    public static HealthCheck toRespondOverHttp(int internalPort, Function<DockerPort, String> urlFunction) {
+    public static SingleServiceHealthCheck toRespondOverHttp(int internalPort, Function<DockerPort, String> urlFunction) {
         return container -> container.portIsListeningOnHttp(internalPort, urlFunction);
     }
 
-    public static HealthCheck toHaveAllPortsOpen() {
+    public static SingleServiceHealthCheck toHaveAllPortsOpen() {
         return Container::areAllPortsOpen;
     }
 }

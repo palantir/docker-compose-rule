@@ -14,20 +14,18 @@
  * limitations under the License.
  */
 
-package com.palantir.docker.compose;
+package com.palantir.docker.compose.connection.waiting;
 
 import com.google.common.base.Preconditions;
 import com.palantir.docker.compose.connection.Container;
-import com.palantir.docker.compose.connection.waiting.HealthCheck;
-import com.palantir.docker.compose.connection.waiting.SuccessOrFailure;
 
 import java.util.List;
 
 import static com.google.common.collect.Iterables.getOnlyElement;
 
 @FunctionalInterface
-public interface MultiHealthCheck {
-    static MultiHealthCheck fromHealthCheck(HealthCheck healthCheck) {
+public interface MultiServiceHealthCheck {
+    static MultiServiceHealthCheck fromSingleServiceHealthCheck(SingleServiceHealthCheck healthCheck) {
         return containers -> {
             Preconditions.checkArgument(containers.size() == 1, "Trying to run a single container health check on containers " + containers);
             return healthCheck.isServiceUp(getOnlyElement(containers));

@@ -18,7 +18,6 @@ package com.palantir.docker.compose.connection.waiting;
 import com.google.common.collect.ImmutableList;
 import com.jayway.awaitility.Awaitility;
 import com.jayway.awaitility.core.ConditionTimeoutException;
-import com.palantir.docker.compose.MultiHealthCheck;
 import com.palantir.docker.compose.connection.Container;
 import org.joda.time.Duration;
 import org.slf4j.Logger;
@@ -35,16 +34,16 @@ import static java.util.stream.Collectors.joining;
 public class ServiceWait {
     private static final Logger log = LoggerFactory.getLogger(ServiceWait.class);
     private final List<Container> containers;
-    private final MultiHealthCheck healthCheck;
+    private final MultiServiceHealthCheck healthCheck;
     private final Duration timeout;
 
-    public ServiceWait(Container service, HealthCheck healthCheck, Duration timeout) {
+    public ServiceWait(Container service, SingleServiceHealthCheck healthCheck, Duration timeout) {
         this.containers = ImmutableList.of(service);
-        this.healthCheck = MultiHealthCheck.fromHealthCheck(healthCheck);
+        this.healthCheck = MultiServiceHealthCheck.fromSingleServiceHealthCheck(healthCheck);
         this.timeout = timeout;
     }
 
-    public ServiceWait(List<Container> containers, MultiHealthCheck healthCheck, Duration timeout) {
+    public ServiceWait(List<Container> containers, MultiServiceHealthCheck healthCheck, Duration timeout) {
         this.containers = containers;
         this.healthCheck = healthCheck;
         this.timeout = timeout;
