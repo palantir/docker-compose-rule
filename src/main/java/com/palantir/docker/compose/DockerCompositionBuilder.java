@@ -17,9 +17,9 @@ package com.palantir.docker.compose;
 
 import com.palantir.docker.compose.connection.Container;
 import com.palantir.docker.compose.connection.ContainerCache;
-import com.palantir.docker.compose.connection.waiting.SingleServiceHealthCheck;
 import com.palantir.docker.compose.connection.waiting.MultiServiceHealthCheck;
 import com.palantir.docker.compose.connection.waiting.ServiceWait;
+import com.palantir.docker.compose.connection.waiting.SingleServiceHealthCheck;
 import com.palantir.docker.compose.execution.DockerCompose;
 import com.palantir.docker.compose.logging.DoNothingLogCollector;
 import com.palantir.docker.compose.logging.FileLogCollector;

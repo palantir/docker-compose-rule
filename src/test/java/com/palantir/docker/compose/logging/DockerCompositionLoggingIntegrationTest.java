@@ -26,10 +26,8 @@ import java.io.IOException;
 
 import static com.palantir.docker.compose.connection.waiting.HealthChecks.toHaveAllPortsOpen;
 import static com.palantir.docker.compose.matchers.IOMatchers.file;
-import static com.palantir.docker.compose.matchers.IOMatchers.fileWithName;
 import static com.palantir.docker.compose.matchers.IOMatchers.matchingPattern;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.arrayContainingInAnyOrder;
 import static org.hamcrest.core.Is.is;
 
 public class DockerCompositionLoggingIntegrationTest {
@@ -56,7 +54,6 @@ public class DockerCompositionLoggingIntegrationTest {
         } finally {
             loggingComposition.after();
         }
-        assertThat(logFolder.getRoot().listFiles(), arrayContainingInAnyOrder(fileWithName("db.log"), fileWithName("db2.log")));
         assertThat(new File(logFolder.getRoot(), "db.log"), is(file(matchingPattern(".*Attaching to \\w+_db_1.*"))));
         assertThat(new File(logFolder.getRoot(), "db2.log"), is(file(matchingPattern(".*Attaching to \\w+_db2_1.*"))));
     }
