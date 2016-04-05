@@ -97,7 +97,7 @@ public class DockerCompositionTest {
         MultiServiceHealthCheck healthCheck = mock(MultiServiceHealthCheck.class);
         when(healthCheck.areServicesUp(containers)).thenReturn(SuccessOrFailure.success());
 
-        dockerComposition.waitingForService(ImmutableList.of("db1", "db2"), healthCheck).build().before();
+        dockerComposition.waitingForServices(ImmutableList.of("db1", "db2"), healthCheck).build().before();
 
         verify(healthCheck).areServicesUp(containers);
     }

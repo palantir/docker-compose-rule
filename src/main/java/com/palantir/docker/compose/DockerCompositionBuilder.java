@@ -49,11 +49,15 @@ public class DockerCompositionBuilder {
         return waitingForService(serviceName, check, DEFAULT_TIMEOUT);
     }
 
-    public DockerCompositionBuilder waitingForService(List<String> services, MultiServiceHealthCheck check) {
+    public DockerCompositionBuilder waitingForServices(List<String> services, MultiServiceHealthCheck check) {
+        return waitingForServices(services, check, DEFAULT_TIMEOUT);
+    }
+    
+    public DockerCompositionBuilder waitingForServices(List<String> services, MultiServiceHealthCheck check, Duration timeout) {
         List<Container> containersToWaitFor = services.stream()
                 .map(containers::get)
                 .collect(toList());
-        serviceWaits.add(new ServiceWait(containersToWaitFor, check, DEFAULT_TIMEOUT));
+        serviceWaits.add(new ServiceWait(containersToWaitFor, check, timeout));
         return this;
     }
 
