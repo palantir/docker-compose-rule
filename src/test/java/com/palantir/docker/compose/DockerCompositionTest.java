@@ -15,6 +15,7 @@
  */
 package com.palantir.docker.compose;
 
+import com.google.common.collect.ImmutableList;
 import com.palantir.docker.compose.configuration.MockDockerEnvironment;
 import com.palantir.docker.compose.connection.Container;
 import com.palantir.docker.compose.connection.ContainerNames;
@@ -31,6 +32,7 @@ import org.junit.rules.TemporaryFolder;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -83,6 +85,20 @@ public class DockerCompositionTest {
         HealthCheck checkCalledOnce = (container) -> SuccessOrFailure.fromBoolean(timesCheckCalled.incrementAndGet() == 1, "not called once yet");
         dockerComposition.waitingForService("db", checkCalledOnce).build().before();
         assertThat(timesCheckCalled.get(), is(1));
+    }
+
+    @Test
+    public void docker_compose_wait_for_service_waits_multiple_services() throws IOException, InterruptedException {
+        Container db1 = withComposeExecutableReturningContainerFor("db1");
+        Container db2 = withComposeExecutableReturningContainerFor("db2");
+        List<Container> containers = ImmutableList.of(db1, db2);
+
+        MultiHealthCheck healthCheck = mock(MultiHealthCheck.class);
+        when(healthCheck.areServicesUp(containers)).thenReturn(SuccessOrFailure.success());
+
+        dockerComposition.waitingForService(ImmutableList.of("db1", "db2"), healthCheck).build().before();
+
+        verify(healthCheck).areServicesUp(containers);
     }
 
     @Test
@@ -169,8 +185,10 @@ public class DockerCompositionTest {
         assertThat(new File(logLocation, "db.log"), is(fileContainingString("db log")));
     }
 
-    public void withComposeExecutableReturningContainerFor(String containerName) {
-        when(dockerCompose.container(containerName)).thenReturn(new Container(containerName, dockerCompose));
+    public Container withComposeExecutableReturningContainerFor(String containerName) {
+        final Container container = new Container(containerName, dockerCompose);
+        when(dockerCompose.container(containerName)).thenReturn(container);
+        return container;
     }
 
 }

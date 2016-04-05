@@ -15,6 +15,7 @@
  */
 package com.palantir.docker.compose;
 
+import com.palantir.docker.compose.connection.Container;
 import com.palantir.docker.compose.connection.ContainerCache;
 import com.palantir.docker.compose.connection.waiting.HealthCheck;
 import com.palantir.docker.compose.connection.waiting.ServiceWait;
@@ -27,6 +28,7 @@ import org.joda.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 
+import static java.util.stream.Collectors.toList;
 import static org.joda.time.Duration.standardMinutes;
 
 public class DockerCompositionBuilder {
@@ -44,6 +46,14 @@ public class DockerCompositionBuilder {
 
     public DockerCompositionBuilder waitingForService(String serviceName, HealthCheck check) {
         return waitingForService(serviceName, check, DEFAULT_TIMEOUT);
+    }
+
+    public DockerCompositionBuilder waitingForService(List<String> services, MultiHealthCheck check) {
+        List<Container> containersToWaitFor = services.stream()
+                .map(containers::get)
+                .collect(toList());
+        serviceWaits.add(new ServiceWait(containersToWaitFor, check, DEFAULT_TIMEOUT));
+        return this;
     }
 
     public DockerCompositionBuilder waitingForService(String serviceName, HealthCheck check, Duration timeout) {
