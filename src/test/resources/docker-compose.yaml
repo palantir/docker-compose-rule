@@ -15,4 +15,21 @@ db2:
     - "POSTGRES_PASSWORD=palantir"
   ports:
     - "5432"
-    
+
+db3:
+  image: kiasaki/alpine-postgres
+  environment:
+    - "POSTGRES_DB=source"
+    - "POSTGRES_USER=palantir"
+    - "POSTGRES_PASSWORD=palantir"
+  ports:
+    - "5432"
+
+db4:
+  image: kiasaki/alpine-postgres
+  environment:
+    - "POSTGRES_DB=source"
+    - "POSTGRES_USER=palantir"
+    - "POSTGRES_PASSWORD=palantir"
+  ports:
+    - "5432"

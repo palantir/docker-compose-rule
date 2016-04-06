@@ -16,9 +16,21 @@
 
 package com.palantir.docker.compose.connection.waiting;
 
+import com.google.common.base.Preconditions;
 import com.palantir.docker.compose.connection.Container;
 
+import java.util.List;
+
+import static com.google.common.collect.Iterables.getOnlyElement;
+
 @FunctionalInterface
-public interface HealthCheck {
-    SuccessOrFailure isServiceUp(Container container);
+public interface MultiServiceHealthCheck {
+    static MultiServiceHealthCheck fromSingleServiceHealthCheck(SingleServiceHealthCheck healthCheck) {
+        return containers -> {
+            Preconditions.checkArgument(containers.size() == 1, "Trying to run a single container health check on containers " + containers);
+            return healthCheck.isServiceUp(getOnlyElement(containers));
+        };
+    }
+
+    SuccessOrFailure areServicesUp(List<Container> containers);
 }

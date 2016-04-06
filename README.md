@@ -78,6 +78,7 @@ public class DockerCompositionTest {
         .waitingForService("db", HealthChecks.toHaveAllPortsOpen())
         .waitingForService("web", HealthChecks.toRespondOverHttp(8080, (port) -> "https://" + port.getIp() + ":" + port.getExternalPort()))
         .waitingForService("other", (container) -> customServiceCheck(container), Duration.standardMinutes(2))
+        .waitingForServices(ImmutableList.of("node1", "node2"), toBeHealthyAsACluster())
         .build();
 
     @Test
@@ -87,7 +88,10 @@ public class DockerCompositionTest {
 }
 ```
 
-The entrypoint method `waitingForService(String container, HealthCheck check[, Duration timeout])` will make sure the healthcheck passes for that container before the tests start. We provide 2 default healthChecks in the HealthChecks class:
+The entrypoint method `waitingForService(String container, SingleServiceHealthCheck check[, Duration timeout])` will make sure the healthcheck passes for that container before the tests start. 
+The entrypoint method `waitingForServices(List<String> containers, MultiServiceHealthCheck check[, Duration timeout])` will make sure the healthcheck passes for the cluster of containers before the tests start. 
+
+We provide 2 default healthChecks in the HealthChecks class:
 
 1. `toHaveAllPortsOpen` - this waits till all ports can be connected to that are exposed on the container
 2. `toRespondOverHttp` - which waits till the specified URL responds to a HTTP request.

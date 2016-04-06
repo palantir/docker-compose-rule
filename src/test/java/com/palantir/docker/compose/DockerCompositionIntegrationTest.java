@@ -15,44 +15,87 @@
  */
 package com.palantir.docker.compose;
 
+import com.google.common.collect.ImmutableList;
+import com.palantir.docker.compose.connection.Container;
+import com.palantir.docker.compose.connection.waiting.MultiServiceHealthCheck;
+import com.palantir.docker.compose.connection.waiting.SuccessOrFailure;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
 
 import java.io.IOException;
+import java.util.List;
+import java.util.function.Consumer;
 
+import static com.google.common.base.Throwables.propagate;
 import static com.palantir.docker.compose.connection.waiting.HealthChecks.toHaveAllPortsOpen;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 
 public class DockerCompositionIntegrationTest {
 
+    private static final List<String> CONTAINERS = ImmutableList.of("db", "db2", "db3", "db4");
+
     @Rule
     public DockerComposition composition = DockerComposition.of("src/test/resources/docker-compose.yaml")
                                                             .waitingForService("db", toHaveAllPortsOpen())
                                                             .waitingForService("db2", toHaveAllPortsOpen())
+                                                            .waitingForServices(ImmutableList.of("db3", "db4"), toAllHaveAllPortsOpen())
                                                             .build();
+
+    private MultiServiceHealthCheck toAllHaveAllPortsOpen() {
+        return containers -> {
+            boolean healthy = containers.stream()
+                    .map(Container::areAllPortsOpen)
+                    .allMatch(SuccessOrFailure::succeeded);
+
+            return SuccessOrFailure.fromBoolean(healthy, "");
+        };
+    }
 
     @Rule
     public ExpectedException exception = ExpectedException.none();
     @Rule
     public TemporaryFolder logFolder = new TemporaryFolder();
 
+    private void forEachContainer(Consumer<String> consumer) {
+        CONTAINERS.forEach(consumer);
+    }
+
     @Test
     public void should_run_docker_compose_up_using_the_specified_docker_compose_file_to_bring_postgres_up() throws InterruptedException, IOException {
-        assertThat(composition.portOnContainerWithExternalMapping("db", 5433).isListeningNow(), is(true));
+        forEachContainer((container) -> {
+            try {
+                assertThat(composition.portOnContainerWithExternalMapping("db", 5433).isListeningNow(), is(true));
+            } catch (IOException | InterruptedException e) {
+                propagate(e);
+            }
+        });
     }
 
     @Test
     public void after_test_is_executed_the_launched_postgres_container_is_no_longer_listening() throws IOException, InterruptedException {
         composition.after();
-        assertThat(composition.portOnContainerWithExternalMapping("db", 5433).isListeningNow(), is(false));
+
+        forEachContainer(container -> {
+            try {
+                assertThat(composition.portOnContainerWithExternalMapping("db", 5433).isListeningNow(), is(false));
+            } catch (IOException | InterruptedException e) {
+                propagate(e);
+            }
+        });
     }
 
     @Test
     public void can_access_external_port_for_internal_port_of_machine() throws IOException, InterruptedException {
-        assertThat(composition.portOnContainerWithInternalMapping("db", 5432).isListeningNow(), is(true));
+        forEachContainer(container -> {
+            try {
+                assertThat(composition.portOnContainerWithInternalMapping("db", 5432).isListeningNow(), is(true));
+            } catch (IOException | InterruptedException e) {
+                propagate(e);
+            }
+        });
     }
 
 }

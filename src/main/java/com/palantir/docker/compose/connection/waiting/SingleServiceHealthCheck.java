@@ -17,16 +17,8 @@
 package com.palantir.docker.compose.connection.waiting;
 
 import com.palantir.docker.compose.connection.Container;
-import com.palantir.docker.compose.connection.DockerPort;
 
-import java.util.function.Function;
-
-public class HealthChecks {
-    public static SingleServiceHealthCheck toRespondOverHttp(int internalPort, Function<DockerPort, String> urlFunction) {
-        return container -> container.portIsListeningOnHttp(internalPort, urlFunction);
-    }
-
-    public static SingleServiceHealthCheck toHaveAllPortsOpen() {
-        return Container::areAllPortsOpen;
-    }
+@FunctionalInterface
+public interface SingleServiceHealthCheck {
+    SuccessOrFailure isServiceUp(Container container);
 }

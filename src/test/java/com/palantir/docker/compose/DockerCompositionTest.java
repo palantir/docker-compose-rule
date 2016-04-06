@@ -15,11 +15,13 @@
  */
 package com.palantir.docker.compose;
 
+import com.google.common.collect.ImmutableList;
 import com.palantir.docker.compose.configuration.MockDockerEnvironment;
 import com.palantir.docker.compose.connection.Container;
 import com.palantir.docker.compose.connection.ContainerNames;
 import com.palantir.docker.compose.connection.DockerPort;
-import com.palantir.docker.compose.connection.waiting.HealthCheck;
+import com.palantir.docker.compose.connection.waiting.MultiServiceHealthCheck;
+import com.palantir.docker.compose.connection.waiting.SingleServiceHealthCheck;
 import com.palantir.docker.compose.connection.waiting.SuccessOrFailure;
 import com.palantir.docker.compose.execution.DockerCompose;
 import org.apache.commons.io.IOUtils;
@@ -31,6 +33,7 @@ import org.junit.rules.TemporaryFolder;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -80,16 +83,30 @@ public class DockerCompositionTest {
     public void docker_compose_wait_for_service_passes_when_check_is_true() throws IOException, InterruptedException {
         AtomicInteger timesCheckCalled = new AtomicInteger(0);
         withComposeExecutableReturningContainerFor("db");
-        HealthCheck checkCalledOnce = (container) -> SuccessOrFailure.fromBoolean(timesCheckCalled.incrementAndGet() == 1, "not called once yet");
+        SingleServiceHealthCheck checkCalledOnce = (container) -> SuccessOrFailure.fromBoolean(timesCheckCalled.incrementAndGet() == 1, "not called once yet");
         dockerComposition.waitingForService("db", checkCalledOnce).build().before();
         assertThat(timesCheckCalled.get(), is(1));
+    }
+
+    @Test
+    public void docker_compose_wait_for_service_waits_multiple_services() throws IOException, InterruptedException {
+        Container db1 = withComposeExecutableReturningContainerFor("db1");
+        Container db2 = withComposeExecutableReturningContainerFor("db2");
+        List<Container> containers = ImmutableList.of(db1, db2);
+
+        MultiServiceHealthCheck healthCheck = mock(MultiServiceHealthCheck.class);
+        when(healthCheck.areServicesUp(containers)).thenReturn(SuccessOrFailure.success());
+
+        dockerComposition.waitingForServices(ImmutableList.of("db1", "db2"), healthCheck).build().before();
+
+        verify(healthCheck).areServicesUp(containers);
     }
 
     @Test
     public void docker_compose_wait_for_service_passes_when_check_is_true_after_being_false() throws IOException, InterruptedException {
         AtomicInteger timesCheckCalled = new AtomicInteger(0);
         withComposeExecutableReturningContainerFor("db");
-        HealthCheck checkCalledTwice = (container) -> SuccessOrFailure.fromBoolean(timesCheckCalled.incrementAndGet() == 2, "not called twice yet");
+        SingleServiceHealthCheck checkCalledTwice = (container) -> SuccessOrFailure.fromBoolean(timesCheckCalled.incrementAndGet() == 2, "not called twice yet");
         dockerComposition.waitingForService("db", checkCalledTwice).build().before();
         assertThat(timesCheckCalled.get(), is(2));
     }
@@ -169,8 +186,10 @@ public class DockerCompositionTest {
         assertThat(new File(logLocation, "db.log"), is(fileContainingString("db log")));
     }
 
-    public void withComposeExecutableReturningContainerFor(String containerName) {
-        when(dockerCompose.container(containerName)).thenReturn(new Container(containerName, dockerCompose));
+    public Container withComposeExecutableReturningContainerFor(String containerName) {
+        final Container container = new Container(containerName, dockerCompose);
+        when(dockerCompose.container(containerName)).thenReturn(container);
+        return container;
     }
 
 }
