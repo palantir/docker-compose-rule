@@ -23,6 +23,7 @@ import com.palantir.docker.compose.connection.DockerPort;
 import com.palantir.docker.compose.connection.waiting.MultiServiceHealthCheck;
 import com.palantir.docker.compose.connection.waiting.SingleServiceHealthCheck;
 import com.palantir.docker.compose.connection.waiting.SuccessOrFailure;
+import com.palantir.docker.compose.execution.DefaultDockerCompose;
 import com.palantir.docker.compose.execution.DockerCompose;
 import org.apache.commons.io.IOUtils;
 import org.junit.Rule;
@@ -61,7 +62,7 @@ public class DockerCompositionTest {
     @Rule
     public TemporaryFolder logFolder = new TemporaryFolder();
 
-    private final DockerCompose dockerCompose = mock(DockerCompose.class);
+    private final DockerCompose dockerCompose = mock(DefaultDockerCompose.class);
     private final MockDockerEnvironment env = new MockDockerEnvironment(dockerCompose);
     private final DockerCompositionBuilder dockerComposition = DockerComposition.of(dockerCompose);
 

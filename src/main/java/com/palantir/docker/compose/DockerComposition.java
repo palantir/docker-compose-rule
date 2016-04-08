@@ -20,6 +20,7 @@ import com.palantir.docker.compose.connection.ContainerCache;
 import com.palantir.docker.compose.connection.DockerMachine;
 import com.palantir.docker.compose.connection.DockerPort;
 import com.palantir.docker.compose.connection.waiting.ServiceWait;
+import com.palantir.docker.compose.execution.DefaultDockerCompose;
 import com.palantir.docker.compose.execution.DockerCompose;
 import com.palantir.docker.compose.logging.LogCollector;
 import org.junit.rules.ExternalResource;
@@ -101,7 +102,7 @@ public class DockerComposition extends ExternalResource {
     }
 
     public static DockerCompositionBuilder of(DockerComposeFiles dockerComposeFiles, DockerMachine dockerMachine) {
-        return of(new DockerCompose(dockerComposeFiles, dockerMachine));
+        return of(new DefaultDockerCompose(dockerComposeFiles, dockerMachine));
     }
 
     public static DockerCompositionBuilder of(DockerCompose executable) {

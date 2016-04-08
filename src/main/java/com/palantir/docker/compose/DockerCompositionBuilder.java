@@ -52,7 +52,7 @@ public class DockerCompositionBuilder {
     public DockerCompositionBuilder waitingForServices(List<String> services, MultiServiceHealthCheck check) {
         return waitingForServices(services, check, DEFAULT_TIMEOUT);
     }
-    
+
     public DockerCompositionBuilder waitingForServices(List<String> services, MultiServiceHealthCheck check, Duration timeout) {
         List<Container> containersToWaitFor = services.stream()
                 .map(containers::get)

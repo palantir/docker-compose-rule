@@ -15,6 +15,7 @@
  */
 package com.palantir.docker.compose.connection;
 
+import com.palantir.docker.compose.execution.DefaultDockerCompose;
 import com.palantir.docker.compose.execution.DockerCompose;
 import org.junit.Before;
 import org.junit.Test;
@@ -29,7 +30,7 @@ public class ContainerCacheTest {
 
     private static final String CONTAINER_NAME = "container";
 
-    private final DockerCompose dockerCompose = mock(DockerCompose.class);
+    private final DockerCompose dockerCompose = mock(DefaultDockerCompose.class);
     private final ContainerCache containers = new ContainerCache(dockerCompose);
 
     @Before

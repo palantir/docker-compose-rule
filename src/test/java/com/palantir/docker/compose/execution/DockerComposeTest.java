@@ -43,7 +43,7 @@ public class DockerComposeTest {
 
     private final DockerComposeExecutable executor = mock(DockerComposeExecutable.class);
     private final DockerMachine dockerMachine = mock(DockerMachine.class);
-    private final DockerCompose compose = new DockerCompose(executor, dockerMachine);
+    private final DockerCompose compose = new DefaultDockerCompose(executor, dockerMachine);
 
     private final Process executedProcess = mock(Process.class);
 

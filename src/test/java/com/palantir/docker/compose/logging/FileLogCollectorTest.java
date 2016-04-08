@@ -16,6 +16,7 @@
 package com.palantir.docker.compose.logging;
 
 import com.palantir.docker.compose.connection.ContainerNames;
+import com.palantir.docker.compose.execution.DefaultDockerCompose;
 import com.palantir.docker.compose.execution.DockerCompose;
 import org.apache.commons.io.IOUtils;
 import org.junit.Before;
@@ -53,7 +54,7 @@ public class FileLogCollectorTest {
     @Rule
     public ExpectedException exception = ExpectedException.none();
 
-    private final DockerCompose compose = mock(DockerCompose.class);
+    private final DockerCompose compose = mock(DefaultDockerCompose.class);
     private File logDirectory;
     private LogCollector logCollector;
 
