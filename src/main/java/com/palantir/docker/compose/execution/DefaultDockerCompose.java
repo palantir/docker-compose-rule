@@ -118,10 +118,10 @@ public class DefaultDockerCompose implements DockerCompose {
 
     private ErrorHandler throwingOnError() {
         return (exitCode, output, commands) -> {
-            log.warn(constructNonZeroExitErrorMessage(exitCode, commands));
-            log.warn("The output was:");
-            log.warn(output);
-            throw new DockerComposeExecutionException(constructNonZeroExitErrorMessage(exitCode, commands));
+            String message = constructNonZeroExitErrorMessage(exitCode, commands) + "\n"
+                + "The output was:\n"
+                + output;
+            throw new DockerComposeExecutionException(message);
         };
     }
 
