@@ -121,7 +121,7 @@ public class DefaultDockerCompose implements DockerCompose {
             log.warn(constructNonZeroExitErrorMessage(exitCode, commands));
             log.warn("The output was:");
             log.warn(output);
-            throw new IllegalStateException(constructNonZeroExitErrorMessage(exitCode, commands));
+            throw new DockerComposeExecutionException(constructNonZeroExitErrorMessage(exitCode, commands));
         };
     }
 
