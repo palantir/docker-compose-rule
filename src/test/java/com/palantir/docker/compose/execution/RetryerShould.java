@@ -16,7 +16,7 @@ import static org.mockito.Mockito.when;
 
 public class RetryerShould {
     private final Retryer.RetryableDockerComposeOperation<String> operation = mock(Retryer.RetryableDockerComposeOperation.class);
-    private final Retryer retryer = new Retryer(2);
+    private final Retryer retryer = new Retryer(1);
 
     @Test
     public void not_retry_if_the_ps_command_was_successful_and_return_the_correct_container_names() throws IOException, InterruptedException {

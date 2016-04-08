@@ -11,8 +11,8 @@ public class RetryingDockerCompose implements DockerCompose {
     private final Retryer retryer;
     private final DockerCompose dockerCompose;
 
-    public RetryingDockerCompose(int attempts, DockerCompose dockerCompose) {
-        this(new Retryer(attempts), dockerCompose);
+    public RetryingDockerCompose(int retryAttempts, DockerCompose dockerCompose) {
+        this(new Retryer(retryAttempts), dockerCompose);
     }
 
     public RetryingDockerCompose(Retryer retryer, DockerCompose dockerCompose) {

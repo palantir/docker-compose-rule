@@ -12,15 +12,15 @@ public class Retryer {
         T call() throws IOException, InterruptedException;
     }
 
-    private final int attempts;
+    private final int retryAttempts;
 
-    public Retryer(int attempts) {
-        this.attempts = attempts;
+    public Retryer(int retryAttempts) {
+        this.retryAttempts = retryAttempts;
     }
 
     public <T> T runWithRetries(RetryableDockerComposeOperation<T> operation) throws IOException, InterruptedException {
         DockerComposeExecutionException lastExecutionException = null;
-        for (int i = 0; i < attempts; i++) {
+        for (int i = 0; i <= retryAttempts; i++) {
             try {
                 return operation.call();
             } catch (DockerComposeExecutionException e) {
