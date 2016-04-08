@@ -51,6 +51,7 @@ public class RetryingDockerComposeShould {
     public void calls_up_on_the_underlying_docker_compose() throws IOException, InterruptedException {
         retryingDockerCompose.up();
 
+        verifyRetryerWasUsed();
         verify(dockerCompose).up();
         verifyNoMoreInteractions(dockerCompose);
     }
@@ -60,7 +61,13 @@ public class RetryingDockerComposeShould {
         when(dockerCompose.ps()).thenReturn(someContainerNames);
 
         assertThat(retryingDockerCompose.ps(), is(someContainerNames));
+
+        verifyRetryerWasUsed();
         verify(dockerCompose).ps();
         verifyNoMoreInteractions(dockerCompose);
+    }
+
+    private void verifyRetryerWasUsed() throws IOException, InterruptedException {
+        verify(retryer).runWithRetries(any(Retryer.RetryableDockerComposeOperation.class));
     }
 }
