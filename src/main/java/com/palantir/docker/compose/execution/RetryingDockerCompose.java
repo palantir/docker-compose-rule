@@ -3,20 +3,20 @@ package com.palantir.docker.compose.execution;
 import com.palantir.docker.compose.connection.Container;
 import com.palantir.docker.compose.connection.ContainerNames;
 import com.palantir.docker.compose.connection.Ports;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.OutputStream;
 
 public class RetryingDockerCompose implements DockerCompose {
-    private static final Logger log = LoggerFactory.getLogger(RetryingDockerCompose.class);
-
-    private final int attempts;
+    private final Retryer retryer;
     private final DockerCompose dockerCompose;
 
     public RetryingDockerCompose(int attempts, DockerCompose dockerCompose) {
-        this.attempts = attempts;
+        this(new Retryer(attempts), dockerCompose);
+    }
+
+    public RetryingDockerCompose(Retryer retryer, DockerCompose dockerCompose) {
+        this.retryer = retryer;
         this.dockerCompose = dockerCompose;
     }
 
@@ -27,18 +27,10 @@ public class RetryingDockerCompose implements DockerCompose {
 
     @Override
     public void up() throws IOException, InterruptedException {
-        DockerComposeExecutionException lastExecutionException = null;
-        for (int i = 0; i < attempts; i++) {
-            try {
-                dockerCompose.up();
-                return;
-            } catch (DockerComposeExecutionException e) {
-                lastExecutionException = e;
-                log.warn("Caught exception: " + e.getMessage() + ". Retrying.");
-            }
-        }
-
-        throw lastExecutionException;
+        retryer.<Void>runWithRetries(() -> {
+            dockerCompose.up();
+            return null;
+        });
     }
 
     @Override
@@ -58,17 +50,7 @@ public class RetryingDockerCompose implements DockerCompose {
 
     @Override
     public ContainerNames ps() throws IOException, InterruptedException {
-        DockerComposeExecutionException lastExecutionException = null;
-        for (int i = 0; i < attempts; i++) {
-            try {
-                return dockerCompose.ps();
-            } catch (DockerComposeExecutionException e) {
-                lastExecutionException = e;
-                log.warn("Caught exception: " + e.getMessage() + ". Retrying.");
-            }
-        }
-
-        throw lastExecutionException;
+        return retryer.runWithRetries(dockerCompose::ps);
     }
 
     @Override
