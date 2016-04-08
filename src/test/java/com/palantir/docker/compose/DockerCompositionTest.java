@@ -23,7 +23,6 @@ import com.palantir.docker.compose.connection.DockerPort;
 import com.palantir.docker.compose.connection.waiting.MultiServiceHealthCheck;
 import com.palantir.docker.compose.connection.waiting.SingleServiceHealthCheck;
 import com.palantir.docker.compose.connection.waiting.SuccessOrFailure;
-import com.palantir.docker.compose.execution.DefaultDockerCompose;
 import com.palantir.docker.compose.execution.DockerCompose;
 import org.apache.commons.io.IOUtils;
 import org.junit.Rule;

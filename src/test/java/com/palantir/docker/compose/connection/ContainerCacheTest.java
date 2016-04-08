@@ -15,7 +15,6 @@
  */
 package com.palantir.docker.compose.connection;
 
-import com.palantir.docker.compose.execution.DefaultDockerCompose;
 import com.palantir.docker.compose.execution.DockerCompose;
 import org.junit.Before;
 import org.junit.Test;
