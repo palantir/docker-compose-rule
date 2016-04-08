@@ -41,7 +41,7 @@ public class ContainerTest {
     @Rule
     public ExpectedException exception = ExpectedException.none();
 
-    private final DockerCompose dockerComposeProcess = mock(DefaultDockerCompose.class);
+    private final DockerCompose dockerComposeProcess = mock(DockerCompose.class);
     private final MockDockerEnvironment env = new MockDockerEnvironment(dockerComposeProcess);
     private final Container container = new Container("service", dockerComposeProcess);
 

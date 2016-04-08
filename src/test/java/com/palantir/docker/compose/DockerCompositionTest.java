@@ -62,7 +62,7 @@ public class DockerCompositionTest {
     @Rule
     public TemporaryFolder logFolder = new TemporaryFolder();
 
-    private final DockerCompose dockerCompose = mock(DefaultDockerCompose.class);
+    private final DockerCompose dockerCompose = mock(DockerCompose.class);
     private final MockDockerEnvironment env = new MockDockerEnvironment(dockerCompose);
     private final DockerCompositionBuilder dockerComposition = DockerComposition.of(dockerCompose);
 

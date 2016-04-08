@@ -30,7 +30,7 @@ public class ContainerCacheTest {
 
     private static final String CONTAINER_NAME = "container";
 
-    private final DockerCompose dockerCompose = mock(DefaultDockerCompose.class);
+    private final DockerCompose dockerCompose = mock(DockerCompose.class);
     private final ContainerCache containers = new ContainerCache(dockerCompose);
 
     @Before
