@@ -34,7 +34,7 @@ public class RetryingDockerCompose implements DockerCompose {
                 return;
             } catch (DockerComposeExecutionException e) {
                 lastExecutionException = e;
-                log.warn("Caught exception: " + e.getMessage() + ". Retrying operation.");
+                log.warn("Caught exception: " + e.getMessage() + ". Retrying.");
             }
         }
 
@@ -58,7 +58,17 @@ public class RetryingDockerCompose implements DockerCompose {
 
     @Override
     public ContainerNames ps() throws IOException, InterruptedException {
-        return dockerCompose.ps();
+        DockerComposeExecutionException lastExecutionException = null;
+        for (int i = 0; i < attempts; i++) {
+            try {
+                return dockerCompose.ps();
+            } catch (DockerComposeExecutionException e) {
+                lastExecutionException = e;
+                log.warn("Caught exception: " + e.getMessage() + ". Retrying.");
+            }
+        }
+
+        throw lastExecutionException;
     }
 
     @Override
