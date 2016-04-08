@@ -21,6 +21,7 @@ import com.palantir.docker.compose.connection.waiting.MultiServiceHealthCheck;
 import com.palantir.docker.compose.connection.waiting.ServiceWait;
 import com.palantir.docker.compose.connection.waiting.SingleServiceHealthCheck;
 import com.palantir.docker.compose.execution.DockerCompose;
+import com.palantir.docker.compose.execution.RetryingDockerCompose;
 import com.palantir.docker.compose.logging.DoNothingLogCollector;
 import com.palantir.docker.compose.logging.FileLogCollector;
 import com.palantir.docker.compose.logging.LogCollector;
@@ -34,15 +35,17 @@ import static org.joda.time.Duration.standardMinutes;
 
 public class DockerCompositionBuilder {
     private static final Duration DEFAULT_TIMEOUT = standardMinutes(2);
+    public static final int DEFAULT_RETRY_ATTEMPTS = 2;
 
     private final List<ServiceWait> serviceWaits = new ArrayList<>();
-    private final DockerCompose dockerComposeProcess;
+    private final DockerCompose dockerCompose;
     private final ContainerCache containers;
     private LogCollector logCollector = new DoNothingLogCollector();
+    private int numRetryAttempts = DEFAULT_RETRY_ATTEMPTS;
 
-    public DockerCompositionBuilder(DockerCompose dockerComposeProcess) {
-        this.dockerComposeProcess = dockerComposeProcess;
-        this.containers = new ContainerCache(dockerComposeProcess);
+    public DockerCompositionBuilder(DockerCompose dockerCompose) {
+        this.dockerCompose = dockerCompose;
+        this.containers = new ContainerCache(dockerCompose);
     }
 
     public DockerCompositionBuilder waitingForService(String serviceName, SingleServiceHealthCheck check) {
@@ -52,7 +55,7 @@ public class DockerCompositionBuilder {
     public DockerCompositionBuilder waitingForServices(List<String> services, MultiServiceHealthCheck check) {
         return waitingForServices(services, check, DEFAULT_TIMEOUT);
     }
-    
+
     public DockerCompositionBuilder waitingForServices(List<String> services, MultiServiceHealthCheck check, Duration timeout) {
         List<Container> containersToWaitFor = services.stream()
                 .map(containers::get)
@@ -71,7 +74,13 @@ public class DockerCompositionBuilder {
         return this;
     }
 
+    public DockerCompositionBuilder retryAttempts(int retryAttempts) {
+        this.numRetryAttempts = retryAttempts;
+        return this;
+    }
+
     public DockerComposition build() {
-        return new DockerComposition(dockerComposeProcess, serviceWaits, logCollector, containers);
+        DockerCompose retryingDockerCompose = new RetryingDockerCompose(numRetryAttempts, dockerCompose);
+        return new DockerComposition(retryingDockerCompose, serviceWaits, logCollector, containers);
     }
 }

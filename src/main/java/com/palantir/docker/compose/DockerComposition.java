@@ -15,11 +15,13 @@
  */
 package com.palantir.docker.compose;
 
+import com.google.common.collect.ImmutableList;
 import com.palantir.docker.compose.configuration.DockerComposeFiles;
 import com.palantir.docker.compose.connection.ContainerCache;
 import com.palantir.docker.compose.connection.DockerMachine;
 import com.palantir.docker.compose.connection.DockerPort;
 import com.palantir.docker.compose.connection.waiting.ServiceWait;
+import com.palantir.docker.compose.execution.DefaultDockerCompose;
 import com.palantir.docker.compose.execution.DockerCompose;
 import com.palantir.docker.compose.logging.LogCollector;
 import org.junit.rules.ExternalResource;
@@ -29,24 +31,22 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.util.List;
 
-import static com.google.common.collect.ImmutableList.copyOf;
-
 public class DockerComposition extends ExternalResource {
 
     private static final Logger log = LoggerFactory.getLogger(DockerComposition.class);
 
-    private final DockerCompose dockerComposeProcess;
+    private final DockerCompose dockerCompose;
     private final ContainerCache containers;
     private final List<ServiceWait> serviceWaits;
     private final LogCollector logCollector;
 
     public DockerComposition(
-            DockerCompose dockerComposeProcess,
+            DockerCompose dockerCompose,
             List<ServiceWait> serviceWaits,
             LogCollector logCollector,
             ContainerCache containers) {
-        this.dockerComposeProcess = dockerComposeProcess;
-        this.serviceWaits = copyOf(serviceWaits);
+        this.dockerCompose = dockerCompose;
+        this.serviceWaits = ImmutableList.copyOf(serviceWaits);
         this.logCollector = logCollector;
         this.containers = containers;
     }
@@ -54,12 +54,12 @@ public class DockerComposition extends ExternalResource {
     @Override
     public void before() throws IOException, InterruptedException {
         log.debug("Starting docker-compose cluster");
-        dockerComposeProcess.build();
-        dockerComposeProcess.up();
+        dockerCompose.build();
+        dockerCompose.up();
 
         log.debug("Starting log collection");
 
-        logCollector.startCollecting(dockerComposeProcess);
+        logCollector.startCollecting(dockerCompose);
         log.debug("Waiting for services");
         serviceWaits.forEach(ServiceWait::waitTillServiceIsUp);
         log.debug("docker-compose cluster started");
@@ -69,9 +69,9 @@ public class DockerComposition extends ExternalResource {
     public void after() {
         try {
             log.debug("Killing docker-compose cluster");
-            dockerComposeProcess.down();
-            dockerComposeProcess.kill();
-            dockerComposeProcess.rm();
+            dockerCompose.down();
+            dockerCompose.kill();
+            dockerCompose.rm();
             logCollector.stopCollecting();
         } catch (IOException | InterruptedException e) {
             throw new RuntimeException("Error cleaning up docker compose cluster", e);
@@ -101,7 +101,7 @@ public class DockerComposition extends ExternalResource {
     }
 
     public static DockerCompositionBuilder of(DockerComposeFiles dockerComposeFiles, DockerMachine dockerMachine) {
-        return of(new DockerCompose(dockerComposeFiles, dockerMachine));
+        return of(new DefaultDockerCompose(dockerComposeFiles, dockerMachine));
     }
 
     public static DockerCompositionBuilder of(DockerCompose executable) {

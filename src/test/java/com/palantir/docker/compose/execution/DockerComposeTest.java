@@ -43,7 +43,7 @@ public class DockerComposeTest {
 
     private final DockerComposeExecutable executor = mock(DockerComposeExecutable.class);
     private final DockerMachine dockerMachine = mock(DockerMachine.class);
-    private final DockerCompose compose = new DockerCompose(executor, dockerMachine);
+    private final DockerCompose compose = new DefaultDockerCompose(executor, dockerMachine);
 
     private final Process executedProcess = mock(Process.class);
 
@@ -87,7 +87,7 @@ public class DockerComposeTest {
     @Test
     public void when_kill_exits_with_a_non_zero_exit_code_an_exception_is_thrown() throws IOException, InterruptedException {
         when(executedProcess.exitValue()).thenReturn(1);
-        exception.expect(IllegalStateException.class);
+        exception.expect(DockerComposeExecutionException.class);
         exception.expectMessage("'docker-compose kill' returned exit code 1");
         compose.kill();
     }
@@ -104,7 +104,7 @@ public class DockerComposeTest {
         when(executedProcess.exitValue()).thenReturn(1);
         when(executedProcess.getInputStream()).thenReturn(toInputStream(""));
 
-        exception.expect(IllegalStateException.class);
+        exception.expect(DockerComposeExecutionException.class);
 
         compose.down();
     }
