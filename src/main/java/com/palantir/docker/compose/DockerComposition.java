@@ -15,6 +15,7 @@
  */
 package com.palantir.docker.compose;
 
+import com.google.common.collect.ImmutableList;
 import com.palantir.docker.compose.configuration.DockerComposeFiles;
 import com.palantir.docker.compose.connection.ContainerCache;
 import com.palantir.docker.compose.connection.DockerMachine;
@@ -29,8 +30,6 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.List;
-
-import static com.google.common.collect.ImmutableList.copyOf;
 
 public class DockerComposition extends ExternalResource {
 
@@ -47,7 +46,7 @@ public class DockerComposition extends ExternalResource {
             LogCollector logCollector,
             ContainerCache containers) {
         this.dockerCompose = dockerCompose;
-        this.serviceWaits = copyOf(serviceWaits);
+        this.serviceWaits = ImmutableList.copyOf(serviceWaits);
         this.logCollector = logCollector;
         this.containers = containers;
     }
