@@ -17,7 +17,6 @@ package com.palantir.docker.compose.execution;
 
 import com.palantir.docker.compose.utils.MockitoMultiAnswer;
 import org.junit.Test;
-import org.mockito.invocation.InvocationOnMock;
 
 import java.io.IOException;
 
@@ -43,17 +42,10 @@ public class RetryerShould {
 
     @Test
     public void retry_the_operation_if_it_failed_once_and_return_the_result_of_the_next_successful_call() throws IOException, InterruptedException {
-        when(operation.call()).thenAnswer(new MockitoMultiAnswer<String>() {
-            @Override
-            protected String firstCall(InvocationOnMock invocation) throws Exception {
-                throw new DockerComposeExecutionException();
-            }
-
-            @Override
-            protected String secondCall(InvocationOnMock invocation) throws Exception {
-                return "hola";
-            }
-        });
+        when(operation.call()).thenAnswer(MockitoMultiAnswer.<String>of(
+            firstInvocation  -> { throw new DockerComposeExecutionException(); },
+            secondInvocation -> "hola"
+        ));
 
         assertThat(retryer.runWithRetries(operation), is("hola"));
         verify(operation, times(2)).call();
@@ -62,17 +54,11 @@ public class RetryerShould {
     @Test
     public void throw_the_last_exception_when_the_operation_fails_more_times_than_the_number_of_specified_retry_attempts() throws IOException, InterruptedException {
         DockerComposeExecutionException finalException = new DockerComposeExecutionException();
-        when(operation.call()).thenAnswer(new MockitoMultiAnswer() {
-            @Override
-            protected Object firstCall(InvocationOnMock invocation) throws Exception {
-                throw new DockerComposeExecutionException();
-            }
 
-            @Override
-            protected Object secondCall(InvocationOnMock invocation) throws Exception {
-                throw finalException;
-            }
-        });
+        when(operation.call()).thenAnswer(MockitoMultiAnswer.<String>of(
+            firstInvocation  -> { throw new DockerComposeExecutionException(); },
+            secondInvocation -> { throw finalException; }
+        ));
 
         try {
             retryer.runWithRetries(operation);
