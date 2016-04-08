@@ -35,7 +35,7 @@ import static org.joda.time.Duration.standardMinutes;
 
 public class DockerCompositionBuilder {
     private static final Duration DEFAULT_TIMEOUT = standardMinutes(2);
-    public static final int DEFAULT_RETRY_ATTEMPTS = 3;
+    public static final int DEFAULT_RETRY_ATTEMPTS = 2;
 
     private final List<ServiceWait> serviceWaits = new ArrayList<>();
     private final DockerCompose dockerCompose;
