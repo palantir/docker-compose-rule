@@ -41,7 +41,7 @@ public class DockerCompositionBuilder {
     private final DockerCompose dockerCompose;
     private final ContainerCache containers;
     private LogCollector logCollector = new DoNothingLogCollector();
-    private int retryAttempts = DEFAULT_RETRY_ATTEMPTS;
+    private int numRetryAttempts = DEFAULT_RETRY_ATTEMPTS;
 
     public DockerCompositionBuilder(DockerCompose dockerCompose) {
         this.dockerCompose = dockerCompose;
@@ -75,12 +75,12 @@ public class DockerCompositionBuilder {
     }
 
     public DockerCompositionBuilder retryAttempts(int retryAttempts) {
-        this.retryAttempts = retryAttempts;
+        this.numRetryAttempts = retryAttempts;
         return this;
     }
 
     public DockerComposition build() {
-        DockerCompose retryingDockerCompose = new RetryingDockerCompose(retryAttempts, dockerCompose);
+        DockerCompose retryingDockerCompose = new RetryingDockerCompose(numRetryAttempts, dockerCompose);
         return new DockerComposition(retryingDockerCompose, serviceWaits, logCollector, containers);
     }
 }
