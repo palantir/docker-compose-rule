@@ -36,17 +36,17 @@ public class DockerComposition extends ExternalResource {
 
     private static final Logger log = LoggerFactory.getLogger(DockerComposition.class);
 
-    private final DockerCompose dockerComposeProcess;
+    private final DockerCompose dockerCompose;
     private final ContainerCache containers;
     private final List<ServiceWait> serviceWaits;
     private final LogCollector logCollector;
 
     public DockerComposition(
-            DockerCompose dockerComposeProcess,
+            DockerCompose dockerCompose,
             List<ServiceWait> serviceWaits,
             LogCollector logCollector,
             ContainerCache containers) {
-        this.dockerComposeProcess = dockerComposeProcess;
+        this.dockerCompose = dockerCompose;
         this.serviceWaits = copyOf(serviceWaits);
         this.logCollector = logCollector;
         this.containers = containers;
@@ -55,12 +55,12 @@ public class DockerComposition extends ExternalResource {
     @Override
     public void before() throws IOException, InterruptedException {
         log.debug("Starting docker-compose cluster");
-        dockerComposeProcess.build();
-        dockerComposeProcess.up();
+        dockerCompose.build();
+        dockerCompose.up();
 
         log.debug("Starting log collection");
 
-        logCollector.startCollecting(dockerComposeProcess);
+        logCollector.startCollecting(dockerCompose);
         log.debug("Waiting for services");
         serviceWaits.forEach(ServiceWait::waitTillServiceIsUp);
         log.debug("docker-compose cluster started");
@@ -70,9 +70,9 @@ public class DockerComposition extends ExternalResource {
     public void after() {
         try {
             log.debug("Killing docker-compose cluster");
-            dockerComposeProcess.down();
-            dockerComposeProcess.kill();
-            dockerComposeProcess.rm();
+            dockerCompose.down();
+            dockerCompose.kill();
+            dockerCompose.rm();
             logCollector.stopCollecting();
         } catch (IOException | InterruptedException e) {
             throw new RuntimeException("Error cleaning up docker compose cluster", e);
