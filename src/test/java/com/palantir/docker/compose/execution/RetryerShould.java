@@ -34,7 +34,7 @@ public class RetryerShould {
     private final Retryer retryer = new Retryer(1);
 
     @Test
-    public void not_retry_if_the_ps_command_was_successful_and_return_the_correct_container_names() throws IOException, InterruptedException {
+    public void not_retry_if_the_operation_was_successful_and_return_result() throws IOException, InterruptedException {
         when(operation.call()).thenReturn("hi");
 
         assertThat(retryer.runWithRetries(operation), is("hi"));
@@ -42,7 +42,7 @@ public class RetryerShould {
     }
 
     @Test
-    public void retry_ps_if_the_command_failed_once_and_return_the_last_container_names() throws IOException, InterruptedException {
+    public void retry_the_operation_if_it_failed_once_and_return_the_result_of_the_next_successful_call() throws IOException, InterruptedException {
         when(operation.call()).thenAnswer(new MockitoMultiAnswer<String>() {
             @Override
             protected String firstCall(InvocationOnMock invocation) throws Exception {
@@ -60,7 +60,7 @@ public class RetryerShould {
     }
 
     @Test
-    public void throw_the_last_exception_when_ps_fails_more_times_than_the_specified_attempts() throws IOException, InterruptedException {
+    public void throw_the_last_exception_when_the_operation_fails_more_times_than_the_number_of_specified_retry_attempts() throws IOException, InterruptedException {
         DockerComposeExecutionException finalException = new DockerComposeExecutionException();
         when(operation.call()).thenAnswer(new MockitoMultiAnswer() {
             @Override
