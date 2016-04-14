@@ -25,21 +25,23 @@ public class DockerPortFormattingShould {
 
     @Test public void
     have_no_effect_on_a_string_with_no_substitutions() {
-        assertThat(dockerPort.inFormat("no substitutions"), is("no substitutions"));
+        assertThat(
+                dockerPort.inFormat("no substitutions"),
+                is("no substitutions"));
     }
 
     @Test public void
     allow_building_an_externally_accessible_address() {
         assertThat(
-                dockerPort.inFormat("http://$HOST:$EXTERNAL_PORT"),
-                is("http://hostname:1234"));
+                dockerPort.inFormat("http://$HOST:$EXTERNAL_PORT/api"),
+                is("http://hostname:1234/api"));
     }
 
     @Test public void
     allow_building_an_address_with_an_internal_port() {
         assertThat(
-                dockerPort.inFormat("http://localhost:$INTERNAL_PORT"),
-                is("http://localhost:4321"));
+                dockerPort.inFormat("http://localhost:$INTERNAL_PORT/api"),
+                is("http://localhost:4321/api"));
     }
 
     @Test public void
