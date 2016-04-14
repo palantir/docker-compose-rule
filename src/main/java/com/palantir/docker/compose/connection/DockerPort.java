@@ -101,14 +101,12 @@ public class DockerPort {
      * <p>
      *     Example: dockerPort.inFormat("https://$HOST:$EXTERNAL_PORT/api")
      * </p>
-     * <p>
      * Formats the docker port into a particular form, available options are:
      * <ul>
      *     <li>$HOST - the hostname/ip address of the docker port</li>
      *     <li>$EXTERNAL_PORT - the external version of the docker port</li>
      *     <li>$INTERNAL_PORT - the internal versino of the docker port</li>
      * </ul>
-     * </p>
      *
      * @param format a format string using the substitutions listed above
      * @return formattedDockerPort the details of the {@link DockerPort} in the specified format
