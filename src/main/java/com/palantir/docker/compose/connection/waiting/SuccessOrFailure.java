@@ -22,6 +22,14 @@ import java.util.Optional;
 
 @Value.Immutable
 public abstract class SuccessOrFailure {
+    public static SuccessOrFailure onResultOf(Attempt attempt) {
+        try {
+            return fromBoolean(attempt.attempt(), "Attempt to complete healthcheck failed");
+        } catch(Exception e) {
+            return fromException(e);
+        }
+    }
+
     @Value.Parameter protected abstract Optional<String> optionalFailureMessage();
 
     public static SuccessOrFailure success() {

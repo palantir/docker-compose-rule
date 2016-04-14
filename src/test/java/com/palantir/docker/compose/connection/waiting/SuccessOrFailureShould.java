@@ -50,4 +50,30 @@ public class SuccessOrFailureShould {
                 containsString("oh no")
             ))));
     }
+
+    @Test
+    public void succeed_on_a_lambda_that_returns_true() {
+        SuccessOrFailure successFromLambda = SuccessOrFailure.onResultOf(() -> true);
+        assertThat(successFromLambda, is(successful()));
+    }
+
+    @Test
+    public void fail_on_a_lambda_that_throws_an_exception() {
+        SuccessOrFailure failureFromLambda = SuccessOrFailure.onResultOf(() -> {
+            throw new IllegalArgumentException("oh no");
+        });
+
+        assertThat(failureFromLambda,
+                is(failureWithMessage(both(
+                        containsString("IllegalArgumentException")).and(
+                        containsString("oh no")
+                ))));
+    }
+
+    @Test
+    public void fail_on_a_lambda_that_returns_false() {
+        SuccessOrFailure failureFromLambda = SuccessOrFailure.onResultOf(() -> false);
+
+        assertThat(failureFromLambda, is(failureWithMessage("Attempt to complete healthcheck failed")));
+    }
 }
