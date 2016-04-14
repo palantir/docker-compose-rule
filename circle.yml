@@ -8,7 +8,7 @@ machine:
 
 test:
   pre:
-    - ./gradlew findbugsMain findbugsTest checkstyleMain checkstyleTest --info
+    - ./gradlew findbugsMain findbugsTest checkstyleMain checkstyleTest javadoc --info
   override:
     - ./gradlew test --info
   post:
