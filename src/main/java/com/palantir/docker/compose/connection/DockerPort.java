@@ -97,6 +97,10 @@ public class DockerPort {
         }
     }
 
+    public String inFormat(String format) {
+        return format;
+    }
+
     @Override
     public int hashCode() {
         return Objects.hash(ip, portMapping);
@@ -122,5 +126,4 @@ public class DockerPort {
     public String toString() {
         return "DockerPort [ip=" + ip + ", portMapping=" + portMapping + "]";
     }
-
 }
