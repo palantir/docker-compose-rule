@@ -76,7 +76,7 @@ public class DockerCompositionTest {
     @ClassRule
     public DockerComposition composition = DockerComposition.of("src/test/resources/docker-compose.yml")
         .waitingForService("db", HealthChecks.toHaveAllPortsOpen())
-        .waitingForService("web", HealthChecks.toRespondOverHttp(8080, (port) -> "https://" + port.getIp() + ":" + port.getExternalPort()))
+        .waitingForService("web", HealthChecks.toRespondOverHttp(8080, (port) -> port.inFormat("https://$HOST:$EXTERNAL_PORT")))
         .waitingForService("other", (container) -> customServiceCheck(container), Duration.standardMinutes(2))
         .waitingForServices(ImmutableList.of("node1", "node2"), toBeHealthyAsACluster())
         .build();
