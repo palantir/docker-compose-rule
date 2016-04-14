@@ -21,9 +21,17 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 
 public class DockerPortFormattingShould {
+    private final DockerPort dockerPort = new DockerPort("hostname", 1234, 4321);
+
     @Test public void
     have_no_effect_on_a_string_with_no_substitutions() {
-        DockerPort dockerPort = new DockerPort("somehostname", 1234, 4321);
         assertThat(dockerPort.inFormat("no substitutions"), is("no substitutions"));
+    }
+
+    @Test public void
+    substitute_in_the_hostname() {
+        assertThat(
+                dockerPort.inFormat("http://$HOST:8000"),
+                is("http://hostname:8000"));
     }
 }

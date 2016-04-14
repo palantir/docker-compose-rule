@@ -98,7 +98,7 @@ public class DockerPort {
     }
 
     public String inFormat(String format) {
-        return format;
+        return format.replaceAll("\\$HOST", getIp());
     }
 
     @Override
