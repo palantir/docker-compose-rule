@@ -98,7 +98,11 @@ public class DockerPort {
     }
 
     public String inFormat(String format) {
-        return format.replaceAll("\\$HOST", getIp());
+        return format
+                .replaceAll("\\$HOST", getIp())
+                .replaceAll("\\$EXTERNAL_PORT", String.valueOf(getExternalPort()))
+                .replaceAll("\\$INTERNAL_PORT", String.valueOf(getInternalPort()));
+
     }
 
     @Override

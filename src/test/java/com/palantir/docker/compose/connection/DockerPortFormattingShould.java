@@ -29,9 +29,24 @@ public class DockerPortFormattingShould {
     }
 
     @Test public void
-    substitute_in_the_hostname() {
+    allow_building_an_externally_accessible_address() {
         assertThat(
-                dockerPort.inFormat("http://$HOST:8000"),
-                is("http://hostname:8000"));
+                dockerPort.inFormat("http://$HOST:$EXTERNAL_PORT"),
+                is("http://hostname:1234"));
     }
+
+    @Test public void
+    allow_building_an_address_with_an_internal_port() {
+        assertThat(
+                dockerPort.inFormat("http://localhost:$INTERNAL_PORT"),
+                is("http://localhost:4321"));
+    }
+
+    @Test public void
+    allow_multiple_copies_of_each_substitution() {
+        assertThat(
+                dockerPort.inFormat("$HOST,$HOST,$INTERNAL_PORT,$INTERNAL_PORT,$EXTERNAL_PORT,$EXTERNAL_PORT"),
+                is("hostname,hostname,4321,4321,1234,1234"));
+    }
+
 }
