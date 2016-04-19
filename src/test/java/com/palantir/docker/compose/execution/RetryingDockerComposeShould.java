@@ -57,6 +57,17 @@ public class RetryingDockerComposeShould {
     }
 
     @Test
+    public void calls_exec_on_the_underlying_docker_compose() throws IOException, InterruptedException {
+        DockerComposeExecOption options = new DockerComposeExecOption(new String[] {"-d", "-i"});
+        String container = "just a name";
+        DockerComposeExecArgument arguments = new DockerComposeExecArgument(new String[] {"ls", "-la"});
+        retryingDockerCompose.exec(options, container, arguments);
+        verifyRetryerWasUsed();
+        verify(dockerCompose).exec(options, container, arguments);
+        verifyNoMoreInteractions(dockerCompose);
+    }
+
+    @Test
     public void call_ps_on_the_underlying_docker_compose_and_returns_the_same_value() throws IOException, InterruptedException {
         when(dockerCompose.ps()).thenReturn(someContainerNames);
 

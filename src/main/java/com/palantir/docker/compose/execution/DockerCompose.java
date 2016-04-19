@@ -28,6 +28,7 @@ public interface DockerCompose {
     void down() throws IOException, InterruptedException;
     void kill() throws IOException, InterruptedException;
     void rm() throws IOException, InterruptedException;
+    void exec(DockerComposeExecOption dockerComposeExecOption, String containerName, DockerComposeExecArgument dockerComposeExecArgument) throws IOException, InterruptedException;
     ContainerNames ps() throws IOException, InterruptedException;
     Container container(String containerName);
     boolean writeLogs(String container, OutputStream output) throws IOException;

@@ -83,6 +83,36 @@ public class DefaultDockerCompose implements DockerCompose {
     }
 
     @Override
+    public void exec(DockerComposeExecOption dockerComposeExecOption, String containerName,
+            DockerComposeExecArgument dockerComposeExecArgument) throws IOException, InterruptedException {
+        verifyDockerComposeVersion();
+        String[] fullArgs = constructFullDockerComposeExecArguments(dockerComposeExecOption, containerName, dockerComposeExecArgument);
+        executeDockerComposeCommand(throwingOnError(), fullArgs);
+    }
+
+    private void verifyDockerComposeVersion() throws IOException, InterruptedException {
+        String versionOutput = executeDockerComposeCommand(throwingOnError(), "-v");
+        String version = DockerComposeVersions.parseFromDockerComposeVersion(versionOutput);
+        validState(DockerComposeVersions.versionCompare(version, "1.7") >= 0, "You need at least docker-compose 1.7 to run docker-compose exec");
+    }
+
+    private String[] constructFullDockerComposeExecArguments(DockerComposeExecOption dockerComposeExecOption,
+            String containerName, DockerComposeExecArgument dockerComposeExecArgument) {
+        String[] options = dockerComposeExecOption.getOptions();
+        String[] arguments = dockerComposeExecArgument.getArguments();
+        String []fullArgs = new String[options.length + arguments.length + 2];
+        fullArgs[0] = "exec";
+        for (int i = 0; i < options.length; i++) {
+            fullArgs[i + 1] = options[i];
+        }
+        fullArgs[options.length + 1] = containerName;
+        for(int i = 0; i < arguments.length; i++) {
+            fullArgs[options.length + 2 +i] = arguments[i];
+        }
+        return fullArgs;
+    }
+
+    @Override
     public ContainerNames ps() throws IOException, InterruptedException {
         String psOutput = executeDockerComposeCommand(throwingOnError(), "ps");
         return ContainerNames.parseFromDockerComposePs(psOutput);

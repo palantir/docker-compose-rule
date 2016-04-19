@@ -31,6 +31,7 @@ import java.nio.charset.StandardCharsets;
 import static org.apache.commons.io.IOUtils.toInputStream;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
 import static org.mockito.Matchers.anyVararg;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -122,6 +123,28 @@ public class DockerComposeTest {
         exception.expect(IllegalStateException.class);
         exception.expectMessage("No container with name 'db' found");
         compose.ports("db");
+    }
+
+    @Test
+    public void docker_compose_exec_pass_concatenated_arguments_to_executor() throws IOException, InterruptedException {
+        when(executedProcess.getInputStream()).thenReturn(toInputStream("docker-compose version 1.7.0rc1, build 1ad8866"));
+        compose.exec(new DockerComposeExecOption(new String[] {"-d"}), "container_1",
+                     new DockerComposeExecArgument(new String[] {"ls"}));
+        verify(executor).execute("-v");
+        verify(executor).execute("exec", "-d", "container_1", "ls");
+    }
+
+    @Test
+    public void docker_compose_exec_fail_if_docker_compose_version_is_prior_1_7() throws IOException, InterruptedException {
+
+        try {
+            when(executedProcess.getInputStream()).thenReturn(toInputStream("docker-compose version 1.5.6, build 1ad8866"));
+            compose.exec(new DockerComposeExecOption(new String[] {"-d"}), "container_1",
+                         new DockerComposeExecArgument(new String[] {"ls"}));
+            fail();
+        } catch (IllegalStateException e) {
+            //expected
+        }
     }
 
 }

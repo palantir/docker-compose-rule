@@ -23,6 +23,8 @@ import com.palantir.docker.compose.connection.DockerPort;
 import com.palantir.docker.compose.connection.waiting.ServiceWait;
 import com.palantir.docker.compose.execution.DefaultDockerCompose;
 import com.palantir.docker.compose.execution.DockerCompose;
+import com.palantir.docker.compose.execution.DockerComposeExecArgument;
+import com.palantir.docker.compose.execution.DockerComposeExecOption;
 import com.palantir.docker.compose.logging.LogCollector;
 import org.junit.rules.ExternalResource;
 import org.slf4j.Logger;
@@ -106,6 +108,11 @@ public class DockerComposition extends ExternalResource {
 
     public static DockerCompositionBuilder of(DockerCompose executable) {
         return new DockerCompositionBuilder(executable);
+    }
+
+    public void exec(DockerComposeExecOption option, String containerName, DockerComposeExecArgument argument)
+            throws IOException, InterruptedException {
+        dockerCompose.exec(option, containerName, argument);
     }
 
 }
