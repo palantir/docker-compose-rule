@@ -28,12 +28,14 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
+import static com.palantir.docker.compose.execution.DockerComposeExecArgument.arguments;
+import static com.palantir.docker.compose.execution.DockerComposeExecOption.options;
 import static org.apache.commons.io.IOUtils.toInputStream;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
 import static org.mockito.Matchers.anyVararg;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -126,25 +128,18 @@ public class DockerComposeTest {
     }
 
     @Test
-    public void docker_compose_exec_pass_concatenated_arguments_to_executor() throws IOException, InterruptedException {
+    public void docker_compose_exec_passes_concatenated_arguments_to_executor() throws IOException, InterruptedException {
         when(executedProcess.getInputStream()).thenReturn(toInputStream("docker-compose version 1.7.0rc1, build 1ad8866"));
-        compose.exec(new DockerComposeExecOption(new String[] {"-d"}), "container_1",
-                     new DockerComposeExecArgument(new String[] {"ls"}));
-        verify(executor).execute("-v");
-        verify(executor).execute("exec", "-d", "container_1", "ls");
+        compose.exec(options("-d"), "container_1", arguments("ls"));
+        verify(executor,times(1)).execute("exec", "-d", "container_1", "ls");
     }
 
     @Test
-    public void docker_compose_exec_fail_if_docker_compose_version_is_prior_1_7() throws IOException, InterruptedException {
-
-        try {
-            when(executedProcess.getInputStream()).thenReturn(toInputStream("docker-compose version 1.5.6, build 1ad8866"));
-            compose.exec(new DockerComposeExecOption(new String[] {"-d"}), "container_1",
-                         new DockerComposeExecArgument(new String[] {"ls"}));
-            fail();
-        } catch (IllegalStateException e) {
-            //expected
-        }
+    public void docker_compose_exec_fails_if_docker_compose_version_is_prior_1_7() throws IOException, InterruptedException {
+        when(executedProcess.getInputStream()).thenReturn(toInputStream("docker-compose version 1.5.6, build 1ad8866"));
+        exception.expect(IllegalStateException.class);
+        exception.expectMessage("You need at least docker-compose 1.7 to run docker-compose exec");
+        compose.exec(options("-d"), "container_1", arguments("ls"));
     }
 
 }

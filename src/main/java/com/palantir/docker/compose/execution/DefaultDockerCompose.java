@@ -15,7 +15,9 @@
  */
 package com.palantir.docker.compose.execution;
 
+import com.github.zafarkhaja.semver.Version;
 import com.google.common.base.Strings;
+import com.google.common.collect.ImmutableList;
 import com.palantir.docker.compose.configuration.DockerComposeFiles;
 import com.palantir.docker.compose.connection.Container;
 import com.palantir.docker.compose.connection.ContainerNames;
@@ -85,31 +87,26 @@ public class DefaultDockerCompose implements DockerCompose {
     @Override
     public void exec(DockerComposeExecOption dockerComposeExecOption, String containerName,
             DockerComposeExecArgument dockerComposeExecArgument) throws IOException, InterruptedException {
-        verifyDockerComposeVersion();
+        verifyDockerComposeVersionAtLeast(Version.valueOf("1.7.0"));
         String[] fullArgs = constructFullDockerComposeExecArguments(dockerComposeExecOption, containerName, dockerComposeExecArgument);
         executeDockerComposeCommand(throwingOnError(), fullArgs);
     }
 
-    private void verifyDockerComposeVersion() throws IOException, InterruptedException {
+    //Current docker-compose version output format: docker-compose version 1.7.0rc1, build 1ad8866
+    private void verifyDockerComposeVersionAtLeast(Version targetVersion) throws IOException, InterruptedException {
         String versionOutput = executeDockerComposeCommand(throwingOnError(), "-v");
-        String version = DockerComposeVersions.parseFromDockerComposeVersion(versionOutput);
-        validState(DockerComposeVersions.versionCompare(version, "1.7") >= 0, "You need at least docker-compose 1.7 to run docker-compose exec");
+        Version version = DockerComposeVersion.parseFromDockerComposeVersion(versionOutput);
+        validState(version.compareTo(targetVersion) >= 0, "You need at least docker-compose 1.7 to run docker-compose exec");
     }
 
     private String[] constructFullDockerComposeExecArguments(DockerComposeExecOption dockerComposeExecOption,
             String containerName, DockerComposeExecArgument dockerComposeExecArgument) {
-        String[] options = dockerComposeExecOption.getOptions();
-        String[] arguments = dockerComposeExecArgument.getArguments();
-        String []fullArgs = new String[options.length + arguments.length + 2];
-        fullArgs[0] = "exec";
-        for (int i = 0; i < options.length; i++) {
-            fullArgs[i + 1] = options[i];
-        }
-        fullArgs[options.length + 1] = containerName;
-        for(int i = 0; i < arguments.length; i++) {
-            fullArgs[options.length + 2 +i] = arguments[i];
-        }
-        return fullArgs;
+        ImmutableList<String> fullArgs = new ImmutableList.Builder<String>().add("exec")
+                                                                            .addAll(dockerComposeExecOption.asList())
+                                                                            .add(containerName)
+                                                                            .addAll(dockerComposeExecArgument.asList())
+                                                                            .build();
+        return fullArgs.toArray(new String[fullArgs.size()]);
     }
 
     @Override

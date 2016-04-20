@@ -34,7 +34,6 @@ public class RetryingDockerComposeShould {
     private final Retryer retryer = mock(Retryer.class);
     private final RetryingDockerCompose retryingDockerCompose = new RetryingDockerCompose(retryer, dockerCompose);
     private final ContainerNames someContainerNames = new ContainerNames("hey");
-
     @Before
     public void before() throws IOException, InterruptedException {
         retryerJustCallsOperation();
@@ -53,17 +52,6 @@ public class RetryingDockerComposeShould {
 
         verifyRetryerWasUsed();
         verify(dockerCompose).up();
-        verifyNoMoreInteractions(dockerCompose);
-    }
-
-    @Test
-    public void calls_exec_on_the_underlying_docker_compose() throws IOException, InterruptedException {
-        DockerComposeExecOption options = new DockerComposeExecOption(new String[] {"-d", "-i"});
-        String container = "just a name";
-        DockerComposeExecArgument arguments = new DockerComposeExecArgument(new String[] {"ls", "-la"});
-        retryingDockerCompose.exec(options, container, arguments);
-        verifyRetryerWasUsed();
-        verify(dockerCompose).exec(options, container, arguments);
         verifyNoMoreInteractions(dockerCompose);
     }
 

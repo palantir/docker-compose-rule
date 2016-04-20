@@ -110,9 +110,9 @@ public class DockerComposition extends ExternalResource {
         return new DockerCompositionBuilder(executable);
     }
 
-    public void exec(DockerComposeExecOption option, String containerName, DockerComposeExecArgument argument)
+    public void exec(DockerComposeExecOption dockerComposeExecOption, String containerName, DockerComposeExecArgument dockerComposeExecArgument)
             throws IOException, InterruptedException {
-        dockerCompose.exec(option, containerName, argument);
+        dockerCompose.exec(dockerComposeExecOption, containerName, dockerComposeExecArgument);
     }
 
 }

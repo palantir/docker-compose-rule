@@ -16,15 +16,19 @@
 package com.palantir.docker.compose.execution;
 
 import java.util.Arrays;
+import java.util.List;
 
 public class DockerComposeExecArgument {
     private final String[] arguments;
 
-    public DockerComposeExecArgument(String[] arguments) {
-        this.arguments = Arrays.copyOf(arguments, arguments.length);
+    public static DockerComposeExecArgument arguments(String... arguments) {
+        return new DockerComposeExecArgument(arguments);
+    }
+    private DockerComposeExecArgument(String... arguments) {
+        this.arguments =  arguments;
     }
 
-    public String[] getArguments() {
-        return Arrays.copyOf(arguments, arguments.length);
+    public List<String> asList() {
+        return Arrays.asList(arguments);
     }
 }

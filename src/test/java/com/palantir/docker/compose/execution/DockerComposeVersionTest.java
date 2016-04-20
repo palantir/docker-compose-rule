@@ -15,35 +15,31 @@
  */
 package com.palantir.docker.compose.execution;
 
+import com.github.zafarkhaja.semver.Version;
 import org.junit.Test;
 
 import static junit.framework.TestCase.assertTrue;
 import static org.junit.Assert.assertEquals;
 
-public class DockerComposeVersionsTest {
+public class DockerComposeVersionTest {
 
     @Test
     public void compare_major_versions_first() throws Exception {
-        assertTrue(DockerComposeVersions.versionCompare("2.1", "1.2") > 0);
+        assertTrue(Version.valueOf("2.1.0").compareTo(Version.valueOf("1.2.1")) > 0);
     }
 
     @Test
     public void compare_minor_versions_when_major_versions_are_the_same() throws Exception {
-        assertTrue(DockerComposeVersions.versionCompare("2.1", "2.3") < 0);
+        assertTrue(Version.valueOf("2.1.7").compareTo(Version.valueOf("2.3.2")) < 0);
     }
 
     @Test
-    public void return_same_versions_for_same_version_strings() throws Exception {
-        assertTrue(DockerComposeVersions.versionCompare("2.1", "2.1") == 0);
-    }
-
-    @Test
-    public void compare_major_versions_first_when_version_strings_have_different_numbers() throws Exception {
-        assertTrue(DockerComposeVersions.versionCompare("2.1", "3") < 0);
+    public void return_equals_for_the_same_version_strings() throws Exception {
+        assertTrue(Version.valueOf("2.1.2").compareTo(Version.valueOf("2.1.2")) == 0);
     }
 
     @Test
     public void remove_non_digits_when_passing_version_string() {
-        assertEquals("1.7.0", DockerComposeVersions.parseFromDockerComposeVersion("docker-compose version 1.7.0rc1, build 1ad8866"));
+        assertEquals(Version.valueOf("1.7.0"), DockerComposeVersion.parseFromDockerComposeVersion("docker-compose version 1.7.0rc1, build 1ad8866"));
     }
 }

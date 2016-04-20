@@ -53,6 +53,7 @@ dependencies {
     compile "commons-io:commons-io:2.4"
     compile "com.google.guava:guava:$guavaVersion"
     compile "joda-time:joda-time:$jodaVersion"
+    compile "com.github.zafarkhaja:java-semver:$javaSemverVersion"
 
     compile "junit:junit:$junitVersion"
     compile 'com.jayway.awaitility:awaitility:1.6.5'

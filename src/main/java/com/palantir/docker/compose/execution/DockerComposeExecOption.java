@@ -16,15 +16,20 @@
 package com.palantir.docker.compose.execution;
 
 import java.util.Arrays;
+import java.util.List;
 
 public class DockerComposeExecOption {
     private final String[] options;
 
-    public DockerComposeExecOption(String[] options) {
-        this.options = Arrays.copyOf(options, options.length);
+    public static DockerComposeExecOption options(String... options) {
+        return new DockerComposeExecOption(options);
     }
 
-    public String[] getOptions() {
-        return Arrays.copyOf(options, options.length);
+    private DockerComposeExecOption(String... options) {
+        this.options = options;
+    }
+
+    public List<String> asList() {
+        return Arrays.asList(options);
     }
 }
