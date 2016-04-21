@@ -17,7 +17,7 @@ package com.palantir.docker.compose.execution;
 
 import com.google.common.collect.ImmutableList;
 import com.palantir.docker.compose.configuration.DockerComposeFiles;
-import com.palantir.docker.compose.configuration.DockerComposeProjectName;
+import com.palantir.docker.compose.configuration.ProjectName;
 import org.immutables.value.Value;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,8 +37,8 @@ public abstract class DockerComposeExecutable {
     @Value.Parameter protected abstract DockerComposeFiles dockerComposeFiles();
     @Value.Parameter protected abstract DockerConfiguration dockerConfiguration();
 
-    @Value.Default protected DockerComposeProjectName projectName() {
-        return new DockerComposeProjectName();
+    @Value.Default public ProjectName projectName() {
+        return ProjectName.random();
     }
 
     @Value.Derived
