@@ -17,6 +17,7 @@ package com.palantir.docker.compose;
 
 import com.google.common.collect.ImmutableList;
 import com.palantir.docker.compose.configuration.DockerComposeFiles;
+import com.palantir.docker.compose.configuration.ProjectName;
 import com.palantir.docker.compose.connection.ContainerCache;
 import com.palantir.docker.compose.connection.DockerMachine;
 import com.palantir.docker.compose.connection.DockerPort;
@@ -103,7 +104,11 @@ public class DockerComposition extends ExternalResource {
     }
 
     public static DockerCompositionBuilder of(DockerComposeFiles dockerComposeFiles, DockerMachine dockerMachine) {
-        return of(new DefaultDockerCompose(dockerComposeFiles, dockerMachine));
+        return of(new DefaultDockerCompose(dockerComposeFiles, dockerMachine, ProjectName.random()));
+    }
+
+    public static DockerCompositionBuilder of(DockerComposeFiles dockerComposeFiles, DockerMachine dockerMachine, String projectName) {
+        return of(new DefaultDockerCompose(dockerComposeFiles, dockerMachine, ProjectName.fromString(projectName)));
     }
 
     public static DockerCompositionBuilder of(DockerCompose executable) {

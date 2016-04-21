@@ -19,6 +19,7 @@ import com.github.zafarkhaja.semver.Version;
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
 import com.palantir.docker.compose.configuration.DockerComposeFiles;
+import com.palantir.docker.compose.configuration.ProjectName;
 import com.palantir.docker.compose.connection.Container;
 import com.palantir.docker.compose.connection.ContainerNames;
 import com.palantir.docker.compose.connection.DockerMachine;
@@ -46,10 +47,11 @@ public class DefaultDockerCompose implements DockerCompose {
     private final DockerMachine dockerMachine;
     private final DockerComposeExecutable rawExecutable;
 
-    public DefaultDockerCompose(DockerComposeFiles dockerComposeFiles, DockerMachine dockerMachine) {
+    public DefaultDockerCompose(DockerComposeFiles dockerComposeFiles, DockerMachine dockerMachine, ProjectName projectName) {
         this(DockerComposeExecutable.builder()
             .dockerComposeFiles(dockerComposeFiles)
             .dockerConfiguration(dockerMachine)
+            .projectName(projectName)
             .build(), dockerMachine);
     }
 
