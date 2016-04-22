@@ -15,15 +15,14 @@
  */
 package com.palantir.docker.compose.configuration;
 
+import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertThat;
+
 import com.google.common.collect.ImmutableMap;
+import java.util.Map;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-
-import java.util.Map;
-
-import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertThat;
 
 public class AdditionalEnvironmentValidatorTest {
 
@@ -33,7 +32,7 @@ public class AdditionalEnvironmentValidatorTest {
     @Test
     public void additional_environment_variables_with_docker_variables() throws Exception {
         Map<String, String> variables = ImmutableMap.<String, String>builder().put("DOCKER_HOST", "tcp://some-host:2376")
-                                                                              .put("SOME_VARIABLE" , "Some Value")
+                                                                              .put("SOME_VARIABLE", "Some Value")
                                                                               .build();
         exception.expect(IllegalStateException.class);
         exception.expectMessage("The following variables");
@@ -44,7 +43,7 @@ public class AdditionalEnvironmentValidatorTest {
 
     @Test
     public void valid_arbitrary_environment_variables() throws Exception {
-        Map<String, String> variables = ImmutableMap.<String, String>builder().put("SOME_VARIABLE" , "Some Value")
+        Map<String, String> variables = ImmutableMap.<String, String>builder().put("SOME_VARIABLE", "Some Value")
                                                                               .build();
 
         assertThat(AdditionalEnvironmentValidator.validate(variables), is(variables));

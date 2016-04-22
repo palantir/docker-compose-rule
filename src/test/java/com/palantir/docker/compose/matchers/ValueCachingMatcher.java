@@ -19,14 +19,15 @@ import org.hamcrest.Description;
 import org.hamcrest.TypeSafeMatcher;
 
 public abstract class ValueCachingMatcher<T> extends TypeSafeMatcher<T> {
+    @SuppressWarnings("checkstyle:VisibilityModifier")
     protected T value;
 
     @Override
     protected abstract void describeMismatchSafely(T item, Description mismatchDescription);
 
     @Override
-    protected boolean matchesSafely(T t) {
-        this.value = t;
+    protected boolean matchesSafely(T val) {
+        this.value = val;
         return matchesSafely();
     }
 

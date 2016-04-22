@@ -18,12 +18,11 @@ package com.palantir.docker.compose.execution;
 import com.google.common.collect.ImmutableList;
 import com.palantir.docker.compose.configuration.DockerComposeFiles;
 import com.palantir.docker.compose.configuration.ProjectName;
+import java.io.IOException;
+import java.util.List;
 import org.immutables.value.Value;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.IOException;
-import java.util.List;
 
 @Value.Immutable
 public abstract class DockerComposeExecutable {
@@ -44,8 +43,8 @@ public abstract class DockerComposeExecutable {
     @Value.Derived
     protected String dockerComposePath() {
         String pathToUse = DOCKER_COMPOSE_LOCATIONS.preferredLocation()
-            .orElseThrow(() -> new IllegalStateException(
-                "Could not find docker-compose, looked in: " + DOCKER_COMPOSE_LOCATIONS));
+                .orElseThrow(() -> new IllegalStateException(
+                        "Could not find docker-compose, looked in: " + DOCKER_COMPOSE_LOCATIONS));
 
         log.debug("Using docker-compose found at " + pathToUse);
 

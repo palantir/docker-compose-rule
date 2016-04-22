@@ -15,14 +15,13 @@
  */
 package com.palantir.docker.compose.matchers;
 
-import com.google.common.collect.ImmutableMap;
-import com.palantir.docker.compose.connection.DockerMachine;
-import org.hamcrest.Description;
-
-import java.util.Map;
-
 import static java.util.stream.Collectors.toMap;
 import static org.hamcrest.collection.IsMapContaining.hasEntry;
+
+import com.google.common.collect.ImmutableMap;
+import com.palantir.docker.compose.connection.DockerMachine;
+import java.util.Map;
+import org.hamcrest.Description;
 
 public class DockerMachineEnvironmentMatcher extends ValueCachingMatcher<DockerMachine> {
 

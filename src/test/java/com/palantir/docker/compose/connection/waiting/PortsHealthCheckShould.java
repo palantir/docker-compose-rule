@@ -15,15 +15,15 @@
  */
 package com.palantir.docker.compose.connection.waiting;
 
-import com.palantir.docker.compose.connection.Container;
-import org.junit.Test;
-
 import static com.palantir.docker.compose.connection.waiting.SuccessOrFailureMatchers.failure;
 import static com.palantir.docker.compose.connection.waiting.SuccessOrFailureMatchers.successful;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+
+import com.palantir.docker.compose.connection.Container;
+import org.junit.Test;
 
 public class PortsHealthCheckShould {
     private final SingleServiceHealthCheck healthCheck = HealthChecks.toHaveAllPortsOpen();

@@ -16,12 +16,11 @@
 
 package com.palantir.docker.compose.connection.waiting;
 
+import static com.google.common.collect.Iterables.getOnlyElement;
+
 import com.google.common.base.Preconditions;
 import com.palantir.docker.compose.connection.Container;
-
 import java.util.List;
-
-import static com.google.common.collect.Iterables.getOnlyElement;
 
 @FunctionalInterface
 public interface MultiServiceHealthCheck {

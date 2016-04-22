@@ -15,15 +15,16 @@
  */
 package com.palantir.docker.compose.connection.waiting;
 
+import static org.hamcrest.Matchers.anything;
+import static org.hamcrest.Matchers.equalTo;
+
 import org.hamcrest.Description;
 import org.hamcrest.FeatureMatcher;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeDiagnosingMatcher;
 
-import static org.hamcrest.Matchers.anything;
-import static org.hamcrest.Matchers.equalTo;
-
-public enum SuccessOrFailureMatchers {;
+public enum SuccessOrFailureMatchers {
+    ;
     public static class Successful extends TypeSafeDiagnosingMatcher<SuccessOrFailure> {
         @Override
         protected boolean matchesSafely(SuccessOrFailure item, Description mismatchDescription) {

@@ -15,14 +15,14 @@
  */
 package com.palantir.docker.compose.connection.waiting;
 
-import com.google.common.collect.ImmutableList;
-import com.palantir.docker.compose.connection.Container;
-import org.junit.Test;
-
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+
+import com.google.common.collect.ImmutableList;
+import com.palantir.docker.compose.connection.Container;
+import org.junit.Test;
 
 public class MultiServiceHealthCheckShould {
 

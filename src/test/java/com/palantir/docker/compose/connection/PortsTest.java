@@ -15,19 +15,18 @@
  */
 package com.palantir.docker.compose.connection;
 
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
-
-import java.io.IOException;
-
 import static com.google.common.collect.Lists.newArrayList;
 import static java.util.Collections.emptyList;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+
+import java.io.IOException;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 public class PortsTest {
 
@@ -87,10 +86,10 @@ public class PortsTest {
     @Test
     public void actual_docker_compose_output_can_be_parsed() throws IOException, InterruptedException {
         String psOutput =
-                "       Name                      Command               State                                         Ports                                        \n" +
-                        "-------------------------------------------------------------------------------------------------------------------------------------------------\n" +
-                        "magritte_magritte_1   /bin/sh -c /usr/local/bin/ ...   Up      0.0.0.0:7000->7000/tcp, 7001/tcp, 7002/tcp, 7003/tcp, 7004/tcp, 7005/tcp, 7006/tcp \n" +
-                        "";
+                  "       Name                      Command               State                                         Ports                                        \n"
+                + "-------------------------------------------------------------------------------------------------------------------------------------------------\n"
+                + "magritte_magritte_1   /bin/sh -c /usr/local/bin/ ...   Up      0.0.0.0:7000->7000/tcp, 7001/tcp, 7002/tcp, 7003/tcp, 7004/tcp, 7005/tcp, 7006/tcp \n"
+                + "";
         Ports ports = Ports.parseFromDockerComposePs(psOutput, LOCALHOST_IP);
         Ports expected = new Ports(newArrayList(new DockerPort(LOCALHOST_IP, 7000, 7000)));
         assertThat(ports, is(expected));

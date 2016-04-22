@@ -15,23 +15,22 @@
  */
 package com.palantir.docker.compose;
 
-import com.google.common.collect.ImmutableList;
-import com.palantir.docker.compose.connection.Container;
-import com.palantir.docker.compose.connection.waiting.MultiServiceHealthCheck;
-import com.palantir.docker.compose.connection.waiting.SuccessOrFailure;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
-import org.junit.rules.TemporaryFolder;
-
-import java.io.IOException;
-import java.util.List;
-import java.util.function.Consumer;
-
 import static com.google.common.base.Throwables.propagate;
 import static com.palantir.docker.compose.connection.waiting.HealthChecks.toHaveAllPortsOpen;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
+
+import com.google.common.collect.ImmutableList;
+import com.palantir.docker.compose.connection.Container;
+import com.palantir.docker.compose.connection.waiting.MultiServiceHealthCheck;
+import com.palantir.docker.compose.connection.waiting.SuccessOrFailure;
+import java.io.IOException;
+import java.util.List;
+import java.util.function.Consumer;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.ExpectedException;
+import org.junit.rules.TemporaryFolder;
 
 public class DockerCompositionIntegrationTest {
 

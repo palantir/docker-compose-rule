@@ -25,12 +25,11 @@ import com.palantir.docker.compose.connection.waiting.ServiceWait;
 import com.palantir.docker.compose.execution.DefaultDockerCompose;
 import com.palantir.docker.compose.execution.DockerCompose;
 import com.palantir.docker.compose.logging.LogCollector;
+import java.io.IOException;
+import java.util.List;
 import org.junit.rules.ExternalResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.IOException;
-import java.util.List;
 
 public class DockerComposition extends ExternalResource {
 

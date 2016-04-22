@@ -15,18 +15,17 @@
  */
 package com.palantir.docker.compose.configuration;
 
-import com.google.common.collect.ImmutableMap;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
-
-import java.util.Map;
-
 import static com.palantir.docker.compose.configuration.EnvironmentVariables.DOCKER_CERT_PATH;
 import static com.palantir.docker.compose.configuration.EnvironmentVariables.DOCKER_HOST;
 import static com.palantir.docker.compose.configuration.EnvironmentVariables.DOCKER_TLS_VERIFY;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
+
+import com.google.common.collect.ImmutableMap;
+import java.util.Map;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 public class DaemonEnvironmentValidatorTest {
 

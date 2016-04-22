@@ -52,8 +52,8 @@ public class PortMapping {
             return false;
         }
         PortMapping other = (PortMapping) obj;
-        return Objects.equals(externalPort, other.externalPort) &&
-               Objects.equals(internalPort, other.internalPort);
+        return Objects.equals(externalPort, other.externalPort)
+                && Objects.equals(internalPort, other.internalPort);
     }
 
     @Override

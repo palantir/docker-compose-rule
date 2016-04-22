@@ -15,11 +15,6 @@
  */
 package com.palantir.docker.compose.connection;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.net.ssl.SSLHandshakeException;
-
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -29,6 +24,9 @@ import java.net.SocketException;
 import java.net.URL;
 import java.util.Objects;
 import java.util.function.Function;
+import javax.net.ssl.SSLHandshakeException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class DockerPort {
 
@@ -98,10 +96,11 @@ public class DockerPort {
     }
 
     /**
+     * Formats the docker port into a particular form.
      * <p>
      *     Example: dockerPort.inFormat("https://$HOST:$EXTERNAL_PORT/api")
      * </p>
-     * Formats the docker port into a particular form, available options are:
+     * Available options are:
      * <ul>
      *     <li>$HOST - the hostname/ip address of the docker port</li>
      *     <li>$EXTERNAL_PORT - the external version of the docker port</li>
@@ -136,8 +135,8 @@ public class DockerPort {
             return false;
         }
         DockerPort other = (DockerPort) obj;
-        return Objects.equals(ip, other.ip) &&
-               Objects.equals(portMapping, other.portMapping);
+        return Objects.equals(ip, other.ip)
+                && Objects.equals(portMapping, other.portMapping);
     }
 
     @Override

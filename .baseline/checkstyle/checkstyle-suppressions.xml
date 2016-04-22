@@ -21,4 +21,11 @@
     <!-- Generated code should not be subjected to checkstyle. -->
     <suppress files="[/\\].*[/\\]generated_src[/\\]" checks="." />
     <suppress files="[/\\].*[/\\]generated_testSrc[/\\]" checks="." />
+
+    <!-- Docker Compose Rule modifications: -->
+    <suppress files=".*" checks="DesignForExtension" />
+    <suppress files=".*" checks="LineLength" />
+    <suppress files=".*" checks="AbbreviationAsWordInName" />
+    <suppress files=".*" checks="TypeName" />
+    <!-- Also deleted AvoidStaticImport, OverloadMethodsDeclarationOrder and some regexes -->
 </suppressions>

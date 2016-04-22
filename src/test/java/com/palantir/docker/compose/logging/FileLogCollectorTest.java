@@ -15,21 +15,6 @@
  */
 package com.palantir.docker.compose.logging;
 
-import com.palantir.docker.compose.connection.ContainerNames;
-import com.palantir.docker.compose.execution.DockerCompose;
-import org.apache.commons.io.IOUtils;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
-import org.junit.rules.TemporaryFolder;
-
-import java.io.File;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
-
 import static com.palantir.docker.compose.matchers.IOMatchers.fileContainingString;
 import static com.palantir.docker.compose.matchers.IOMatchers.fileWithName;
 import static java.util.Arrays.asList;
@@ -44,6 +29,20 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+
+import com.palantir.docker.compose.connection.ContainerNames;
+import com.palantir.docker.compose.execution.DockerCompose;
+import java.io.File;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+import org.apache.commons.io.IOUtils;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.ExpectedException;
+import org.junit.rules.TemporaryFolder;
 
 @SuppressWarnings("unchecked")
 public class FileLogCollectorTest {
@@ -103,7 +102,7 @@ public class FileLogCollectorTest {
     }
 
     @Test
-    public void when_one_container_is_running_and_terminates_before_start_collecting_is_run_logs_are_collected() throws IOException, InterruptedException {
+    public void when_one_container_is_running_and_terminates_before_start_collecting_is_run_logs_are_collected() throws Exception {
         when(compose.ps()).thenReturn(new ContainerNames("db"));
         when(compose.writeLogs(eq("db"), any(OutputStream.class))).thenAnswer((args) -> {
             OutputStream outputStream = (OutputStream) args.getArguments()[1];
@@ -117,7 +116,7 @@ public class FileLogCollectorTest {
     }
 
     @Test
-    public void when_one_container_is_running_and_does_not_terminate_until_after_start_collecting_is_run_logs_are_collected() throws IOException, InterruptedException {
+    public void when_one_container_is_running_and_does_not_terminate_until_after_start_collecting_is_run_logs_are_collected() throws Exception {
         when(compose.ps()).thenReturn(new ContainerNames("db"));
         CountDownLatch latch = new CountDownLatch(1);
         when(compose.writeLogs(eq("db"), any(OutputStream.class))).thenAnswer((args) -> {

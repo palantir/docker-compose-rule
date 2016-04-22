@@ -15,10 +15,9 @@
  */
 package com.palantir.docker.compose.execution;
 
+import java.io.IOException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.IOException;
 
 public class Retryer {
     private static final Logger log = LoggerFactory.getLogger(Retryer.class);

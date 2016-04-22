@@ -70,9 +70,6 @@
             <property name="allowInSwitchCase" value="true"/>
         </module>
         <module name="AvoidStarImport"/> <!-- Java Style Guide: No wildcard imports -->
-        <module name="AvoidStaticImport"> <!-- Java Style Guide: No static imports -->
-            <property name="excludes" value="org.junit.Assert.*,org.junit.Assume.*,org.hamcrest.Matchers.*,org.mockito.Mockito.*,org.mockito.Matchers.*,org.assertj.core.api.Assertions.*,com.google.common.base.Preconditions.*,org.apache.commons.lang3.Validate.*,com.google.common.truth.Truth.*"/>
-        </module>
         <module name="ClassTypeParameterName"> <!-- Java Style Guide: Type variable names -->
             <property name="format" value="(^[A-Z][0-9]?)$|([A-Z][a-zA-Z0-9]*[T]$)"/>
             <message key="name.invalidPattern" value="Class type name ''{0}'' must match pattern ''{1}''."/>
@@ -144,19 +141,15 @@
         </module>
         <module name="InnerAssignment"/> <!-- Java Coding Guidelines: Inner assignments: Not used -->
         <module name="LeftCurly"> <!-- Java Style Guide: Nonempty blocks: K & R style -->
-            <property name="maxLineLength" value="120"/>
+            <property name="maxLineLength" value="150"/>
         </module>
         <module name="LineLength"> <!-- Java Style Guide: No line-wrapping -->
-            <property name="max" value="120"/>
+            <property name="max" value="150"/>
             <property name="ignorePattern" value="^package.*|^import.*|a href|href|http://|https://|ftp://"/>
         </module>
         <module name="MemberName"> <!-- Java Style Guide: Non-constant field names -->
             <property name="format" value="^[a-z][a-z0-9][a-zA-Z0-9]*$"/>
             <message key="name.invalidPattern" value="Member name ''{0}'' must match pattern ''{1}''."/>
-        </module>
-        <module name="MethodName"> <!-- Java Style Guide: Method names -->
-            <property name="format" value="^[a-z][a-z0-9][a-zA-Z0-9_]*$"/>
-            <message key="name.invalidPattern" value="Method name ''{0}'' must match pattern ''{1}''."/>
         </module>
         <module name="MethodParamPad"/> <!-- Java Style Guide: Horizontal whitespace -->
         <module name="MissingDeprecated"/> <!-- Java Coding Guide: Deprecate per annotation and Javadoc -->
@@ -183,7 +176,6 @@
             <property name="tokens" value="BAND, BOR, BSR, BXOR, DIV, EQUAL, GE, GT, LAND, LE, LITERAL_INSTANCEOF, LOR, LT, MINUS, MOD, NOT_EQUAL, PLUS, QUESTION, SL, SR, STAR "/>
         </module>
         <module name="OuterTypeFilename"/> <!-- Java Style Guide: File name -->
-        <module name="OverloadMethodsDeclarationOrder"/> <!-- Java Style Guide: Overloads: never split -->
         <module name="PackageAnnotation"/> <!-- Java Style Guide: Package statement -->
         <module name="PackageDeclaration"/> <!-- Java Style Guide: Package statement -->
         <module name="PackageName"> <!-- Java Style Guide: Package names -->

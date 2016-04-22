@@ -15,11 +15,11 @@
  */
 package com.palantir.docker.compose.configuration;
 
-import org.junit.Test;
-
 import static com.palantir.docker.compose.configuration.DaemonHostIpResolver.LOCALHOST;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
+
+import org.junit.Test;
 
 public class DaemonHostIpResolverTest {
 

@@ -15,25 +15,23 @@
  */
 package com.palantir.docker.compose.matchers;
 
-import com.google.common.base.MoreObjects;
-import org.apache.commons.io.FileUtils;
-import org.hamcrest.Description;
-import org.hamcrest.FeatureMatcher;
-import org.hamcrest.Matcher;
-import org.hamcrest.TypeSafeDiagnosingMatcher;
+import static org.hamcrest.Matchers.containsString;
 
+import com.google.common.base.MoreObjects;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.regex.Pattern;
+import org.apache.commons.io.FileUtils;
+import org.hamcrest.Description;
+import org.hamcrest.FeatureMatcher;
+import org.hamcrest.Matcher;
+import org.hamcrest.TypeSafeDiagnosingMatcher;
 
-import static org.hamcrest.Matchers.containsString;
-
-public class IOMatchers {
-    private IOMatchers() {
-    }
+public final class IOMatchers {
+    private IOMatchers() {}
 
     public static Matcher<File> hasFiles(int numberOfFiles) {
         return new ValueCachingMatcher<File>() {
