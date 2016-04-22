@@ -51,7 +51,7 @@ public class RemoteEnvironmentValidatorTest {
                 .put(DOCKER_TLS_VERIFY, "1")
                 .build();
 
-        RemoteEnvironmentValidator validator = new RemoteEnvironmentValidator(variables);
+        new RemoteEnvironmentValidator(variables);
         exception.expect(IllegalStateException.class);
         exception.expectMessage("Missing required environment variables: ");
         exception.expectMessage(DOCKER_CERT_PATH);

@@ -53,7 +53,7 @@ public class DockerMachineEnvironmentMatcher extends ValueCachingMatcher<DockerM
     }
 
     private Map<String, String> missingEnvironmentVariables() {
-        Map<String, String> environment = value.configuredDockerComposeProcess()
+        Map<String, String> environment = value().configuredDockerComposeProcess()
                                                .environment();
         return expected.entrySet()
                        .stream()

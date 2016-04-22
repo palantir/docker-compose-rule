@@ -40,7 +40,7 @@ public final class IOMatchers {
             @Override
             public void describeTo(Description description) {
                 description.appendText("directory ")
-                           .appendValue(value)
+                           .appendValue(value())
                            .appendText(" to have " + numberOfFiles + " files");
             }
 
@@ -55,7 +55,7 @@ public final class IOMatchers {
 
             @Override
             protected boolean matchesSafely() {
-                files = MoreObjects.firstNonNull(value.list(), new String[0]);
+                files = MoreObjects.firstNonNull(value().list(), new String[0]);
                 return files.length == numberOfFiles;
             }
         };
@@ -78,7 +78,7 @@ public final class IOMatchers {
 
             @Override
             protected boolean matchesSafely() {
-                return value.getName().equals(filename);
+                return value().getName().equals(filename);
             }
         };
     }
@@ -125,7 +125,7 @@ public final class IOMatchers {
             @Override
             public void describeTo(Description description) {
                 description.appendText("file ")
-                           .appendValue(value)
+                           .appendValue(value())
                            .appendText(" to exist");
             }
 
@@ -138,7 +138,7 @@ public final class IOMatchers {
 
             @Override
             protected boolean matchesSafely() {
-                return value.exists();
+                return value().exists();
             }
         };
     }
@@ -147,7 +147,7 @@ public final class IOMatchers {
         return new ValueCachingMatcher<File>() {
             @Override
             public void describeTo(Description description) {
-                description.appendValue(value)
+                description.appendValue(value())
                            .appendText(" is directory");
             }
 
@@ -159,7 +159,7 @@ public final class IOMatchers {
 
             @Override
             protected boolean matchesSafely() {
-                return value.isDirectory();
+                return value().isDirectory();
             }
         };
     }
@@ -169,7 +169,7 @@ public final class IOMatchers {
             @Override
             public void describeTo(Description description) {
                 description.appendText("file ")
-                           .appendValue(value)
+                           .appendValue(value())
                            .appendText(" to exist");
             }
 
@@ -182,7 +182,7 @@ public final class IOMatchers {
 
             @Override
             protected boolean matchesSafely() {
-                return value.toFile().exists();
+                return value().toFile().exists();
             }
         };
     }
