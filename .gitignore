@@ -16,5 +16,6 @@ logs/
 out/
 classes/
 
+.factorypath
 generated_src/
 generated_testSrc/
