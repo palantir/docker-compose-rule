@@ -15,17 +15,16 @@
  */
 package com.palantir.docker.compose.connection.waiting;
 
+import java.util.Optional;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.immutables.value.Value;
-
-import java.util.Optional;
 
 @Value.Immutable
 public abstract class SuccessOrFailure {
     public static SuccessOrFailure onResultOf(Attempt attempt) {
         try {
             return fromBoolean(attempt.attempt(), "Attempt to complete healthcheck failed");
-        } catch(Exception e) {
+        } catch (Exception e) {
             return fromException(e);
         }
     }

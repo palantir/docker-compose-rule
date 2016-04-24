@@ -15,16 +15,15 @@
  */
 package com.palantir.docker.compose.configuration;
 
-import com.google.common.collect.ImmutableList;
-import org.immutables.value.Value;
-import org.immutables.value.Value.Style.ImplementationVisibility;
+import static com.google.common.base.Preconditions.checkState;
 
+import com.google.common.collect.ImmutableList;
 import java.util.List;
 import java.util.UUID;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
-
-import static com.google.common.base.Preconditions.checkState;
+import org.immutables.value.Value;
+import org.immutables.value.Value.Style.ImplementationVisibility;
 
 @Value.Immutable
 @Value.Style(visibility = ImplementationVisibility.PACKAGE)

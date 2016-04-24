@@ -15,12 +15,12 @@
  */
 package com.palantir.docker.compose.execution;
 
+import static java.util.Arrays.asList;
+
 import java.io.File;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Predicate;
-
-import static java.util.Arrays.asList;
 
 public class DockerComposeLocations {
     private static final Predicate<String> IS_NOT_NULL = path -> path != null;
@@ -42,8 +42,6 @@ public class DockerComposeLocations {
 
     @Override
     public String toString() {
-        return "DockerComposeLocations{" +
-                "possiblePaths=" + possiblePaths +
-                '}';
+        return "DockerComposeLocations{possiblePaths=" + possiblePaths + "}";
     }
 }

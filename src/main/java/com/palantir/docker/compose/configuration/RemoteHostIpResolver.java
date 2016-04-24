@@ -15,12 +15,11 @@
  */
 package com.palantir.docker.compose.configuration;
 
-import org.apache.commons.lang3.StringUtils;
-
-import java.util.Optional;
-
 import static com.google.common.base.Strings.emptyToNull;
 import static com.palantir.docker.compose.configuration.EnvironmentVariables.TCP_PROTOCOL;
+
+import java.util.Optional;
+import org.apache.commons.lang3.StringUtils;
 
 public class RemoteHostIpResolver implements HostIpResolver {
 

@@ -15,19 +15,6 @@
  */
 package com.palantir.docker.compose.execution;
 
-import com.palantir.docker.compose.connection.ContainerNames;
-import com.palantir.docker.compose.connection.DockerMachine;
-import com.palantir.docker.compose.connection.DockerPort;
-import com.palantir.docker.compose.connection.Ports;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
-
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-
 import static org.apache.commons.io.IOUtils.toInputStream;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
@@ -35,6 +22,18 @@ import static org.mockito.Matchers.anyVararg;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
+import com.palantir.docker.compose.connection.ContainerNames;
+import com.palantir.docker.compose.connection.DockerMachine;
+import com.palantir.docker.compose.connection.DockerPort;
+import com.palantir.docker.compose.connection.Ports;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 public class DockerComposeTest {
 

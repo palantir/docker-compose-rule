@@ -15,6 +15,9 @@
  */
 package com.palantir.docker.compose;
 
+import static java.util.stream.Collectors.toList;
+import static org.joda.time.Duration.standardMinutes;
+
 import com.palantir.docker.compose.connection.Container;
 import com.palantir.docker.compose.connection.ContainerCache;
 import com.palantir.docker.compose.connection.waiting.MultiServiceHealthCheck;
@@ -25,13 +28,9 @@ import com.palantir.docker.compose.execution.RetryingDockerCompose;
 import com.palantir.docker.compose.logging.DoNothingLogCollector;
 import com.palantir.docker.compose.logging.FileLogCollector;
 import com.palantir.docker.compose.logging.LogCollector;
-import org.joda.time.Duration;
-
 import java.util.ArrayList;
 import java.util.List;
-
-import static java.util.stream.Collectors.toList;
-import static org.joda.time.Duration.standardMinutes;
+import org.joda.time.Duration;
 
 public class DockerCompositionBuilder {
     private static final Duration DEFAULT_TIMEOUT = standardMinutes(2);

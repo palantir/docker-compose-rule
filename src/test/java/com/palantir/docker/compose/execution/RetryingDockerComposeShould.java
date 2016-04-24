@@ -15,12 +15,6 @@
  */
 package com.palantir.docker.compose.execution;
 
-import com.palantir.docker.compose.connection.ContainerNames;
-import org.junit.Before;
-import org.junit.Test;
-
-import java.io.IOException;
-
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.any;
@@ -28,6 +22,11 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
+
+import com.palantir.docker.compose.connection.ContainerNames;
+import java.io.IOException;
+import org.junit.Before;
+import org.junit.Test;
 
 public class RetryingDockerComposeShould {
     private final DockerCompose dockerCompose = mock(DockerCompose.class);

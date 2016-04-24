@@ -15,20 +15,19 @@
  */
 package com.palantir.docker.compose.logging;
 
-import com.palantir.docker.compose.DockerComposition;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
-
-import java.io.File;
-import java.io.IOException;
-
 import static com.palantir.docker.compose.connection.waiting.HealthChecks.toHaveAllPortsOpen;
 import static com.palantir.docker.compose.matchers.IOMatchers.file;
 import static com.palantir.docker.compose.matchers.IOMatchers.matchingPattern;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
+
+import com.palantir.docker.compose.DockerComposition;
+import java.io.File;
+import java.io.IOException;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
 public class DockerCompositionLoggingIntegrationTest {
 

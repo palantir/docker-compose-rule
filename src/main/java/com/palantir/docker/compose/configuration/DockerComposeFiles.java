@@ -15,15 +15,15 @@
  */
 package com.palantir.docker.compose.configuration;
 
-import java.io.File;
-import java.util.Collection;
-import java.util.List;
-
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkState;
 import static com.google.common.collect.Lists.newArrayList;
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
+
+import java.io.File;
+import java.util.Collection;
+import java.util.List;
 
 public class DockerComposeFiles {
 

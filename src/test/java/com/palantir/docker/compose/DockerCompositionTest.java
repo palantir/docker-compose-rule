@@ -15,29 +15,6 @@
  */
 package com.palantir.docker.compose;
 
-import com.google.common.collect.ImmutableList;
-import com.palantir.docker.compose.configuration.MockDockerEnvironment;
-import com.palantir.docker.compose.connection.Container;
-import com.palantir.docker.compose.connection.ContainerNames;
-import com.palantir.docker.compose.connection.DockerPort;
-import com.palantir.docker.compose.connection.waiting.MultiServiceHealthCheck;
-import com.palantir.docker.compose.connection.waiting.SingleServiceHealthCheck;
-import com.palantir.docker.compose.connection.waiting.SuccessOrFailure;
-import com.palantir.docker.compose.execution.DockerCompose;
-import org.apache.commons.io.IOUtils;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
-import org.junit.rules.TemporaryFolder;
-
-import java.io.File;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.util.List;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
-
 import static com.palantir.docker.compose.connection.waiting.HealthChecks.toHaveAllPortsOpen;
 import static com.palantir.docker.compose.matchers.IOMatchers.fileContainingString;
 import static com.palantir.docker.compose.matchers.IOMatchers.fileWithName;
@@ -51,6 +28,28 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
+import com.google.common.collect.ImmutableList;
+import com.palantir.docker.compose.configuration.MockDockerEnvironment;
+import com.palantir.docker.compose.connection.Container;
+import com.palantir.docker.compose.connection.ContainerNames;
+import com.palantir.docker.compose.connection.DockerPort;
+import com.palantir.docker.compose.connection.waiting.MultiServiceHealthCheck;
+import com.palantir.docker.compose.connection.waiting.SingleServiceHealthCheck;
+import com.palantir.docker.compose.connection.waiting.SuccessOrFailure;
+import com.palantir.docker.compose.execution.DockerCompose;
+import java.io.File;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
+import org.apache.commons.io.IOUtils;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.ExpectedException;
+import org.junit.rules.TemporaryFolder;
 
 public class DockerCompositionTest {
 
@@ -142,7 +141,7 @@ public class DockerCompositionTest {
     }
 
     @Test
-    public void when_two_external_ports_on_a_container_are_requested_docker_compose_ps_is_only_executed_once() throws IOException, InterruptedException {
+    public void when_two_external_ports_on_a_container_are_requested_docker_compose_ps_is_only_executed_once() throws Exception {
         env.ports("db", IP, 5432, 8080);
         withComposeExecutableReturningContainerFor("db");
         DockerComposition composition = dockerComposition.build();

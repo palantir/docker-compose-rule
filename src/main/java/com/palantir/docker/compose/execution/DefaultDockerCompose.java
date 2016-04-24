@@ -15,6 +15,11 @@
  */
 package com.palantir.docker.compose.execution;
 
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
+import static java.util.stream.Collectors.joining;
+import static org.apache.commons.lang3.Validate.validState;
+import static org.joda.time.Duration.standardMinutes;
+
 import com.google.common.base.Strings;
 import com.palantir.docker.compose.configuration.DockerComposeFiles;
 import com.palantir.docker.compose.configuration.ProjectName;
@@ -22,19 +27,13 @@ import com.palantir.docker.compose.connection.Container;
 import com.palantir.docker.compose.connection.ContainerNames;
 import com.palantir.docker.compose.connection.DockerMachine;
 import com.palantir.docker.compose.connection.Ports;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.Arrays;
 import org.apache.commons.io.IOUtils;
 import org.joda.time.Duration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.IOException;
-import java.io.OutputStream;
-import java.util.Arrays;
-
-import static java.util.concurrent.TimeUnit.MILLISECONDS;
-import static java.util.stream.Collectors.joining;
-import static org.apache.commons.lang3.Validate.validState;
-import static org.joda.time.Duration.standardMinutes;
 
 public class DefaultDockerCompose implements DockerCompose {
 
@@ -97,7 +96,7 @@ public class DefaultDockerCompose implements DockerCompose {
 
     /**
      * Blocks until all logs collected from the container.
-     * @return Whether the docker container terminated prior to log collection ending.
+     * @return Whether the docker container terminated prior to log collection ending
      */
     @Override
     public boolean writeLogs(String container, OutputStream output) throws IOException {
@@ -120,17 +119,16 @@ public class DefaultDockerCompose implements DockerCompose {
 
     private ErrorHandler throwingOnError() {
         return (exitCode, output, commands) -> {
-            String message = constructNonZeroExitErrorMessage(exitCode, commands) + "\n"
-                + "The output was:\n"
-                + output;
+            String message = constructNonZeroExitErrorMessage(exitCode, commands) + "\nThe output was:\n" + output;
             throw new DockerComposeExecutionException(message);
         };
     }
 
-    private String executeDockerComposeCommand(ErrorHandler errorHandler, String... commands) throws IOException, InterruptedException {
+    private String executeDockerComposeCommand(ErrorHandler errorHandler, String... commands)
+            throws IOException, InterruptedException {
         ProcessResult result = executable.run(commands);
 
-        if(result.exitCode() != 0) {
+        if (result.exitCode() != 0) {
             errorHandler.handle(result.exitCode(), result.output(), commands);
         }
 
@@ -144,7 +142,7 @@ public class DefaultDockerCompose implements DockerCompose {
 
     private ErrorHandler swallowingDownCommandDoesNotExist() {
         return (exitCode, output, commands) -> {
-            if(downCommandWasPresent(output)) {
+            if (downCommandWasPresent(output)) {
                 throwingOnError().handle(exitCode, output, commands);
             }
 

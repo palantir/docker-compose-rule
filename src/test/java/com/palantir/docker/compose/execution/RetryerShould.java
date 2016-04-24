@@ -15,11 +15,6 @@
  */
 package com.palantir.docker.compose.execution;
 
-import com.palantir.docker.compose.utils.MockitoMultiAnswer;
-import org.junit.Test;
-
-import java.io.IOException;
-
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
@@ -28,12 +23,15 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.palantir.docker.compose.utils.MockitoMultiAnswer;
+import org.junit.Test;
+
 public class RetryerShould {
     private final Retryer.RetryableDockerComposeOperation<String> operation = mock(Retryer.RetryableDockerComposeOperation.class);
     private final Retryer retryer = new Retryer(1);
 
     @Test
-    public void not_retry_if_the_operation_was_successful_and_return_result() throws IOException, InterruptedException {
+    public void not_retry_if_the_operation_was_successful_and_return_result() throws Exception {
         when(operation.call()).thenReturn("hi");
 
         assertThat(retryer.runWithRetries(operation), is("hi"));
@@ -41,10 +39,10 @@ public class RetryerShould {
     }
 
     @Test
-    public void retry_the_operation_if_it_failed_once_and_return_the_result_of_the_next_successful_call() throws IOException, InterruptedException {
+    public void retry_the_operation_if_it_failed_once_and_return_the_result_of_the_next_successful_call() throws Exception {
         when(operation.call()).thenAnswer(MockitoMultiAnswer.<String>of(
-            firstInvocation  -> { throw new DockerComposeExecutionException(); },
-            secondInvocation -> "hola"
+                firstInvocation  -> { throw new DockerComposeExecutionException(); },
+                secondInvocation -> "hola"
         ));
 
         assertThat(retryer.runWithRetries(operation), is("hola"));
@@ -52,12 +50,12 @@ public class RetryerShould {
     }
 
     @Test
-    public void throw_the_last_exception_when_the_operation_fails_more_times_than_the_number_of_specified_retry_attempts() throws IOException, InterruptedException {
+    public void throw_the_last_exception_when_the_operation_fails_more_times_than_the_number_of_specified_retry_attempts() throws Exception {
         DockerComposeExecutionException finalException = new DockerComposeExecutionException();
 
         when(operation.call()).thenAnswer(MockitoMultiAnswer.<String>of(
-            firstInvocation  -> { throw new DockerComposeExecutionException(); },
-            secondInvocation -> { throw finalException; }
+                firstInvocation  -> { throw new DockerComposeExecutionException(); },
+                secondInvocation -> { throw finalException; }
         ));
 
         try {

@@ -16,7 +16,6 @@
 package com.palantir.docker.compose.logging;
 
 import com.palantir.docker.compose.execution.DockerCompose;
-
 import java.io.IOException;
 
 public interface LogCollector {
