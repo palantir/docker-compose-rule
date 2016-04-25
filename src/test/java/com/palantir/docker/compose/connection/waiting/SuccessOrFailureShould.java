@@ -15,8 +15,6 @@
  */
 package com.palantir.docker.compose.connection.waiting;
 
-import org.junit.Test;
-
 import static com.palantir.docker.compose.connection.waiting.SuccessOrFailureMatchers.failure;
 import static com.palantir.docker.compose.connection.waiting.SuccessOrFailureMatchers.failureWithMessage;
 import static com.palantir.docker.compose.connection.waiting.SuccessOrFailureMatchers.successful;
@@ -24,6 +22,8 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.both;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.core.Is.is;
+
+import org.junit.Test;
 
 public class SuccessOrFailureShould {
     @Test
@@ -45,10 +45,10 @@ public class SuccessOrFailureShould {
     public void fail_from_an_exception() {
         Exception exception = new RuntimeException("oh no");
         assertThat(SuccessOrFailure.fromException(exception),
-            is(failureWithMessage(both(
-                containsString("RuntimeException")).and(
-                containsString("oh no")
-            ))));
+                is(failureWithMessage(both(
+                    containsString("RuntimeException")).and(
+                    containsString("oh no")
+                ))));
     }
 
     @Test

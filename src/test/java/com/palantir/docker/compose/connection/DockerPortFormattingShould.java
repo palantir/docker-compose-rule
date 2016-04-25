@@ -15,10 +15,10 @@
  */
 package com.palantir.docker.compose.connection;
 
-import org.junit.Test;
-
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
+
+import org.junit.Test;
 
 public class DockerPortFormattingShould {
     private final DockerPort dockerPort = new DockerPort("hostname", 1234, 4321);

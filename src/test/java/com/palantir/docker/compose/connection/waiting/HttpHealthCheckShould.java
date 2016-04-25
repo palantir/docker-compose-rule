@@ -16,18 +16,17 @@
 
 package com.palantir.docker.compose.connection.waiting;
 
-import com.palantir.docker.compose.connection.Container;
-import com.palantir.docker.compose.connection.DockerPort;
-import org.junit.Test;
-
-import java.util.function.Function;
-
 import static com.palantir.docker.compose.connection.waiting.SuccessOrFailureMatchers.failure;
 import static com.palantir.docker.compose.connection.waiting.SuccessOrFailureMatchers.successful;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+
+import com.palantir.docker.compose.connection.Container;
+import com.palantir.docker.compose.connection.DockerPort;
+import java.util.function.Function;
+import org.junit.Test;
 
 public class HttpHealthCheckShould {
     private static final Function<DockerPort, String> URL_FUNCTION = port -> null;

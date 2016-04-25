@@ -16,7 +16,6 @@
 package com.palantir.docker.compose.connection;
 
 import com.palantir.docker.compose.execution.DockerCompose;
-
 import java.util.HashMap;
 import java.util.Map;
 

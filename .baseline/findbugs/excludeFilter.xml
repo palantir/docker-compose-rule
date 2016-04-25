@@ -1,31 +1,21 @@
+<!-- See http://findbugs.sourceforge.net/manual/filter.html for syntax -->
 <FindBugsFilter>
-  <!-- Do not check test files -->
-  <Match>
-    <!-- Class names ending in 'Tests' -->
-    <Class name="~.*Tests$" />
-  </Match>
-  <Match>
-    <!-- Class names ending in 'Test' -->
-    <Class name="~.*Test$" />
-  </Match>
-  <Match>
-    <!-- Class names beginning with 'Test' -->
-    <Class name="~.*\.Test[^.]*$" />
-  </Match>
-  <Match>
-    <!-- Inner classes not defining serializable. Guava has lots of abstract classes
-         you are expected to make into inner classes that are serializable that we will
-         never serialize -->
-    <And>
-      <Bug pattern="SE_BAD_FIELD" />
-      <Class name="~.(\\$\d)+$" />
-    </And>
-  </Match>
-  <Match>
-    <!-- Findbugs seems convinced this cannot be null but I cannot see why -->
-    <And>
-       <Bug pattern="RCN_REDUNDANT_NULLCHECK_OF_NONNULL_VALUE" />
-       <Class name="com.palantir.magritte.component.foundry.v8.FoundryErrorHandler" />
-    </And>
-  </Match>
+
+    <!-- @NonnullByDefault doesn't play nicely with overriding @Nullable parameters/outputs -->
+    <Match>
+        <Bug pattern="NP_PARAMETER_MUST_BE_NONNULL_BUT_MARKED_AS_NULLABLE" />
+    </Match>
+
+    <!-- Ignore the following bug patterns in test code -->
+    <!-- (i.e., classes ending in 'Test' or 'Tests', and inner classes of same) -->
+    <Match>
+        <Class name="~.*\.*Tests?(\$.*)?" />
+        <Or>
+            <Bug pattern="NP_NONNULL_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR"/> <!-- common in tests to have non-final variables instantiated in @Before methods, which FindBugs can't detect -->
+            <Bug pattern="NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE"/> <!-- if a null is dereferenced, test will fail anyway. Plus assertNotNull() is often a bad pattern. -->
+            <Bug pattern="RV_RETURN_VALUE_IGNORED_INFERRED"/> <!-- common in tests to call a method [that has a return value] to deliberately cause an exception, then test that exception -->
+            <Bug pattern="RV_RETURN_VALUE_IGNORED_NO_SIDE_EFFECT"/> <!-- ditto above -->
+            <Bug pattern="URF_UNREAD_PUBLIC_OR_PROTECTED_FIELD"/> <!-- @Rule ivars can be public and unused -->
+        </Or>
+    </Match>
 </FindBugsFilter>

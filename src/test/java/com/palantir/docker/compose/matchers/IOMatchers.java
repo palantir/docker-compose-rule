@@ -15,25 +15,23 @@
  */
 package com.palantir.docker.compose.matchers;
 
-import com.google.common.base.MoreObjects;
-import org.apache.commons.io.FileUtils;
-import org.hamcrest.Description;
-import org.hamcrest.FeatureMatcher;
-import org.hamcrest.Matcher;
-import org.hamcrest.TypeSafeDiagnosingMatcher;
+import static org.hamcrest.Matchers.containsString;
 
+import com.google.common.base.MoreObjects;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.regex.Pattern;
+import org.apache.commons.io.FileUtils;
+import org.hamcrest.Description;
+import org.hamcrest.FeatureMatcher;
+import org.hamcrest.Matcher;
+import org.hamcrest.TypeSafeDiagnosingMatcher;
 
-import static org.hamcrest.Matchers.containsString;
-
-public class IOMatchers {
-    private IOMatchers() {
-    }
+public final class IOMatchers {
+    private IOMatchers() {}
 
     public static Matcher<File> hasFiles(int numberOfFiles) {
         return new ValueCachingMatcher<File>() {
@@ -42,7 +40,7 @@ public class IOMatchers {
             @Override
             public void describeTo(Description description) {
                 description.appendText("directory ")
-                           .appendValue(value)
+                           .appendValue(value())
                            .appendText(" to have " + numberOfFiles + " files");
             }
 
@@ -57,7 +55,7 @@ public class IOMatchers {
 
             @Override
             protected boolean matchesSafely() {
-                files = MoreObjects.firstNonNull(value.list(), new String[0]);
+                files = MoreObjects.firstNonNull(value().list(), new String[0]);
                 return files.length == numberOfFiles;
             }
         };
@@ -80,7 +78,7 @@ public class IOMatchers {
 
             @Override
             protected boolean matchesSafely() {
-                return value.getName().equals(filename);
+                return value().getName().equals(filename);
             }
         };
     }
@@ -127,7 +125,7 @@ public class IOMatchers {
             @Override
             public void describeTo(Description description) {
                 description.appendText("file ")
-                           .appendValue(value)
+                           .appendValue(value())
                            .appendText(" to exist");
             }
 
@@ -140,7 +138,7 @@ public class IOMatchers {
 
             @Override
             protected boolean matchesSafely() {
-                return value.exists();
+                return value().exists();
             }
         };
     }
@@ -149,7 +147,7 @@ public class IOMatchers {
         return new ValueCachingMatcher<File>() {
             @Override
             public void describeTo(Description description) {
-                description.appendValue(value)
+                description.appendValue(value())
                            .appendText(" is directory");
             }
 
@@ -161,7 +159,7 @@ public class IOMatchers {
 
             @Override
             protected boolean matchesSafely() {
-                return value.isDirectory();
+                return value().isDirectory();
             }
         };
     }
@@ -171,7 +169,7 @@ public class IOMatchers {
             @Override
             public void describeTo(Description description) {
                 description.appendText("file ")
-                           .appendValue(value)
+                           .appendValue(value())
                            .appendText(" to exist");
             }
 
@@ -184,7 +182,7 @@ public class IOMatchers {
 
             @Override
             protected boolean matchesSafely() {
-                return value.toFile().exists();
+                return value().toFile().exists();
             }
         };
     }

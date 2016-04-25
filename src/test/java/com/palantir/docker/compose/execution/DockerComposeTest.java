@@ -15,19 +15,6 @@
  */
 package com.palantir.docker.compose.execution;
 
-import com.palantir.docker.compose.connection.ContainerNames;
-import com.palantir.docker.compose.connection.DockerMachine;
-import com.palantir.docker.compose.connection.DockerPort;
-import com.palantir.docker.compose.connection.Ports;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
-
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-
 import static com.palantir.docker.compose.execution.DockerComposeExecArgument.arguments;
 import static com.palantir.docker.compose.execution.DockerComposeExecOption.options;
 import static org.apache.commons.io.IOUtils.toInputStream;
@@ -38,6 +25,19 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
+import com.palantir.docker.compose.connection.ContainerNames;
+import com.palantir.docker.compose.connection.DockerMachine;
+import com.palantir.docker.compose.connection.DockerPort;
+import com.palantir.docker.compose.connection.Ports;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.ExpectedException;
+
 
 public class DockerComposeTest {
 
@@ -131,7 +131,7 @@ public class DockerComposeTest {
     public void docker_compose_exec_passes_concatenated_arguments_to_executor() throws IOException, InterruptedException {
         when(executedProcess.getInputStream()).thenReturn(toInputStream("docker-compose version 1.7.0rc1, build 1ad8866"));
         compose.exec(options("-d"), "container_1", arguments("ls"));
-        verify(executor,times(1)).execute("exec", "-d", "container_1", "ls");
+        verify(executor, times(1)).execute("exec", "-d", "container_1", "ls");
     }
 
     @Test

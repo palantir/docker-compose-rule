@@ -15,16 +15,15 @@
  */
 package com.palantir.docker.compose.execution;
 
+import static java.util.Optional.empty;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.Is.is;
+
+import java.io.IOException;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
-
-import java.io.IOException;
-
-import static java.util.Optional.empty;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.Is.is;
 
 public class DockerComposeLocationsShould {
     private static final String badLocation = "file/that/does/not/exist";
@@ -32,7 +31,7 @@ public class DockerComposeLocationsShould {
 
     @Rule public TemporaryFolder folder = new TemporaryFolder();
 
-    String goodLocation;
+    private String goodLocation;
 
     @Before
     public void setup() throws IOException {

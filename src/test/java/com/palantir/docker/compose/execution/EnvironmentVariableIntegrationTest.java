@@ -15,18 +15,17 @@
  */
 package com.palantir.docker.compose.execution;
 
-import com.palantir.docker.compose.DockerComposition;
-import com.palantir.docker.compose.connection.DockerMachine;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
-
-import java.nio.file.Path;
-
 import static com.palantir.docker.compose.connection.waiting.HealthChecks.toHaveAllPortsOpen;
 import static com.palantir.docker.compose.matchers.IOMatchers.fileContainingString;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
+
+import com.palantir.docker.compose.DockerComposition;
+import com.palantir.docker.compose.connection.DockerMachine;
+import java.nio.file.Path;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
 public class EnvironmentVariableIntegrationTest {
 

@@ -16,12 +16,11 @@
 package com.palantir.docker.compose.utils;
 
 import com.google.common.collect.ImmutableList;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
-
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Function;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 
 public class MockitoMultiAnswer<T> implements Answer<T> {
     private final List<Function<InvocationOnMock, T>> invocationHandlers;
@@ -41,7 +40,7 @@ public class MockitoMultiAnswer<T> implements Answer<T> {
             throw new RuntimeException("Called more times than supported");
         }
 
-        Function<InvocationOnMock,T> invocationHandler = invocationHandlers.get(numberOfTimesCalled);
+        Function<InvocationOnMock, T> invocationHandler = invocationHandlers.get(numberOfTimesCalled);
         numberOfTimesCalled++;
         return invocationHandler.apply(invocation);
     }

@@ -15,27 +15,30 @@
  */
 package com.palantir.docker.compose.execution;
 
+import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.Matchers.lessThan;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
+
 import com.github.zafarkhaja.semver.Version;
 import org.junit.Test;
 
-import static junit.framework.TestCase.assertTrue;
-import static org.junit.Assert.assertEquals;
 
 public class DockerComposeVersionTest {
 
     @Test
     public void compare_major_versions_first() throws Exception {
-        assertTrue(Version.valueOf("2.1.0").compareTo(Version.valueOf("1.2.1")) > 0);
+        assertThat(Version.valueOf("2.1.0").compareTo(Version.valueOf("1.2.1")), greaterThan(0));
     }
 
     @Test
     public void compare_minor_versions_when_major_versions_are_the_same() throws Exception {
-        assertTrue(Version.valueOf("2.1.7").compareTo(Version.valueOf("2.3.2")) < 0);
+        assertThat(Version.valueOf("2.1.7").compareTo(Version.valueOf("2.3.2")), lessThan(0));
     }
 
     @Test
     public void return_equals_for_the_same_version_strings() throws Exception {
-        assertTrue(Version.valueOf("2.1.2").compareTo(Version.valueOf("2.1.2")) == 0);
+        assertEquals(Version.valueOf("2.1.2").compareTo(Version.valueOf("2.1.2")), 0);
     }
 
     @Test

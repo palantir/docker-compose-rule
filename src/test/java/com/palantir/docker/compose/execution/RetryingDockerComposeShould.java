@@ -15,12 +15,6 @@
  */
 package com.palantir.docker.compose.execution;
 
-import com.palantir.docker.compose.connection.ContainerNames;
-import org.junit.Before;
-import org.junit.Test;
-
-import java.io.IOException;
-
 import static com.palantir.docker.compose.execution.DockerComposeExecArgument.arguments;
 import static com.palantir.docker.compose.execution.DockerComposeExecOption.options;
 import static org.hamcrest.core.Is.is;
@@ -32,12 +26,18 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
+import com.palantir.docker.compose.connection.ContainerNames;
+import java.io.IOException;
+import org.junit.Before;
+import org.junit.Test;
+
 public class RetryingDockerComposeShould {
     private final DockerCompose dockerCompose = mock(DockerCompose.class);
     private final Retryer retryer = mock(Retryer.class);
     private final RetryingDockerCompose retryingDockerCompose = new RetryingDockerCompose(retryer, dockerCompose);
     private final ContainerNames someContainerNames = new ContainerNames("hey");
     private static final String CONTAINER_NAME = "container";
+
     @Before
     public void before() throws IOException, InterruptedException {
         retryerJustCallsOperation();

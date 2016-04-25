@@ -16,11 +16,10 @@
 package com.palantir.docker.compose.matchers;
 
 import com.palantir.docker.compose.connection.DockerPort;
-import org.hamcrest.Description;
-import org.hamcrest.TypeSafeMatcher;
-
 import java.util.Collection;
 import java.util.stream.Collectors;
+import org.hamcrest.Description;
+import org.hamcrest.TypeSafeMatcher;
 
 public class AvailablePortMatcher extends TypeSafeMatcher<Collection<DockerPort>> {
 

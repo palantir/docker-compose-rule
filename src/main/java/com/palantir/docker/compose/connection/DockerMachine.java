@@ -15,6 +15,12 @@
  */
 package com.palantir.docker.compose.connection;
 
+import static com.google.common.base.MoreObjects.firstNonNull;
+import static com.google.common.collect.Maps.newHashMap;
+import static com.palantir.docker.compose.configuration.EnvironmentVariables.DOCKER_CERT_PATH;
+import static com.palantir.docker.compose.configuration.EnvironmentVariables.DOCKER_HOST;
+import static com.palantir.docker.compose.configuration.EnvironmentVariables.DOCKER_TLS_VERIFY;
+
 import com.google.common.collect.ImmutableMap;
 import com.palantir.docker.compose.configuration.AdditionalEnvironmentValidator;
 import com.palantir.docker.compose.configuration.DaemonEnvironmentValidator;
@@ -24,15 +30,8 @@ import com.palantir.docker.compose.configuration.HostIpResolver;
 import com.palantir.docker.compose.configuration.RemoteEnvironmentValidator;
 import com.palantir.docker.compose.configuration.RemoteHostIpResolver;
 import com.palantir.docker.compose.execution.DockerConfiguration;
-
 import java.util.HashMap;
 import java.util.Map;
-
-import static com.google.common.base.MoreObjects.firstNonNull;
-import static com.google.common.collect.Maps.newHashMap;
-import static com.palantir.docker.compose.configuration.EnvironmentVariables.DOCKER_CERT_PATH;
-import static com.palantir.docker.compose.configuration.EnvironmentVariables.DOCKER_HOST;
-import static com.palantir.docker.compose.configuration.EnvironmentVariables.DOCKER_TLS_VERIFY;
 
 public class DockerMachine implements DockerConfiguration {
 
@@ -108,7 +107,7 @@ public class DockerMachine implements DockerConfiguration {
         return new RemoteBuilder();
     }
 
-    public static class RemoteBuilder {
+    public static final class RemoteBuilder {
 
         private final Map<String, String> dockerEnvironment = newHashMap();
         private Map<String, String> additionalEnvironment = newHashMap();

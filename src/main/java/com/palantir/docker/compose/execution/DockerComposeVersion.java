@@ -16,15 +16,16 @@
 package com.palantir.docker.compose.execution;
 import com.github.zafarkhaja.semver.Version;
 
-public class DockerComposeVersion {
+public final class DockerComposeVersion {
 
+    private DockerComposeVersion() {}
     //docker-compose version format is like 1.7.0rc1, which can't be parsed by java-semver
     //here we only pass 1.7.0 to java-semver
     public static Version parseFromDockerComposeVersion(String versionOutput) {
         String[] splitOnSeparator = versionOutput.split(" ");
         String version = splitOnSeparator[2];
         StringBuilder builder = new StringBuilder();
-        for (int i = 0; i < version.length(); i ++) {
+        for (int i = 0; i < version.length(); i++) {
             if (version.charAt(i) >= '0' && version.charAt(i) <= '9' || version.charAt(i) == '.') {
                 builder.append(version.charAt(i));
             } else {

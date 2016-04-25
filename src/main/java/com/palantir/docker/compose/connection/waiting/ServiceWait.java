@@ -15,21 +15,20 @@
  */
 package com.palantir.docker.compose.connection.waiting;
 
+import static java.util.stream.Collectors.joining;
+
 import com.google.common.collect.ImmutableList;
 import com.jayway.awaitility.Awaitility;
 import com.jayway.awaitility.core.ConditionTimeoutException;
 import com.palantir.docker.compose.connection.Container;
-import org.joda.time.Duration;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
-
-import static java.util.stream.Collectors.joining;
+import org.joda.time.Duration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ServiceWait {
     private static final Logger log = LoggerFactory.getLogger(ServiceWait.class);
@@ -72,8 +71,8 @@ public class ServiceWait {
 
     private String serviceDidNotStartupExceptionMessage(AtomicReference<Optional<SuccessOrFailure>> lastSuccessOrFailure) {
         String healthcheckFailureMessage = lastSuccessOrFailure.get()
-            .flatMap(SuccessOrFailure::toOptionalFailureMessage)
-            .orElse("The healthcheck did not finish before the timeout");
+                .flatMap(SuccessOrFailure::toOptionalFailureMessage)
+                .orElse("The healthcheck did not finish before the timeout");
 
         return String.format("%s '%s' failed to pass startup check:%n%s",
             containers.size() > 1 ? "Containers" : "Container",

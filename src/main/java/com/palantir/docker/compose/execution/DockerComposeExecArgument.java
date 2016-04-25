@@ -15,10 +15,10 @@
  */
 package com.palantir.docker.compose.execution;
 
-import org.immutables.value.Value;
-
 import java.util.Arrays;
 import java.util.List;
+
+import org.immutables.value.Value;
 
 @Value.Immutable
 public abstract class DockerComposeExecArgument {

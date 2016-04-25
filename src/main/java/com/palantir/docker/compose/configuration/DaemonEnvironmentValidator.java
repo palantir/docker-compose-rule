@@ -15,20 +15,18 @@
  */
 package com.palantir.docker.compose.configuration;
 
-import com.google.common.collect.ImmutableSet;
-
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
-
 import static com.google.common.base.Preconditions.checkState;
 import static com.palantir.docker.compose.configuration.EnvironmentVariables.DOCKER_CERT_PATH;
 import static com.palantir.docker.compose.configuration.EnvironmentVariables.DOCKER_HOST;
 import static com.palantir.docker.compose.configuration.EnvironmentVariables.DOCKER_TLS_VERIFY;
-
 import static java.util.stream.Collectors.joining;
 
-public class DaemonEnvironmentValidator {
+import com.google.common.collect.ImmutableSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+public final class DaemonEnvironmentValidator {
 
     private static final Set<String> ILLEGAL_VARIABLES = ImmutableSet.of(DOCKER_TLS_VERIFY, DOCKER_HOST, DOCKER_CERT_PATH);
 

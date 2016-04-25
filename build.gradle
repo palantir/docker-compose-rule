@@ -10,7 +10,7 @@ buildscript {
         }
     }
     dependencies {
-        classpath 'com.palantir:gradle-baseline-java:0.1.1'
+        classpath 'com.palantir:gradle-baseline-java:0.4.1'
         classpath "com.jfrog.bintray.gradle:gradle-bintray-plugin:${bintrayPlugin}"
         classpath "org.jfrog.buildinfo:build-info-extractor-gradle:4.0.0"
         classpath 'gradle.plugin.org.inferred:gradle-processors:1.2.1'
@@ -28,6 +28,7 @@ apply plugin: 'java'
 group = 'com.palantir.docker.compose'
 version "git describe --tags --dirty".execute().text.trim()
 
+apply plugin: 'com.palantir.baseline-config'
 apply plugin: 'com.palantir.baseline-checkstyle'
 apply plugin: 'com.palantir.baseline-eclipse'
 apply plugin: 'com.palantir.baseline-findbugs'
@@ -69,4 +70,3 @@ dependencies {
     testCompile "com.github.tomakehurst:wiremock:2.0.6-beta"
     testCompile "com.google.code.findbugs:jsr305:3.0.0"
 }
-
