@@ -21,10 +21,13 @@ import org.junit.Test;
 
 import java.io.IOException;
 
+import static com.palantir.docker.compose.execution.DockerComposeExecArgument.arguments;
+import static com.palantir.docker.compose.execution.DockerComposeExecOption.options;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
@@ -34,6 +37,7 @@ public class RetryingDockerComposeShould {
     private final Retryer retryer = mock(Retryer.class);
     private final RetryingDockerCompose retryingDockerCompose = new RetryingDockerCompose(retryer, dockerCompose);
     private final ContainerNames someContainerNames = new ContainerNames("hey");
+    private static final String CONTAINER_NAME = "container";
     @Before
     public void before() throws IOException, InterruptedException {
         retryerJustCallsOperation();
@@ -68,5 +72,16 @@ public class RetryingDockerComposeShould {
 
     private void verifyRetryerWasUsed() throws IOException, InterruptedException {
         verify(retryer).runWithRetries(any(Retryer.RetryableDockerComposeOperation.class));
+    }
+
+    private void verifyRetryerWasNotUsed() throws IOException, InterruptedException {
+        verify(retryer, times(0)).runWithRetries(any(Retryer.RetryableDockerComposeOperation.class));
+    }
+
+    @Test
+    public void calls_exec_on_the_underlying_docker_compose_and_not_invoke_retryer() throws IOException, InterruptedException {
+        retryingDockerCompose.exec(options("-d"), CONTAINER_NAME, arguments("ls"));
+        verifyRetryerWasNotUsed();
+        verify(dockerCompose).exec(options("-d"), CONTAINER_NAME, arguments("ls"));
     }
 }
