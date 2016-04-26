@@ -40,7 +40,8 @@ public class DockerCompositionIntegrationTest {
     public DockerComposition composition = DockerComposition.of("src/test/resources/docker-compose.yaml")
                                                             .waitingForService("db", toHaveAllPortsOpen())
                                                             .waitingForService("db2", toHaveAllPortsOpen())
-                                                            .waitingForServices(ImmutableList.of("db3", "db4"), toAllHaveAllPortsOpen())
+                                                            .waitingForService("db3", toHaveAllPortsOpen())
+                                                            .waitingForService("db4", toHaveAllPortsOpen())
                                                             .build();
 
     private MultiServiceHealthCheck toAllHaveAllPortsOpen() {
