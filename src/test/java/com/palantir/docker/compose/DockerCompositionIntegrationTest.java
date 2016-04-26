@@ -21,9 +21,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 
 import com.google.common.collect.ImmutableList;
-import com.palantir.docker.compose.connection.Container;
-import com.palantir.docker.compose.connection.waiting.MultiServiceHealthCheck;
-import com.palantir.docker.compose.connection.waiting.SuccessOrFailure;
 import java.io.IOException;
 import java.util.List;
 import java.util.function.Consumer;
@@ -43,16 +40,6 @@ public class DockerCompositionIntegrationTest {
                                                             .waitingForService("db3", toHaveAllPortsOpen())
                                                             .waitingForService("db4", toHaveAllPortsOpen())
                                                             .build();
-
-    private MultiServiceHealthCheck toAllHaveAllPortsOpen() {
-        return containers -> {
-            boolean healthy = containers.stream()
-                    .map(Container::areAllPortsOpen)
-                    .allMatch(SuccessOrFailure::succeeded);
-
-            return SuccessOrFailure.fromBoolean(healthy, "");
-        };
-    }
 
     @Rule
     public ExpectedException exception = ExpectedException.none();

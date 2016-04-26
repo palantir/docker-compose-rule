@@ -15,13 +15,9 @@
  */
 package com.palantir.docker.compose.connection.waiting;
 
-import static java.util.stream.Collectors.joining;
-
-import com.google.common.collect.ImmutableList;
 import com.jayway.awaitility.Awaitility;
 import com.jayway.awaitility.core.ConditionTimeoutException;
 import com.palantir.docker.compose.connection.Container;
-import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
@@ -32,24 +28,18 @@ import org.slf4j.LoggerFactory;
 
 public class ServiceWait {
     private static final Logger log = LoggerFactory.getLogger(ServiceWait.class);
-    private final List<Container> containers;
-    private final MultiServiceHealthCheck healthCheck;
+    private final Container container;
+    private final SingleServiceHealthCheck healthCheck;
     private final Duration timeout;
 
-    public ServiceWait(Container service, SingleServiceHealthCheck healthCheck, Duration timeout) {
-        this.containers = ImmutableList.of(service);
-        this.healthCheck = MultiServiceHealthCheck.fromSingleServiceHealthCheck(healthCheck);
-        this.timeout = timeout;
-    }
-
-    public ServiceWait(List<Container> containers, MultiServiceHealthCheck healthCheck, Duration timeout) {
-        this.containers = containers;
+    public ServiceWait(Container container, SingleServiceHealthCheck healthCheck, Duration timeout) {
+        this.container = container;
         this.healthCheck = healthCheck;
         this.timeout = timeout;
     }
 
     public void waitTillServiceIsUp() {
-        log.debug("Waiting for services [{}]", containerNames());
+        log.debug("Waiting for service [{}]", container.getContainerName());
         final AtomicReference<Optional<SuccessOrFailure>> lastSuccessOrFailure = new AtomicReference<>(Optional.empty());
         try {
             Awaitility.await()
@@ -63,7 +53,7 @@ public class ServiceWait {
 
     private Callable<Boolean> weHaveSuccess(AtomicReference<Optional<SuccessOrFailure>> lastSuccessOrFailure) {
         return () -> {
-            SuccessOrFailure successOrFailure = healthCheck.areServicesUp(containers);
+            SuccessOrFailure successOrFailure = healthCheck.isServiceUp(container);
             lastSuccessOrFailure.set(Optional.of(successOrFailure));
             return successOrFailure.succeeded();
         };
@@ -75,15 +65,8 @@ public class ServiceWait {
                 .orElse("The healthcheck did not finish before the timeout");
 
         return String.format("%s '%s' failed to pass startup check:%n%s",
-            containers.size() > 1 ? "Containers" : "Container",
-            containerNames(),
+            "Container",
+            container.getContainerName(),
             healthcheckFailureMessage);
-    }
-
-    private String containerNames() {
-        return containers.stream()
-                .map(Container::getContainerName)
-                .collect(joining(", "));
-
     }
 }
