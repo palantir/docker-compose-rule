@@ -113,6 +113,19 @@ DockerPort portOnContainerWithInternalMapping(String container, int portNumber)
 
 In both cases the port in the Docker compose file must be referenced. Using the latter method no external port needs to be declared, this will be allocated by Docker at runtime and the DockerPort object contains the dynamic port and IP assignment.
 
+Run docker-compose exec
+---------------------------------------------------------
+
+We support docker-compose exec command which runs a new command in a running container.
+
+
+```java
+dockerCompose.exec(dockerComposeExecOption, containerName, dockerComposeExecArgument)
+```
+
+Jut be aware that you need at least docker-compose 1.7 to run docker-compose exec
+
+
 Collecting logs
 ---------------
 

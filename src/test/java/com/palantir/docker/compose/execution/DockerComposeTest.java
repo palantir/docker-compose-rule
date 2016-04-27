@@ -15,11 +15,14 @@
  */
 package com.palantir.docker.compose.execution;
 
+import static com.palantir.docker.compose.execution.DockerComposeExecArgument.arguments;
+import static com.palantir.docker.compose.execution.DockerComposeExecOption.options;
 import static org.apache.commons.io.IOUtils.toInputStream;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.anyVararg;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -34,6 +37,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+
 
 public class DockerComposeTest {
 
@@ -121,6 +125,21 @@ public class DockerComposeTest {
         exception.expect(IllegalStateException.class);
         exception.expectMessage("No container with name 'db' found");
         compose.ports("db");
+    }
+
+    @Test
+    public void docker_compose_exec_passes_concatenated_arguments_to_executor() throws IOException, InterruptedException {
+        when(executedProcess.getInputStream()).thenReturn(toInputStream("docker-compose version 1.7.0rc1, build 1ad8866"));
+        compose.exec(options("-d"), "container_1", arguments("ls"));
+        verify(executor, times(1)).execute("exec", "-d", "container_1", "ls");
+    }
+
+    @Test
+    public void docker_compose_exec_fails_if_docker_compose_version_is_prior_1_7() throws IOException, InterruptedException {
+        when(executedProcess.getInputStream()).thenReturn(toInputStream("docker-compose version 1.5.6, build 1ad8866"));
+        exception.expect(IllegalStateException.class);
+        exception.expectMessage("You need at least docker-compose 1.7 to run docker-compose exec");
+        compose.exec(options("-d"), "container_1", arguments("ls"));
     }
 
 }
