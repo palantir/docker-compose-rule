@@ -54,11 +54,11 @@ public class DockerComposition extends ExternalResource {
     }
 
     public DockerPort portOnContainerWithExternalMapping(String container, int portNumber) throws IOException, InterruptedException {
-        return rule.containers().get(container).portMappedExternallyTo(portNumber);
+        return rule.containers().container(container).portMappedExternallyTo(portNumber);
     }
 
     public DockerPort portOnContainerWithInternalMapping(String container, int portNumber) throws IOException, InterruptedException {
-        return rule.containers().get(container).portMappedInternallyTo(portNumber);
+        return rule.containers().container(container).portMappedInternallyTo(portNumber);
     }
 
     public static DockerCompositionBuilder of(String dockerComposeFile) {

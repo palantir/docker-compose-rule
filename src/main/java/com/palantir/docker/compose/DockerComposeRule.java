@@ -9,6 +9,7 @@ import com.google.common.collect.ImmutableList;
 import com.palantir.docker.compose.configuration.DockerComposeFiles;
 import com.palantir.docker.compose.configuration.ProjectName;
 import com.palantir.docker.compose.connection.Container;
+import com.palantir.docker.compose.connection.ContainerAccessor;
 import com.palantir.docker.compose.connection.ContainerCache;
 import com.palantir.docker.compose.connection.DockerMachine;
 import com.palantir.docker.compose.connection.waiting.MultiServiceHealthCheck;
@@ -62,7 +63,7 @@ public abstract class DockerComposeRule extends ExternalResource {
     }
 
     @Value.Default
-    public ContainerCache containers() {
+    public ContainerAccessor containers() {
         return new ContainerCache(dockerCompose());
     }
 
@@ -72,7 +73,7 @@ public abstract class DockerComposeRule extends ExternalResource {
     protected List<ServiceWait> serviceWaits() {
         return services().stream()
                 .map(service -> {
-                    Container container = containers().get(service.serviceName());
+                    Container container = containers().container(service.serviceName());
                     SingleServiceHealthCheck singlecheck = service.healthCheck();
                     return new ServiceWait(container, singlecheck, timeout());
                 }).collect(toList());

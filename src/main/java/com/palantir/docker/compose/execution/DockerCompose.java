@@ -16,12 +16,13 @@
 package com.palantir.docker.compose.execution;
 
 import com.palantir.docker.compose.connection.Container;
+import com.palantir.docker.compose.connection.ContainerAccessor;
 import com.palantir.docker.compose.connection.ContainerNames;
 import com.palantir.docker.compose.connection.Ports;
 import java.io.IOException;
 import java.io.OutputStream;
 
-public interface DockerCompose {
+public interface DockerCompose extends ContainerAccessor {
     void build() throws IOException, InterruptedException;
     void up() throws IOException, InterruptedException;
     void down() throws IOException, InterruptedException;
