@@ -15,6 +15,7 @@ import com.palantir.docker.compose.connection.DockerMachine;
 import com.palantir.docker.compose.connection.waiting.MultiServiceHealthCheck;
 import com.palantir.docker.compose.connection.waiting.ServiceWait;
 import com.palantir.docker.compose.connection.waiting.SingleServiceHealthCheck;
+import com.palantir.docker.compose.connection.waiting.SingleServiceWait;
 import com.palantir.docker.compose.execution.DefaultDockerCompose;
 import com.palantir.docker.compose.execution.DockerCompose;
 import com.palantir.docker.compose.execution.DockerComposeExecutable;
@@ -67,7 +68,7 @@ public abstract class DockerComposeRule extends ExternalResource {
         return new ContainerCache(dockerCompose());
     }
 
-    protected abstract List<DockerService> services();
+    protected abstract List<SingleServiceWait> services();
 
     @Value.Lazy
     protected List<ServiceWait> serviceWaits() {
@@ -128,10 +129,10 @@ public abstract class DockerComposeRule extends ExternalResource {
             return logCollector(FileLogCollector.fromPath(path));
         }
 
-        public abstract Builder addService(DockerService element);
+        public abstract Builder addService(SingleServiceWait element);
 
         public Builder waitingForService(String serviceName, SingleServiceHealthCheck healthCheck) {
-            return addService(DockerService.of(serviceName, healthCheck));
+            return addService(SingleServiceWait.of(serviceName, healthCheck));
         }
 
         public Builder waitingForServices(ImmutableList<String> services, MultiServiceHealthCheck healthCheck) {
