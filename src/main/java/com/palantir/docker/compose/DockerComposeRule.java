@@ -3,17 +3,14 @@
  */
 package com.palantir.docker.compose;
 
-import static java.util.stream.Collectors.toList;
-
 import com.google.common.collect.ImmutableList;
 import com.palantir.docker.compose.configuration.DockerComposeFiles;
 import com.palantir.docker.compose.configuration.ProjectName;
-import com.palantir.docker.compose.connection.Container;
 import com.palantir.docker.compose.connection.ContainerAccessor;
 import com.palantir.docker.compose.connection.ContainerCache;
 import com.palantir.docker.compose.connection.DockerMachine;
+import com.palantir.docker.compose.connection.waiting.ClusterWait;
 import com.palantir.docker.compose.connection.waiting.MultiServiceHealthCheck;
-import com.palantir.docker.compose.connection.waiting.ServiceWait;
 import com.palantir.docker.compose.connection.waiting.SingleServiceHealthCheck;
 import com.palantir.docker.compose.connection.waiting.SingleServiceWait;
 import com.palantir.docker.compose.execution.DefaultDockerCompose;
@@ -68,17 +65,7 @@ public abstract class DockerComposeRule extends ExternalResource {
         return new ContainerCache(dockerCompose());
     }
 
-    protected abstract List<SingleServiceWait> services();
-
-    @Value.Lazy
-    protected List<ServiceWait> serviceWaits() {
-        return services().stream()
-                .map(service -> {
-                    Container container = containers().container(service.serviceName());
-                    SingleServiceHealthCheck singlecheck = service.healthCheck();
-                    return new ServiceWait(container, singlecheck, timeout());
-                }).collect(toList());
-    }
+    protected abstract List<ClusterWait> clusterWaits();
 
     @Value.Default
     protected Duration timeout() {
@@ -100,7 +87,7 @@ public abstract class DockerComposeRule extends ExternalResource {
 
         logCollector().startCollecting(dockerCompose());
         log.debug("Waiting for services");
-        serviceWaits().forEach(ServiceWait::waitTillServiceIsUp);
+        clusterWaits().forEach(clusterWait -> clusterWait.waitUntilReady(containers(), timeout()));
         log.debug("docker-compose cluster started");
     }
 
@@ -129,10 +116,10 @@ public abstract class DockerComposeRule extends ExternalResource {
             return logCollector(FileLogCollector.fromPath(path));
         }
 
-        public abstract Builder addService(SingleServiceWait element);
+        public abstract Builder addClusterWait(ClusterWait clusterWait);
 
         public Builder waitingForService(String serviceName, SingleServiceHealthCheck healthCheck) {
-            return addService(SingleServiceWait.of(serviceName, healthCheck));
+            return addClusterWait(SingleServiceWait.of(serviceName, healthCheck));
         }
 
         public Builder waitingForServices(ImmutableList<String> services, MultiServiceHealthCheck healthCheck) {
