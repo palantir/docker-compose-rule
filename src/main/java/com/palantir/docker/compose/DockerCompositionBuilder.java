@@ -23,12 +23,11 @@ import com.palantir.docker.compose.connection.DockerMachine;
 import com.palantir.docker.compose.connection.waiting.MultiServiceHealthCheck;
 import com.palantir.docker.compose.connection.waiting.SingleServiceHealthCheck;
 import com.palantir.docker.compose.execution.DockerCompose;
+import java.util.List;
 import org.joda.time.Duration;
 
 public class DockerCompositionBuilder {
     private final Builder builder;
-
-    public static final int DEFAULT_RETRY_ATTEMPTS = 2;
 
     public DockerCompositionBuilder() {
         this.builder = DockerComposeRule.builder();
@@ -41,6 +40,16 @@ public class DockerCompositionBuilder {
 
     public DockerCompositionBuilder waitingForServices(ImmutableList<String> services, MultiServiceHealthCheck healthCheck) {
         builder.waitingForServices(services, healthCheck);
+        return this;
+    }
+
+    public DockerCompositionBuilder waitingForServices(List<String> services, MultiServiceHealthCheck check, Duration timeout) {
+        builder.waitingForServices(services, check, timeout);
+        return this;
+    }
+
+    public DockerCompositionBuilder waitingForService(String serviceName, SingleServiceHealthCheck check, Duration timeout) {
+        builder.waitingForService(serviceName, check, timeout);
         return this;
     }
 
@@ -71,11 +80,6 @@ public class DockerCompositionBuilder {
 
     public DockerCompositionBuilder saveLogsTo(String absolutePath) {
         builder.saveLogsTo(absolutePath);
-        return this;
-    }
-
-    public DockerCompositionBuilder timeout(Duration timeout) {
-        builder.timeout(timeout);
         return this;
     }
 

@@ -31,9 +31,14 @@ import org.slf4j.LoggerFactory;
 @Value.Immutable
 @Value.Style(depluralize = true)
 public abstract class DockerComposeRule extends ExternalResource {
+    public static final Duration DEFAULT_TIMEOUT = Duration.standardMinutes(2);
+    public static final int DEFAULT_RETRY_ATTEMPTS = 2;
+
     private static final Logger log = LoggerFactory.getLogger(DockerComposeRule.class);
 
     public abstract DockerComposeFiles files();
+
+    protected abstract List<ClusterWait> clusterWaits();
 
     @Value.Default
     protected DockerMachine machine() {
@@ -57,19 +62,12 @@ public abstract class DockerComposeRule extends ExternalResource {
     @Value.Default
     protected DockerCompose dockerCompose() {
         DockerCompose dockerCompose = new DefaultDockerCompose(executable(), machine());
-        return new RetryingDockerCompose(DockerCompositionBuilder.DEFAULT_RETRY_ATTEMPTS, dockerCompose);
+        return new RetryingDockerCompose(DEFAULT_RETRY_ATTEMPTS, dockerCompose);
     }
 
     @Value.Default
     public ContainerAccessor containers() {
         return new ContainerCache(dockerCompose());
-    }
-
-    protected abstract List<ClusterWait> clusterWaits();
-
-    @Value.Default
-    protected Duration timeout() {
-        return Duration.standardMinutes(5);
     }
 
     @Value.Default
@@ -87,7 +85,7 @@ public abstract class DockerComposeRule extends ExternalResource {
 
         logCollector().startCollecting(dockerCompose());
         log.debug("Waiting for services");
-        clusterWaits().forEach(clusterWait -> clusterWait.waitUntilReady(containers(), timeout()));
+        clusterWaits().forEach(clusterWait -> clusterWait.waitUntilReady(containers()));
         log.debug("docker-compose cluster started");
     }
 
@@ -119,11 +117,19 @@ public abstract class DockerComposeRule extends ExternalResource {
         public abstract ImmutableDockerComposeRule.Builder addClusterWait(ClusterWait clusterWait);
 
         public ImmutableDockerComposeRule.Builder waitingForService(String serviceName, SingleServiceHealthCheck healthCheck) {
-            return addClusterWait(SingleServiceWait.of(serviceName, healthCheck));
+            return addClusterWait(SingleServiceWait.of(serviceName, healthCheck, DEFAULT_TIMEOUT));
+        }
+
+        public ImmutableDockerComposeRule.Builder waitingForService(String serviceName, SingleServiceHealthCheck healthCheck, Duration timeout) {
+            return addClusterWait(SingleServiceWait.of(serviceName, healthCheck, timeout));
         }
 
         public ImmutableDockerComposeRule.Builder waitingForServices(List<String> services, MultiServiceHealthCheck healthCheck) {
-            return addClusterWait(MultiServiceWait.of(services, healthCheck));
+            return addClusterWait(MultiServiceWait.of(services, healthCheck, DEFAULT_TIMEOUT));
+        }
+
+        public ImmutableDockerComposeRule.Builder waitingForServices(List<String> services, MultiServiceHealthCheck healthCheck, Duration timeout) {
+            return addClusterWait(MultiServiceWait.of(services, healthCheck, timeout));
         }
     }
 }

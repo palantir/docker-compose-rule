@@ -17,27 +17,15 @@ package com.palantir.docker.compose;
 
 import com.palantir.docker.compose.configuration.DockerComposeFiles;
 import com.palantir.docker.compose.configuration.ProjectName;
-import com.palantir.docker.compose.connection.ContainerCache;
 import com.palantir.docker.compose.connection.DockerMachine;
 import com.palantir.docker.compose.connection.DockerPort;
-import com.palantir.docker.compose.connection.waiting.ServiceWait;
 import com.palantir.docker.compose.execution.DockerCompose;
-import com.palantir.docker.compose.logging.LogCollector;
 import java.io.IOException;
-import java.util.List;
 import org.junit.rules.ExternalResource;
 
 public class DockerComposition extends ExternalResource {
 
     private DockerComposeRule rule;
-
-    public DockerComposition(
-            DockerCompose dockerCompose,
-            List<ServiceWait> serviceWaits,
-            LogCollector logCollector,
-            ContainerCache containers) {
-        this.rule = null;
-    }
 
     public DockerComposition(DockerComposeRule rule) {
         this.rule = rule;

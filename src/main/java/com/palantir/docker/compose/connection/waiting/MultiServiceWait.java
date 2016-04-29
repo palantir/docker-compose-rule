@@ -21,16 +21,19 @@ public abstract class MultiServiceWait implements ClusterWait {
     @Value.Parameter
     protected abstract MultiServiceHealthCheck healthcheck();
 
-    public static MultiServiceWait of(List<String> serviceNames, MultiServiceHealthCheck healthCheck) {
-        return ImmutableMultiServiceWait.of(serviceNames, healthCheck);
+    @Value.Parameter
+    protected abstract Duration timeout();
+
+    public static MultiServiceWait of(List<String> serviceNames, MultiServiceHealthCheck healthCheck, Duration timeout) {
+        return ImmutableMultiServiceWait.of(serviceNames, healthCheck, timeout);
     }
 
     @Override
-    public void waitUntilReady(ContainerAccessor containers, Duration timeout) {
+    public void waitUntilReady(ContainerAccessor containers) {
         List<Container> containersToWaitFor = containerNames().stream()
                         .map(containers::container)
                         .collect(toList());
-        ServiceWait serviceWait = new ServiceWait(containersToWaitFor, healthcheck(), timeout);
+        ServiceWait serviceWait = new ServiceWait(containersToWaitFor, healthcheck(), timeout());
         serviceWait.waitTillServiceIsUp();
     }
 

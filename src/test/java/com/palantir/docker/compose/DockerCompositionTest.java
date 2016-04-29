@@ -121,7 +121,7 @@ public class DockerCompositionTest {
         exception.expect(IllegalStateException.class);
         exception.expectMessage("Container 'db' failed to pass startup check:\noops");
 
-        dockerComposition.timeout(millis(200)).waitingForService("db", (container) -> SuccessOrFailure.failure("oops")).build().before();
+        dockerComposition.waitingForService("db", (container) -> SuccessOrFailure.failure("oops"), millis(200)).build().before();
     }
 
     @Test

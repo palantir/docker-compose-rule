@@ -4,6 +4,7 @@
 
 package com.palantir.docker.compose.connection.waiting;
 
+import static com.palantir.docker.compose.DockerComposeRule.DEFAULT_TIMEOUT;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -12,7 +13,6 @@ import static org.mockito.Mockito.when;
 
 import com.palantir.docker.compose.connection.Container;
 import com.palantir.docker.compose.connection.ContainerAccessor;
-import org.joda.time.Duration;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -21,7 +21,7 @@ public class SingleServiceWaitTest {
     private ContainerAccessor containerAccessor = mock(ContainerAccessor.class);
     private SingleServiceHealthCheck healthCheck = mock(SingleServiceHealthCheck.class);
     private Container someContainer = mock(Container.class);
-    private SingleServiceWait wait = SingleServiceWait.of("somecontainer", healthCheck);
+    private SingleServiceWait wait = SingleServiceWait.of("somecontainer", healthCheck, DEFAULT_TIMEOUT);
 
     @Before
     public void before() {
@@ -31,13 +31,13 @@ public class SingleServiceWaitTest {
 
     @Test
     public void isReadyLooksUpContainer() {
-        wait.waitUntilReady(containerAccessor, Duration.millis(100));
+        wait.waitUntilReady(containerAccessor);
         verify(containerAccessor, times(1)).container("somecontainer");
     }
 
     @Test
     public void isReadyDelegatesToServiceWait() {
-        wait.waitUntilReady(containerAccessor, Duration.millis(100));
+        wait.waitUntilReady(containerAccessor);
         verify(healthCheck, times(1)).isServiceUp(someContainer);
     }
 }
