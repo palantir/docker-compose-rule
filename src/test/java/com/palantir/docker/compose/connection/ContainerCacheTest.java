@@ -39,14 +39,14 @@ public class ContainerCacheTest {
 
     @Test
     public void getting_a_new_container_returns_a_container_with_the_specified_name() {
-        Container container = containers.get(CONTAINER_NAME);
+        Container container = containers.container(CONTAINER_NAME);
         assertThat(container, is(new Container(CONTAINER_NAME, dockerCompose)));
     }
 
     @Test
     public void getting_a_container_twice_returns_the_same_object() {
-        Container container = containers.get(CONTAINER_NAME);
-        Container sameContainer = containers.get(CONTAINER_NAME);
+        Container container = containers.container(CONTAINER_NAME);
+        Container sameContainer = containers.container(CONTAINER_NAME);
         assertThat(container, is(sameInstance(sameContainer)));
     }
 

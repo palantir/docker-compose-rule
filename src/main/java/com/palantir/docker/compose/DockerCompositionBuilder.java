@@ -15,71 +15,75 @@
  */
 package com.palantir.docker.compose;
 
-import static java.util.stream.Collectors.toList;
-import static org.joda.time.Duration.standardMinutes;
-
-import com.palantir.docker.compose.connection.Container;
-import com.palantir.docker.compose.connection.ContainerCache;
+import com.palantir.docker.compose.ImmutableDockerComposeRule.Builder;
+import com.palantir.docker.compose.configuration.DockerComposeFiles;
+import com.palantir.docker.compose.configuration.ProjectName;
+import com.palantir.docker.compose.connection.DockerMachine;
 import com.palantir.docker.compose.connection.waiting.MultiServiceHealthCheck;
-import com.palantir.docker.compose.connection.waiting.ServiceWait;
 import com.palantir.docker.compose.connection.waiting.SingleServiceHealthCheck;
 import com.palantir.docker.compose.execution.DockerCompose;
-import com.palantir.docker.compose.execution.RetryingDockerCompose;
-import com.palantir.docker.compose.logging.DoNothingLogCollector;
-import com.palantir.docker.compose.logging.FileLogCollector;
-import com.palantir.docker.compose.logging.LogCollector;
-import java.util.ArrayList;
 import java.util.List;
 import org.joda.time.Duration;
 
 public class DockerCompositionBuilder {
-    private static final Duration DEFAULT_TIMEOUT = standardMinutes(2);
-    public static final int DEFAULT_RETRY_ATTEMPTS = 2;
+    private final Builder builder;
 
-    private final List<ServiceWait> serviceWaits = new ArrayList<>();
-    private final DockerCompose dockerCompose;
-    private final ContainerCache containers;
-    private LogCollector logCollector = new DoNothingLogCollector();
-    private int numRetryAttempts = DEFAULT_RETRY_ATTEMPTS;
-
-    public DockerCompositionBuilder(DockerCompose dockerCompose) {
-        this.dockerCompose = dockerCompose;
-        this.containers = new ContainerCache(dockerCompose);
+    public DockerCompositionBuilder() {
+        this.builder = DockerComposeRule.builder();
     }
 
     public DockerCompositionBuilder waitingForService(String serviceName, SingleServiceHealthCheck check) {
-        return waitingForService(serviceName, check, DEFAULT_TIMEOUT);
+        builder.waitingForService(serviceName, check);
+        return this;
     }
 
     public DockerCompositionBuilder waitingForServices(List<String> services, MultiServiceHealthCheck check) {
-        return waitingForServices(services, check, DEFAULT_TIMEOUT);
+        builder.waitingForServices(services, check);
+        return this;
     }
 
     public DockerCompositionBuilder waitingForServices(List<String> services, MultiServiceHealthCheck check, Duration timeout) {
-        List<Container> containersToWaitFor = services.stream()
-                .map(containers::get)
-                .collect(toList());
-        serviceWaits.add(new ServiceWait(containersToWaitFor, check, timeout));
+        builder.waitingForServices(services, check, timeout);
         return this;
     }
 
     public DockerCompositionBuilder waitingForService(String serviceName, SingleServiceHealthCheck check, Duration timeout) {
-        serviceWaits.add(new ServiceWait(containers.get(serviceName), check, timeout));
+        builder.waitingForService(serviceName, check, timeout);
+        return this;
+    }
+
+    public DockerCompositionBuilder files(DockerComposeFiles files) {
+        builder.files(files);
+        return this;
+    }
+
+    public DockerCompositionBuilder machine(DockerMachine machine) {
+        builder.machine(machine);
+        return this;
+    }
+
+    public DockerCompositionBuilder projectName(ProjectName name) {
+        builder.projectName(name);
+        return this;
+    }
+
+    public DockerCompositionBuilder dockerCompose(DockerCompose compose) {
+        builder.dockerCompose(compose);
         return this;
     }
 
     public DockerCompositionBuilder saveLogsTo(String path) {
-        this.logCollector = FileLogCollector.fromPath(path);
+        builder.saveLogsTo(path);
         return this;
     }
 
     public DockerCompositionBuilder retryAttempts(int retryAttempts) {
-        this.numRetryAttempts = retryAttempts;
+        builder.retryAttempts(retryAttempts);
         return this;
     }
 
     public DockerComposition build() {
-        DockerCompose retryingDockerCompose = new RetryingDockerCompose(numRetryAttempts, dockerCompose);
-        return new DockerComposition(retryingDockerCompose, serviceWaits, logCollector, containers);
+        DockerComposeRule rule = builder.build();
+        return new DockerComposition(rule);
     }
 }

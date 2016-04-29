@@ -19,6 +19,7 @@ import com.github.zafarkhaja.semver.Version;
 public final class DockerComposeVersion {
 
     private DockerComposeVersion() {}
+
     //docker-compose version format is like 1.7.0rc1, which can't be parsed by java-semver
     //here we only pass 1.7.0 to java-semver
     public static Version parseFromDockerComposeVersion(String versionOutput) {

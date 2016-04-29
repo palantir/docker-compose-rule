@@ -15,108 +15,78 @@
  */
 package com.palantir.docker.compose;
 
-import com.google.common.collect.ImmutableList;
 import com.palantir.docker.compose.configuration.DockerComposeFiles;
 import com.palantir.docker.compose.configuration.ProjectName;
-import com.palantir.docker.compose.connection.ContainerCache;
 import com.palantir.docker.compose.connection.DockerMachine;
 import com.palantir.docker.compose.connection.DockerPort;
-import com.palantir.docker.compose.connection.waiting.ServiceWait;
-import com.palantir.docker.compose.execution.DefaultDockerCompose;
 import com.palantir.docker.compose.execution.DockerCompose;
 import com.palantir.docker.compose.execution.DockerComposeExecArgument;
 import com.palantir.docker.compose.execution.DockerComposeExecOption;
-import com.palantir.docker.compose.logging.LogCollector;
 import java.io.IOException;
-import java.util.List;
 import org.junit.rules.ExternalResource;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class DockerComposition extends ExternalResource {
 
-    private static final Logger log = LoggerFactory.getLogger(DockerComposition.class);
+    private DockerComposeRule rule;
 
-    private final DockerCompose dockerCompose;
-    private final ContainerCache containers;
-    private final List<ServiceWait> serviceWaits;
-    private final LogCollector logCollector;
-
-    public DockerComposition(
-            DockerCompose dockerCompose,
-            List<ServiceWait> serviceWaits,
-            LogCollector logCollector,
-            ContainerCache containers) {
-        this.dockerCompose = dockerCompose;
-        this.serviceWaits = ImmutableList.copyOf(serviceWaits);
-        this.logCollector = logCollector;
-        this.containers = containers;
+    public DockerComposition(DockerComposeRule rule) {
+        this.rule = rule;
     }
 
     @Override
     public void before() throws IOException, InterruptedException {
-        log.debug("Starting docker-compose cluster");
-        dockerCompose.build();
-        dockerCompose.up();
-
-        log.debug("Starting log collection");
-
-        logCollector.startCollecting(dockerCompose);
-        log.debug("Waiting for services");
-        serviceWaits.forEach(ServiceWait::waitTillServiceIsUp);
-        log.debug("docker-compose cluster started");
+        rule.before();
     }
 
     @Override
     public void after() {
-        try {
-            log.debug("Killing docker-compose cluster");
-            dockerCompose.down();
-            dockerCompose.kill();
-            dockerCompose.rm();
-            logCollector.stopCollecting();
-        } catch (IOException | InterruptedException e) {
-            throw new RuntimeException("Error cleaning up docker compose cluster", e);
-        }
+        rule.after();
     }
 
     public DockerPort portOnContainerWithExternalMapping(String container, int portNumber) throws IOException, InterruptedException {
-        return containers.get(container)
-                         .portMappedExternallyTo(portNumber);
+        return rule.containers().container(container).portMappedExternallyTo(portNumber);
     }
 
     public DockerPort portOnContainerWithInternalMapping(String container, int portNumber) throws IOException, InterruptedException {
-        return containers.get(container)
-                         .portMappedInternallyTo(portNumber);
+        return rule.containers().container(container).portMappedInternallyTo(portNumber);
     }
 
     public static DockerCompositionBuilder of(String dockerComposeFile) {
-        return of(DockerComposeFiles.from(dockerComposeFile));
+        return new DockerCompositionBuilder()
+                .files(DockerComposeFiles.from(dockerComposeFile));
     }
 
     public static DockerCompositionBuilder of(DockerComposeFiles dockerComposeFiles) {
-        return of(dockerComposeFiles, DockerMachine.localMachine().build());
+        return new DockerCompositionBuilder()
+                .files(dockerComposeFiles);
     }
 
     public static DockerCompositionBuilder of(String dockerComposeFile, DockerMachine dockerMachine) {
-        return of(DockerComposeFiles.from(dockerComposeFile), dockerMachine);
+        return new DockerCompositionBuilder()
+                .files(DockerComposeFiles.from(dockerComposeFile))
+                .machine(dockerMachine);
     }
 
     public static DockerCompositionBuilder of(DockerComposeFiles dockerComposeFiles, DockerMachine dockerMachine) {
-        return of(new DefaultDockerCompose(dockerComposeFiles, dockerMachine, ProjectName.random()));
+        return new DockerCompositionBuilder()
+                .files(dockerComposeFiles)
+                .machine(dockerMachine);
     }
 
     public static DockerCompositionBuilder of(DockerComposeFiles dockerComposeFiles, DockerMachine dockerMachine, String projectName) {
-        return of(new DefaultDockerCompose(dockerComposeFiles, dockerMachine, ProjectName.fromString(projectName)));
+        return new DockerCompositionBuilder()
+                .files(dockerComposeFiles)
+                .machine(dockerMachine)
+                .projectName(ProjectName.fromString(projectName));
     }
 
-    public static DockerCompositionBuilder of(DockerCompose executable) {
-        return new DockerCompositionBuilder(executable);
+    public static DockerCompositionBuilder of(DockerCompose compose) {
+        return new DockerCompositionBuilder().dockerCompose(compose);
     }
 
     public void exec(DockerComposeExecOption options, String containerName, DockerComposeExecArgument arguments)
             throws IOException, InterruptedException {
-        dockerCompose.exec(options, containerName, arguments);
+        rule.exec(options, containerName, arguments);
     }
 
 }

@@ -30,9 +30,11 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.google.common.collect.ImmutableList;
+import com.palantir.docker.compose.configuration.DockerComposeFiles;
 import com.palantir.docker.compose.configuration.MockDockerEnvironment;
 import com.palantir.docker.compose.connection.Container;
 import com.palantir.docker.compose.connection.ContainerNames;
+import com.palantir.docker.compose.connection.DockerMachine;
 import com.palantir.docker.compose.connection.DockerPort;
 import com.palantir.docker.compose.connection.waiting.MultiServiceHealthCheck;
 import com.palantir.docker.compose.connection.waiting.SingleServiceHealthCheck;
@@ -51,7 +53,7 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
 
-public class DockerCompositionTest {
+public class DockerComposeRuleTest {
 
     private static final String IP = "127.0.0.1";
 
@@ -62,18 +64,20 @@ public class DockerCompositionTest {
 
     private final DockerCompose dockerCompose = mock(DockerCompose.class);
     private final MockDockerEnvironment env = new MockDockerEnvironment(dockerCompose);
-    private final DockerCompositionBuilder dockerComposition = DockerComposition.of(dockerCompose);
+    private DockerComposeFiles mockFiles = mock(DockerComposeFiles.class);
+    private DockerMachine machine = mock(DockerMachine.class);
+    private final DockerComposeRule rule = DockerComposeRule.builder().dockerCompose(dockerCompose).files(mockFiles).machine(machine).build();
 
     @Test
     public void docker_compose_build_and_up_is_called_before_tests_are_run() throws IOException, InterruptedException {
-        dockerComposition.build().before();
+        rule.before();
         verify(dockerCompose).build();
         verify(dockerCompose).up();
     }
 
     @Test
     public void docker_compose_kill_and_rm_are_called_after_tests_are_run() throws IOException, InterruptedException {
-        dockerComposition.build().after();
+        rule.after();
         verify(dockerCompose).kill();
         verify(dockerCompose).rm();
     }
@@ -83,7 +87,7 @@ public class DockerCompositionTest {
         AtomicInteger timesCheckCalled = new AtomicInteger(0);
         withComposeExecutableReturningContainerFor("db");
         SingleServiceHealthCheck checkCalledOnce = (container) -> SuccessOrFailure.fromBoolean(timesCheckCalled.incrementAndGet() == 1, "not called once yet");
-        dockerComposition.waitingForService("db", checkCalledOnce).build().before();
+        DockerComposeRule.builder().from(rule).waitingForService("db", checkCalledOnce).build().before();
         assertThat(timesCheckCalled.get(), is(1));
     }
 
@@ -96,7 +100,8 @@ public class DockerCompositionTest {
         MultiServiceHealthCheck healthCheck = mock(MultiServiceHealthCheck.class);
         when(healthCheck.areServicesUp(containers)).thenReturn(SuccessOrFailure.success());
 
-        dockerComposition.waitingForServices(ImmutableList.of("db1", "db2"), healthCheck).build().before();
+
+        DockerComposeRule.builder().from(rule).waitingForServices(ImmutableList.of("db1", "db2"), healthCheck).build().before();
 
         verify(healthCheck).areServicesUp(containers);
     }
@@ -106,7 +111,7 @@ public class DockerCompositionTest {
         AtomicInteger timesCheckCalled = new AtomicInteger(0);
         withComposeExecutableReturningContainerFor("db");
         SingleServiceHealthCheck checkCalledTwice = (container) -> SuccessOrFailure.fromBoolean(timesCheckCalled.incrementAndGet() == 2, "not called twice yet");
-        dockerComposition.waitingForService("db", checkCalledTwice).build().before();
+        DockerComposeRule.builder().from(rule).waitingForService("db", checkCalledTwice).build().before();
         assertThat(timesCheckCalled.get(), is(2));
     }
 
@@ -117,7 +122,7 @@ public class DockerCompositionTest {
         exception.expect(IllegalStateException.class);
         exception.expectMessage("Container 'db' failed to pass startup check:\noops");
 
-        dockerComposition.waitingForService("db", (container) -> SuccessOrFailure.failure("oops"), millis(200)).build().before();
+        DockerComposeRule.builder().from(rule).waitingForService("db", (container) -> SuccessOrFailure.failure("oops"), millis(200)).build().before();
     }
 
     @Test
@@ -125,7 +130,7 @@ public class DockerCompositionTest {
         DockerPort expectedPort = env.port("db", IP, 5433, 5432);
         withComposeExecutableReturningContainerFor("db");
 
-        DockerPort actualPort = dockerComposition.build().portOnContainerWithExternalMapping("db", 5433);
+        DockerPort actualPort = rule.containers().container("db").portMappedExternallyTo(5433);
 
         assertThat(actualPort, is(expectedPort));
     }
@@ -135,7 +140,7 @@ public class DockerCompositionTest {
         DockerPort expectedPort = env.port("db", IP, 5433, 5432);
         withComposeExecutableReturningContainerFor("db");
 
-        DockerPort actualPort = dockerComposition.build().portOnContainerWithInternalMapping("db", 5432);
+        DockerPort actualPort = rule.containers().container("db").portMappedInternallyTo(5432);
 
         assertThat(actualPort, is(expectedPort));
     }
@@ -144,10 +149,9 @@ public class DockerCompositionTest {
     public void when_two_external_ports_on_a_container_are_requested_docker_compose_ps_is_only_executed_once() throws Exception {
         env.ports("db", IP, 5432, 8080);
         withComposeExecutableReturningContainerFor("db");
-        DockerComposition composition = dockerComposition.build();
 
-        composition.portOnContainerWithInternalMapping("db", 5432);
-        composition.portOnContainerWithInternalMapping("db", 8080);
+        rule.containers().container("db").portMappedInternallyTo(5432);
+        rule.containers().container("db").portMappedInternallyTo(8080);
 
         verify(dockerCompose, times(1)).ports("db");
     }
@@ -162,14 +166,14 @@ public class DockerCompositionTest {
         exception.expect(IllegalStateException.class);
         exception.expectMessage(nonExistentContainer);
 
-        dockerComposition.waitingForService(nonExistentContainer, toHaveAllPortsOpen()).build().before();
+        DockerComposeRule.builder().from(rule).waitingForService(nonExistentContainer, toHaveAllPortsOpen()).build().before();
     }
 
     @SuppressWarnings("unchecked")
     @Test
     public void logs_can_be_saved_to_a_directory_while_containers_are_running() throws IOException, InterruptedException {
         File logLocation = logFolder.newFolder();
-        DockerComposition loggingComposition = dockerComposition.saveLogsTo(logLocation.getAbsolutePath()).build();
+        DockerComposeRule loggingComposition = DockerComposeRule.builder().from(rule).saveLogsTo(logLocation.getAbsolutePath()).build();
         when(dockerCompose.ps()).thenReturn(new ContainerNames("db"));
         CountDownLatch latch = new CountDownLatch(1);
         when(dockerCompose.writeLogs(eq("db"), any(OutputStream.class))).thenAnswer((args) -> {
