@@ -15,7 +15,6 @@
  */
 package com.palantir.docker.compose;
 
-import com.google.common.collect.ImmutableList;
 import com.palantir.docker.compose.ImmutableDockerComposeRule.Builder;
 import com.palantir.docker.compose.configuration.DockerComposeFiles;
 import com.palantir.docker.compose.configuration.ProjectName;
@@ -38,7 +37,7 @@ public class DockerCompositionBuilder {
         return this;
     }
 
-    public DockerCompositionBuilder waitingForServices(ImmutableList<String> services, MultiServiceHealthCheck check) {
+    public DockerCompositionBuilder waitingForServices(List<String> services, MultiServiceHealthCheck check) {
         builder.waitingForServices(services, check);
         return this;
     }
@@ -87,5 +86,4 @@ public class DockerCompositionBuilder {
         DockerComposeRule rule = builder.build();
         return new DockerComposition(rule);
     }
-
 }

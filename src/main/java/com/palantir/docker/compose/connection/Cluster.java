@@ -4,7 +4,7 @@
 
 package com.palantir.docker.compose.connection;
 
-public interface ContainerAccessor {
+public interface Cluster {
 
     Container container(String name);
 

@@ -11,14 +11,14 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.palantir.docker.compose.connection.Cluster;
 import com.palantir.docker.compose.connection.Container;
-import com.palantir.docker.compose.connection.ContainerAccessor;
 import org.junit.Before;
 import org.junit.Test;
 
 public class SingleServiceWaitTest {
 
-    private ContainerAccessor containerAccessor = mock(ContainerAccessor.class);
+    private Cluster containerAccessor = mock(Cluster.class);
     private SingleServiceHealthCheck healthCheck = mock(SingleServiceHealthCheck.class);
     private Container someContainer = mock(Container.class);
     private SingleServiceWait wait = SingleServiceWait.of("somecontainer", healthCheck, DEFAULT_TIMEOUT);

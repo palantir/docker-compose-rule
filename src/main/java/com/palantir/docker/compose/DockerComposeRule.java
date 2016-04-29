@@ -5,7 +5,7 @@ package com.palantir.docker.compose;
 
 import com.palantir.docker.compose.configuration.DockerComposeFiles;
 import com.palantir.docker.compose.configuration.ProjectName;
-import com.palantir.docker.compose.connection.ContainerAccessor;
+import com.palantir.docker.compose.connection.Cluster;
 import com.palantir.docker.compose.connection.ContainerCache;
 import com.palantir.docker.compose.connection.DockerMachine;
 import com.palantir.docker.compose.connection.waiting.ClusterWait;
@@ -43,7 +43,7 @@ public abstract class DockerComposeRule extends ExternalResource {
     protected abstract List<ClusterWait> clusterWaits();
 
     @Value.Default
-    protected DockerMachine machine() {
+    public DockerMachine machine() {
         return DockerMachine.localMachine().build();
     }
 
@@ -62,19 +62,19 @@ public abstract class DockerComposeRule extends ExternalResource {
     }
 
     @Value.Default
-    protected int retryAttempts() {
-        return DEFAULT_RETRY_ATTEMPTS;
-    }
-
-    @Value.Default
-    protected DockerCompose dockerCompose() {
+    public DockerCompose dockerCompose() {
         DockerCompose dockerCompose = new DefaultDockerCompose(executable(), machine());
         return new RetryingDockerCompose(retryAttempts(), dockerCompose);
     }
 
     @Value.Default
-    public ContainerAccessor containers() {
+    public Cluster containers() {
         return new ContainerCache(dockerCompose());
+    }
+
+    @Value.Default
+    protected int retryAttempts() {
+        return DEFAULT_RETRY_ATTEMPTS;
     }
 
     @Value.Default
@@ -119,6 +119,12 @@ public abstract class DockerComposeRule extends ExternalResource {
     }
 
     public abstract static class Builder {
+
+        public abstract ImmutableDockerComposeRule.Builder files(DockerComposeFiles files);
+
+        public ImmutableDockerComposeRule.Builder file(String dockerComposeYmlFile) {
+            return files(DockerComposeFiles.from(dockerComposeYmlFile));
+        }
 
         public abstract ImmutableDockerComposeRule.Builder logCollector(LogCollector logCollector);
 

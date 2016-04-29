@@ -6,8 +6,8 @@ package com.palantir.docker.compose.connection.waiting;
 
 import static java.util.stream.Collectors.toList;
 
+import com.palantir.docker.compose.connection.Cluster;
 import com.palantir.docker.compose.connection.Container;
-import com.palantir.docker.compose.connection.ContainerAccessor;
 import java.util.List;
 import org.immutables.value.Value;
 import org.joda.time.Duration;
@@ -29,7 +29,7 @@ public abstract class MultiServiceWait implements ClusterWait {
     }
 
     @Override
-    public void waitUntilReady(ContainerAccessor containers) {
+    public void waitUntilReady(Cluster containers) {
         List<Container> containersToWaitFor = containerNames().stream()
                         .map(containers::container)
                         .collect(toList());

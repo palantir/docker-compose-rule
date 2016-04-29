@@ -19,7 +19,7 @@ import com.palantir.docker.compose.execution.DockerCompose;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ContainerCache implements ContainerAccessor {
+public class ContainerCache implements Cluster {
 
     private final Map<String, Container> containers = new HashMap<>();
     private final DockerCompose dockerCompose;
