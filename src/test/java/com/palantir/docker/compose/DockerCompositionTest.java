@@ -48,7 +48,6 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.apache.commons.io.IOUtils;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -92,7 +91,6 @@ public class DockerCompositionTest {
         assertThat(timesCheckCalled.get(), is(1));
     }
 
-    @Ignore
     @Test
     public void docker_compose_wait_for_service_waits_multiple_services() throws IOException, InterruptedException {
         Container db1 = withComposeExecutableReturningContainerFor("db1");

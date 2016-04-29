@@ -3,7 +3,6 @@
  */
 package com.palantir.docker.compose;
 
-import com.google.common.collect.ImmutableList;
 import com.palantir.docker.compose.configuration.DockerComposeFiles;
 import com.palantir.docker.compose.configuration.ProjectName;
 import com.palantir.docker.compose.connection.ContainerAccessor;
@@ -11,6 +10,7 @@ import com.palantir.docker.compose.connection.ContainerCache;
 import com.palantir.docker.compose.connection.DockerMachine;
 import com.palantir.docker.compose.connection.waiting.ClusterWait;
 import com.palantir.docker.compose.connection.waiting.MultiServiceHealthCheck;
+import com.palantir.docker.compose.connection.waiting.MultiServiceWait;
 import com.palantir.docker.compose.connection.waiting.SingleServiceHealthCheck;
 import com.palantir.docker.compose.connection.waiting.SingleServiceWait;
 import com.palantir.docker.compose.execution.DefaultDockerCompose;
@@ -110,20 +110,20 @@ public abstract class DockerComposeRule extends ExternalResource {
 
     public abstract static class Builder {
 
-        public abstract Builder logCollector(LogCollector logCollector);
+        public abstract ImmutableDockerComposeRule.Builder logCollector(LogCollector logCollector);
 
-        public Builder saveLogsTo(String path) {
+        public ImmutableDockerComposeRule.Builder saveLogsTo(String path) {
             return logCollector(FileLogCollector.fromPath(path));
         }
 
-        public abstract Builder addClusterWait(ClusterWait clusterWait);
+        public abstract ImmutableDockerComposeRule.Builder addClusterWait(ClusterWait clusterWait);
 
-        public Builder waitingForService(String serviceName, SingleServiceHealthCheck healthCheck) {
+        public ImmutableDockerComposeRule.Builder waitingForService(String serviceName, SingleServiceHealthCheck healthCheck) {
             return addClusterWait(SingleServiceWait.of(serviceName, healthCheck));
         }
 
-        public Builder waitingForServices(ImmutableList<String> services, MultiServiceHealthCheck healthCheck) {
-            return this;
+        public ImmutableDockerComposeRule.Builder waitingForServices(List<String> services, MultiServiceHealthCheck healthCheck) {
+            return addClusterWait(MultiServiceWait.of(services, healthCheck));
         }
     }
 }
