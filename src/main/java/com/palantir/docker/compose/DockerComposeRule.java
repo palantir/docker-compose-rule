@@ -15,6 +15,8 @@ import com.palantir.docker.compose.connection.waiting.SingleServiceHealthCheck;
 import com.palantir.docker.compose.connection.waiting.SingleServiceWait;
 import com.palantir.docker.compose.execution.DefaultDockerCompose;
 import com.palantir.docker.compose.execution.DockerCompose;
+import com.palantir.docker.compose.execution.DockerComposeExecArgument;
+import com.palantir.docker.compose.execution.DockerComposeExecOption;
 import com.palantir.docker.compose.execution.DockerComposeExecutable;
 import com.palantir.docker.compose.execution.RetryingDockerCompose;
 import com.palantir.docker.compose.logging.DoNothingLogCollector;
@@ -105,6 +107,11 @@ public abstract class DockerComposeRule extends ExternalResource {
         } catch (IOException | InterruptedException e) {
             throw new RuntimeException("Error cleaning up docker compose cluster", e);
         }
+    }
+
+    public void exec(DockerComposeExecOption options, String containerName,
+            DockerComposeExecArgument arguments) throws IOException, InterruptedException {
+        dockerCompose().exec(options, containerName, arguments);
     }
 
     public static ImmutableDockerComposeRule.Builder builder() {

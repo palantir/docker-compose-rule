@@ -20,7 +20,9 @@ import static java.util.stream.Collectors.joining;
 import static org.apache.commons.lang3.Validate.validState;
 import static org.joda.time.Duration.standardMinutes;
 
+import com.github.zafarkhaja.semver.Version;
 import com.google.common.base.Strings;
+import com.google.common.collect.ImmutableList;
 import com.palantir.docker.compose.configuration.DockerComposeFiles;
 import com.palantir.docker.compose.configuration.ProjectName;
 import com.palantir.docker.compose.connection.Container;
@@ -81,6 +83,31 @@ public class DefaultDockerCompose implements DockerCompose {
     @Override
     public void rm() throws IOException, InterruptedException {
         executeDockerComposeCommand(throwingOnError(), "rm", "-f");
+    }
+
+    @Override
+    public void exec(DockerComposeExecOption dockerComposeExecOption, String containerName,
+            DockerComposeExecArgument dockerComposeExecArgument) throws IOException, InterruptedException {
+        verifyDockerComposeVersionAtLeast(Version.valueOf("1.7.0"));
+        String[] fullArgs = constructFullDockerComposeExecArguments(dockerComposeExecOption, containerName, dockerComposeExecArgument);
+        executeDockerComposeCommand(throwingOnError(), fullArgs);
+    }
+
+    //Current docker-compose version output format: docker-compose version 1.7.0rc1, build 1ad8866
+    private void verifyDockerComposeVersionAtLeast(Version targetVersion) throws IOException, InterruptedException {
+        String versionOutput = executeDockerComposeCommand(throwingOnError(), "-v");
+        Version version = DockerComposeVersion.parseFromDockerComposeVersion(versionOutput);
+        validState(version.compareTo(targetVersion) >= 0, "You need at least docker-compose 1.7 to run docker-compose exec");
+    }
+
+    private String[] constructFullDockerComposeExecArguments(DockerComposeExecOption dockerComposeExecOption,
+            String containerName, DockerComposeExecArgument dockerComposeExecArgument) {
+        ImmutableList<String> fullArgs = new ImmutableList.Builder<String>().add("exec")
+                                                                            .addAll(dockerComposeExecOption.asList())
+                                                                            .add(containerName)
+                                                                            .addAll(dockerComposeExecArgument.asList())
+                                                                            .build();
+        return fullArgs.toArray(new String[fullArgs.size()]);
     }
 
     @Override

@@ -20,6 +20,8 @@ import com.palantir.docker.compose.configuration.ProjectName;
 import com.palantir.docker.compose.connection.DockerMachine;
 import com.palantir.docker.compose.connection.DockerPort;
 import com.palantir.docker.compose.execution.DockerCompose;
+import com.palantir.docker.compose.execution.DockerComposeExecArgument;
+import com.palantir.docker.compose.execution.DockerComposeExecOption;
 import java.io.IOException;
 import org.junit.rules.ExternalResource;
 
@@ -80,6 +82,11 @@ public class DockerComposition extends ExternalResource {
 
     public static DockerCompositionBuilder of(DockerCompose compose) {
         return new DockerCompositionBuilder().dockerCompose(compose);
+    }
+
+    public void exec(DockerComposeExecOption options, String containerName, DockerComposeExecArgument arguments)
+            throws IOException, InterruptedException {
+        rule.exec(options, containerName, arguments);
     }
 
 }
