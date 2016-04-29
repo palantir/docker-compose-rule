@@ -29,22 +29,26 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.google.common.collect.ImmutableList;
 import com.palantir.docker.compose.configuration.DockerComposeFiles;
 import com.palantir.docker.compose.configuration.MockDockerEnvironment;
 import com.palantir.docker.compose.connection.Container;
 import com.palantir.docker.compose.connection.ContainerNames;
 import com.palantir.docker.compose.connection.DockerMachine;
 import com.palantir.docker.compose.connection.DockerPort;
+import com.palantir.docker.compose.connection.waiting.MultiServiceHealthCheck;
 import com.palantir.docker.compose.connection.waiting.SingleServiceHealthCheck;
 import com.palantir.docker.compose.connection.waiting.SuccessOrFailure;
 import com.palantir.docker.compose.execution.DockerCompose;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.apache.commons.io.IOUtils;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -86,6 +90,21 @@ public class DockerCompositionTest {
         SingleServiceHealthCheck checkCalledOnce = (container) -> SuccessOrFailure.fromBoolean(timesCheckCalled.incrementAndGet() == 1, "not called once yet");
         dockerComposition.waitingForService("db", checkCalledOnce).build().before();
         assertThat(timesCheckCalled.get(), is(1));
+    }
+
+    @Ignore
+    @Test
+    public void docker_compose_wait_for_service_waits_multiple_services() throws IOException, InterruptedException {
+        Container db1 = withComposeExecutableReturningContainerFor("db1");
+        Container db2 = withComposeExecutableReturningContainerFor("db2");
+        List<Container> containers = ImmutableList.of(db1, db2);
+
+        MultiServiceHealthCheck healthCheck = mock(MultiServiceHealthCheck.class);
+        when(healthCheck.areServicesUp(containers)).thenReturn(SuccessOrFailure.success());
+
+        dockerComposition.waitingForServices(ImmutableList.of("db1", "db2"), healthCheck).build().before();
+
+        verify(healthCheck).areServicesUp(containers);
     }
 
     @Test

@@ -15,10 +15,12 @@
  */
 package com.palantir.docker.compose;
 
+import com.google.common.collect.ImmutableList;
 import com.palantir.docker.compose.ImmutableDockerComposeRule.Builder;
 import com.palantir.docker.compose.configuration.DockerComposeFiles;
 import com.palantir.docker.compose.configuration.ProjectName;
 import com.palantir.docker.compose.connection.DockerMachine;
+import com.palantir.docker.compose.connection.waiting.MultiServiceHealthCheck;
 import com.palantir.docker.compose.connection.waiting.SingleServiceHealthCheck;
 import com.palantir.docker.compose.execution.DockerCompose;
 import org.joda.time.Duration;
@@ -33,7 +35,12 @@ public class DockerCompositionBuilder {
     }
 
     public DockerCompositionBuilder waitingForService(String serviceName, SingleServiceHealthCheck healthCheck) {
-        builder.addServices(DockerService.of(serviceName, healthCheck));
+        builder.waitingForService(serviceName, healthCheck);
+        return this;
+    }
+
+    public DockerCompositionBuilder waitingForServices(ImmutableList<String> services, MultiServiceHealthCheck healthCheck) {
+        builder.waitingForServices(services, healthCheck);
         return this;
     }
 

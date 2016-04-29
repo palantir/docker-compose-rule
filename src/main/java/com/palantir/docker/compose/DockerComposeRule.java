@@ -5,11 +5,13 @@ package com.palantir.docker.compose;
 
 import static java.util.stream.Collectors.toList;
 
+import com.google.common.collect.ImmutableList;
 import com.palantir.docker.compose.configuration.DockerComposeFiles;
 import com.palantir.docker.compose.configuration.ProjectName;
 import com.palantir.docker.compose.connection.Container;
 import com.palantir.docker.compose.connection.ContainerCache;
 import com.palantir.docker.compose.connection.DockerMachine;
+import com.palantir.docker.compose.connection.waiting.MultiServiceHealthCheck;
 import com.palantir.docker.compose.connection.waiting.ServiceWait;
 import com.palantir.docker.compose.connection.waiting.SingleServiceHealthCheck;
 import com.palantir.docker.compose.execution.DefaultDockerCompose;
@@ -28,6 +30,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @Value.Immutable
+@Value.Style(depluralize = true)
 public abstract class DockerComposeRule extends ExternalResource {
     private static final Logger log = LoggerFactory.getLogger(DockerComposeRule.class);
 
@@ -118,11 +121,20 @@ public abstract class DockerComposeRule extends ExternalResource {
 
     public abstract static class Builder {
 
-        public abstract ImmutableDockerComposeRule.Builder logCollector(LogCollector logCollector);
+        public abstract Builder logCollector(LogCollector logCollector);
 
-        public ImmutableDockerComposeRule.Builder saveLogsTo(String path) {
+        public Builder saveLogsTo(String path) {
             return logCollector(FileLogCollector.fromPath(path));
         }
 
+        public abstract Builder addService(DockerService element);
+
+        public Builder waitingForService(String serviceName, SingleServiceHealthCheck healthCheck) {
+            return addService(DockerService.of(serviceName, healthCheck));
+        }
+
+        public Builder waitingForServices(ImmutableList<String> services, MultiServiceHealthCheck healthCheck) {
+            return this;
+        }
     }
 }
