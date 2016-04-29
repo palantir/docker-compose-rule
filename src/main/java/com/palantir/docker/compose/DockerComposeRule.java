@@ -60,9 +60,14 @@ public abstract class DockerComposeRule extends ExternalResource {
     }
 
     @Value.Default
+    protected int retryAttempts() {
+        return DEFAULT_RETRY_ATTEMPTS;
+    }
+
+    @Value.Default
     protected DockerCompose dockerCompose() {
         DockerCompose dockerCompose = new DefaultDockerCompose(executable(), machine());
-        return new RetryingDockerCompose(DEFAULT_RETRY_ATTEMPTS, dockerCompose);
+        return new RetryingDockerCompose(retryAttempts(), dockerCompose);
     }
 
     @Value.Default

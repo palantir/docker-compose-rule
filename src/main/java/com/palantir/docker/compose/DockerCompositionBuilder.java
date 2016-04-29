@@ -33,13 +33,13 @@ public class DockerCompositionBuilder {
         this.builder = DockerComposeRule.builder();
     }
 
-    public DockerCompositionBuilder waitingForService(String serviceName, SingleServiceHealthCheck healthCheck) {
-        builder.waitingForService(serviceName, healthCheck);
+    public DockerCompositionBuilder waitingForService(String serviceName, SingleServiceHealthCheck check) {
+        builder.waitingForService(serviceName, check);
         return this;
     }
 
-    public DockerCompositionBuilder waitingForServices(ImmutableList<String> services, MultiServiceHealthCheck healthCheck) {
-        builder.waitingForServices(services, healthCheck);
+    public DockerCompositionBuilder waitingForServices(ImmutableList<String> services, MultiServiceHealthCheck check) {
+        builder.waitingForServices(services, check);
         return this;
     }
 
@@ -70,6 +70,11 @@ public class DockerCompositionBuilder {
 
     public DockerCompositionBuilder machine(DockerMachine machine) {
         builder.machine(machine);
+        return this;
+    }
+
+    public DockerCompositionBuilder retryAttempts(int retryAttempts) {
+        builder.retryAttempts(retryAttempts);
         return this;
     }
 
