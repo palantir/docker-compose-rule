@@ -53,16 +53,6 @@ public class DockerCompositionBuilder {
         return this;
     }
 
-    public DockerComposition build() {
-        DockerComposeRule rule = builder.build();
-        return new DockerComposition(rule);
-    }
-
-    public DockerCompositionBuilder dockerCompose(DockerCompose compose) {
-        builder.dockerCompose(compose);
-        return this;
-    }
-
     public DockerCompositionBuilder files(DockerComposeFiles files) {
         builder.files(files);
         return this;
@@ -73,19 +63,29 @@ public class DockerCompositionBuilder {
         return this;
     }
 
-    public DockerCompositionBuilder retryAttempts(int retryAttempts) {
-        builder.retryAttempts(retryAttempts);
-        return this;
-    }
-
     public DockerCompositionBuilder projectName(ProjectName name) {
         builder.projectName(name);
         return this;
     }
 
-    public DockerCompositionBuilder saveLogsTo(String absolutePath) {
-        builder.saveLogsTo(absolutePath);
+    public DockerCompositionBuilder dockerCompose(DockerCompose compose) {
+        builder.dockerCompose(compose);
         return this;
+    }
+
+    public DockerCompositionBuilder saveLogsTo(String path) {
+        builder.saveLogsTo(path);
+        return this;
+    }
+
+    public DockerCompositionBuilder retryAttempts(int retryAttempts) {
+        builder.retryAttempts(retryAttempts);
+        return this;
+    }
+
+    public DockerComposition build() {
+        DockerComposeRule rule = builder.build();
+        return new DockerComposition(rule);
     }
 
 }
