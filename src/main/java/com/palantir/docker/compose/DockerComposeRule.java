@@ -106,7 +106,10 @@ public abstract class DockerComposeRule extends ExternalResource {
         try {
             if (skipShutdown()) {
                 log.error("******************************************************************************************\n"
-                        + "******** Skipping docker-compose down/kill/rm; This should not happen on CI! *************\n"
+                        + "* docker-compose-rule has been configured to skip docker-compose shutdown:               *\n"
+                        + "* this means the containers will be left running after tests finish executing.           *\n"
+                        + "* If you see this message when running on CI it means you are potentially abandoning     *\n"
+                        + "* long running processes and leaking resources.                                          *\n"
                         + "*******************************************************************************************");
             } else {
                 log.debug("Killing docker-compose cluster");

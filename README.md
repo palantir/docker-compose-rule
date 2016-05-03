@@ -156,12 +156,9 @@ To skip shutdown of containers after tests are finished executing:
 
 ```java
 public class DockerCompositionTest {
-
-    private static final boolean SKIP_SHUTDOWN = true;
-
     @ClassRule
     public DockerComposition composition = DockerComposition.of("src/test/resources/docker-compose.yml")
-                                                .skipShutdown(SKIP_SHUTDOWN)
+                                                .skipShutdown(true)
                                                 .build();
 }
 ```
