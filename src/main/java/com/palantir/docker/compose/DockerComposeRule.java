@@ -78,6 +78,11 @@ public abstract class DockerComposeRule extends ExternalResource {
     }
 
     @Value.Default
+    protected boolean skipShutdown() {
+        return false;
+    }
+
+    @Value.Default
     protected LogCollector logCollector() {
         return new DoNothingLogCollector();
     }
@@ -99,10 +104,17 @@ public abstract class DockerComposeRule extends ExternalResource {
     @Override
     public void after() {
         try {
-            log.debug("Killing docker-compose cluster");
-            dockerCompose().down();
-            dockerCompose().kill();
-            dockerCompose().rm();
+            if (skipShutdown()) {
+                log.error("******************************************************************************************\n"
+                        + "******** Skipping docker-compose down/kill/rm; This should not happen on CI! *************\n"
+                        + "*******************************************************************************************");
+            } else {
+                log.debug("Killing docker-compose cluster");
+                dockerCompose().down();
+                dockerCompose().kill();
+                dockerCompose().rm();
+            }
+
             logCollector().stopCollecting();
         } catch (IOException | InterruptedException e) {
             throw new RuntimeException("Error cleaning up docker compose cluster", e);

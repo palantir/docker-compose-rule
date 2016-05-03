@@ -149,6 +149,25 @@ public class DockerCompositionTest {
 
 This will automatically record logs for all containers in real time to the specified directory. Collection will stop when the containers terminate.
 
+Skipping shutdown
+-----------------
+
+To skip shutdown of containers after tests are finished executing:
+
+```java
+public class DockerCompositionTest {
+
+    private static final boolean SKIP_SHUTDOWN = true;
+
+    @ClassRule
+    public DockerComposition composition = DockerComposition.of("src/test/resources/docker-compose.yml")
+                                                .skipShutdown(SKIP_SHUTDOWN)
+                                                .build();
+}
+```
+
+This can shorten iteration time when services take a long time to start. Remember to never leave it on in CI!
+
 Docker Machine
 --------------
 
