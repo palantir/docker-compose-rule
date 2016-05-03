@@ -27,6 +27,7 @@ import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import com.google.common.collect.ImmutableList;
@@ -40,6 +41,7 @@ import com.palantir.docker.compose.connection.waiting.MultiServiceHealthCheck;
 import com.palantir.docker.compose.connection.waiting.SingleServiceHealthCheck;
 import com.palantir.docker.compose.connection.waiting.SuccessOrFailure;
 import com.palantir.docker.compose.execution.DockerCompose;
+import com.palantir.docker.compose.logging.LogCollector;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -66,7 +68,8 @@ public class DockerComposeRuleTest {
     private final MockDockerEnvironment env = new MockDockerEnvironment(dockerCompose);
     private DockerComposeFiles mockFiles = mock(DockerComposeFiles.class);
     private DockerMachine machine = mock(DockerMachine.class);
-    private final DockerComposeRule rule = DockerComposeRule.builder().dockerCompose(dockerCompose).files(mockFiles).machine(machine).build();
+    private LogCollector logCollector = mock(LogCollector.class);
+    private final DockerComposeRule rule = defaultBuilder().build();
 
     @Test
     public void docker_compose_build_and_up_is_called_before_tests_are_run() throws IOException, InterruptedException {
@@ -189,10 +192,25 @@ public class DockerComposeRuleTest {
         assertThat(new File(logLocation, "db.log"), is(fileContainingString("db log")));
     }
 
+    @Test
+    public void when_skipShutdown_is_true_shutdown_does_not_happen() throws InterruptedException {
+        defaultBuilder().skipShutdown(true)
+                        .build()
+                        .after();
+        verifyNoMoreInteractions(dockerCompose);
+        verify(logCollector, times(1)).stopCollecting();
+    }
+
     public Container withComposeExecutableReturningContainerFor(String containerName) {
         final Container container = new Container(containerName, dockerCompose);
         when(dockerCompose.container(containerName)).thenReturn(container);
         return container;
     }
 
+    private ImmutableDockerComposeRule.Builder defaultBuilder() {
+        return DockerComposeRule.builder().dockerCompose(dockerCompose)
+                                          .files(mockFiles)
+                                          .machine(machine)
+                                          .logCollector(logCollector);
+    }
 }

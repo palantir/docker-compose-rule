@@ -78,6 +78,11 @@ public abstract class DockerComposeRule extends ExternalResource {
     }
 
     @Value.Default
+    protected boolean skipShutdown() {
+        return false;
+    }
+
+    @Value.Default
     protected LogCollector logCollector() {
         return new DoNothingLogCollector();
     }
@@ -99,10 +104,20 @@ public abstract class DockerComposeRule extends ExternalResource {
     @Override
     public void after() {
         try {
-            log.debug("Killing docker-compose cluster");
-            dockerCompose().down();
-            dockerCompose().kill();
-            dockerCompose().rm();
+            if (skipShutdown()) {
+                log.error("******************************************************************************************\n"
+                        + "* docker-compose-rule has been configured to skip docker-compose shutdown:               *\n"
+                        + "* this means the containers will be left running after tests finish executing.           *\n"
+                        + "* If you see this message when running on CI it means you are potentially abandoning     *\n"
+                        + "* long running processes and leaking resources.                                          *\n"
+                        + "*******************************************************************************************");
+            } else {
+                log.debug("Killing docker-compose cluster");
+                dockerCompose().down();
+                dockerCompose().kill();
+                dockerCompose().rm();
+            }
+
             logCollector().stopCollecting();
         } catch (IOException | InterruptedException e) {
             throw new RuntimeException("Error cleaning up docker compose cluster", e);

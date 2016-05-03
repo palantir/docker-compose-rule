@@ -82,6 +82,11 @@ public class DockerCompositionBuilder {
         return this;
     }
 
+    public DockerCompositionBuilder skipShutdown(boolean skipShutdown) {
+        builder.skipShutdown(skipShutdown);
+        return this;
+    }
+
     public DockerComposition build() {
         DockerComposeRule rule = builder.build();
         return new DockerComposition(rule);
