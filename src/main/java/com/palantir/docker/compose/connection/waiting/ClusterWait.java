@@ -33,12 +33,14 @@ import org.slf4j.LoggerFactory;
 
 public class ClusterWait {
     private static final Logger log = LoggerFactory.getLogger(ClusterWait.class);
-    private final List<String> containerNames;
-    private final MultiServiceHealthCheck healthCheck;
-    private final Duration timeout;
+    private ClusterHealthCheck clusterHealthCheck;
+    private List<String> containerNames;
+    private MultiServiceHealthCheck healthCheck;
+    private Duration timeout;
 
     public ClusterWait(String containerName, SingleServiceHealthCheck healthCheck, Duration timeout) {
-        this(ImmutableList.of(containerName), MultiServiceHealthCheck.fromSingleServiceHealthCheck(healthCheck), timeout);
+        this(ImmutableList.of(containerName), MultiServiceHealthCheck.fromSingleServiceHealthCheck(healthCheck),
+                timeout);
     }
 
     public ClusterWait(List<String> containerNames, MultiServiceHealthCheck healthCheck, Duration timeout) {
@@ -47,37 +49,58 @@ public class ClusterWait {
         this.timeout = timeout;
     }
 
+    public ClusterWait(ClusterHealthCheck clusterHealthCheck, Duration timeout) {
+        this.clusterHealthCheck = clusterHealthCheck;
+        this.timeout = timeout;
+    }
+
     public void waitUntilReady(Cluster cluster) {
+        final AtomicReference<Optional<SuccessOrFailure>> lastSuccessOrFailure = new AtomicReference<>(
+                Optional.empty());
+        final Callable<Boolean> evaluator = weHaveSuccess(cluster, lastSuccessOrFailure);
+
         log.debug("Waiting for services [{}]", containerNames);
-        final AtomicReference<Optional<SuccessOrFailure>> lastSuccessOrFailure = new AtomicReference<>(Optional.empty());
-        List<Container> containersToCheck = containerNames.stream().map(cluster::container).collect(toList());
         try {
             Awaitility.await()
                     .pollInterval(50, TimeUnit.MILLISECONDS)
                     .atMost(timeout.getMillis(), TimeUnit.MILLISECONDS)
-                    .until(weHaveSuccess(containersToCheck, lastSuccessOrFailure));
+                    .until(evaluator);
         } catch (ConditionTimeoutException e) {
             throw new IllegalStateException(serviceDidNotStartupExceptionMessage(lastSuccessOrFailure));
         }
     }
 
-    private Callable<Boolean> weHaveSuccess(List<Container> containersToCheck, AtomicReference<Optional<SuccessOrFailure>> lastSuccessOrFailure) {
-        return () -> {
-            SuccessOrFailure successOrFailure = healthCheck.areServicesUp(containersToCheck);
-            lastSuccessOrFailure.set(Optional.of(successOrFailure));
-            return successOrFailure.succeeded();
-        };
+    private List<Container> containersToCheck(Cluster cluster) {
+        return containerNames.stream().map(cluster::container).collect(toList());
     }
 
-    private String serviceDidNotStartupExceptionMessage(AtomicReference<Optional<SuccessOrFailure>> lastSuccessOrFailure) {
+    private Callable<Boolean> weHaveSuccess(Cluster cluster,
+            AtomicReference<Optional<SuccessOrFailure>> lastSuccessOrFailure) {
+        if (clusterHealthCheck == null) {
+            return () -> {
+                SuccessOrFailure successOrFailure = healthCheck.areServicesUp(containersToCheck(cluster));
+                lastSuccessOrFailure.set(Optional.of(successOrFailure));
+                return successOrFailure.succeeded();
+            };
+        } else {
+            return () -> {
+                SuccessOrFailure successOrFailure = clusterHealthCheck.isClusterHealthy(cluster);
+                lastSuccessOrFailure.set(Optional.of(successOrFailure));
+                return successOrFailure.succeeded();
+            };
+        }
+    }
+
+    private String serviceDidNotStartupExceptionMessage(
+            AtomicReference<Optional<SuccessOrFailure>> lastSuccessOrFailure) {
         String healthcheckFailureMessage = lastSuccessOrFailure.get()
                 .flatMap(SuccessOrFailure::toOptionalFailureMessage)
                 .orElse("The healthcheck did not finish before the timeout");
 
         return String.format("%s '%s' failed to pass startup check:%n%s",
-            containerNames.size() > 1 ? "Containers" : "Container",
+                containerNames.size() > 1 ? "Containers" : "Container",
                 containerNames,
-            healthcheckFailureMessage);
+                healthcheckFailureMessage);
     }
 
 }
