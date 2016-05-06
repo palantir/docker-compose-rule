@@ -20,6 +20,7 @@ import static java.util.stream.Collectors.joining;
 import com.google.common.collect.ImmutableList;
 import com.jayway.awaitility.Awaitility;
 import com.jayway.awaitility.core.ConditionTimeoutException;
+import com.palantir.docker.compose.connection.Cluster;
 import com.palantir.docker.compose.connection.Container;
 import java.util.List;
 import java.util.Optional;
@@ -48,7 +49,7 @@ public class ServiceWait {
         this.timeout = timeout;
     }
 
-    public void waitTillServiceIsUp() {
+    public void waitTillServiceIsUp(Cluster cluster) {
         log.debug("Waiting for services [{}]", containerNames());
         final AtomicReference<Optional<SuccessOrFailure>> lastSuccessOrFailure = new AtomicReference<>(Optional.empty());
         try {

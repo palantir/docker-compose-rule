@@ -26,10 +26,10 @@ public abstract class SingleServiceWait implements ClusterWait {
     }
 
     @Override
-    public void waitUntilReady(Cluster containers) {
-        Container container = containers.container(containerName());
+    public void waitUntilReady(Cluster cluster) {
+        Container container = cluster.container(containerName());
         ServiceWait serviceWait = new ServiceWait(container, healthCheck(), timeout());
-        serviceWait.waitTillServiceIsUp();
+        serviceWait.waitTillServiceIsUp(cluster);
     }
 
 }

@@ -29,12 +29,12 @@ public abstract class MultiServiceWait implements ClusterWait {
     }
 
     @Override
-    public void waitUntilReady(Cluster containers) {
+    public void waitUntilReady(Cluster cluster) {
         List<Container> containersToWaitFor = containerNames().stream()
-                        .map(containers::container)
+                        .map(cluster::container)
                         .collect(toList());
         ServiceWait serviceWait = new ServiceWait(containersToWaitFor, healthcheck(), timeout());
-        serviceWait.waitTillServiceIsUp();
+        serviceWait.waitTillServiceIsUp(cluster);
     }
 
 }
