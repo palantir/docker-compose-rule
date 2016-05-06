@@ -9,9 +9,8 @@ import com.palantir.docker.compose.connection.Cluster;
 import com.palantir.docker.compose.connection.ContainerCache;
 import com.palantir.docker.compose.connection.DockerMachine;
 import com.palantir.docker.compose.connection.ImmutableCluster;
-import com.palantir.docker.compose.connection.waiting.ClusterWait;
 import com.palantir.docker.compose.connection.waiting.MultiServiceHealthCheck;
-import com.palantir.docker.compose.connection.waiting.ServiceWait;
+import com.palantir.docker.compose.connection.waiting.ClusterWait;
 import com.palantir.docker.compose.connection.waiting.SingleServiceHealthCheck;
 import com.palantir.docker.compose.execution.DefaultDockerCompose;
 import com.palantir.docker.compose.execution.DockerCompose;
@@ -153,19 +152,19 @@ public abstract class DockerComposeRule extends ExternalResource {
         public abstract ImmutableDockerComposeRule.Builder addClusterWait(ClusterWait clusterWait);
 
         public ImmutableDockerComposeRule.Builder waitingForService(String serviceName, SingleServiceHealthCheck healthCheck) {
-            return addClusterWait(new ServiceWait(serviceName, healthCheck, DEFAULT_TIMEOUT));
+            return addClusterWait(new ClusterWait(serviceName, healthCheck, DEFAULT_TIMEOUT));
         }
 
         public ImmutableDockerComposeRule.Builder waitingForService(String serviceName, SingleServiceHealthCheck healthCheck, Duration timeout) {
-            return addClusterWait(new ServiceWait(serviceName, healthCheck, timeout));
+            return addClusterWait(new ClusterWait(serviceName, healthCheck, timeout));
         }
 
         public ImmutableDockerComposeRule.Builder waitingForServices(List<String> services, MultiServiceHealthCheck healthCheck) {
-            return addClusterWait(new ServiceWait(services, healthCheck, DEFAULT_TIMEOUT));
+            return addClusterWait(new ClusterWait(services, healthCheck, DEFAULT_TIMEOUT));
         }
 
         public ImmutableDockerComposeRule.Builder waitingForServices(List<String> services, MultiServiceHealthCheck healthCheck, Duration timeout) {
-            return addClusterWait(new ServiceWait(services, healthCheck, timeout));
+            return addClusterWait(new ClusterWait(services, healthCheck, timeout));
         }
     }
 }
