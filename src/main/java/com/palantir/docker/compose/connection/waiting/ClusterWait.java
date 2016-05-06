@@ -53,11 +53,11 @@ public class ClusterWait {
 
     private Callable<Boolean> weHaveSuccess(Cluster cluster,
             AtomicReference<Optional<SuccessOrFailure>> lastSuccessOrFailure) {
-            return () -> {
-                SuccessOrFailure successOrFailure = clusterHealthCheck.isClusterHealthy(cluster);
-                lastSuccessOrFailure.set(Optional.of(successOrFailure));
-                return successOrFailure.succeeded();
-            };
+        return () -> {
+            SuccessOrFailure successOrFailure = clusterHealthCheck.isClusterHealthy(cluster);
+            lastSuccessOrFailure.set(Optional.of(successOrFailure));
+            return successOrFailure.succeeded();
+        };
     }
 
     private String serviceDidNotStartupExceptionMessage(

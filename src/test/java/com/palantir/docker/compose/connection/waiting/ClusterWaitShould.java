@@ -15,7 +15,8 @@
  */
 package com.palantir.docker.compose.connection.waiting;
 
-import static com.palantir.docker.compose.connection.waiting.SuccessOrFailure.*;
+import static com.palantir.docker.compose.connection.waiting.SuccessOrFailure.failure;
+import static com.palantir.docker.compose.connection.waiting.SuccessOrFailure.success;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;

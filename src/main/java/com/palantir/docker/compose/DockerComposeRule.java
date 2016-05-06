@@ -3,7 +3,7 @@
  */
 package com.palantir.docker.compose;
 
-import static com.palantir.docker.compose.connection.waiting.ClusterHealthCheck.*;
+import static com.palantir.docker.compose.connection.waiting.ClusterHealthCheck.serviceHealthCheck;
 
 import com.palantir.docker.compose.configuration.DockerComposeFiles;
 import com.palantir.docker.compose.configuration.ProjectName;
