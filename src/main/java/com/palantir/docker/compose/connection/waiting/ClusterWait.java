@@ -15,11 +15,12 @@
  */
 package com.palantir.docker.compose.connection.waiting;
 
-import static com.palantir.docker.compose.connection.waiting.ClusterHealthCheck.*;
+import static com.palantir.docker.compose.connection.waiting.ClusterHealthCheck.serviceHealthCheck;
 
 import com.jayway.awaitility.Awaitility;
 import com.jayway.awaitility.core.ConditionTimeoutException;
 import com.palantir.docker.compose.connection.Cluster;
+import com.palantir.docker.compose.connection.Container;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.Callable;
@@ -34,7 +35,7 @@ public class ClusterWait {
     private final ClusterHealthCheck clusterHealthCheck;
     private final Duration timeout;
 
-    public ClusterWait(String service, SingleServiceHealthCheck healthCheck, Duration timeout) {
+    public ClusterWait(String service, HealthCheck<Container> healthCheck, Duration timeout) {
         this(serviceHealthCheck(service, healthCheck), timeout);
     }
 

@@ -13,12 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.palantir.docker.compose.connection.waiting;
 
-import com.palantir.docker.compose.connection.Container;
-
 @FunctionalInterface
-public interface SingleServiceHealthCheck {
-    SuccessOrFailure isServiceUp(Container container);
+public interface HealthCheck<T> {
+    SuccessOrFailure isHealthy(T target);
 }

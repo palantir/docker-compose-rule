@@ -26,21 +26,21 @@ import com.palantir.docker.compose.connection.Container;
 import org.junit.Test;
 
 public class PortsHealthCheckShould {
-    private final SingleServiceHealthCheck healthCheck = HealthChecks.toHaveAllPortsOpen();
+    private final HealthCheck<Container> healthCheck = HealthChecks.toHaveAllPortsOpen();
     private final Container container = mock(Container.class);
 
     @Test
     public void be_healthy_when_all_ports_are_listening() {
         whenTheContainerHasAllPortsOpen();
 
-        assertThat(healthCheck.isServiceUp(container), is(successful()));
+        assertThat(healthCheck.isHealthy(container), is(successful()));
     }
 
     @Test
     public void be_unhealthy_when_all_ports_are_not_listening() {
         whenTheContainerDoesNotHaveAllPortsOpen();
 
-        assertThat(healthCheck.isServiceUp(container), is(failure()));
+        assertThat(healthCheck.isHealthy(container), is(failure()));
     }
 
     private void whenTheContainerDoesNotHaveAllPortsOpen() {
