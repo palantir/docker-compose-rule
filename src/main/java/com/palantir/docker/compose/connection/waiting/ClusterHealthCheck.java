@@ -18,6 +18,7 @@ package com.palantir.docker.compose.connection.waiting;
 import com.palantir.docker.compose.connection.Cluster;
 import com.palantir.docker.compose.connection.Container;
 import java.util.List;
+import java.util.function.Function;
 
 @FunctionalInterface
 public interface ClusterHealthCheck {
@@ -25,8 +26,15 @@ public interface ClusterHealthCheck {
         return cluster -> delegate.areServicesUp(cluster.containers(containerNames));
     }
 
-    static ClusterHealthCheck serviceHealthCheck(String containerName, HealthCheck<Container> delegate) {
-        return cluster -> delegate.isHealthy(cluster.container(containerName));
+    static ClusterHealthCheck serviceHealthCheck(String containerName, HealthCheck<Container> containerCheck) {
+        return transformingHealthCheck(cluster -> cluster.container(containerName), containerCheck);
+    }
+
+    static <T> ClusterHealthCheck transformingHealthCheck(Function<Cluster, T> transform, HealthCheck<T> healthCheck) {
+        return cluster -> {
+            T target = transform.apply(cluster);
+            return healthCheck.isHealthy(target);
+        };
     }
 
     SuccessOrFailure isClusterHealthy(Cluster cluster);
