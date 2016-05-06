@@ -20,7 +20,7 @@ import com.palantir.docker.compose.connection.Container;
 import java.util.List;
 
 @FunctionalInterface
-public interface MultiServiceHealthCheck {
+public interface MultiServiceHealthCheck extends HealthCheck<List<Container>> {
 
-    SuccessOrFailure areServicesUp(List<Container> containers);
+    SuccessOrFailure isHealthy(List<Container> containers);
 }

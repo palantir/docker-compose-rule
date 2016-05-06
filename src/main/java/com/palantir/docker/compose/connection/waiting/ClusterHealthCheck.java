@@ -22,8 +22,8 @@ import java.util.function.Function;
 
 @FunctionalInterface
 public interface ClusterHealthCheck {
-    static ClusterHealthCheck serviceHealthCheck(List<String> containerNames, MultiServiceHealthCheck delegate) {
-        return cluster -> delegate.areServicesUp(cluster.containers(containerNames));
+    static ClusterHealthCheck serviceHealthCheck(List<String> containerNames, HealthCheck<List<Container>> delegate) {
+        return transformingHealthCheck(cluster -> cluster.containers(containerNames), delegate);
     }
 
     static ClusterHealthCheck serviceHealthCheck(String containerName, HealthCheck<Container> containerCheck) {

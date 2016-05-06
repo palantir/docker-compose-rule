@@ -108,12 +108,12 @@ public class DockerComposeRuleTest {
         List<Container> containers = ImmutableList.of(db1, db2);
 
         MultiServiceHealthCheck healthCheck = mock(MultiServiceHealthCheck.class);
-        when(healthCheck.areServicesUp(containers)).thenReturn(SuccessOrFailure.success());
+        when(healthCheck.isHealthy(containers)).thenReturn(SuccessOrFailure.success());
 
 
         DockerComposeRule.builder().from(rule).waitingForServices(ImmutableList.of("db1", "db2"), healthCheck).build().before();
 
-        verify(healthCheck).areServicesUp(containers);
+        verify(healthCheck).isHealthy(containers);
     }
 
     @Test
