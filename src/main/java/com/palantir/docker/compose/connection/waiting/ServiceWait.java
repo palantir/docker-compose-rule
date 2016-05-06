@@ -15,6 +15,8 @@
  */
 package com.palantir.docker.compose.connection.waiting;
 
+import static java.util.stream.Collectors.toList;
+
 import com.google.common.collect.ImmutableList;
 import com.jayway.awaitility.Awaitility;
 import com.jayway.awaitility.core.ConditionTimeoutException;
@@ -25,14 +27,12 @@ import java.util.Optional;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.stream.Collectors;
 import org.joda.time.Duration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class ServiceWait {
     private static final Logger log = LoggerFactory.getLogger(ServiceWait.class);
-    private final List<Container> containers;
     private final List<String> containerNames;
     private final MultiServiceHealthCheck healthCheck;
     private final Duration timeout;
@@ -42,30 +42,30 @@ public class ServiceWait {
     }
 
     public ServiceWait(List<Container> containers, MultiServiceHealthCheck healthCheck, Duration timeout) {
-        this.containers = containers;
         this.healthCheck = healthCheck;
         this.timeout = timeout;
         containerNames = containers.stream()
                 .map(Container::getContainerName)
-                .collect(Collectors.toList());
+                .collect(toList());
     }
 
     public void waitTillServiceIsUp(Cluster cluster) {
         log.debug("Waiting for services [{}]", containerNames);
         final AtomicReference<Optional<SuccessOrFailure>> lastSuccessOrFailure = new AtomicReference<>(Optional.empty());
+        List<Container> containersToCheck = containerNames.stream().map(cluster::container).collect(toList());
         try {
             Awaitility.await()
                     .pollInterval(50, TimeUnit.MILLISECONDS)
                     .atMost(timeout.getMillis(), TimeUnit.MILLISECONDS)
-                    .until(weHaveSuccess(lastSuccessOrFailure));
+                    .until(weHaveSuccess(containersToCheck, lastSuccessOrFailure));
         } catch (ConditionTimeoutException e) {
             throw new IllegalStateException(serviceDidNotStartupExceptionMessage(lastSuccessOrFailure));
         }
     }
 
-    private Callable<Boolean> weHaveSuccess(AtomicReference<Optional<SuccessOrFailure>> lastSuccessOrFailure) {
+    private Callable<Boolean> weHaveSuccess(List<Container> containersToCheck, AtomicReference<Optional<SuccessOrFailure>> lastSuccessOrFailure) {
         return () -> {
-            SuccessOrFailure successOrFailure = healthCheck.areServicesUp(containers);
+            SuccessOrFailure successOrFailure = healthCheck.areServicesUp(containersToCheck);
             lastSuccessOrFailure.set(Optional.of(successOrFailure));
             return successOrFailure.succeeded();
         };
@@ -77,7 +77,7 @@ public class ServiceWait {
                 .orElse("The healthcheck did not finish before the timeout");
 
         return String.format("%s '%s' failed to pass startup check:%n%s",
-            containers.size() > 1 ? "Containers" : "Container",
+            containerNames.size() > 1 ? "Containers" : "Container",
                 containerNames,
             healthcheckFailureMessage);
     }

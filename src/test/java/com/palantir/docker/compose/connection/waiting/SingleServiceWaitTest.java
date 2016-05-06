@@ -18,26 +18,21 @@ import org.junit.Test;
 
 public class SingleServiceWaitTest {
 
-    private Cluster containerAccessor = mock(Cluster.class);
+    private Cluster cluster = mock(Cluster.class);
     private SingleServiceHealthCheck healthCheck = mock(SingleServiceHealthCheck.class);
-    private Container someContainer = mock(Container.class);
+    private Container someContainer = mock(Container.class, "somecontainer");
     private SingleServiceWait wait = SingleServiceWait.of("somecontainer", healthCheck, DEFAULT_TIMEOUT);
 
     @Before
     public void before() {
-        when(containerAccessor.container("somecontainer")).thenReturn(someContainer);
+        when(someContainer.getContainerName()).thenReturn("somecontainer");
+        when(cluster.container("somecontainer")).thenReturn(someContainer);
         when(healthCheck.isServiceUp(any())).thenReturn(SuccessOrFailure.success());
     }
 
     @Test
-    public void isReadyLooksUpContainer() {
-        wait.waitUntilReady(containerAccessor);
-        verify(containerAccessor, times(1)).container("somecontainer");
-    }
-
-    @Test
     public void isReadyDelegatesToServiceWait() {
-        wait.waitUntilReady(containerAccessor);
+        wait.waitUntilReady(cluster);
         verify(healthCheck, times(1)).isServiceUp(someContainer);
     }
 }
