@@ -17,13 +17,17 @@ package com.palantir.docker.compose.connection.waiting;
 
 import static com.palantir.docker.compose.connection.waiting.SuccessOrFailure.*;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.palantir.docker.compose.connection.Cluster;
 import com.palantir.docker.compose.connection.ContainerCache;
 import com.palantir.docker.compose.connection.ImmutableCluster;
 import org.joda.time.Duration;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 public class ClusterWaitShould {
 
@@ -38,11 +42,33 @@ public class ClusterWaitShould {
             .ip(IP)
             .build();
 
+    @Rule public ExpectedException exception = ExpectedException.none();
+
 
     @Test public void
     return_when_a_cluster_is_ready() {
         when(clusterHealthCheck.isClusterHealthy(cluster)).thenReturn(success());
         ClusterWait wait = new ClusterWait(clusterHealthCheck, DURATION);
+        wait.waitUntilReady(cluster);
+    }
+
+    @Test public void
+    check_until_a_cluster_is_ready() {
+        when(clusterHealthCheck.isClusterHealthy(cluster)).thenReturn(failure("failure!"), success());
+        ClusterWait wait = new ClusterWait(clusterHealthCheck, DURATION);
+        wait.waitUntilReady(cluster);
+        verify(clusterHealthCheck, times(2)).isClusterHealthy(cluster);
+    }
+
+    @Test(timeout = 2000L) public void
+    timeout_if_the_cluster_is_not_healthy() {
+        when(clusterHealthCheck.isClusterHealthy(cluster)).thenReturn(failure("failure!"));
+
+        exception.expect(IllegalStateException.class);
+        exception.expectMessage("failure!");
+
+        ClusterWait wait = new ClusterWait(clusterHealthCheck, DURATION);
+
         wait.waitUntilReady(cluster);
     }
 }

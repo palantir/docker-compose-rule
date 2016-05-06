@@ -97,10 +97,7 @@ public class ClusterWait {
                 .flatMap(SuccessOrFailure::toOptionalFailureMessage)
                 .orElse("The healthcheck did not finish before the timeout");
 
-        return String.format("%s '%s' failed to pass startup check:%n%s",
-                containerNames.size() > 1 ? "Containers" : "Container",
-                containerNames,
-                healthcheckFailureMessage);
+        return "The cluster failed to pass a startup check: " + healthcheckFailureMessage;
     }
 
 }
