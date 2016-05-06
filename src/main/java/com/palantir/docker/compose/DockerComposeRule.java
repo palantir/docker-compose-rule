@@ -8,6 +8,7 @@ import com.palantir.docker.compose.configuration.ProjectName;
 import com.palantir.docker.compose.connection.Cluster;
 import com.palantir.docker.compose.connection.ContainerCache;
 import com.palantir.docker.compose.connection.DockerMachine;
+import com.palantir.docker.compose.connection.ImmutableCluster;
 import com.palantir.docker.compose.connection.waiting.ClusterWait;
 import com.palantir.docker.compose.connection.waiting.MultiServiceHealthCheck;
 import com.palantir.docker.compose.connection.waiting.MultiServiceWait;
@@ -69,7 +70,10 @@ public abstract class DockerComposeRule extends ExternalResource {
 
     @Value.Default
     public Cluster containers() {
-        return new ContainerCache(dockerCompose());
+        return ImmutableCluster.builder()
+                .ip(machine().getIp())
+                .containers(new ContainerCache(dockerCompose()))
+                .build();
     }
 
     @Value.Default

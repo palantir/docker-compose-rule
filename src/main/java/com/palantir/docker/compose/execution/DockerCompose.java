@@ -15,14 +15,13 @@
  */
 package com.palantir.docker.compose.execution;
 
-import com.palantir.docker.compose.connection.Cluster;
 import com.palantir.docker.compose.connection.Container;
 import com.palantir.docker.compose.connection.ContainerNames;
 import com.palantir.docker.compose.connection.Ports;
 import java.io.IOException;
 import java.io.OutputStream;
 
-public interface DockerCompose extends Cluster {
+public interface DockerCompose {
     void build() throws IOException, InterruptedException;
     void up() throws IOException, InterruptedException;
     void down() throws IOException, InterruptedException;

@@ -4,8 +4,16 @@
 
 package com.palantir.docker.compose.connection;
 
-public interface Cluster {
+import org.immutables.value.Value;
 
-    Container container(String name);
+@Value.Immutable
+public abstract class Cluster {
+
+    public abstract String ip();
+    public abstract ContainerCache containers();
+
+    public Container container(String name) {
+        return containers().container(name);
+    }
 
 }

@@ -5,7 +5,6 @@
 package com.palantir.docker.compose.connection.waiting;
 
 import com.palantir.docker.compose.connection.Cluster;
-import com.palantir.docker.compose.connection.Container;
 import org.immutables.value.Value;
 import org.joda.time.Duration;
 
@@ -26,10 +25,9 @@ public abstract class SingleServiceWait implements ClusterWait {
     }
 
     @Override
-    public void waitUntilReady(Cluster containers) {
-        Container container = containers.container(containerName());
-        ServiceWait serviceWait = new ServiceWait(container, healthCheck(), timeout());
-        serviceWait.waitTillServiceIsUp();
+    public void waitUntilReady(Cluster cluster) {
+        ServiceWait serviceWait = new ServiceWait(containerName(), healthCheck(), timeout());
+        serviceWait.waitUntilReady(cluster);
     }
 
 }

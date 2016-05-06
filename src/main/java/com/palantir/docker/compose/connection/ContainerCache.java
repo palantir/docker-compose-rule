@@ -19,7 +19,7 @@ import com.palantir.docker.compose.execution.DockerCompose;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ContainerCache implements Cluster {
+public class ContainerCache {
 
     private final Map<String, Container> containers = new HashMap<>();
     private final DockerCompose dockerCompose;
@@ -28,7 +28,6 @@ public class ContainerCache implements Cluster {
         this.dockerCompose = dockerCompose;
     }
 
-    @Override
     public Container container(String containerName) {
         containers.putIfAbsent(containerName, dockerCompose.container(containerName));
         return containers.get(containerName);
