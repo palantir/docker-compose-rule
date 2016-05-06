@@ -31,7 +31,7 @@ import org.joda.time.Duration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ServiceWait {
+public class ServiceWait implements ClusterWait {
     private static final Logger log = LoggerFactory.getLogger(ServiceWait.class);
     private final List<String> containerNames;
     private final MultiServiceHealthCheck healthCheck;
@@ -47,7 +47,7 @@ public class ServiceWait {
         this.timeout = timeout;
     }
 
-    public void waitTillServiceIsUp(Cluster cluster) {
+    public void waitUntilReady(Cluster cluster) {
         log.debug("Waiting for services [{}]", containerNames);
         final AtomicReference<Optional<SuccessOrFailure>> lastSuccessOrFailure = new AtomicReference<>(Optional.empty());
         List<Container> containersToCheck = containerNames.stream().map(cluster::container).collect(toList());
