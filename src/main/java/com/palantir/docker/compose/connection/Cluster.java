@@ -4,8 +4,25 @@
 
 package com.palantir.docker.compose.connection;
 
-public interface Cluster {
+import static java.util.stream.Collectors.toList;
 
-    Container container(String name);
+import java.util.List;
+import org.immutables.value.Value;
+
+@Value.Immutable
+public abstract class Cluster {
+
+    public abstract String ip();
+    public abstract ContainerCache containerCache();
+
+    public Container container(String name) {
+        return containerCache().container(name);
+    }
+
+    public List<Container> containers(List<String> containerNames) {
+        return containerNames.stream()
+                .map(this::container)
+                .collect(toList());
+    }
 
 }

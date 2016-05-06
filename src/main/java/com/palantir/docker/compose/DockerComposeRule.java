@@ -3,16 +3,18 @@
  */
 package com.palantir.docker.compose;
 
+import static com.palantir.docker.compose.connection.waiting.ClusterHealthCheck.serviceHealthCheck;
+
 import com.palantir.docker.compose.configuration.DockerComposeFiles;
 import com.palantir.docker.compose.configuration.ProjectName;
 import com.palantir.docker.compose.connection.Cluster;
+import com.palantir.docker.compose.connection.Container;
 import com.palantir.docker.compose.connection.ContainerCache;
 import com.palantir.docker.compose.connection.DockerMachine;
+import com.palantir.docker.compose.connection.ImmutableCluster;
+import com.palantir.docker.compose.connection.waiting.ClusterHealthCheck;
 import com.palantir.docker.compose.connection.waiting.ClusterWait;
-import com.palantir.docker.compose.connection.waiting.MultiServiceHealthCheck;
-import com.palantir.docker.compose.connection.waiting.MultiServiceWait;
-import com.palantir.docker.compose.connection.waiting.SingleServiceHealthCheck;
-import com.palantir.docker.compose.connection.waiting.SingleServiceWait;
+import com.palantir.docker.compose.connection.waiting.HealthCheck;
 import com.palantir.docker.compose.execution.DefaultDockerCompose;
 import com.palantir.docker.compose.execution.DockerCompose;
 import com.palantir.docker.compose.execution.DockerComposeExecArgument;
@@ -69,7 +71,10 @@ public abstract class DockerComposeRule extends ExternalResource {
 
     @Value.Default
     public Cluster containers() {
-        return new ContainerCache(dockerCompose());
+        return ImmutableCluster.builder()
+                .ip(machine().getIp())
+                .containerCache(new ContainerCache(dockerCompose()))
+                .build();
     }
 
     @Value.Default
@@ -149,20 +154,22 @@ public abstract class DockerComposeRule extends ExternalResource {
 
         public abstract ImmutableDockerComposeRule.Builder addClusterWait(ClusterWait clusterWait);
 
-        public ImmutableDockerComposeRule.Builder waitingForService(String serviceName, SingleServiceHealthCheck healthCheck) {
-            return addClusterWait(SingleServiceWait.of(serviceName, healthCheck, DEFAULT_TIMEOUT));
+        public ImmutableDockerComposeRule.Builder waitingForService(String serviceName, HealthCheck<Container> healthCheck) {
+            return waitingForService(serviceName, healthCheck, DEFAULT_TIMEOUT);
         }
 
-        public ImmutableDockerComposeRule.Builder waitingForService(String serviceName, SingleServiceHealthCheck healthCheck, Duration timeout) {
-            return addClusterWait(SingleServiceWait.of(serviceName, healthCheck, timeout));
+        public ImmutableDockerComposeRule.Builder waitingForService(String serviceName, HealthCheck<Container> healthCheck, Duration timeout) {
+            ClusterHealthCheck clusterHealthCheck = serviceHealthCheck(serviceName, healthCheck);
+            return addClusterWait(new ClusterWait(clusterHealthCheck, timeout));
         }
 
-        public ImmutableDockerComposeRule.Builder waitingForServices(List<String> services, MultiServiceHealthCheck healthCheck) {
-            return addClusterWait(MultiServiceWait.of(services, healthCheck, DEFAULT_TIMEOUT));
+        public ImmutableDockerComposeRule.Builder waitingForServices(List<String> services, HealthCheck<List<Container>> healthCheck) {
+            return waitingForServices(services, healthCheck, DEFAULT_TIMEOUT);
         }
 
-        public ImmutableDockerComposeRule.Builder waitingForServices(List<String> services, MultiServiceHealthCheck healthCheck, Duration timeout) {
-            return addClusterWait(MultiServiceWait.of(services, healthCheck, timeout));
+        public ImmutableDockerComposeRule.Builder waitingForServices(List<String> services, HealthCheck<List<Container>> healthCheck, Duration timeout) {
+            ClusterHealthCheck clusterHealthCheck = serviceHealthCheck(services, healthCheck);
+            return addClusterWait(new ClusterWait(clusterHealthCheck, timeout));
         }
     }
 }

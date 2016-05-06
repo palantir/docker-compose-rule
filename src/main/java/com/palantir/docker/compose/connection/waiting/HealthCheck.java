@@ -13,23 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.palantir.docker.compose.connection.waiting;
 
-import static com.google.common.collect.Iterables.getOnlyElement;
-
-import com.google.common.base.Preconditions;
-import com.palantir.docker.compose.connection.Container;
-import java.util.List;
-
 @FunctionalInterface
-public interface MultiServiceHealthCheck {
-    static MultiServiceHealthCheck fromSingleServiceHealthCheck(SingleServiceHealthCheck healthCheck) {
-        return containers -> {
-            Preconditions.checkArgument(containers.size() == 1, "Trying to run a single container health check on containers " + containers);
-            return healthCheck.isServiceUp(getOnlyElement(containers));
-        };
-    }
-
-    SuccessOrFailure areServicesUp(List<Container> containers);
+public interface HealthCheck<T> {
+    SuccessOrFailure isHealthy(T target);
 }

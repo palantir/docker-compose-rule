@@ -89,7 +89,7 @@ public class DockerCompositionTest {
 ```
 
 The entrypoint method `waitingForService(String container, SingleServiceHealthCheck check[, Duration timeout])` will make sure the healthcheck passes for that container before the tests start. 
-The entrypoint method `waitingForServices(List<String> containers, MultiServiceHealthCheck check[, Duration timeout])` will make sure the healthcheck passes for the cluster of containers before the tests start. 
+The entrypoint method `waitingForServices(List<String> containers, HealthCheck<List<Container>> check[, Duration timeout])` will make sure the healthcheck passes for the cluster of containers before the tests start. 
 
 We provide 2 default healthChecks in the HealthChecks class:
 

@@ -22,7 +22,7 @@ import static org.hamcrest.core.Is.is;
 
 import com.google.common.collect.ImmutableList;
 import com.palantir.docker.compose.connection.Container;
-import com.palantir.docker.compose.connection.waiting.MultiServiceHealthCheck;
+import com.palantir.docker.compose.connection.waiting.HealthCheck;
 import com.palantir.docker.compose.connection.waiting.SuccessOrFailure;
 import java.io.IOException;
 import java.util.List;
@@ -43,7 +43,7 @@ public class DockerCompositionIntegrationTest {
                                                             .waitingForServices(ImmutableList.of("db3", "db4"), toAllHaveAllPortsOpen())
                                                             .build();
 
-    private MultiServiceHealthCheck toAllHaveAllPortsOpen() {
+    private HealthCheck<List<Container>> toAllHaveAllPortsOpen() {
         return containers -> {
             boolean healthy = containers.stream()
                     .map(Container::areAllPortsOpen)
