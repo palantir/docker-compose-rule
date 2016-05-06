@@ -15,8 +15,6 @@
  */
 package com.palantir.docker.compose.connection.waiting;
 
-import static java.util.stream.Collectors.joining;
-
 import com.google.common.collect.ImmutableList;
 import com.jayway.awaitility.Awaitility;
 import com.jayway.awaitility.core.ConditionTimeoutException;
@@ -53,7 +51,7 @@ public class ServiceWait {
     }
 
     public void waitTillServiceIsUp(Cluster cluster) {
-        log.debug("Waiting for services [{}]", containerNames());
+        log.debug("Waiting for services [{}]", containerNames);
         final AtomicReference<Optional<SuccessOrFailure>> lastSuccessOrFailure = new AtomicReference<>(Optional.empty());
         try {
             Awaitility.await()
@@ -80,14 +78,8 @@ public class ServiceWait {
 
         return String.format("%s '%s' failed to pass startup check:%n%s",
             containers.size() > 1 ? "Containers" : "Container",
-            containerNames(),
+                containerNames,
             healthcheckFailureMessage);
     }
 
-    private String containerNames() {
-        return containers.stream()
-                .map(Container::getContainerName)
-                .collect(joining(", "));
-
-    }
 }
