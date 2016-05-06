@@ -89,4 +89,7 @@ public class DockerComposition extends ExternalResource {
         rule.exec(options, containerName, arguments);
     }
 
+    public DockerPort hostNetworkedPort(int port) {
+        return rule.hostNetworkedPort(port);
+    }
 }

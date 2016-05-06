@@ -4,6 +4,7 @@
 package com.palantir.docker.compose;
 
 import static com.palantir.docker.compose.connection.waiting.ClusterHealthCheck.serviceHealthCheck;
+import static com.palantir.docker.compose.connection.waiting.ClusterHealthCheck.transformingHealthCheck;
 
 import com.palantir.docker.compose.configuration.DockerComposeFiles;
 import com.palantir.docker.compose.configuration.ProjectName;
@@ -11,6 +12,7 @@ import com.palantir.docker.compose.connection.Cluster;
 import com.palantir.docker.compose.connection.Container;
 import com.palantir.docker.compose.connection.ContainerCache;
 import com.palantir.docker.compose.connection.DockerMachine;
+import com.palantir.docker.compose.connection.DockerPort;
 import com.palantir.docker.compose.connection.ImmutableCluster;
 import com.palantir.docker.compose.connection.waiting.ClusterHealthCheck;
 import com.palantir.docker.compose.connection.waiting.ClusterWait;
@@ -39,6 +41,10 @@ public abstract class DockerComposeRule extends ExternalResource {
     public static final int DEFAULT_RETRY_ATTEMPTS = 2;
 
     private static final Logger log = LoggerFactory.getLogger(DockerComposeRule.class);
+
+    public DockerPort hostNetworkedPort(int port) {
+        return new DockerPort(machine().getIp(), port, port);
+    }
 
     public abstract DockerComposeFiles files();
 
@@ -169,6 +175,15 @@ public abstract class DockerComposeRule extends ExternalResource {
 
         public ImmutableDockerComposeRule.Builder waitingForServices(List<String> services, HealthCheck<List<Container>> healthCheck, Duration timeout) {
             ClusterHealthCheck clusterHealthCheck = serviceHealthCheck(services, healthCheck);
+            return addClusterWait(new ClusterWait(clusterHealthCheck, timeout));
+        }
+
+        public ImmutableDockerComposeRule.Builder waitingForHostNetworkedPort(int port, HealthCheck<DockerPort> healthCheck) {
+            return waitingForHostNetworkedPort(port, healthCheck, DEFAULT_TIMEOUT);
+        }
+
+        public ImmutableDockerComposeRule.Builder waitingForHostNetworkedPort(int port, HealthCheck<DockerPort> healthCheck, Duration timeout) {
+            ClusterHealthCheck clusterHealthCheck = transformingHealthCheck(cluster -> new DockerPort(cluster.ip(), port, port), healthCheck);
             return addClusterWait(new ClusterWait(clusterHealthCheck, timeout));
         }
     }

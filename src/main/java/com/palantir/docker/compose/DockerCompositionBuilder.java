@@ -20,6 +20,7 @@ import com.palantir.docker.compose.configuration.DockerComposeFiles;
 import com.palantir.docker.compose.configuration.ProjectName;
 import com.palantir.docker.compose.connection.Container;
 import com.palantir.docker.compose.connection.DockerMachine;
+import com.palantir.docker.compose.connection.DockerPort;
 import com.palantir.docker.compose.connection.waiting.HealthCheck;
 import com.palantir.docker.compose.execution.DockerCompose;
 import java.util.List;
@@ -49,6 +50,16 @@ public class DockerCompositionBuilder {
 
     public DockerCompositionBuilder waitingForService(String serviceName, HealthCheck<Container> check, Duration timeout) {
         builder.waitingForService(serviceName, check, timeout);
+        return this;
+    }
+
+    public DockerCompositionBuilder waitingForHostNetworkedPort(int port, HealthCheck<DockerPort> healthCheck, Duration timeout) {
+        builder.waitingForHostNetworkedPort(port, healthCheck, timeout);
+        return this;
+    }
+
+    public DockerCompositionBuilder waitingForHostNetworkedPort(int port, HealthCheck<DockerPort> healthCheck) {
+        builder.waitingForHostNetworkedPort(port, healthCheck);
         return this;
     }
 
