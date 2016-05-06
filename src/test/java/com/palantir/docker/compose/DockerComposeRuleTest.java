@@ -38,7 +38,6 @@ import com.palantir.docker.compose.connection.ContainerNames;
 import com.palantir.docker.compose.connection.DockerMachine;
 import com.palantir.docker.compose.connection.DockerPort;
 import com.palantir.docker.compose.connection.waiting.HealthCheck;
-import com.palantir.docker.compose.connection.waiting.MultiServiceHealthCheck;
 import com.palantir.docker.compose.connection.waiting.SuccessOrFailure;
 import com.palantir.docker.compose.execution.DockerCompose;
 import com.palantir.docker.compose.logging.LogCollector;
@@ -55,7 +54,11 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
 
+@RunWith(MockitoJUnitRunner.class)
 public class DockerComposeRuleTest {
 
     private static final String IP = "127.0.0.1";
@@ -64,6 +67,9 @@ public class DockerComposeRuleTest {
     public ExpectedException exception = ExpectedException.none();
     @Rule
     public TemporaryFolder logFolder = new TemporaryFolder();
+
+    @Mock
+    private HealthCheck<List<Container>> healthCheck;
 
     private final DockerCompose dockerCompose = mock(DockerCompose.class);
     private final MockDockerEnvironment env = new MockDockerEnvironment(dockerCompose);
@@ -107,7 +113,6 @@ public class DockerComposeRuleTest {
         Container db2 = withComposeExecutableReturningContainerFor("db2");
         List<Container> containers = ImmutableList.of(db1, db2);
 
-        MultiServiceHealthCheck healthCheck = mock(MultiServiceHealthCheck.class);
         when(healthCheck.isHealthy(containers)).thenReturn(SuccessOrFailure.success());
 
 

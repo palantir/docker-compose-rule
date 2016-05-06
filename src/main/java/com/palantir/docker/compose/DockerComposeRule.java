@@ -12,7 +12,6 @@ import com.palantir.docker.compose.connection.DockerMachine;
 import com.palantir.docker.compose.connection.ImmutableCluster;
 import com.palantir.docker.compose.connection.waiting.ClusterWait;
 import com.palantir.docker.compose.connection.waiting.HealthCheck;
-import com.palantir.docker.compose.connection.waiting.MultiServiceHealthCheck;
 import com.palantir.docker.compose.execution.DefaultDockerCompose;
 import com.palantir.docker.compose.execution.DockerCompose;
 import com.palantir.docker.compose.execution.DockerComposeExecArgument;
@@ -160,11 +159,11 @@ public abstract class DockerComposeRule extends ExternalResource {
             return addClusterWait(new ClusterWait(serviceName, healthCheck, timeout));
         }
 
-        public ImmutableDockerComposeRule.Builder waitingForServices(List<String> services, MultiServiceHealthCheck healthCheck) {
+        public ImmutableDockerComposeRule.Builder waitingForServices(List<String> services, HealthCheck<List<Container>> healthCheck) {
             return addClusterWait(new ClusterWait(services, healthCheck, DEFAULT_TIMEOUT));
         }
 
-        public ImmutableDockerComposeRule.Builder waitingForServices(List<String> services, MultiServiceHealthCheck healthCheck, Duration timeout) {
+        public ImmutableDockerComposeRule.Builder waitingForServices(List<String> services, HealthCheck<List<Container>> healthCheck, Duration timeout) {
             return addClusterWait(new ClusterWait(services, healthCheck, timeout));
         }
     }

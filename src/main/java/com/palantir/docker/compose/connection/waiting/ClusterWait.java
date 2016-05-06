@@ -39,7 +39,7 @@ public class ClusterWait {
         this(serviceHealthCheck(service, healthCheck), timeout);
     }
 
-    public ClusterWait(List<String> services, MultiServiceHealthCheck healthCheck, Duration timeout) {
+    public ClusterWait(List<String> services, HealthCheck<List<Container>> healthCheck, Duration timeout) {
         this(serviceHealthCheck(services, healthCheck), timeout);
     }
 
