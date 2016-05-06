@@ -70,7 +70,7 @@ public abstract class DockerComposeRule extends ExternalResource {
     public Cluster containers() {
         return ImmutableCluster.builder()
                 .ip(machine().getIp())
-                .containers(new ContainerCache(dockerCompose()))
+                .containerCache(new ContainerCache(dockerCompose()))
                 .build();
     }
 

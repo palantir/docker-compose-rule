@@ -38,7 +38,7 @@ public class ClusterWaitShould {
     private final ClusterHealthCheck clusterHealthCheck = mock(ClusterHealthCheck.class);
 
     private final Cluster cluster = ImmutableCluster.builder()
-            .containers(containerCache)
+            .containerCache(containerCache)
             .ip(IP)
             .build();
 

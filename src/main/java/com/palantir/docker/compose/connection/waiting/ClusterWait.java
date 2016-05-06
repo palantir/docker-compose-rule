@@ -15,13 +15,11 @@
  */
 package com.palantir.docker.compose.connection.waiting;
 
-import static java.util.stream.Collectors.toList;
+import static com.palantir.docker.compose.connection.waiting.ClusterHealthCheck.*;
 
-import com.google.common.collect.ImmutableList;
 import com.jayway.awaitility.Awaitility;
 import com.jayway.awaitility.core.ConditionTimeoutException;
 import com.palantir.docker.compose.connection.Cluster;
-import com.palantir.docker.compose.connection.Container;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.Callable;
@@ -33,20 +31,15 @@ import org.slf4j.LoggerFactory;
 
 public class ClusterWait {
     private static final Logger log = LoggerFactory.getLogger(ClusterWait.class);
-    private ClusterHealthCheck clusterHealthCheck;
-    private List<String> containerNames;
-    private MultiServiceHealthCheck healthCheck;
-    private Duration timeout;
+    private final ClusterHealthCheck clusterHealthCheck;
+    private final Duration timeout;
 
-    public ClusterWait(String containerName, SingleServiceHealthCheck healthCheck, Duration timeout) {
-        this(ImmutableList.of(containerName), MultiServiceHealthCheck.fromSingleServiceHealthCheck(healthCheck),
-                timeout);
+    public ClusterWait(String service, SingleServiceHealthCheck healthCheck, Duration timeout) {
+        this(serviceHealthCheck(service, healthCheck), timeout);
     }
 
-    public ClusterWait(List<String> containerNames, MultiServiceHealthCheck healthCheck, Duration timeout) {
-        this.containerNames = containerNames;
-        this.healthCheck = healthCheck;
-        this.timeout = timeout;
+    public ClusterWait(List<String> services, MultiServiceHealthCheck healthCheck, Duration timeout) {
+        this(serviceHealthCheck(services, healthCheck), timeout);
     }
 
     public ClusterWait(ClusterHealthCheck clusterHealthCheck, Duration timeout) {
@@ -57,38 +50,25 @@ public class ClusterWait {
     public void waitUntilReady(Cluster cluster) {
         final AtomicReference<Optional<SuccessOrFailure>> lastSuccessOrFailure = new AtomicReference<>(
                 Optional.empty());
-        final Callable<Boolean> evaluator = weHaveSuccess(cluster, lastSuccessOrFailure);
 
-        log.debug("Waiting for services [{}]", containerNames);
+        log.debug("Waiting for cluster to be healthy");
         try {
             Awaitility.await()
                     .pollInterval(50, TimeUnit.MILLISECONDS)
                     .atMost(timeout.getMillis(), TimeUnit.MILLISECONDS)
-                    .until(evaluator);
+                    .until(weHaveSuccess(cluster, lastSuccessOrFailure));
         } catch (ConditionTimeoutException e) {
             throw new IllegalStateException(serviceDidNotStartupExceptionMessage(lastSuccessOrFailure));
         }
     }
 
-    private List<Container> containersToCheck(Cluster cluster) {
-        return containerNames.stream().map(cluster::container).collect(toList());
-    }
-
     private Callable<Boolean> weHaveSuccess(Cluster cluster,
             AtomicReference<Optional<SuccessOrFailure>> lastSuccessOrFailure) {
-        if (clusterHealthCheck == null) {
-            return () -> {
-                SuccessOrFailure successOrFailure = healthCheck.areServicesUp(containersToCheck(cluster));
-                lastSuccessOrFailure.set(Optional.of(successOrFailure));
-                return successOrFailure.succeeded();
-            };
-        } else {
             return () -> {
                 SuccessOrFailure successOrFailure = clusterHealthCheck.isClusterHealthy(cluster);
                 lastSuccessOrFailure.set(Optional.of(successOrFailure));
                 return successOrFailure.succeeded();
             };
-        }
     }
 
     private String serviceDidNotStartupExceptionMessage(
