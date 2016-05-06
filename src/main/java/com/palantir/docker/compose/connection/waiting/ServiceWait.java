@@ -27,6 +27,7 @@ import java.util.Optional;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Collectors;
 import org.joda.time.Duration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,19 +35,21 @@ import org.slf4j.LoggerFactory;
 public class ServiceWait {
     private static final Logger log = LoggerFactory.getLogger(ServiceWait.class);
     private final List<Container> containers;
+    private final List<String> containerNames;
     private final MultiServiceHealthCheck healthCheck;
     private final Duration timeout;
 
-    public ServiceWait(Container service, SingleServiceHealthCheck healthCheck, Duration timeout) {
-        this.containers = ImmutableList.of(service);
-        this.healthCheck = MultiServiceHealthCheck.fromSingleServiceHealthCheck(healthCheck);
-        this.timeout = timeout;
+    public ServiceWait(Container container, SingleServiceHealthCheck healthCheck, Duration timeout) {
+        this(ImmutableList.of(container), MultiServiceHealthCheck.fromSingleServiceHealthCheck(healthCheck), timeout);
     }
 
     public ServiceWait(List<Container> containers, MultiServiceHealthCheck healthCheck, Duration timeout) {
         this.containers = containers;
         this.healthCheck = healthCheck;
         this.timeout = timeout;
+        containerNames = containers.stream()
+                .map(Container::getContainerName)
+                .collect(Collectors.toList());
     }
 
     public void waitTillServiceIsUp(Cluster cluster) {
