@@ -50,6 +50,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.apache.commons.io.IOUtils;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -69,7 +70,13 @@ public class DockerComposeRuleTest {
     private DockerComposeFiles mockFiles = mock(DockerComposeFiles.class);
     private DockerMachine machine = mock(DockerMachine.class);
     private LogCollector logCollector = mock(LogCollector.class);
-    private final DockerComposeRule rule = defaultBuilder().build();
+    private DockerComposeRule rule;
+
+    @Before public void
+    setup() {
+        when(machine.getIp()).thenReturn(IP);
+        rule = defaultBuilder().build();
+    }
 
     @Test
     public void docker_compose_build_and_up_is_called_before_tests_are_run() throws IOException, InterruptedException {
@@ -123,7 +130,7 @@ public class DockerComposeRuleTest {
         withComposeExecutableReturningContainerFor("db");
 
         exception.expect(IllegalStateException.class);
-        exception.expectMessage("Container 'db' failed to pass startup check:\noops");
+        exception.expectMessage("Container '[db]' failed to pass startup check:\noops");
 
         DockerComposeRule.builder().from(rule).waitingForService("db", (container) -> SuccessOrFailure.failure("oops"), millis(200)).build().before();
     }
