@@ -3,6 +3,8 @@
  */
 package com.palantir.docker.compose;
 
+import static com.palantir.docker.compose.connection.waiting.ClusterHealthCheck.*;
+
 import com.palantir.docker.compose.configuration.DockerComposeFiles;
 import com.palantir.docker.compose.configuration.ProjectName;
 import com.palantir.docker.compose.connection.Cluster;
@@ -10,6 +12,7 @@ import com.palantir.docker.compose.connection.Container;
 import com.palantir.docker.compose.connection.ContainerCache;
 import com.palantir.docker.compose.connection.DockerMachine;
 import com.palantir.docker.compose.connection.ImmutableCluster;
+import com.palantir.docker.compose.connection.waiting.ClusterHealthCheck;
 import com.palantir.docker.compose.connection.waiting.ClusterWait;
 import com.palantir.docker.compose.connection.waiting.HealthCheck;
 import com.palantir.docker.compose.execution.DefaultDockerCompose;
@@ -152,19 +155,21 @@ public abstract class DockerComposeRule extends ExternalResource {
         public abstract ImmutableDockerComposeRule.Builder addClusterWait(ClusterWait clusterWait);
 
         public ImmutableDockerComposeRule.Builder waitingForService(String serviceName, HealthCheck<Container> healthCheck) {
-            return addClusterWait(new ClusterWait(serviceName, healthCheck, DEFAULT_TIMEOUT));
+            return waitingForService(serviceName, healthCheck, DEFAULT_TIMEOUT);
         }
 
         public ImmutableDockerComposeRule.Builder waitingForService(String serviceName, HealthCheck<Container> healthCheck, Duration timeout) {
-            return addClusterWait(new ClusterWait(serviceName, healthCheck, timeout));
+            ClusterHealthCheck clusterHealthCheck = serviceHealthCheck(serviceName, healthCheck);
+            return addClusterWait(new ClusterWait(clusterHealthCheck, timeout));
         }
 
         public ImmutableDockerComposeRule.Builder waitingForServices(List<String> services, HealthCheck<List<Container>> healthCheck) {
-            return addClusterWait(new ClusterWait(services, healthCheck, DEFAULT_TIMEOUT));
+            return waitingForServices(services, healthCheck, DEFAULT_TIMEOUT);
         }
 
         public ImmutableDockerComposeRule.Builder waitingForServices(List<String> services, HealthCheck<List<Container>> healthCheck, Duration timeout) {
-            return addClusterWait(new ClusterWait(services, healthCheck, timeout));
+            ClusterHealthCheck clusterHealthCheck = serviceHealthCheck(services, healthCheck);
+            return addClusterWait(new ClusterWait(clusterHealthCheck, timeout));
         }
     }
 }
