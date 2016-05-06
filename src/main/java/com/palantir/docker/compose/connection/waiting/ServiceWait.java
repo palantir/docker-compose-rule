@@ -37,16 +37,14 @@ public class ServiceWait {
     private final MultiServiceHealthCheck healthCheck;
     private final Duration timeout;
 
-    public ServiceWait(Container container, SingleServiceHealthCheck healthCheck, Duration timeout) {
-        this(ImmutableList.of(container), MultiServiceHealthCheck.fromSingleServiceHealthCheck(healthCheck), timeout);
+    public ServiceWait(String containerName, SingleServiceHealthCheck healthCheck, Duration timeout) {
+        this(ImmutableList.of(containerName), MultiServiceHealthCheck.fromSingleServiceHealthCheck(healthCheck), timeout);
     }
 
-    public ServiceWait(List<Container> containers, MultiServiceHealthCheck healthCheck, Duration timeout) {
+    public ServiceWait(List<String> containerNames, MultiServiceHealthCheck healthCheck, Duration timeout) {
+        this.containerNames = containerNames;
         this.healthCheck = healthCheck;
         this.timeout = timeout;
-        containerNames = containers.stream()
-                .map(Container::getContainerName)
-                .collect(toList());
     }
 
     public void waitTillServiceIsUp(Cluster cluster) {
