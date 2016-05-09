@@ -37,8 +37,7 @@ import com.palantir.docker.compose.connection.Container;
 import com.palantir.docker.compose.connection.ContainerNames;
 import com.palantir.docker.compose.connection.DockerMachine;
 import com.palantir.docker.compose.connection.DockerPort;
-import com.palantir.docker.compose.connection.waiting.MultiServiceHealthCheck;
-import com.palantir.docker.compose.connection.waiting.SingleServiceHealthCheck;
+import com.palantir.docker.compose.connection.waiting.HealthCheck;
 import com.palantir.docker.compose.connection.waiting.SuccessOrFailure;
 import com.palantir.docker.compose.execution.DockerCompose;
 import com.palantir.docker.compose.logging.LogCollector;
@@ -50,11 +49,16 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.apache.commons.io.IOUtils;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
 
+@RunWith(MockitoJUnitRunner.class)
 public class DockerComposeRuleTest {
 
     private static final String IP = "127.0.0.1";
@@ -64,12 +68,21 @@ public class DockerComposeRuleTest {
     @Rule
     public TemporaryFolder logFolder = new TemporaryFolder();
 
+    @Mock
+    private HealthCheck<List<Container>> healthCheck;
+
     private final DockerCompose dockerCompose = mock(DockerCompose.class);
     private final MockDockerEnvironment env = new MockDockerEnvironment(dockerCompose);
     private DockerComposeFiles mockFiles = mock(DockerComposeFiles.class);
     private DockerMachine machine = mock(DockerMachine.class);
     private LogCollector logCollector = mock(LogCollector.class);
-    private final DockerComposeRule rule = defaultBuilder().build();
+    private DockerComposeRule rule;
+
+    @Before public void
+    setup() {
+        when(machine.getIp()).thenReturn(IP);
+        rule = defaultBuilder().build();
+    }
 
     @Test
     public void docker_compose_build_and_up_is_called_before_tests_are_run() throws IOException, InterruptedException {
@@ -89,7 +102,7 @@ public class DockerComposeRuleTest {
     public void docker_compose_wait_for_service_passes_when_check_is_true() throws IOException, InterruptedException {
         AtomicInteger timesCheckCalled = new AtomicInteger(0);
         withComposeExecutableReturningContainerFor("db");
-        SingleServiceHealthCheck checkCalledOnce = (container) -> SuccessOrFailure.fromBoolean(timesCheckCalled.incrementAndGet() == 1, "not called once yet");
+        HealthCheck<Container> checkCalledOnce = (container) -> SuccessOrFailure.fromBoolean(timesCheckCalled.incrementAndGet() == 1, "not called once yet");
         DockerComposeRule.builder().from(rule).waitingForService("db", checkCalledOnce).build().before();
         assertThat(timesCheckCalled.get(), is(1));
     }
@@ -100,20 +113,19 @@ public class DockerComposeRuleTest {
         Container db2 = withComposeExecutableReturningContainerFor("db2");
         List<Container> containers = ImmutableList.of(db1, db2);
 
-        MultiServiceHealthCheck healthCheck = mock(MultiServiceHealthCheck.class);
-        when(healthCheck.areServicesUp(containers)).thenReturn(SuccessOrFailure.success());
+        when(healthCheck.isHealthy(containers)).thenReturn(SuccessOrFailure.success());
 
 
         DockerComposeRule.builder().from(rule).waitingForServices(ImmutableList.of("db1", "db2"), healthCheck).build().before();
 
-        verify(healthCheck).areServicesUp(containers);
+        verify(healthCheck).isHealthy(containers);
     }
 
     @Test
     public void docker_compose_wait_for_service_passes_when_check_is_true_after_being_false() throws IOException, InterruptedException {
         AtomicInteger timesCheckCalled = new AtomicInteger(0);
         withComposeExecutableReturningContainerFor("db");
-        SingleServiceHealthCheck checkCalledTwice = (container) -> SuccessOrFailure.fromBoolean(timesCheckCalled.incrementAndGet() == 2, "not called twice yet");
+        HealthCheck<Container> checkCalledTwice = (container) -> SuccessOrFailure.fromBoolean(timesCheckCalled.incrementAndGet() == 2, "not called twice yet");
         DockerComposeRule.builder().from(rule).waitingForService("db", checkCalledTwice).build().before();
         assertThat(timesCheckCalled.get(), is(2));
     }
@@ -123,7 +135,8 @@ public class DockerComposeRuleTest {
         withComposeExecutableReturningContainerFor("db");
 
         exception.expect(IllegalStateException.class);
-        exception.expectMessage("Container 'db' failed to pass startup check:\noops");
+        exception.expectMessage("failed to pass a startup check");
+        exception.expectMessage("oops");
 
         DockerComposeRule.builder().from(rule).waitingForService("db", (container) -> SuccessOrFailure.failure("oops"), millis(200)).build().before();
     }

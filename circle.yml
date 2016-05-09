@@ -1,4 +1,6 @@
 machine:
+  pre:
+    - curl -sSL https://s3.amazonaws.com/circle-downloads/install-circleci-docker.sh | bash -s -- 1.10.0
   java:
     version: oraclejdk8 
   services:
@@ -6,6 +8,10 @@ machine:
   environment:
     TERM: dumb
 
+dependencies:
+  pre:
+    - sudo pip install docker-compose
+    
 test:
   pre:
     - ./gradlew findbugsMain findbugsTest checkstyleMain checkstyleTest javadoc --info

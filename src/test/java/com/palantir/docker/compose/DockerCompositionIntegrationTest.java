@@ -22,7 +22,7 @@ import static org.hamcrest.core.Is.is;
 
 import com.google.common.collect.ImmutableList;
 import com.palantir.docker.compose.connection.Container;
-import com.palantir.docker.compose.connection.waiting.MultiServiceHealthCheck;
+import com.palantir.docker.compose.connection.waiting.HealthCheck;
 import com.palantir.docker.compose.connection.waiting.SuccessOrFailure;
 import java.io.IOException;
 import java.util.List;
@@ -43,7 +43,7 @@ public class DockerCompositionIntegrationTest {
                                                             .waitingForServices(ImmutableList.of("db3", "db4"), toAllHaveAllPortsOpen())
                                                             .build();
 
-    private MultiServiceHealthCheck toAllHaveAllPortsOpen() {
+    private HealthCheck<List<Container>> toAllHaveAllPortsOpen() {
         return containers -> {
             boolean healthy = containers.stream()
                     .map(Container::areAllPortsOpen)
@@ -66,7 +66,7 @@ public class DockerCompositionIntegrationTest {
     public void should_run_docker_compose_up_using_the_specified_docker_compose_file_to_bring_postgres_up() throws InterruptedException, IOException {
         forEachContainer((container) -> {
             try {
-                assertThat(composition.portOnContainerWithExternalMapping("db", 5433).isListeningNow(), is(true));
+                assertThat(composition.portOnContainerWithExternalMapping("db", 5442).isListeningNow(), is(true));
             } catch (IOException | InterruptedException e) {
                 propagate(e);
             }
@@ -79,7 +79,7 @@ public class DockerCompositionIntegrationTest {
 
         forEachContainer(container -> {
             try {
-                assertThat(composition.portOnContainerWithExternalMapping("db", 5433).isListeningNow(), is(false));
+                assertThat(composition.portOnContainerWithInternalMapping("db", 5432).isListeningNow(), is(false));
             } catch (IOException | InterruptedException e) {
                 propagate(e);
             }

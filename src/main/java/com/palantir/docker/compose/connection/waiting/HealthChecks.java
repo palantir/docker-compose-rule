@@ -24,11 +24,11 @@ public final class HealthChecks {
 
     private HealthChecks() {}
 
-    public static SingleServiceHealthCheck toRespondOverHttp(int internalPort, Function<DockerPort, String> urlFunction) {
+    public static HealthCheck<Container> toRespondOverHttp(int internalPort, Function<DockerPort, String> urlFunction) {
         return container -> container.portIsListeningOnHttp(internalPort, urlFunction);
     }
 
-    public static SingleServiceHealthCheck toHaveAllPortsOpen() {
+    public static HealthCheck<Container> toHaveAllPortsOpen() {
         return Container::areAllPortsOpen;
     }
 }

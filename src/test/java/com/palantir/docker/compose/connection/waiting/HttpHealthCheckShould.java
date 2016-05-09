@@ -38,7 +38,7 @@ public class HttpHealthCheckShould {
         whenTheContainerIsListeningOnHttpTo(PORT, URL_FUNCTION);
 
         assertThat(
-                HealthChecks.toRespondOverHttp(PORT, URL_FUNCTION).isServiceUp(container),
+                HealthChecks.toRespondOverHttp(PORT, URL_FUNCTION).isHealthy(container),
                 is(successful()));
     }
 
@@ -47,7 +47,7 @@ public class HttpHealthCheckShould {
         whenTheContainerIsNotListeningOnHttpTo(PORT, URL_FUNCTION);
 
         assertThat(
-                HealthChecks.toRespondOverHttp(PORT, URL_FUNCTION).isServiceUp(container),
+                HealthChecks.toRespondOverHttp(PORT, URL_FUNCTION).isHealthy(container),
                 is(failure()));
     }
 
