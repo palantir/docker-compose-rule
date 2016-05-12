@@ -38,7 +38,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-
 public class DockerComposeTest {
 
     @Rule
@@ -140,6 +139,34 @@ public class DockerComposeTest {
         exception.expect(IllegalStateException.class);
         exception.expectMessage("You need at least docker-compose 1.7 to run docker-compose exec");
         compose.exec(options("-d"), "container_1", arguments("ls"));
+    }
+
+    @Test
+    public void docker_compose_exec_returns_the_output_from_the_executed_process() throws Exception {
+        String lsString = "-rw-r--r--  1 user  1318458867  11326 Mar  9 17:47 LICENSE\n"
+                             + "-rw-r--r--  1 user  1318458867  12570 May 12 14:51 README.md";
+
+        String versionString = "docker-compose version 1.7.0rc1, build 1ad8866";
+
+        DockerComposeExecutable processExecutor = mock(DockerComposeExecutable.class);
+
+        addProcessToExecutor(processExecutor, processWithOutput(versionString), "-v");
+        addProcessToExecutor(processExecutor, processWithOutput(lsString), "exec", "container_1", "ls", "-l");
+
+        DockerCompose processCompose = new DefaultDockerCompose(processExecutor, dockerMachine);
+
+        assertThat(processCompose.exec(options(), "container_1", arguments("ls", "-l")), is(lsString));
+    }
+
+    private void addProcessToExecutor(DockerComposeExecutable dockerComposeExecutable, Process process, String... commands) throws Exception {
+        when(dockerComposeExecutable.execute(commands)).thenReturn(process);
+    }
+
+    private Process processWithOutput(String output) {
+        Process mockedProcess = mock(Process.class);
+        when(mockedProcess.getInputStream()).thenReturn(toInputStream(output));
+        when(mockedProcess.exitValue()).thenReturn(0);
+        return mockedProcess;
     }
 
 }

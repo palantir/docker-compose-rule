@@ -63,9 +63,9 @@ public class RetryingDockerCompose implements DockerCompose {
     }
 
     @Override
-    public void exec(DockerComposeExecOption dockerComposeExecOption, String containerName,
+    public String exec(DockerComposeExecOption dockerComposeExecOption, String containerName,
             DockerComposeExecArgument dockerComposeExecArgument) throws IOException, InterruptedException {
-        dockerCompose.exec(dockerComposeExecOption, containerName, dockerComposeExecArgument);
+        return dockerCompose.exec(dockerComposeExecOption, containerName, dockerComposeExecArgument);
     }
 
     @Override

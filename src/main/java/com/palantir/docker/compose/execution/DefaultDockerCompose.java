@@ -86,11 +86,11 @@ public class DefaultDockerCompose implements DockerCompose {
     }
 
     @Override
-    public void exec(DockerComposeExecOption dockerComposeExecOption, String containerName,
+    public String exec(DockerComposeExecOption dockerComposeExecOption, String containerName,
             DockerComposeExecArgument dockerComposeExecArgument) throws IOException, InterruptedException {
         verifyDockerComposeVersionAtLeast(Version.valueOf("1.7.0"));
         String[] fullArgs = constructFullDockerComposeExecArguments(dockerComposeExecOption, containerName, dockerComposeExecArgument);
-        executeDockerComposeCommand(throwingOnError(), fullArgs);
+        return executeDockerComposeCommand(throwingOnError(), fullArgs);
     }
 
     //Current docker-compose version output format: docker-compose version 1.7.0rc1, build 1ad8866
