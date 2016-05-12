@@ -17,6 +17,9 @@ package com.palantir.docker.compose;
 
 import static com.google.common.base.Throwables.propagate;
 import static com.palantir.docker.compose.connection.waiting.HealthChecks.toHaveAllPortsOpen;
+import static com.palantir.docker.compose.execution.DockerComposeExecArgument.arguments;
+import static com.palantir.docker.compose.execution.DockerComposeExecOption.options;
+
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 
@@ -27,6 +30,8 @@ import com.palantir.docker.compose.connection.waiting.SuccessOrFailure;
 import java.io.IOException;
 import java.util.List;
 import java.util.function.Consumer;
+
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -95,6 +100,12 @@ public class DockerCompositionIntegrationTest {
                 propagate(e);
             }
         });
+    }
+
+    @Ignore // This test will not run on Circle CI because it does not currently support docker-compose exec.
+    @Test
+    public void exec_returns_output() throws Exception {
+        assertThat(composition.exec(options(), CONTAINERS.get(0), arguments("echo", "hello")), is("hello"));
     }
 
 }

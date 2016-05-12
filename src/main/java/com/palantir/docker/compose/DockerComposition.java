@@ -84,9 +84,9 @@ public class DockerComposition extends ExternalResource {
         return new DockerCompositionBuilder().dockerCompose(compose);
     }
 
-    public void exec(DockerComposeExecOption options, String containerName, DockerComposeExecArgument arguments)
+    public String exec(DockerComposeExecOption options, String containerName, DockerComposeExecArgument arguments)
             throws IOException, InterruptedException {
-        rule.exec(options, containerName, arguments);
+        return rule.exec(options, containerName, arguments);
     }
 
     public DockerPort hostNetworkedPort(int port) {
