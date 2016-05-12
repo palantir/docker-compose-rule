@@ -15,11 +15,12 @@
  */
 package com.palantir.docker.compose.execution;
 
+import java.io.IOException;
+import java.io.OutputStream;
+
 import com.palantir.docker.compose.connection.Container;
 import com.palantir.docker.compose.connection.ContainerNames;
 import com.palantir.docker.compose.connection.Ports;
-import java.io.IOException;
-import java.io.OutputStream;
 
 public class RetryingDockerCompose implements DockerCompose {
     private final Retryer retryer;
@@ -63,9 +64,9 @@ public class RetryingDockerCompose implements DockerCompose {
     }
 
     @Override
-    public void exec(DockerComposeExecOption dockerComposeExecOption, String containerName,
+    public String exec(DockerComposeExecOption dockerComposeExecOption, String containerName,
             DockerComposeExecArgument dockerComposeExecArgument) throws IOException, InterruptedException {
-        dockerCompose.exec(dockerComposeExecOption, containerName, dockerComposeExecArgument);
+        return dockerCompose.exec(dockerComposeExecOption, containerName, dockerComposeExecArgument);
     }
 
     @Override
