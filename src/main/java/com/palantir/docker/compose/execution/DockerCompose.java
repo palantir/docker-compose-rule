@@ -15,12 +15,11 @@
  */
 package com.palantir.docker.compose.execution;
 
-import java.io.IOException;
-import java.io.OutputStream;
-
 import com.palantir.docker.compose.connection.Container;
 import com.palantir.docker.compose.connection.ContainerNames;
 import com.palantir.docker.compose.connection.Ports;
+import java.io.IOException;
+import java.io.OutputStream;
 
 public interface DockerCompose {
     void build() throws IOException, InterruptedException;

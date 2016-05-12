@@ -17,18 +17,8 @@ package com.palantir.docker.compose.execution;
 
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static java.util.stream.Collectors.joining;
-
 import static org.apache.commons.lang3.Validate.validState;
 import static org.joda.time.Duration.standardMinutes;
-
-import java.io.IOException;
-import java.io.OutputStream;
-import java.util.Arrays;
-
-import org.apache.commons.io.IOUtils;
-import org.joda.time.Duration;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.github.zafarkhaja.semver.Version;
 import com.google.common.base.Strings;
@@ -39,6 +29,13 @@ import com.palantir.docker.compose.connection.Container;
 import com.palantir.docker.compose.connection.ContainerNames;
 import com.palantir.docker.compose.connection.DockerMachine;
 import com.palantir.docker.compose.connection.Ports;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.Arrays;
+import org.apache.commons.io.IOUtils;
+import org.joda.time.Duration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class DefaultDockerCompose implements DockerCompose {
 
