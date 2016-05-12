@@ -135,9 +135,9 @@ public abstract class DockerComposeRule extends ExternalResource {
         }
     }
 
-    public void exec(DockerComposeExecOption options, String containerName,
+    public String exec(DockerComposeExecOption options, String containerName,
             DockerComposeExecArgument arguments) throws IOException, InterruptedException {
-        dockerCompose().exec(options, containerName, arguments);
+        return dockerCompose().exec(options, containerName, arguments);
     }
 
     public static ImmutableDockerComposeRule.Builder builder() {
