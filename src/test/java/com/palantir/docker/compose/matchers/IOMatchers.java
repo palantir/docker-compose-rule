@@ -84,7 +84,7 @@ public final class IOMatchers {
     }
 
     public static Matcher<File> fileContainingString(String contents) {
-        return file(containsString(contents));
+        return fileWithConents(containsString(contents));
     }
 
     public static Matcher<String> matchingPattern(String patternStr) {
@@ -94,7 +94,7 @@ public final class IOMatchers {
                 Pattern pattern = Pattern.compile(patternStr, Pattern.DOTALL);
                 boolean matches = pattern.matcher(text).matches();
                 if (!matches) {
-                    mismatchDescription.appendText("not matching " + patternStr);
+                    mismatchDescription.appendText(text);
                 }
                 return matches;
             }
@@ -106,7 +106,7 @@ public final class IOMatchers {
         };
     }
 
-    public static Matcher<File> file(Matcher<String> contentsMatcher) {
+    public static Matcher<File> fileWithConents(Matcher<String> contentsMatcher) {
         return new FeatureMatcher<File, String>(contentsMatcher, "file contents", "file contents") {
 
             @Override
