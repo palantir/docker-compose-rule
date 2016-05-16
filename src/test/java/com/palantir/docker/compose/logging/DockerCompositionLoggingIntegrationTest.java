@@ -16,7 +16,7 @@
 package com.palantir.docker.compose.logging;
 
 import static com.palantir.docker.compose.connection.waiting.HealthChecks.toHaveAllPortsOpen;
-import static com.palantir.docker.compose.matchers.IOMatchers.file;
+import static com.palantir.docker.compose.matchers.IOMatchers.fileWithConents;
 import static com.palantir.docker.compose.matchers.IOMatchers.matchingPattern;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
@@ -53,8 +53,10 @@ public class DockerCompositionLoggingIntegrationTest {
         } finally {
             loggingComposition.after();
         }
-        assertThat(new File(logFolder.getRoot(), "db.log"), is(file(matchingPattern(".*Attaching to \\w+_db_1.*"))));
-        assertThat(new File(logFolder.getRoot(), "db2.log"), is(file(matchingPattern(".*Attaching to \\w+_db2_1.*"))));
+        assertThat(new File(logFolder.getRoot(), "db.log"), is(fileWithConents(matchingPattern(
+                ".*Attaching to \\w+_db_1.*server started.*"))));
+        assertThat(new File(logFolder.getRoot(), "db2.log"), is(fileWithConents(matchingPattern(
+                ".*Attaching to \\w+_db2_1.*server started.*"))));
     }
 
 }
