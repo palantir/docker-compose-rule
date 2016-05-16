@@ -130,14 +130,22 @@ public class DefaultDockerCompose implements DockerCompose {
      */
     @Override
     public boolean writeLogs(String container, OutputStream output) throws IOException {
-        Process executedProcess = rawExecutable.execute("logs", "--no-color", container);
-        IOUtils.copy(executedProcess.getInputStream(), output);
         try {
+            Process executedProcess = followLogs(container);
+            IOUtils.copy(executedProcess.getInputStream(), output);
             executedProcess.waitFor(COMMAND_TIMEOUT.getMillis(), MILLISECONDS);
         } catch (InterruptedException e) {
             return false;
         }
         return true;
+    }
+
+    private Process followLogs(String container) throws IOException, InterruptedException {
+        if (version().greaterThanOrEqualTo(VERSION_1_7_0)) {
+            return rawExecutable.execute("logs", "--no-color", "--follow", container);
+        }
+
+        return rawExecutable.execute("logs", "--no-color", container);
     }
 
     @Override

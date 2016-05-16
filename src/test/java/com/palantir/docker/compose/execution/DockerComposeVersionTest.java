@@ -43,6 +43,8 @@ public class DockerComposeVersionTest {
 
     @Test
     public void remove_non_digits_when_passing_version_string() {
-        assertEquals(Version.valueOf("1.7.0"), DockerComposeVersion.parseFromDockerComposeVersion("docker-compose version 1.7.0rc1, build 1ad8866"));
+        assertEquals(
+                DockerComposeVersion.parseFromDockerComposeVersion("docker-compose version 1.7.0rc1, build 1ad8866"),
+                Version.valueOf("1.7.0"));
     }
 }
