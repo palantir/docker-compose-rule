@@ -39,6 +39,7 @@ import org.slf4j.LoggerFactory;
 
 public class DefaultDockerCompose implements DockerCompose {
 
+    public static final Version VERSION_1_7_0 = Version.valueOf("1.7.0");
     private static final Duration COMMAND_TIMEOUT = standardMinutes(2);
     private static final Logger log = LoggerFactory.getLogger(DefaultDockerCompose.class);
 
@@ -88,16 +89,18 @@ public class DefaultDockerCompose implements DockerCompose {
     @Override
     public String exec(DockerComposeExecOption dockerComposeExecOption, String containerName,
             DockerComposeExecArgument dockerComposeExecArgument) throws IOException, InterruptedException {
-        verifyDockerComposeVersionAtLeast(Version.valueOf("1.7.0"));
+        verifyDockerComposeVersionAtLeast(VERSION_1_7_0, "You need at least docker-compose 1.7 to run docker-compose exec");
         String[] fullArgs = constructFullDockerComposeExecArguments(dockerComposeExecOption, containerName, dockerComposeExecArgument);
         return executeDockerComposeCommand(throwingOnError(), fullArgs);
     }
 
-    //Current docker-compose version output format: docker-compose version 1.7.0rc1, build 1ad8866
-    private void verifyDockerComposeVersionAtLeast(Version targetVersion) throws IOException, InterruptedException {
+    private void verifyDockerComposeVersionAtLeast(Version targetVersion, String message) throws IOException, InterruptedException {
+        validState(version().greaterThanOrEqualTo(targetVersion), message);
+    }
+
+    private Version version() throws IOException, InterruptedException {
         String versionOutput = executeDockerComposeCommand(throwingOnError(), "-v");
-        Version version = DockerComposeVersion.parseFromDockerComposeVersion(versionOutput);
-        validState(version.compareTo(targetVersion) >= 0, "You need at least docker-compose 1.7 to run docker-compose exec");
+        return DockerComposeVersion.parseFromDockerComposeVersion(versionOutput);
     }
 
     private String[] constructFullDockerComposeExecArguments(DockerComposeExecOption dockerComposeExecOption,
