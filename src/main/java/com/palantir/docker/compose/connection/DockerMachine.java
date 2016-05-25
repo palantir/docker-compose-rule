@@ -59,7 +59,11 @@ public class DockerMachine implements DockerConfiguration {
     }
 
     public static LocalBuilder localMachine() {
-        return new LocalBuilder(DockerType.getLocalDockerType(), System.getenv());
+        return localMachine(DockerType.getDefaultLocalDockerType());
+    }
+
+    public static LocalBuilder localMachine(DockerType dockerType) {
+        return new LocalBuilder(dockerType, System.getenv());
     }
 
     public static class LocalBuilder {
