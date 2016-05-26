@@ -83,7 +83,7 @@ public class DefaultDockerCompose implements DockerCompose {
 
     @Override
     public void rm() throws IOException, InterruptedException {
-        executeDockerComposeCommand(throwingOnError(), "rm", "-f");
+        executeDockerComposeCommand(throwingOnError(), "rm", "--force", "-v");
     }
 
     @Override
