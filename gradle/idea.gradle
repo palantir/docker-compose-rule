@@ -19,11 +19,6 @@ idea {
         inheritOutputDirs = true
         inheritOutputDirs = true
         iml {
-            withXml {
-                def rootManager = it.asNode().component.find { it.@name == 'NewModuleRootManager' }
-                rootManager.@LANGUAGE_LEVEL = jdkVersion
-                rootManager.find {it.@type == "jdk" }.@jdkName = "JavaSE-$javaVersion"
-            }
             whenMerged { module ->
                 module.dependencies.findAll { it.scope == 'TEST' }*.exported = true
             }
