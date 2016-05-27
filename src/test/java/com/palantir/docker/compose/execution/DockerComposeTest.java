@@ -64,9 +64,9 @@ public class DockerComposeTest {
     }
 
     @Test
-    public void rm_calls_docker_compose_rm_with_f_flag() throws IOException, InterruptedException {
+    public void rm_calls_docker_compose_rm_with_force_and_volume_flags() throws IOException, InterruptedException {
         compose.rm();
-        verify(executor).execute("rm", "-f");
+        verify(executor).execute("rm", "--force", "-v");
     }
 
     @Test
