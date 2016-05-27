@@ -125,6 +125,12 @@ public class DockerComposeTest {
     }
 
     @Test
+    public void when_down_exists_if_uses_the_remove_volumes_flag() throws IOException, InterruptedException {
+        compose.down();
+        verify(executor).execute("down", "--volumes");
+    }
+
+    @Test
     public void calling_ports_parses_the_ps_output() throws IOException, InterruptedException {
         Ports ports = compose.ports("db");
         verify(executor).execute("ps", "db");
