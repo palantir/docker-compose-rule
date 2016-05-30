@@ -88,6 +88,11 @@ public class DockerCompositionBuilder {
         return this;
     }
 
+    public DockerCompositionBuilder removeConflictingContainersOnStartup(boolean removeConflictingContainersOnStartup) {
+        builder.removeConflictingContainersOnStartup(removeConflictingContainersOnStartup);
+        return this;
+    }
+
     public DockerCompositionBuilder retryAttempts(int retryAttempts) {
         builder.retryAttempts(retryAttempts);
         return this;

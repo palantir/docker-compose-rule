@@ -6,6 +6,7 @@ package com.palantir.docker.compose;
 import static com.palantir.docker.compose.connection.waiting.ClusterHealthCheck.serviceHealthCheck;
 import static com.palantir.docker.compose.connection.waiting.ClusterHealthCheck.transformingHealthCheck;
 
+import com.google.common.collect.ImmutableSet;
 import com.palantir.docker.compose.configuration.DockerComposeFiles;
 import com.palantir.docker.compose.configuration.ProjectName;
 import com.palantir.docker.compose.connection.Cluster;
@@ -18,16 +19,22 @@ import com.palantir.docker.compose.connection.waiting.ClusterHealthCheck;
 import com.palantir.docker.compose.connection.waiting.ClusterWait;
 import com.palantir.docker.compose.connection.waiting.HealthCheck;
 import com.palantir.docker.compose.execution.DefaultDockerCompose;
+import com.palantir.docker.compose.execution.Docker;
 import com.palantir.docker.compose.execution.DockerCompose;
 import com.palantir.docker.compose.execution.DockerComposeExecArgument;
 import com.palantir.docker.compose.execution.DockerComposeExecOption;
 import com.palantir.docker.compose.execution.DockerComposeExecutable;
+import com.palantir.docker.compose.execution.DockerComposeExecutionException;
+import com.palantir.docker.compose.execution.DockerExecutable;
 import com.palantir.docker.compose.execution.RetryingDockerCompose;
 import com.palantir.docker.compose.logging.DoNothingLogCollector;
 import com.palantir.docker.compose.logging.FileLogCollector;
 import com.palantir.docker.compose.logging.LogCollector;
 import java.io.IOException;
 import java.util.List;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import org.immutables.value.Value;
 import org.joda.time.Duration;
 import org.junit.rules.ExternalResource;
@@ -41,6 +48,7 @@ public abstract class DockerComposeRule extends ExternalResource {
     public static final int DEFAULT_RETRY_ATTEMPTS = 2;
 
     private static final Logger log = LoggerFactory.getLogger(DockerComposeRule.class);
+    private static final Pattern NAME_CONFLICT_PATTERN = Pattern.compile("The name \"([^\"]*)\" is already in use");
 
     public DockerPort hostNetworkedPort(int port) {
         return new DockerPort(machine().getIp(), port, port);
@@ -94,6 +102,11 @@ public abstract class DockerComposeRule extends ExternalResource {
     }
 
     @Value.Default
+    protected boolean removeConflictingContainersOnStartup() {
+        return false;
+    }
+
+    @Value.Default
     protected LogCollector logCollector() {
         return new DoNothingLogCollector();
     }
@@ -102,7 +115,21 @@ public abstract class DockerComposeRule extends ExternalResource {
     public void before() throws IOException, InterruptedException {
         log.debug("Starting docker-compose cluster");
         dockerCompose().build();
-        dockerCompose().up();
+
+        try {
+            dockerCompose().up();
+        } catch (DockerComposeExecutionException e) {
+            Set<String> conflictingContainerNames = getConflictingContainerNames(e.getMessage());
+            if (removeConflictingContainersOnStartup() && !conflictingContainerNames.isEmpty()) {
+                // if rule is configured to remove containers with existing name on startup and conflicting containers
+                // were detected, attempt to remove them and start again
+                Docker docker = new Docker(DockerExecutable.builder().dockerConfiguration(machine()).build());
+                docker.rm(conflictingContainerNames.toArray(new String[conflictingContainerNames.size()]));
+                dockerCompose().up();
+            } else {
+                throw e;
+            }
+        }
 
         log.debug("Starting log collection");
 
@@ -110,6 +137,15 @@ public abstract class DockerComposeRule extends ExternalResource {
         log.debug("Waiting for services");
         clusterWaits().forEach(clusterWait -> clusterWait.waitUntilReady(containers()));
         log.debug("docker-compose cluster started");
+    }
+
+    private static Set<String> getConflictingContainerNames(String input) {
+        ImmutableSet.Builder<String> builder = ImmutableSet.builder();
+        Matcher matcher = NAME_CONFLICT_PATTERN.matcher(input);
+        while (matcher.find()) {
+            builder.add(matcher.group(1));
+        }
+        return builder.build();
     }
 
     @Override
