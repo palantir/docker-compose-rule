@@ -16,7 +16,6 @@
 package com.palantir.docker.compose.execution;
 
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
-import static java.util.stream.Collectors.joining;
 import static org.apache.commons.lang3.Validate.validState;
 import static org.joda.time.Duration.standardMinutes;
 
@@ -31,19 +30,17 @@ import com.palantir.docker.compose.connection.DockerMachine;
 import com.palantir.docker.compose.connection.Ports;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.Arrays;
 import org.apache.commons.io.IOUtils;
 import org.joda.time.Duration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class DefaultDockerCompose implements DockerCompose {
+public class DefaultDockerCompose extends AbstractCommand<DockerComposeExecutable> implements DockerCompose {
 
     public static final Version VERSION_1_7_0 = Version.valueOf("1.7.0");
     private static final Duration COMMAND_TIMEOUT = standardMinutes(2);
     private static final Logger log = LoggerFactory.getLogger(DefaultDockerCompose.class);
 
-    private final SynchronousDockerComposeExecutable executable;
     private final DockerMachine dockerMachine;
     private final DockerComposeExecutable rawExecutable;
 
@@ -56,34 +53,35 @@ public class DefaultDockerCompose implements DockerCompose {
     }
 
     public DefaultDockerCompose(DockerComposeExecutable rawExecutable, DockerMachine dockerMachine) {
+        super("docker-compose", new SynchronousDockerComposeExecutable(rawExecutable, log::debug));
+
         this.rawExecutable = rawExecutable;
-        this.executable = new SynchronousDockerComposeExecutable(rawExecutable, log::debug);
         this.dockerMachine = dockerMachine;
     }
 
     @Override
     public void build() throws IOException, InterruptedException {
-        executeDockerComposeCommand(throwingOnError(), "build");
+        executeCommand(throwingOnError(), "build");
     }
 
     @Override
     public void up() throws IOException, InterruptedException {
-        executeDockerComposeCommand(throwingOnError(), "up", "-d");
+        executeCommand(throwingOnError(), "up", "-d");
     }
 
     @Override
     public void down() throws IOException, InterruptedException {
-        executeDockerComposeCommand(swallowingDownCommandDoesNotExist(), "down", "--volumes");
+        executeCommand(swallowingDownCommandDoesNotExist(), "down", "--volumes");
     }
 
     @Override
     public void kill() throws IOException, InterruptedException {
-        executeDockerComposeCommand(throwingOnError(), "kill");
+        executeCommand(throwingOnError(), "kill");
     }
 
     @Override
     public void rm() throws IOException, InterruptedException {
-        executeDockerComposeCommand(throwingOnError(), "rm", "--force", "-v");
+        executeCommand(throwingOnError(), "rm", "--force", "-v");
     }
 
     @Override
@@ -91,7 +89,7 @@ public class DefaultDockerCompose implements DockerCompose {
             DockerComposeExecArgument dockerComposeExecArgument) throws IOException, InterruptedException {
         verifyDockerComposeVersionAtLeast(VERSION_1_7_0, "You need at least docker-compose 1.7 to run docker-compose exec");
         String[] fullArgs = constructFullDockerComposeExecArguments(dockerComposeExecOption, containerName, dockerComposeExecArgument);
-        return executeDockerComposeCommand(throwingOnError(), fullArgs);
+        return executeCommand(throwingOnError(), fullArgs);
     }
 
     private void verifyDockerComposeVersionAtLeast(Version targetVersion, String message) throws IOException, InterruptedException {
@@ -99,7 +97,7 @@ public class DefaultDockerCompose implements DockerCompose {
     }
 
     private Version version() throws IOException, InterruptedException {
-        String versionOutput = executeDockerComposeCommand(throwingOnError(), "-v");
+        String versionOutput = executeCommand(throwingOnError(), "-v");
         return DockerComposeVersion.parseFromDockerComposeVersion(versionOutput);
     }
 
@@ -115,7 +113,7 @@ public class DefaultDockerCompose implements DockerCompose {
 
     @Override
     public ContainerNames ps() throws IOException, InterruptedException {
-        String psOutput = executeDockerComposeCommand(throwingOnError(), "ps");
+        String psOutput = executeCommand(throwingOnError(), "ps");
         return ContainerNames.parseFromDockerComposePs(psOutput);
     }
 
@@ -150,32 +148,9 @@ public class DefaultDockerCompose implements DockerCompose {
 
     @Override
     public Ports ports(String service) throws IOException, InterruptedException {
-        String psOutput = executeDockerComposeCommand(throwingOnError(), "ps", service);
+        String psOutput = executeCommand(throwingOnError(), "ps", service);
         validState(!Strings.isNullOrEmpty(psOutput), "No container with name '" + service + "' found");
         return Ports.parseFromDockerComposePs(psOutput, dockerMachine.getIp());
-    }
-
-    private ErrorHandler throwingOnError() {
-        return (exitCode, output, commands) -> {
-            String message = constructNonZeroExitErrorMessage(exitCode, commands) + "\nThe output was:\n" + output;
-            throw new DockerComposeExecutionException(message);
-        };
-    }
-
-    private String executeDockerComposeCommand(ErrorHandler errorHandler, String... commands)
-            throws IOException, InterruptedException {
-        ProcessResult result = executable.run(commands);
-
-        if (result.exitCode() != 0) {
-            errorHandler.handle(result.exitCode(), result.output(), commands);
-        }
-
-        return result.output();
-    }
-
-
-    private String constructNonZeroExitErrorMessage(int exitCode, String... commands) {
-        return "'docker-compose " + Arrays.stream(commands).collect(joining(" ")) + "' returned exit code " + exitCode;
     }
 
     private ErrorHandler swallowingDownCommandDoesNotExist() {

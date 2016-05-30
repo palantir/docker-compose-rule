@@ -22,7 +22,7 @@ import org.slf4j.LoggerFactory;
 public class Retryer {
     private static final Logger log = LoggerFactory.getLogger(Retryer.class);
 
-    public interface RetryableDockerComposeOperation<T> {
+    public interface RetryableDockerOperation<T> {
         T call() throws IOException, InterruptedException;
     }
 
@@ -32,12 +32,12 @@ public class Retryer {
         this.retryAttempts = retryAttempts;
     }
 
-    public <T> T runWithRetries(RetryableDockerComposeOperation<T> operation) throws IOException, InterruptedException {
-        DockerComposeExecutionException lastExecutionException = null;
+    public <T> T runWithRetries(RetryableDockerOperation<T> operation) throws IOException, InterruptedException {
+        DockerExecutionException lastExecutionException = null;
         for (int i = 0; i <= retryAttempts; i++) {
             try {
                 return operation.call();
-            } catch (DockerComposeExecutionException e) {
+            } catch (DockerExecutionException e) {
                 lastExecutionException = e;
                 log.warn("Caught exception: " + e.getMessage() + ". Retrying.");
             }

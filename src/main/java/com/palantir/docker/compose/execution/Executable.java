@@ -15,13 +15,10 @@
  */
 package com.palantir.docker.compose.execution;
 
-import java.util.function.Consumer;
+import java.io.IOException;
 
-public class SynchronousDockerComposeExecutable extends AbstractSynchronousExecutable<DockerComposeExecutable> {
+public interface Executable {
 
-    public SynchronousDockerComposeExecutable(DockerComposeExecutable dockerComposeExecutable,
-            Consumer<String> logConsumer) {
-        super(dockerComposeExecutable, logConsumer);
-    }
+    Process execute(String... commands) throws IOException;
 
 }

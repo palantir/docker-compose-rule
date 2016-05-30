@@ -15,13 +15,21 @@
  */
 package com.palantir.docker.compose.execution;
 
-import java.util.function.Consumer;
+import com.google.common.collect.ObjectArrays;
+import java.io.IOException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-public class SynchronousDockerComposeExecutable extends AbstractSynchronousExecutable<DockerComposeExecutable> {
+public class Docker extends AbstractCommand<DockerExecutable> {
 
-    public SynchronousDockerComposeExecutable(DockerComposeExecutable dockerComposeExecutable,
-            Consumer<String> logConsumer) {
-        super(dockerComposeExecutable, logConsumer);
+    private static final Logger log = LoggerFactory.getLogger(Docker.class);
+
+    public Docker(DockerExecutable rawExecutable) {
+        super("docker", new SynchronousDockerExecutable(rawExecutable, log::debug));
+    }
+
+    public void rm(String... containerNames) throws IOException, InterruptedException {
+        executeCommand(throwingOnError(), ObjectArrays.concat(new String[] {"rm", "-f"}, containerNames, String.class));
     }
 
 }

@@ -24,6 +24,7 @@ import static org.hamcrest.core.Is.is;
 import static org.joda.time.Duration.millis;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -39,7 +40,9 @@ import com.palantir.docker.compose.connection.DockerMachine;
 import com.palantir.docker.compose.connection.DockerPort;
 import com.palantir.docker.compose.connection.waiting.HealthCheck;
 import com.palantir.docker.compose.connection.waiting.SuccessOrFailure;
+import com.palantir.docker.compose.execution.Docker;
 import com.palantir.docker.compose.execution.DockerCompose;
+import com.palantir.docker.compose.execution.DockerExecutionException;
 import com.palantir.docker.compose.logging.LogCollector;
 import java.io.File;
 import java.io.IOException;
@@ -215,6 +218,52 @@ public class DockerComposeRuleShould {
                         .after();
         verifyNoMoreInteractions(dockerCompose);
         verify(logCollector, times(1)).stopCollecting();
+    }
+
+    @Test
+    public void before_fails_when_docker_up_throws_exception() throws IOException, InterruptedException {
+        doThrow(new DockerExecutionException("")).when(dockerCompose).up();
+        rule = defaultBuilder().removeConflictingContainersOnStartup(true).build();
+        exception.expect(DockerExecutionException.class);
+        rule.before();
+    }
+
+    @Test
+    public void before_retries_if_docker_up_throws_container_conflict_exception()
+            throws IOException, InterruptedException {
+        doThrow(new DockerExecutionException("The name \"testName\" is already in use"))
+                .doNothing()
+                .when(dockerCompose).up();
+        Docker mockDocker = mock(Docker.class);
+
+        rule = defaultBuilder().docker(mockDocker).removeConflictingContainersOnStartup(true).build();
+        rule.before();
+    }
+
+    @Test
+    public void docker_execution_exception_in_before_retry_is_ignored()
+            throws IOException, InterruptedException {
+        doThrow(new DockerExecutionException("The name \"testName\" is already in use"))
+                .doNothing()
+                .when(dockerCompose).up();
+        Docker mockDocker = mock(Docker.class);
+        doThrow(DockerExecutionException.class).when(mockDocker).rm(any());
+
+        rule = defaultBuilder().docker(mockDocker).removeConflictingContainersOnStartup(true).build();
+        rule.before();
+    }
+
+    @Test
+    public void non_docker_execution_exception_in_before_retry_is_thrown()
+            throws IOException, InterruptedException {
+        doThrow(new DockerExecutionException("The name \"testName\" is already in use"))
+                .doNothing()
+                .when(dockerCompose).up();
+        Docker mockDocker = mock(Docker.class);
+        doThrow(RuntimeException.class).when(mockDocker).rm(any());
+        rule = defaultBuilder().docker(mockDocker).removeConflictingContainersOnStartup(true).build();
+        exception.expect(RuntimeException.class);
+        rule.before();
     }
 
     public Container withComposeExecutableReturningContainerFor(String containerName) {

@@ -27,7 +27,7 @@ import com.palantir.docker.compose.utils.MockitoMultiAnswer;
 import org.junit.Test;
 
 public class RetryerShould {
-    private final Retryer.RetryableDockerComposeOperation<String> operation = mock(Retryer.RetryableDockerComposeOperation.class);
+    private final Retryer.RetryableDockerOperation<String> operation = mock(Retryer.RetryableDockerOperation.class);
     private final Retryer retryer = new Retryer(1);
 
     @Test
@@ -41,7 +41,7 @@ public class RetryerShould {
     @Test
     public void retry_the_operation_if_it_failed_once_and_return_the_result_of_the_next_successful_call() throws Exception {
         when(operation.call()).thenAnswer(MockitoMultiAnswer.<String>of(
-                firstInvocation  -> { throw new DockerComposeExecutionException(); },
+                firstInvocation  -> { throw new DockerExecutionException(); },
                 secondInvocation -> "hola"
         ));
 
@@ -51,17 +51,17 @@ public class RetryerShould {
 
     @Test
     public void throw_the_last_exception_when_the_operation_fails_more_times_than_the_number_of_specified_retry_attempts() throws Exception {
-        DockerComposeExecutionException finalException = new DockerComposeExecutionException();
+        DockerExecutionException finalException = new DockerExecutionException();
 
         when(operation.call()).thenAnswer(MockitoMultiAnswer.<String>of(
-                firstInvocation  -> { throw new DockerComposeExecutionException(); },
+                firstInvocation  -> { throw new DockerExecutionException(); },
                 secondInvocation -> { throw finalException; }
         ));
 
         try {
             retryer.runWithRetries(operation);
             fail("Should have caught exception");
-        } catch (DockerComposeExecutionException actualException) {
+        } catch (DockerExecutionException actualException) {
             assertThat(actualException, is(finalException));
         }
 

@@ -44,8 +44,8 @@ public class RetryingDockerComposeShould {
     }
 
     private void retryerJustCallsOperation() throws IOException, InterruptedException {
-        when(retryer.runWithRetries(any(Retryer.RetryableDockerComposeOperation.class))).thenAnswer(invocation -> {
-            Retryer.RetryableDockerComposeOperation operation = (Retryer.RetryableDockerComposeOperation) invocation.getArguments()[0];
+        when(retryer.runWithRetries(any(Retryer.RetryableDockerOperation.class))).thenAnswer(invocation -> {
+            Retryer.RetryableDockerOperation operation = (Retryer.RetryableDockerOperation) invocation.getArguments()[0];
             return operation.call();
         });
     }
@@ -71,11 +71,11 @@ public class RetryingDockerComposeShould {
     }
 
     private void verifyRetryerWasUsed() throws IOException, InterruptedException {
-        verify(retryer).runWithRetries(any(Retryer.RetryableDockerComposeOperation.class));
+        verify(retryer).runWithRetries(any(Retryer.RetryableDockerOperation.class));
     }
 
     private void verifyRetryerWasNotUsed() throws IOException, InterruptedException {
-        verify(retryer, times(0)).runWithRetries(any(Retryer.RetryableDockerComposeOperation.class));
+        verify(retryer, times(0)).runWithRetries(any(Retryer.RetryableDockerOperation.class));
     }
 
     @Test

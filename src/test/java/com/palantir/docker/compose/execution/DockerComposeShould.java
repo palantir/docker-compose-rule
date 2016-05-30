@@ -103,7 +103,7 @@ public class DockerComposeShould {
     @Test
     public void throw_exception_when_kill_exits_with_a_non_zero_exit_code() throws IOException, InterruptedException {
         when(executedProcess.exitValue()).thenReturn(1);
-        exception.expect(DockerComposeExecutionException.class);
+        exception.expect(DockerExecutionException.class);
         exception.expectMessage("'docker-compose kill' returned exit code 1");
         compose.kill();
     }
@@ -122,7 +122,7 @@ public class DockerComposeShould {
         when(executedProcess.exitValue()).thenReturn(1);
         when(executedProcess.getInputStream()).thenReturn(toInputStream(""));
 
-        exception.expect(DockerComposeExecutionException.class);
+        exception.expect(DockerExecutionException.class);
 
         compose.down();
     }

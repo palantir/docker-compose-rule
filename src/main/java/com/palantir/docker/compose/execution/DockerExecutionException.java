@@ -15,13 +15,11 @@
  */
 package com.palantir.docker.compose.execution;
 
-import java.util.function.Consumer;
-
-public class SynchronousDockerComposeExecutable extends AbstractSynchronousExecutable<DockerComposeExecutable> {
-
-    public SynchronousDockerComposeExecutable(DockerComposeExecutable dockerComposeExecutable,
-            Consumer<String> logConsumer) {
-        super(dockerComposeExecutable, logConsumer);
+public class DockerExecutionException extends RuntimeException {
+    public DockerExecutionException() {
     }
 
+    public DockerExecutionException(String message) {
+        super(message);
+    }
 }
