@@ -73,7 +73,7 @@ public class DefaultDockerCompose implements DockerCompose {
 
     @Override
     public void down() throws IOException, InterruptedException {
-        executeDockerComposeCommand(swallowingDownCommandDoesNotExist(), "down");
+        executeDockerComposeCommand(swallowingDownCommandDoesNotExist(), "down", "--volumes");
     }
 
     @Override
