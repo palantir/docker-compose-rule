@@ -11,6 +11,8 @@ machine:
 dependencies:
   pre:
     - sudo pip install docker-compose
+  override:
+    - ./gradlew resolveConfigurations
     
 test:
   pre:
@@ -30,5 +32,3 @@ deployment:
     tag: /[0-9]+(\.[0-9]+)+/
     commands:
       - ./gradlew -i bintrayUpload
-
-
