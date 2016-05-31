@@ -25,7 +25,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
-public class DockerComposeLocationsShould {
+public class DockerCommandLocationsShould {
     private static final String badLocation = "file/that/does/not/exist";
     private static final String otherBadLocation = "another/file/that/does/not/exist";
 
@@ -39,7 +39,7 @@ public class DockerComposeLocationsShould {
     }
 
     @Test public void
-    provide_the_first_docker_compose_location_if_it_exists() throws IOException {
+    provide_the_first_docker_command_location_if_it_exists() throws IOException {
         DockerComposeLocations dockerComposeLocations = new DockerComposeLocations(
                 badLocation,
                 goodLocation,
