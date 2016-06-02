@@ -28,10 +28,16 @@ public abstract class DockerExecutable implements Executable {
 
     private static final DockerCommandLocations DOCKER_LOCATIONS = new DockerCommandLocations(
             System.getenv("DOCKER_LOCATION"),
-            "/usr/local/bin/docker"
+            "/usr/local/bin/docker",
+            "/usr/bin/docker"
     );
 
     @Value.Parameter protected abstract DockerConfiguration dockerConfiguration();
+
+    @Override
+    public final String commandName() {
+        return "docker";
+    }
 
     @Value.Derived
     protected String dockerPath() {

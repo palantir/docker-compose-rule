@@ -25,7 +25,7 @@ import java.io.IOException;
 import org.junit.Before;
 import org.junit.Test;
 
-public class DockerTest {
+public class DockerShould {
 
     private final DockerExecutable executor = mock(DockerExecutable.class);
     private final Docker docker = new Docker(executor);
@@ -40,7 +40,7 @@ public class DockerTest {
     }
 
     @Test
-    public void rm_calls_docker_rm_with_force_flag() throws IOException, InterruptedException {
+    public void call_docker_rm_with_force_flag_on_rm() throws IOException, InterruptedException {
         docker.rm("testContainer");
 
         verify(executor).execute("rm", "-f", "testContainer");

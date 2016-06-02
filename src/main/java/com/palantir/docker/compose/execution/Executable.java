@@ -19,6 +19,8 @@ import java.io.IOException;
 
 public interface Executable {
 
+    String commandName();
+
     Process execute(String... commands) throws IOException;
 
 }

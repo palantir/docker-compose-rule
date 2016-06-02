@@ -17,19 +17,27 @@ package com.palantir.docker.compose.execution;
 
 import com.google.common.collect.ObjectArrays;
 import java.io.IOException;
+import java.util.Collection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class Docker extends AbstractCommand<DockerExecutable> {
+public class Docker {
 
     private static final Logger log = LoggerFactory.getLogger(Docker.class);
 
+    private final Command command;
+
     public Docker(DockerExecutable rawExecutable) {
-        super("docker", new SynchronousDockerExecutable(rawExecutable, log::debug));
+        this.command = new Command(rawExecutable, log::debug);
+    }
+
+    public void rm(Collection<String> containerNames) throws IOException, InterruptedException {
+        rm(containerNames.toArray(new String[containerNames.size()]));
     }
 
     public void rm(String... containerNames) throws IOException, InterruptedException {
-        executeCommand(throwingOnError(), ObjectArrays.concat(new String[] {"rm", "-f"}, containerNames, String.class));
+        command.execute(Command.throwingOnError(),
+                ObjectArrays.concat(new String[] {"rm", "-f"}, containerNames, String.class));
     }
 
 }

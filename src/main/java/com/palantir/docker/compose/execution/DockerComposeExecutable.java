@@ -30,7 +30,8 @@ public abstract class DockerComposeExecutable implements Executable {
 
     private static final DockerCommandLocations DOCKER_COMPOSE_LOCATIONS = new DockerCommandLocations(
             System.getenv("DOCKER_COMPOSE_LOCATION"),
-            "/usr/local/bin/docker-compose"
+            "/usr/local/bin/docker-compose",
+            "/usr/bin/docker-compose"
     );
 
     @Value.Parameter protected abstract DockerComposeFiles dockerComposeFiles();
@@ -38,6 +39,11 @@ public abstract class DockerComposeExecutable implements Executable {
 
     @Value.Default public ProjectName projectName() {
         return ProjectName.random();
+    }
+
+    @Override
+    public final String commandName() {
+        return "docker-compose";
     }
 
     @Value.Derived

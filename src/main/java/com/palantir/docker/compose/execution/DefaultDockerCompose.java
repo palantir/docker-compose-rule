@@ -35,12 +35,13 @@ import org.joda.time.Duration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class DefaultDockerCompose extends AbstractCommand<DockerComposeExecutable> implements DockerCompose {
+public class DefaultDockerCompose implements DockerCompose {
 
     public static final Version VERSION_1_7_0 = Version.valueOf("1.7.0");
     private static final Duration COMMAND_TIMEOUT = standardMinutes(2);
     private static final Logger log = LoggerFactory.getLogger(DefaultDockerCompose.class);
 
+    private final Command command;
     private final DockerMachine dockerMachine;
     private final DockerComposeExecutable rawExecutable;
 
@@ -53,35 +54,34 @@ public class DefaultDockerCompose extends AbstractCommand<DockerComposeExecutabl
     }
 
     public DefaultDockerCompose(DockerComposeExecutable rawExecutable, DockerMachine dockerMachine) {
-        super("docker-compose", new SynchronousDockerComposeExecutable(rawExecutable, log::debug));
-
         this.rawExecutable = rawExecutable;
+        this.command = new Command(rawExecutable, log::debug);
         this.dockerMachine = dockerMachine;
     }
 
     @Override
     public void build() throws IOException, InterruptedException {
-        executeCommand(throwingOnError(), "build");
+        command.execute(Command.throwingOnError(), "build");
     }
 
     @Override
     public void up() throws IOException, InterruptedException {
-        executeCommand(throwingOnError(), "up", "-d");
+        command.execute(Command.throwingOnError(), "up", "-d");
     }
 
     @Override
     public void down() throws IOException, InterruptedException {
-        executeCommand(swallowingDownCommandDoesNotExist(), "down", "--volumes");
+        command.execute(swallowingDownCommandDoesNotExist(), "down", "--volumes");
     }
 
     @Override
     public void kill() throws IOException, InterruptedException {
-        executeCommand(throwingOnError(), "kill");
+        command.execute(Command.throwingOnError(), "kill");
     }
 
     @Override
     public void rm() throws IOException, InterruptedException {
-        executeCommand(throwingOnError(), "rm", "--force", "-v");
+        command.execute(Command.throwingOnError(), "rm", "--force", "-v");
     }
 
     @Override
@@ -89,7 +89,7 @@ public class DefaultDockerCompose extends AbstractCommand<DockerComposeExecutabl
             DockerComposeExecArgument dockerComposeExecArgument) throws IOException, InterruptedException {
         verifyDockerComposeVersionAtLeast(VERSION_1_7_0, "You need at least docker-compose 1.7 to run docker-compose exec");
         String[] fullArgs = constructFullDockerComposeExecArguments(dockerComposeExecOption, containerName, dockerComposeExecArgument);
-        return executeCommand(throwingOnError(), fullArgs);
+        return command.execute(Command.throwingOnError(), fullArgs);
     }
 
     private void verifyDockerComposeVersionAtLeast(Version targetVersion, String message) throws IOException, InterruptedException {
@@ -97,7 +97,7 @@ public class DefaultDockerCompose extends AbstractCommand<DockerComposeExecutabl
     }
 
     private Version version() throws IOException, InterruptedException {
-        String versionOutput = executeCommand(throwingOnError(), "-v");
+        String versionOutput = command.execute(Command.throwingOnError(), "-v");
         return DockerComposeVersion.parseFromDockerComposeVersion(versionOutput);
     }
 
@@ -113,7 +113,7 @@ public class DefaultDockerCompose extends AbstractCommand<DockerComposeExecutabl
 
     @Override
     public ContainerNames ps() throws IOException, InterruptedException {
-        String psOutput = executeCommand(throwingOnError(), "ps");
+        String psOutput = command.execute(Command.throwingOnError(), "ps");
         return ContainerNames.parseFromDockerComposePs(psOutput);
     }
 
@@ -148,15 +148,15 @@ public class DefaultDockerCompose extends AbstractCommand<DockerComposeExecutabl
 
     @Override
     public Ports ports(String service) throws IOException, InterruptedException {
-        String psOutput = executeCommand(throwingOnError(), "ps", service);
+        String psOutput = command.execute(Command.throwingOnError(), "ps", service);
         validState(!Strings.isNullOrEmpty(psOutput), "No container with name '" + service + "' found");
         return Ports.parseFromDockerComposePs(psOutput, dockerMachine.getIp());
     }
 
     private ErrorHandler swallowingDownCommandDoesNotExist() {
-        return (exitCode, output, commands) -> {
+        return (exitCode, output, commandName, commands) -> {
             if (downCommandWasPresent(output)) {
-                throwingOnError().handle(exitCode, output, commands);
+                Command.throwingOnError().handle(exitCode, output, commandName, commands);
             }
 
             log.warn("It looks like `docker-compose down` didn't work.");

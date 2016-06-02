@@ -24,24 +24,48 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.Arrays;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.function.Consumer;
 
-public abstract class AbstractSynchronousExecutable<T extends Executable> {
+public class Command {
     public static final int HOURS_TO_WAIT_FOR_STD_OUT_TO_CLOSE = 12;
     public static final int MINUTES_TO_WAIT_AFTER_STD_OUT_CLOSES = 1;
-    private final T executable;
+    private final Executable executable;
     private final Consumer<String> logConsumer;
 
-    public AbstractSynchronousExecutable(T executable, Consumer<String> logConsumer) {
+    public Command(Executable executable, Consumer<String> logConsumer) {
         this.executable = executable;
         this.logConsumer = logConsumer;
     }
 
-    public ProcessResult run(String... commands) throws IOException, InterruptedException {
+    public String execute(ErrorHandler errorHandler, String... commands) throws IOException, InterruptedException {
+        ProcessResult result = run(commands);
+
+        if (result.exitCode() != 0) {
+            errorHandler.handle(result.exitCode(), result.output(), executable.commandName(), commands);
+        }
+
+        return result.output();
+    }
+
+    public static ErrorHandler throwingOnError() {
+        return (exitCode, output, commandName, commands) -> {
+            String message =
+                    constructNonZeroExitErrorMessage(exitCode, commandName, commands) + "\nThe output was:\n" + output;
+            throw new DockerExecutionException(message);
+        };
+    }
+
+    private static String constructNonZeroExitErrorMessage(int exitCode, String commandName, String... commands) {
+        return "'" + commandName + " " + Arrays.stream(commands).collect(joining(" ")) + "' returned exit code "
+                + exitCode;
+    }
+
+    private ProcessResult run(String... commands) throws IOException, InterruptedException {
         Process process = executable.execute(commands);
 
         Future<String> outputProcessing = newSingleThreadExecutor()
@@ -71,5 +95,4 @@ public abstract class AbstractSynchronousExecutable<T extends Executable> {
     private BufferedReader asReader(InputStream inputStream) {
         return new BufferedReader(new InputStreamReader(inputStream, UTF_8));
     }
-
 }

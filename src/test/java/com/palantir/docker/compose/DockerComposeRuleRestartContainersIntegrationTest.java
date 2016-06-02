@@ -15,48 +15,26 @@
  */
 package com.palantir.docker.compose;
 
-import com.palantir.docker.compose.connection.DockerMachine;
-import com.palantir.docker.compose.execution.Docker;
-import com.palantir.docker.compose.execution.DockerExecutable;
 import com.palantir.docker.compose.execution.DockerExecutionException;
 import java.io.IOException;
-import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class DockerComposeRuleRestartContainersIntegrationTest {
 
-    private static final Logger log = LoggerFactory.getLogger(DockerComposeRuleRestartContainersIntegrationTest.class);
     private static final String DOCKER_COMPOSE_YAML_PATH = "src/test/resources/named-containers-docker-compose.yaml";
 
     @Rule
     public ExpectedException exception = ExpectedException.none();
 
-    /**
-     * Tests assume that container names in the YAML file are not already in use. In order to enforce this invariant,
-     * this cleanup method is run before each test. This method runs "docker rm" on the container names used by the
-     * tests. The names are hard-coded and should match the names used by the containers defined in the
-     * DOCKER_COMPOSE_YAML_PATH file.
-     */
-    @Before
-    public void cleanup() throws IOException, InterruptedException {
-        Docker docker = new Docker(
-                DockerExecutable.builder().dockerConfiguration(DockerMachine.localMachine().build()).build());
-        try {
-            docker.rm("/test-1.container.name", "/test-2.container.name");
-        } catch (DockerExecutionException e) {
-            log.debug("docker rm failed in cleanup, but continuing", e);
-        }
-    }
-
     @Test
-    public void testDockerComposeRuleFailsWithExistingContainers() throws IOException, InterruptedException {
+    public void test_docker_compose_rule_fails_with_existing_containers() throws IOException, InterruptedException {
         DockerComposition composition = DockerComposition.of(DOCKER_COMPOSE_YAML_PATH).build();
         composition.before();
-        composition = DockerComposition.of(DOCKER_COMPOSE_YAML_PATH).build();
+        composition = DockerComposition.of(DOCKER_COMPOSE_YAML_PATH)
+                .removeConflictingContainersOnStartup(false)
+                .build();
 
         exception.expect(DockerExecutionException.class);
         exception.expectMessage("'docker-compose up -d' returned exit code");
@@ -64,13 +42,11 @@ public class DockerComposeRuleRestartContainersIntegrationTest {
     }
 
     @Test
-    public void testDockerComposeRuleRemovesExistingContainers() throws IOException, InterruptedException {
+    public void test_docker_compose_rule_removes_existing_containers() throws IOException, InterruptedException {
         DockerComposition composition = DockerComposition.of(DOCKER_COMPOSE_YAML_PATH).build();
         composition.before();
 
-        composition = DockerComposition.of(DOCKER_COMPOSE_YAML_PATH)
-                .removeConflictingContainersOnStartup(true)
-                .build();
+        composition = DockerComposition.of(DOCKER_COMPOSE_YAML_PATH).build();
         composition.before();
         composition.after();
     }

@@ -32,6 +32,7 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
 import com.palantir.docker.compose.configuration.DockerComposeFiles;
 import com.palantir.docker.compose.configuration.MockDockerEnvironment;
 import com.palantir.docker.compose.connection.Container;
@@ -75,6 +76,7 @@ public class DockerComposeRuleShould {
     private HealthCheck<List<Container>> healthCheck;
 
     private final DockerCompose dockerCompose = mock(DockerCompose.class);
+    private final Docker mockDocker = mock(Docker.class);
     private final MockDockerEnvironment env = new MockDockerEnvironment(dockerCompose);
     private DockerComposeFiles mockFiles = mock(DockerComposeFiles.class);
     private DockerMachine machine = mock(DockerMachine.class);
@@ -223,46 +225,34 @@ public class DockerComposeRuleShould {
     @Test
     public void before_fails_when_docker_up_throws_exception() throws IOException, InterruptedException {
         doThrow(new DockerExecutionException("")).when(dockerCompose).up();
-        rule = defaultBuilder().removeConflictingContainersOnStartup(true).build();
+        rule = defaultBuilder().build();
         exception.expect(DockerExecutionException.class);
         rule.before();
     }
 
     @Test
-    public void before_retries_if_docker_up_throws_container_conflict_exception()
-            throws IOException, InterruptedException {
-        doThrow(new DockerExecutionException("The name \"testName\" is already in use"))
+    public void before_retries_when_docker_up_reports_conflicting_containers() throws IOException, InterruptedException {
+        String conflictingContainer = "conflictingContainer";
+        doThrow(new DockerExecutionException("The name \"" + conflictingContainer + "\" is already in use"))
                 .doNothing()
                 .when(dockerCompose).up();
-        Docker mockDocker = mock(Docker.class);
-
-        rule = defaultBuilder().docker(mockDocker).removeConflictingContainersOnStartup(true).build();
+        rule = defaultBuilder().docker(mockDocker).build();
         rule.before();
+
+        verify(dockerCompose, times(2)).up();
+        verify(mockDocker).rm(ImmutableSet.of(conflictingContainer));
     }
 
     @Test
-    public void docker_execution_exception_in_before_retry_is_ignored()
+    public void when_remove_conflicting_containers_on_startup_is_set_to_false_before_does_not_retry_on_conflicts()
             throws IOException, InterruptedException {
-        doThrow(new DockerExecutionException("The name \"testName\" is already in use"))
-                .doNothing()
+        String conflictingContainer = "conflictingContainer";
+        doThrow(new DockerExecutionException("The name \"" + conflictingContainer + "\" is already in use"))
                 .when(dockerCompose).up();
-        Docker mockDocker = mock(Docker.class);
-        doThrow(DockerExecutionException.class).when(mockDocker).rm(any());
+        rule = defaultBuilder().docker(mockDocker).removeConflictingContainersOnStartup(false).build();
 
-        rule = defaultBuilder().docker(mockDocker).removeConflictingContainersOnStartup(true).build();
-        rule.before();
-    }
-
-    @Test
-    public void non_docker_execution_exception_in_before_retry_is_thrown()
-            throws IOException, InterruptedException {
-        doThrow(new DockerExecutionException("The name \"testName\" is already in use"))
-                .doNothing()
-                .when(dockerCompose).up();
-        Docker mockDocker = mock(Docker.class);
-        doThrow(RuntimeException.class).when(mockDocker).rm(any());
-        rule = defaultBuilder().docker(mockDocker).removeConflictingContainersOnStartup(true).build();
-        exception.expect(RuntimeException.class);
+        exception.expect(DockerExecutionException.class);
+        exception.expectMessage("The name \"conflictingContainer\" is already in use");
         rule.before();
     }
 

@@ -11,7 +11,6 @@ machine:
 dependencies:
   pre:
     - sudo pip install docker-compose
-    - sudo cp /usr/bin/docker /usr/local/bin/docker
   override:
     - ./gradlew resolveConfigurations
 
