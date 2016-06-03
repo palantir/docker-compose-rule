@@ -15,20 +15,41 @@
  */
 package com.palantir.docker.compose.configuration;
 
-import com.google.common.base.StandardSystemProperty;
+import com.google.common.base.Optional;
+import java.util.Map;
 
-public enum DockerType {
+public enum DockerType implements HostIpResolver, EnvironmentValidator {
+    DAEMON(DaemonEnvironmentValidator.instance(), new DaemonHostIpResolver()),
+    REMOTE(RemoteEnvironmentValidator.instance(), new RemoteHostIpResolver());
 
-    DAEMON, REMOTE;
+    private final EnvironmentValidator validator;
+    private final HostIpResolver resolver;
 
-    public static final String MAC_OS = "Mac";
+    DockerType(EnvironmentValidator validator, HostIpResolver resolver) {
+        this.validator = validator;
+        this.resolver = resolver;
+    }
 
-    public static DockerType getDefaultLocalDockerType() {
-        if (StandardSystemProperty.OS_NAME.value().startsWith(MAC_OS)) {
-            return REMOTE;
-        } else {
-            return DAEMON;
+    @Override
+    public Map<String, String> validate(Map<String, String> dockerEnvironment) {
+        return validator.validate(dockerEnvironment);
+    }
+
+    @Override
+    public String resolveIp(String dockerHost) {
+        return resolver.resolveIp(dockerHost);
+    }
+
+    public static Optional<DockerType> getFirstValidDockerTypeForEnvironment(Map<String, String> environment) {
+        for (DockerType currType : DockerType.values()) {
+            try {
+                currType.validate(environment);
+                return Optional.of(currType);
+            } catch (IllegalStateException e) {
+                // ignore and try next type
+            }
         }
+        return Optional.absent();
     }
 
 }

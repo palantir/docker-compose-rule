@@ -39,7 +39,7 @@ public class DaemonEnvironmentValidatorShould {
                                                     .put("ANOTHER_VARIABLE", "ANOTHER_VALUE")
                                                     .build();
 
-        assertThat(DaemonEnvironmentValidator.validate(variables), is(variables));
+        assertThat(DaemonEnvironmentValidator.instance().validate(variables), is(variables));
     }
 
     @Test
@@ -56,7 +56,7 @@ public class DaemonEnvironmentValidatorShould {
         exception.expectMessage(DOCKER_CERT_PATH);
         exception.expectMessage(DOCKER_TLS_VERIFY);
         exception.expectMessage("They cannot be set when connecting to a local docker daemon");
-        assertThat(DaemonEnvironmentValidator.validate(variables), is(variables));
+        assertThat(DaemonEnvironmentValidator.instance().validate(variables), is(variables));
     }
 
 }

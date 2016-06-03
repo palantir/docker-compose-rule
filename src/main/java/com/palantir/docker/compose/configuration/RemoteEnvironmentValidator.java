@@ -23,6 +23,8 @@ import static java.util.stream.Collectors.joining;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
+import com.google.common.base.Supplier;
+import com.google.common.base.Suppliers;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
 import java.util.Collection;
@@ -30,18 +32,21 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class RemoteEnvironmentValidator {
+public final class RemoteEnvironmentValidator implements EnvironmentValidator {
 
     private static final Set<String> SECURE_VARIABLES = ImmutableSet.of(DOCKER_TLS_VERIFY, DOCKER_CERT_PATH);
+    private static final Supplier<RemoteEnvironmentValidator> SUPPLIER = Suppliers.memoize(
+            () -> new RemoteEnvironmentValidator());
 
-    private final Map<String, String> dockerEnvironment;
-
-    public RemoteEnvironmentValidator(Map<String, String> dockerEnvironment) {
-        this.dockerEnvironment = dockerEnvironment;
+    public static RemoteEnvironmentValidator instance() {
+        return SUPPLIER.get();
     }
 
-    public Map<String, String> validate() {
-        Collection<String> missingVariables = getMissingEnvVariables();
+    private RemoteEnvironmentValidator() {
+    }
+
+    public Map<String, String> validate(Map<String, String> dockerEnvironment) {
+        Collection<String> missingVariables = getMissingEnvVariables(dockerEnvironment);
         String errorMessage = missingVariables.stream()
                                               .collect(joining(", ",
                                                                "Missing required environment variables: ",
@@ -52,23 +57,20 @@ public class RemoteEnvironmentValidator {
         return dockerEnvironment;
     }
 
-    private Collection<String> getMissingEnvVariables() {
-        Collection<String> requiredVariables = Sets.union(newHashSet(DOCKER_HOST), secureVariablesRequired());
+    private Collection<String> getMissingEnvVariables(Map<String, String> dockerEnvironment) {
+        Collection<String> requiredVariables = Sets.union(newHashSet(DOCKER_HOST),
+                secureVariablesRequired(dockerEnvironment));
         return requiredVariables.stream()
                                 .filter(envVariable -> Strings.isNullOrEmpty(dockerEnvironment.get(envVariable)))
                                 .collect(Collectors.toSet());
     }
 
-    private Set<String> secureVariablesRequired() {
-        return certVerificationEnabled() ? SECURE_VARIABLES : newHashSet();
+    private Set<String> secureVariablesRequired(Map<String, String> dockerEnvironment) {
+        return certVerificationEnabled(dockerEnvironment) ? SECURE_VARIABLES : newHashSet();
     }
 
-    private boolean certVerificationEnabled() {
+    private boolean certVerificationEnabled(Map<String, String> dockerEnvironment) {
         return dockerEnvironment.containsKey(DOCKER_TLS_VERIFY);
-    }
-
-    public static Map<String, String> validate(Map<String, String> dockerEnvironment) {
-        return new RemoteEnvironmentValidator(dockerEnvironment).validate();
     }
 
 }

@@ -41,7 +41,7 @@ public class RemoteEnvironmentValidatorShould {
         exception.expect(IllegalStateException.class);
         exception.expectMessage("Missing required environment variables: ");
         exception.expectMessage(DOCKER_HOST);
-        RemoteEnvironmentValidator.validate(variables);
+        RemoteEnvironmentValidator.instance().validate(variables);
     }
 
     @Test
@@ -51,11 +51,10 @@ public class RemoteEnvironmentValidatorShould {
                 .put(DOCKER_TLS_VERIFY, "1")
                 .build();
 
-        new RemoteEnvironmentValidator(variables);
         exception.expect(IllegalStateException.class);
         exception.expectMessage("Missing required environment variables: ");
         exception.expectMessage(DOCKER_CERT_PATH);
-        RemoteEnvironmentValidator.validate(variables);
+        RemoteEnvironmentValidator.instance().validate(variables);
     }
 
     @Test
@@ -65,7 +64,7 @@ public class RemoteEnvironmentValidatorShould {
                                                     .put("SOME_VARIABLE", "SOME_VALUE")
                                                     .build();
 
-        assertThat(RemoteEnvironmentValidator.validate(variables), is(variables));
+        assertThat(RemoteEnvironmentValidator.instance().validate(variables), is(variables));
     }
 
     @Test
@@ -77,6 +76,6 @@ public class RemoteEnvironmentValidatorShould {
                 .put("SOME_VARIABLE", "SOME_VALUE")
                 .build();
 
-        assertThat(RemoteEnvironmentValidator.validate(variables), is(variables));
+        assertThat(RemoteEnvironmentValidator.instance().validate(variables), is(variables));
     }
 }
