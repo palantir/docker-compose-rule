@@ -59,7 +59,7 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
 @RunWith(MockitoJUnitRunner.class)
-public class DockerComposeRuleTest {
+public class DockerComposeRuleShould {
 
     private static final String IP = "127.0.0.1";
 
@@ -85,21 +85,21 @@ public class DockerComposeRuleTest {
     }
 
     @Test
-    public void docker_compose_build_and_up_is_called_before_tests_are_run() throws IOException, InterruptedException {
+    public void call_build_and_up_before_tests_are_run() throws IOException, InterruptedException {
         rule.before();
         verify(dockerCompose).build();
         verify(dockerCompose).up();
     }
 
     @Test
-    public void docker_compose_kill_and_rm_are_called_after_tests_are_run() throws IOException, InterruptedException {
+    public void call_kill_and_rm_after_tests_are_run() throws IOException, InterruptedException {
         rule.after();
         verify(dockerCompose).kill();
         verify(dockerCompose).rm();
     }
 
     @Test
-    public void docker_compose_wait_for_service_passes_when_check_is_true() throws IOException, InterruptedException {
+    public void pass_wait_for_service_when_check_is_true() throws IOException, InterruptedException {
         AtomicInteger timesCheckCalled = new AtomicInteger(0);
         withComposeExecutableReturningContainerFor("db");
         HealthCheck<Container> checkCalledOnce = (container) -> SuccessOrFailure.fromBoolean(timesCheckCalled.incrementAndGet() == 1, "not called once yet");
@@ -108,7 +108,7 @@ public class DockerComposeRuleTest {
     }
 
     @Test
-    public void docker_compose_wait_for_service_waits_multiple_services() throws IOException, InterruptedException {
+    public void wait_for_multiple_services_on_wait() throws IOException, InterruptedException {
         Container db1 = withComposeExecutableReturningContainerFor("db1");
         Container db2 = withComposeExecutableReturningContainerFor("db2");
         List<Container> containers = ImmutableList.of(db1, db2);
@@ -122,7 +122,7 @@ public class DockerComposeRuleTest {
     }
 
     @Test
-    public void docker_compose_wait_for_service_passes_when_check_is_true_after_being_false() throws IOException, InterruptedException {
+    public void pass_wait_for_service_when_check_is_true_after_being_false() throws IOException, InterruptedException {
         AtomicInteger timesCheckCalled = new AtomicInteger(0);
         withComposeExecutableReturningContainerFor("db");
         HealthCheck<Container> checkCalledTwice = (container) -> SuccessOrFailure.fromBoolean(timesCheckCalled.incrementAndGet() == 2, "not called twice yet");
@@ -131,7 +131,8 @@ public class DockerComposeRuleTest {
     }
 
     @Test
-    public void throws_if_a_wait_for_service_check_remains_false_till_the_timeout() throws IOException, InterruptedException {
+    public void throw_exception_if_a_wait_for_service_check_remains_false_until_the_timeout()
+            throws IOException, InterruptedException {
         withComposeExecutableReturningContainerFor("db");
 
         exception.expect(IllegalStateException.class);
@@ -142,7 +143,7 @@ public class DockerComposeRuleTest {
     }
 
     @Test
-    public void port_for_container_can_be_retrieved_by_external_mapping() throws IOException, InterruptedException {
+    public void retrieve_port_for_container_by_external_mapping() throws IOException, InterruptedException {
         DockerPort expectedPort = env.port("db", IP, 5433, 5432);
         withComposeExecutableReturningContainerFor("db");
 
@@ -152,7 +153,7 @@ public class DockerComposeRuleTest {
     }
 
     @Test
-    public void port_for_container_can_be_retrieved_by_internal_mapping() throws IOException, InterruptedException {
+    public void retrieve_port_for_container_by_internal_mapping() throws IOException, InterruptedException {
         DockerPort expectedPort = env.port("db", IP, 5433, 5432);
         withComposeExecutableReturningContainerFor("db");
 
@@ -162,7 +163,7 @@ public class DockerComposeRuleTest {
     }
 
     @Test
-    public void when_two_external_ports_on_a_container_are_requested_docker_compose_ps_is_only_executed_once() throws Exception {
+    public void execute_ps_once_when_two_external_ports_on_a_container_are_requested() throws Exception {
         env.ports("db", IP, 5432, 8080);
         withComposeExecutableReturningContainerFor("db");
 
@@ -173,7 +174,8 @@ public class DockerComposeRuleTest {
     }
 
     @Test
-    public void waiting_for_service_that_does_not_exist_results_in_an_illegal_state_exception() throws IOException, InterruptedException {
+    public void throw_illegal_state_exception_when_waiting_for_service_that_does_not_exist()
+            throws IOException, InterruptedException {
         String nonExistentContainer = "nonExistent";
         when(dockerCompose.ports(nonExistentContainer))
             .thenThrow(new IllegalStateException("No container with name 'nonExistent' found"));
@@ -187,7 +189,8 @@ public class DockerComposeRuleTest {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void logs_can_be_saved_to_a_directory_while_containers_are_running() throws IOException, InterruptedException {
+    public void be_able_to_save_logs_to_a_directory_while_containers_are_running()
+            throws IOException, InterruptedException {
         File logLocation = logFolder.newFolder();
         DockerComposeRule loggingComposition = DockerComposeRule.builder().from(rule).saveLogsTo(logLocation.getAbsolutePath()).build();
         when(dockerCompose.ps()).thenReturn(new ContainerNames("db"));
@@ -206,7 +209,7 @@ public class DockerComposeRuleTest {
     }
 
     @Test
-    public void when_skipShutdown_is_true_shutdown_does_not_happen() throws InterruptedException {
+    public void not_shut_down_when_skipShutdown_is_true() throws InterruptedException {
         defaultBuilder().skipShutdown(true)
                         .build()
                         .after();

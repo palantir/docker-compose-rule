@@ -24,13 +24,13 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-public class AdditionalEnvironmentValidatorTest {
+public class AdditionalEnvironmentValidatorShould {
 
     @Rule
     public ExpectedException exception = ExpectedException.none();
 
     @Test
-    public void additional_environment_variables_with_docker_variables() throws Exception {
+    public void throw_exception_when_additional_environment_variables_contain_docker_variables() throws Exception {
         Map<String, String> variables = ImmutableMap.<String, String>builder().put("DOCKER_HOST", "tcp://some-host:2376")
                                                                               .put("SOME_VARIABLE", "Some Value")
                                                                               .build();
@@ -42,7 +42,7 @@ public class AdditionalEnvironmentValidatorTest {
     }
 
     @Test
-    public void valid_arbitrary_environment_variables() throws Exception {
+    public void validate_arbitrary_environment_variables() throws Exception {
         Map<String, String> variables = ImmutableMap.<String, String>builder().put("SOME_VARIABLE", "Some Value")
                                                                               .build();
 

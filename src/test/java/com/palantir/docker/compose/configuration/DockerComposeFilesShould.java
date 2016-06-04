@@ -26,7 +26,7 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
 
-public class DockerComposeFilesTest {
+public class DockerComposeFilesShould {
 
     @Rule
     public final TemporaryFolder tempFolder = new TemporaryFolder();
@@ -35,14 +35,14 @@ public class DockerComposeFilesTest {
     public final ExpectedException exception = ExpectedException.none();
 
     @Test
-    public void notSpecifyingAComposeFileResultsInError() throws Exception {
+    public void throw_exception_when_compose_file_is_not_specified() throws Exception {
         exception.expect(IllegalArgumentException.class);
         exception.expectMessage("A docker compose file must be specified.");
         DockerComposeFiles.from();
     }
 
     @Test
-    public void missingDockerComposeFileThrowsAnException() throws Exception {
+    public void throw_exception_when_compose_file_does_not_exist() throws Exception {
         exception.expect(IllegalStateException.class);
         exception.expectMessage("The following docker-compose files:");
         exception.expectMessage("does-not-exist.yaml");
@@ -51,7 +51,9 @@ public class DockerComposeFilesTest {
     }
 
     @Test
-    public void aSingleMissingComposeFileWithAnExistingComposeFileThrowsCorrectException() throws Exception {
+    public void
+            throw_correct_exception_when_there_is_a_single_missing_compose_file_with_an_existing_compose_file()
+            throws Exception {
         exception.expect(IllegalStateException.class);
         exception.expectMessage("The following docker-compose files:");
         exception.expectMessage("does-not-exist.yaml");
@@ -63,14 +65,14 @@ public class DockerComposeFilesTest {
     }
 
     @Test
-    public void dockerComposeFileCommandGetsGeneratedCorrectly_singleComposeFile() throws Exception {
+    public void generate_docker_compose_file_command_correctly_for_single_compose_file() throws Exception {
         File composeFile = tempFolder.newFile("docker-compose.yaml");
         DockerComposeFiles dockerComposeFiles = DockerComposeFiles.from(composeFile.getAbsolutePath());
         assertThat(dockerComposeFiles.constructComposeFileCommand(), contains("--file", composeFile.getAbsolutePath()));
     }
 
     @Test
-    public void dockerComposeFileCommandGetsGeneratedCorrectly_multipleComposeFile() throws Exception {
+    public void generate_docker_compose_file_command_correctly_for_multiple_compose_files() throws Exception {
         File composeFile1 = tempFolder.newFile("docker-compose1.yaml");
         File composeFile2 = tempFolder.newFile("docker-compose2.yaml");
         DockerComposeFiles dockerComposeFiles = DockerComposeFiles.from(composeFile1.getAbsolutePath(), composeFile2.getAbsolutePath());

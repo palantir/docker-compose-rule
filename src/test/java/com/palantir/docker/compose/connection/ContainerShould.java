@@ -31,7 +31,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-public class ContainerTest {
+public class ContainerShould {
 
     private static final String IP = "127.0.0.1";
 
@@ -43,21 +43,21 @@ public class ContainerTest {
     private final Container container = new Container("service", dockerComposeProcess);
 
     @Test
-    public void port_is_returned_for_container_when_external_port_number_given() throws Exception {
+    public void return_port_for_container_when_external_port_number_given() throws Exception {
         DockerPort expected = env.availableService("service", IP, 5433, 5432);
         DockerPort port = container.portMappedExternallyTo(5433);
         assertThat(port, is(expected));
     }
 
     @Test
-    public void port_is_returned_for_container_when_internal_port_number_given() throws Exception {
+    public void return_port_for_container_when_internal_port_number_given() throws Exception {
         DockerPort expected = env.availableService("service", IP, 5433, 5432);
         DockerPort port = container.portMappedInternallyTo(5432);
         assertThat(port, is(expected));
     }
 
     @Test
-    public void when_two_ports_are_requested_docker_ports_is_only_called_once() throws Exception {
+    public void call_docker_ports_once_when_two_ports_are_requested() throws Exception {
         env.ports("service", IP, 8080, 8081);
         container.portMappedInternallyTo(8080);
         container.portMappedInternallyTo(8081);
@@ -65,7 +65,8 @@ public class ContainerTest {
     }
 
     @Test
-    public void requested_a_port_for_an_unknown_external_port_results_in_an_illegal_argument_exception() throws Exception {
+    public void throw_illegal_argument_exception_when_a_port_for_an_unknown_external_port_is_requested()
+            throws Exception {
         // Service must have ports otherwise we end up with an exception telling you the service is listening at all
         env.availableService("service", IP, 5400, 5400);
         exception.expect(IllegalArgumentException.class);
@@ -74,7 +75,8 @@ public class ContainerTest {
     }
 
     @Test
-    public void requested_a_port_for_an_unknown_internal_port_results_in_an_illegal_argument_exception() throws Exception {
+    public void throw_illegal_argument_exception_when_a_port_for_an_unknown_internal_port_is_requested()
+            throws Exception {
         env.availableService("service", IP, 5400, 5400);
         exception.expect(IllegalArgumentException.class);
         exception.expectMessage("No internal port '5432' for container 'service'");

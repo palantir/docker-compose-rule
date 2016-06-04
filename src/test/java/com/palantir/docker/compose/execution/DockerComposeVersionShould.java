@@ -24,7 +24,7 @@ import com.github.zafarkhaja.semver.Version;
 import org.junit.Test;
 
 
-public class DockerComposeVersionTest {
+public class DockerComposeVersionShould {
 
     @Test
     public void compare_major_versions_first() throws Exception {

@@ -27,13 +27,13 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-public class ProjectNameTest {
+public class ProjectNameShould {
 
     @Rule
     public final ExpectedException exception = ExpectedException.none();
 
     @Test
-    public void construct_compose_command_should_use_project_name_prefix() {
+    public void use_project_name_prefix_in_construct_compose_command() {
         List<String> command = ProjectName.random().constructComposeFileCommand();
 
         assertThat(command, hasSize(2));
@@ -41,7 +41,7 @@ public class ProjectNameTest {
     }
 
     @Test
-    public void successive_calls_to_random_should_produce_different_names() {
+    public void produce_different_names_on_successive_calls_to_random() {
         List<String> firstCommand = ProjectName.random().constructComposeFileCommand();
         List<String> secondCommand = ProjectName.random().constructComposeFileCommand();
 
@@ -49,32 +49,32 @@ public class ProjectNameTest {
     }
 
     @Test
-    public void random_should_be_eight_characters_long() {
+    public void have_eight_characters_long_random() {
         String randomName = ProjectName.random().constructComposeFileCommand().get(1);
         assertThat(randomName.length(), is(8));
     }
 
     @Test
-    public void from_string_factory_should_pass_name_to_command() {
+    public void should_pass_name_to_command_in_from_string_factory() {
         List<String> command = ProjectName.fromString("projectname").constructComposeFileCommand();
         assertThat(command, contains("--project-name", "projectname"));
     }
 
     @Test
-    public void from_string_factory_should_disallow_names() {
+    public void should_disallow_names_in_from_string_factory() {
         List<String> command = ProjectName.fromString("projectname").constructComposeFileCommand();
         assertThat(command, contains("--project-name", "projectname"));
     }
 
     @Test
-    public void from_string_should_reject_blanks() {
+    public void reject_blanks_in_from_string() {
         exception.expect(IllegalStateException.class);
         exception.expectMessage("ProjectName must not be blank.");
         ProjectName.fromString(" ");
     }
 
     @Test
-    public void validation_should_match_docker_compose_cli() {
+    public void match_validation_behavior_of_docker_compose_cli() {
         exception.expect(IllegalStateException.class);
         exception.expectMessage("ProjectName 'Crazy#Proj ect!Name' not allowed, please use lowercase letters and numbers only.");
         ProjectName.fromString("Crazy#Proj ect!Name");

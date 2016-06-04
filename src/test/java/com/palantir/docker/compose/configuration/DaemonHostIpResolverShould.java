@@ -21,20 +21,20 @@ import static org.junit.Assert.assertThat;
 
 import org.junit.Test;
 
-public class DaemonHostIpResolverTest {
+public class DaemonHostIpResolverShould {
 
     @Test
-    public void daemon_returns_local_host_with_null() throws Exception {
+    public void return_local_host_with_null() throws Exception {
         assertThat(new DaemonHostIpResolver().resolveIp(null), is(LOCALHOST));
     }
 
     @Test
-    public void daemon_returns_local_host_with_blank() throws Exception {
+    public void return_local_host_with_blank() throws Exception {
         assertThat(new DaemonHostIpResolver().resolveIp(""), is(LOCALHOST));
     }
 
     @Test
-    public void daemon_returns_local_host_with_arbitrary() throws Exception {
+    public void return_local_host_with_arbitrary() throws Exception {
         assertThat(new DaemonHostIpResolver().resolveIp("arbitrary"), is(LOCALHOST));
     }
 

@@ -23,7 +23,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-public class RemoteHostIpResolverTest {
+public class RemoteHostIpResolverShould {
 
     private static final String IP = "192.168.99.100";
     private static final int PORT = 2376;
@@ -32,14 +32,14 @@ public class RemoteHostIpResolverTest {
     public ExpectedException exception = ExpectedException.none();
 
     @Test
-    public void resolving_invalid_docker_host_results_in_error_blank() throws Exception {
+    public void result_in_error_blank_when_resolving_invalid_docker_host() throws Exception {
         exception.expect(IllegalArgumentException.class);
         exception.expectMessage("DOCKER_HOST cannot be blank/null");
         new RemoteHostIpResolver().resolveIp("");
     }
 
     @Test
-    public void resolving_invalid_docker_host_results_in_error_null() throws Exception {
+    public void result_in_error_null_when_resolving_invalid_docker_host() throws Exception {
         exception.expect(IllegalArgumentException.class);
         exception.expectMessage("DOCKER_HOST cannot be blank/null");
         new RemoteHostIpResolver().resolveIp(null);

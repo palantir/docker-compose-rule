@@ -22,40 +22,40 @@ import static org.junit.Assert.assertThat;
 
 import org.junit.Test;
 
-public class ContainerNamesTest {
+public class ContainerNamesShould {
 
     @Test
-    public void empty_ps_output_results_in_no_container_names() {
+    public void result_in_no_container_names_when_ps_output_is_empty() {
         ContainerNames names = ContainerNames.parseFromDockerComposePs("\n----\n");
         assertThat(names, is(new ContainerNames(emptyList())));
     }
 
     @Test
-    public void ps_output_with_a_single_container_results_in_a_single_container_name() {
+    public void result_in_a_single_container_name_when_ps_output_has_a_single_container() {
         ContainerNames names = ContainerNames.parseFromDockerComposePs("\n----\ndir_db_1 other line contents");
         assertThat(names, is(new ContainerNames("db")));
     }
 
     @Test
-    public void containers_with_underscores_in_their_name_are_allowed() {
+    public void allow_containers_with_underscores_in_their_name() {
         ContainerNames names = ContainerNames.parseFromDockerComposePs("\n----\ndir_left_right_1 other line contents");
         assertThat(names, is(new ContainerNames("left_right")));
     }
 
     @Test
-    public void ps_output_with_two_containers_results_in_a_two_container_name() {
+    public void result_in_two_container_names_when_ps_output_has_two_containers() {
         ContainerNames names = ContainerNames.parseFromDockerComposePs("\n----\ndir_db_1 other line contents\ndir_db2_1 other stuff");
         assertThat(names, is(new ContainerNames(asList("db", "db2"))));
     }
 
     @Test
-    public void an_empty_line_in_ps_output_is_ignored() {
+    public void ignore_an_empty_line_in_ps_output() {
         ContainerNames names = ContainerNames.parseFromDockerComposePs("\n----\ndir_db_1 other line contents\n\n");
         assertThat(names, is(new ContainerNames("db")));
     }
 
     @Test
-    public void a_line_with_ony_spaces_in_ps_output_is_ignored() {
+    public void ignore_a_line_with_ony_spaces_in_ps_output() {
         ContainerNames names = ContainerNames.parseFromDockerComposePs("\n----\ndir_db_1 other line contents\n   \n");
         assertThat(names, is(new ContainerNames("db")));
     }

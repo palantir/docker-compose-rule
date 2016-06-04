@@ -26,13 +26,13 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-public class RemoteBuilderTest {
+public class RemoteBuilderShould {
 
     @Rule
     public ExpectedException exception = ExpectedException.none();
 
     @Test
-    public void a_docker_machine_built_without_a_host_results_in_an_error() throws Exception {
+    public void throw_exception_when_building_a_docker_machine_without_a_host() throws Exception {
         exception.expect(IllegalStateException.class);
         exception.expectMessage("Missing required environment variables");
         exception.expectMessage("DOCKER_HOST");
@@ -42,7 +42,7 @@ public class RemoteBuilderTest {
     }
 
     @Test
-    public void a_docker_machine_built_without_t_l_s_has_no_t_l_s_environment_variables() throws Exception {
+    public void have_no_tls_environment_variables_when_a_docker_machine_is_built_without_tls() throws Exception {
         DockerMachine dockerMachine = DockerMachine.remoteMachine()
                                                    .host("tcp://192.168.99.100")
                                                    .withoutTLS()
@@ -56,7 +56,7 @@ public class RemoteBuilderTest {
     }
 
     @Test
-    public void a_docker_machine_built_with_t_l_s_has_t_l_s_environment_variables_set() throws Exception {
+    public void have_tls_environment_variables_set_when_a_docker_machine_is_built_with_tls() throws Exception {
         DockerMachine dockerMachine = DockerMachine.remoteMachine()
                                                    .host("tcp://192.168.99.100")
                                                    .withTLS("/path/to/certs")
@@ -70,7 +70,7 @@ public class RemoteBuilderTest {
     }
 
     @Test
-    public void a_docker_machine_built_with_additional_environment_variables() throws Exception {
+    public void build_a_docker_machine_with_additional_environment_variables() throws Exception {
         DockerMachine dockerMachine = DockerMachine.remoteMachine()
                                                    .host("tcp://192.168.99.100")
                                                    .withoutTLS()
