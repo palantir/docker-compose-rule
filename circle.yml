@@ -13,7 +13,7 @@ dependencies:
     - sudo pip install docker-compose
   override:
     - ./gradlew resolveConfigurations
-    
+
 test:
   pre:
     - ./gradlew findbugsMain findbugsTest checkstyleMain checkstyleTest javadoc --info

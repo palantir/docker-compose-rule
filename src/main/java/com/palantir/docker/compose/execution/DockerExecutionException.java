@@ -15,7 +15,11 @@
  */
 package com.palantir.docker.compose.execution;
 
-@FunctionalInterface
-public interface ErrorHandler {
-    void handle(int exitCode, String output, String commandName, String... commands);
+public class DockerExecutionException extends RuntimeException {
+    public DockerExecutionException() {
+    }
+
+    public DockerExecutionException(String message) {
+        super(message);
+    }
 }

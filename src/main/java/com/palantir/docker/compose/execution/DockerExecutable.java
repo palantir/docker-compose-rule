@@ -16,8 +16,6 @@
 package com.palantir.docker.compose.execution;
 
 import com.google.common.collect.ImmutableList;
-import com.palantir.docker.compose.configuration.DockerComposeFiles;
-import com.palantir.docker.compose.configuration.ProjectName;
 import java.io.IOException;
 import java.util.List;
 import org.immutables.value.Value;
@@ -25,34 +23,29 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @Value.Immutable
-public abstract class DockerComposeExecutable implements Executable {
-    private static final Logger log = LoggerFactory.getLogger(DockerComposeExecutable.class);
+public abstract class DockerExecutable implements Executable {
+    private static final Logger log = LoggerFactory.getLogger(DockerExecutable.class);
 
-    private static final DockerCommandLocations DOCKER_COMPOSE_LOCATIONS = new DockerCommandLocations(
-            System.getenv("DOCKER_COMPOSE_LOCATION"),
-            "/usr/local/bin/docker-compose",
-            "/usr/bin/docker-compose"
+    private static final DockerCommandLocations DOCKER_LOCATIONS = new DockerCommandLocations(
+            System.getenv("DOCKER_LOCATION"),
+            "/usr/local/bin/docker",
+            "/usr/bin/docker"
     );
 
-    @Value.Parameter protected abstract DockerComposeFiles dockerComposeFiles();
     @Value.Parameter protected abstract DockerConfiguration dockerConfiguration();
-
-    @Value.Default public ProjectName projectName() {
-        return ProjectName.random();
-    }
 
     @Override
     public final String commandName() {
-        return "docker-compose";
+        return "docker";
     }
 
     @Value.Derived
-    protected String dockerComposePath() {
-        String pathToUse = DOCKER_COMPOSE_LOCATIONS.preferredLocation()
+    protected String dockerPath() {
+        String pathToUse = DOCKER_LOCATIONS.preferredLocation()
                 .orElseThrow(() -> new IllegalStateException(
-                        "Could not find docker-compose, looked in: " + DOCKER_COMPOSE_LOCATIONS));
+                        "Could not find docker, looked in: " + DOCKER_LOCATIONS));
 
-        log.debug("Using docker-compose found at " + pathToUse);
+        log.debug("Using docker found at " + pathToUse);
 
         return pathToUse;
     }
@@ -60,9 +53,7 @@ public abstract class DockerComposeExecutable implements Executable {
     @Override
     public Process execute(String... commands) throws IOException {
         List<String> args = ImmutableList.<String>builder()
-                .add(dockerComposePath())
-                .addAll(projectName().constructComposeFileCommand())
-                .addAll(dockerComposeFiles().constructComposeFileCommand())
+                .add(dockerPath())
                 .add(commands)
                 .build();
 
@@ -72,7 +63,7 @@ public abstract class DockerComposeExecutable implements Executable {
                 .start();
     }
 
-    public static ImmutableDockerComposeExecutable.Builder builder() {
-        return ImmutableDockerComposeExecutable.builder();
+    public static ImmutableDockerExecutable.Builder builder() {
+        return ImmutableDockerExecutable.builder();
     }
 }

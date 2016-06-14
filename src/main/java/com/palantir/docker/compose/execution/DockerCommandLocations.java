@@ -22,13 +22,13 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Predicate;
 
-public class DockerComposeLocations {
+public class DockerCommandLocations {
     private static final Predicate<String> IS_NOT_NULL = path -> path != null;
     private static final Predicate<String> FILE_EXISTS = path -> new File(path).exists();
 
     private final List<String> possiblePaths;
 
-    public DockerComposeLocations(String... possiblePaths) {
+    public DockerCommandLocations(String... possiblePaths) {
         this.possiblePaths = asList(possiblePaths);
     }
 
@@ -42,6 +42,6 @@ public class DockerComposeLocations {
 
     @Override
     public String toString() {
-        return "DockerComposeLocations{possiblePaths=" + possiblePaths + "}";
+        return "DockerCommandLocations{possiblePaths=" + possiblePaths + "}";
     }
 }

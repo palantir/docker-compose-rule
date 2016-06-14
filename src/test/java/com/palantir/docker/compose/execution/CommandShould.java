@@ -20,6 +20,8 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.core.Is.is;
 import static org.mockito.Matchers.anyVararg;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
@@ -33,45 +35,63 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
 @RunWith(MockitoJUnitRunner.class)
-public class SynchronousDockerComposeExecutableShould {
+public class CommandShould {
     @Mock private Process executedProcess;
     @Mock private DockerComposeExecutable dockerComposeExecutable;
-    private SynchronousDockerComposeExecutable dockerCompose;
+    @Mock private ErrorHandler errorHandler;
+    private Command dockerComposeCommand;
     private final List<String> consumedLogLines = new ArrayList<>();
     private final Consumer<String> logConsumer = s -> consumedLogLines.add(s);
 
     @Before
     public void setup() throws IOException {
         when(dockerComposeExecutable.execute(anyVararg())).thenReturn(executedProcess);
-        dockerCompose = new SynchronousDockerComposeExecutable(dockerComposeExecutable, logConsumer);
+        dockerComposeCommand = new Command(dockerComposeExecutable, logConsumer);
 
         givenTheUnderlyingProcessHasOutput("");
         givenTheUnderlyingProcessTerminatesWithAnExitCodeOf(0);
     }
 
     @Test public void
-    respond_with_the_exit_code_of_the_executed_process() throws IOException, InterruptedException {
+    invoke_error_handler_when_exit_code_of_the_executed_process_is_non_0() throws IOException, InterruptedException {
         int expectedExitCode = 1;
-
         givenTheUnderlyingProcessTerminatesWithAnExitCodeOf(expectedExitCode);
+        dockerComposeCommand.execute(errorHandler, "rm", "-f");
 
-        assertThat(dockerCompose.run("rm", "-f").exitCode(), is(expectedExitCode));
+        verify(errorHandler).handle(expectedExitCode, "", "docker-compose", "rm", "-f");
     }
 
     @Test public void
-    respond_with_the_output_of_the_executed_process() throws IOException, InterruptedException {
-        String expectedOutput = "some output";
+    not_invoke_error_handler_when_exit_code_of_the_executed_process_is_0() throws IOException, InterruptedException {
+        dockerComposeCommand.execute(errorHandler, "rm", "-f");
 
+        verifyZeroInteractions(errorHandler);
+    }
+
+    @Test public void
+    return_output_when_exit_code_of_the_executed_process_is_non_0() throws IOException, InterruptedException {
+        String expectedOutput = "test output";
+        givenTheUnderlyingProcessTerminatesWithAnExitCodeOf(1);
         givenTheUnderlyingProcessHasOutput(expectedOutput);
+        String commandOutput = dockerComposeCommand.execute(errorHandler, "rm", "-f");
 
-        assertThat(dockerCompose.run("rm", "-f").output(), is(expectedOutput));
+        assertThat(commandOutput, is(expectedOutput));
+    }
+
+    @Test public void
+    return_output_when_exit_code_of_the_executed_process_is_0() throws IOException, InterruptedException {
+        String expectedOutput = "test output";
+        givenTheUnderlyingProcessHasOutput(expectedOutput);
+        String commandOutput = dockerComposeCommand.execute(errorHandler, "rm", "-f");
+
+        assertThat(commandOutput, is(expectedOutput));
     }
 
     @Test public void
     give_the_output_to_the_specified_consumer_as_it_is_available() throws IOException, InterruptedException {
         givenTheUnderlyingProcessHasOutput("line 1\nline 2");
 
-        dockerCompose.run("rm", "-f");
+        dockerComposeCommand.execute(errorHandler, "rm", "-f");
 
         assertThat(consumedLogLines, contains("line 1", "line 2"));
     }

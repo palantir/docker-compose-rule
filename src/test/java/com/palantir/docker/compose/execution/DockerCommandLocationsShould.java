@@ -25,7 +25,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
-public class DockerComposeLocationsShould {
+public class DockerCommandLocationsShould {
     private static final String badLocation = "file/that/does/not/exist";
     private static final String otherBadLocation = "another/file/that/does/not/exist";
 
@@ -39,32 +39,32 @@ public class DockerComposeLocationsShould {
     }
 
     @Test public void
-    provide_the_first_docker_compose_location_if_it_exists() throws IOException {
-        DockerComposeLocations dockerComposeLocations = new DockerComposeLocations(
+    provide_the_first_docker_command_location_if_it_exists() throws IOException {
+        DockerCommandLocations dockerCommandLocations = new DockerCommandLocations(
                 badLocation,
                 goodLocation,
                 otherBadLocation);
 
-        assertThat(dockerComposeLocations.preferredLocation().get(),
+        assertThat(dockerCommandLocations.preferredLocation().get(),
                 is(goodLocation));
     }
 
     @Test public void
     skip_paths_from_environment_variables_that_are_unset() {
-        DockerComposeLocations dockerComposeLocations = new DockerComposeLocations(
+        DockerCommandLocations dockerCommandLocations = new DockerCommandLocations(
                 System.getenv("AN_UNSET_DOCKER_COMPOSE_PATH"),
                 goodLocation);
 
-        assertThat(dockerComposeLocations.preferredLocation().get(),
+        assertThat(dockerCommandLocations.preferredLocation().get(),
                 is(goodLocation));
     }
 
     @Test public void
     have_no_preferred_path_when_all_possible_paths_are_all_invalid() {
-        DockerComposeLocations dockerComposeLocations = new DockerComposeLocations(
+        DockerCommandLocations dockerCommandLocations = new DockerCommandLocations(
                 badLocation);
 
-        assertThat(dockerComposeLocations.preferredLocation(),
+        assertThat(dockerCommandLocations.preferredLocation(),
                 is(empty()));
     }
 }

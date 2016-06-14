@@ -17,11 +17,14 @@ import com.palantir.docker.compose.connection.ImmutableCluster;
 import com.palantir.docker.compose.connection.waiting.ClusterHealthCheck;
 import com.palantir.docker.compose.connection.waiting.ClusterWait;
 import com.palantir.docker.compose.connection.waiting.HealthCheck;
+import com.palantir.docker.compose.execution.ConflictingContainerRemovingDockerCompose;
 import com.palantir.docker.compose.execution.DefaultDockerCompose;
+import com.palantir.docker.compose.execution.Docker;
 import com.palantir.docker.compose.execution.DockerCompose;
 import com.palantir.docker.compose.execution.DockerComposeExecArgument;
 import com.palantir.docker.compose.execution.DockerComposeExecOption;
 import com.palantir.docker.compose.execution.DockerComposeExecutable;
+import com.palantir.docker.compose.execution.DockerExecutable;
 import com.palantir.docker.compose.execution.RetryingDockerCompose;
 import com.palantir.docker.compose.logging.DoNothingLogCollector;
 import com.palantir.docker.compose.logging.FileLogCollector;
@@ -61,7 +64,7 @@ public abstract class DockerComposeRule extends ExternalResource {
     }
 
     @Value.Default
-    public DockerComposeExecutable executable() {
+    public DockerComposeExecutable dockerComposeExecutable() {
         return DockerComposeExecutable.builder()
             .dockerComposeFiles(files())
             .dockerConfiguration(machine())
@@ -70,8 +73,20 @@ public abstract class DockerComposeRule extends ExternalResource {
     }
 
     @Value.Default
+    public DockerExecutable dockerExecutable() {
+        return DockerExecutable.builder()
+                .dockerConfiguration(machine())
+                .build();
+    }
+
+    @Value.Default
+    public Docker docker() {
+        return new Docker(dockerExecutable());
+    }
+
+    @Value.Default
     public DockerCompose dockerCompose() {
-        DockerCompose dockerCompose = new DefaultDockerCompose(executable(), machine());
+        DockerCompose dockerCompose = new DefaultDockerCompose(dockerComposeExecutable(), machine());
         return new RetryingDockerCompose(retryAttempts(), dockerCompose);
     }
 
@@ -94,6 +109,11 @@ public abstract class DockerComposeRule extends ExternalResource {
     }
 
     @Value.Default
+    protected boolean removeConflictingContainersOnStartup() {
+        return true;
+    }
+
+    @Value.Default
     protected LogCollector logCollector() {
         return new DoNothingLogCollector();
     }
@@ -102,7 +122,12 @@ public abstract class DockerComposeRule extends ExternalResource {
     public void before() throws IOException, InterruptedException {
         log.debug("Starting docker-compose cluster");
         dockerCompose().build();
-        dockerCompose().up();
+
+        DockerCompose upDockerCompose = dockerCompose();
+        if (removeConflictingContainersOnStartup()) {
+            upDockerCompose = new ConflictingContainerRemovingDockerCompose(upDockerCompose, docker());
+        }
+        upDockerCompose.up();
 
         log.debug("Starting log collection");
 
@@ -187,4 +212,5 @@ public abstract class DockerComposeRule extends ExternalResource {
             return addClusterWait(new ClusterWait(clusterHealthCheck, timeout));
         }
     }
+
 }

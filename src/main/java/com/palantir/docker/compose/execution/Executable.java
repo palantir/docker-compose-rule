@@ -15,11 +15,12 @@
  */
 package com.palantir.docker.compose.execution;
 
-public class DockerComposeExecutionException extends RuntimeException {
-    public DockerComposeExecutionException() {
-    }
+import java.io.IOException;
 
-    public DockerComposeExecutionException(String message) {
-        super(message);
-    }
+public interface Executable {
+
+    String commandName();
+
+    Process execute(String... commands) throws IOException;
+
 }

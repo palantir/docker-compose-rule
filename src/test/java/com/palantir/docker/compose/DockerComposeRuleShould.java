@@ -24,6 +24,7 @@ import static org.hamcrest.core.Is.is;
 import static org.joda.time.Duration.millis;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -31,6 +32,7 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
 import com.palantir.docker.compose.configuration.DockerComposeFiles;
 import com.palantir.docker.compose.configuration.MockDockerEnvironment;
 import com.palantir.docker.compose.connection.Container;
@@ -39,7 +41,9 @@ import com.palantir.docker.compose.connection.DockerMachine;
 import com.palantir.docker.compose.connection.DockerPort;
 import com.palantir.docker.compose.connection.waiting.HealthCheck;
 import com.palantir.docker.compose.connection.waiting.SuccessOrFailure;
+import com.palantir.docker.compose.execution.Docker;
 import com.palantir.docker.compose.execution.DockerCompose;
+import com.palantir.docker.compose.execution.DockerExecutionException;
 import com.palantir.docker.compose.logging.LogCollector;
 import java.io.File;
 import java.io.IOException;
@@ -72,6 +76,7 @@ public class DockerComposeRuleShould {
     private HealthCheck<List<Container>> healthCheck;
 
     private final DockerCompose dockerCompose = mock(DockerCompose.class);
+    private final Docker mockDocker = mock(Docker.class);
     private final MockDockerEnvironment env = new MockDockerEnvironment(dockerCompose);
     private DockerComposeFiles mockFiles = mock(DockerComposeFiles.class);
     private DockerMachine machine = mock(DockerMachine.class);
@@ -215,6 +220,40 @@ public class DockerComposeRuleShould {
                         .after();
         verifyNoMoreInteractions(dockerCompose);
         verify(logCollector, times(1)).stopCollecting();
+    }
+
+    @Test
+    public void before_fails_when_docker_up_throws_exception() throws IOException, InterruptedException {
+        doThrow(new DockerExecutionException("")).when(dockerCompose).up();
+        rule = defaultBuilder().build();
+        exception.expect(DockerExecutionException.class);
+        rule.before();
+    }
+
+    @Test
+    public void before_retries_when_docker_up_reports_conflicting_containers() throws IOException, InterruptedException {
+        String conflictingContainer = "conflictingContainer";
+        doThrow(new DockerExecutionException("The name \"" + conflictingContainer + "\" is already in use"))
+                .doNothing()
+                .when(dockerCompose).up();
+        rule = defaultBuilder().docker(mockDocker).build();
+        rule.before();
+
+        verify(dockerCompose, times(2)).up();
+        verify(mockDocker).rm(ImmutableSet.of(conflictingContainer));
+    }
+
+    @Test
+    public void when_remove_conflicting_containers_on_startup_is_set_to_false_before_does_not_retry_on_conflicts()
+            throws IOException, InterruptedException {
+        String conflictingContainer = "conflictingContainer";
+        doThrow(new DockerExecutionException("The name \"" + conflictingContainer + "\" is already in use"))
+                .when(dockerCompose).up();
+        rule = defaultBuilder().docker(mockDocker).removeConflictingContainersOnStartup(false).build();
+
+        exception.expect(DockerExecutionException.class);
+        exception.expectMessage("The name \"conflictingContainer\" is already in use");
+        rule.before();
     }
 
     public Container withComposeExecutableReturningContainerFor(String containerName) {

@@ -16,7 +16,6 @@
 package com.palantir.docker.compose.execution;
 
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
-import static java.util.stream.Collectors.joining;
 import static org.apache.commons.lang3.Validate.validState;
 import static org.joda.time.Duration.standardMinutes;
 
@@ -31,7 +30,6 @@ import com.palantir.docker.compose.connection.DockerMachine;
 import com.palantir.docker.compose.connection.Ports;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.Arrays;
 import org.apache.commons.io.IOUtils;
 import org.joda.time.Duration;
 import org.slf4j.Logger;
@@ -43,7 +41,7 @@ public class DefaultDockerCompose implements DockerCompose {
     private static final Duration COMMAND_TIMEOUT = standardMinutes(2);
     private static final Logger log = LoggerFactory.getLogger(DefaultDockerCompose.class);
 
-    private final SynchronousDockerComposeExecutable executable;
+    private final Command command;
     private final DockerMachine dockerMachine;
     private final DockerComposeExecutable rawExecutable;
 
@@ -57,33 +55,33 @@ public class DefaultDockerCompose implements DockerCompose {
 
     public DefaultDockerCompose(DockerComposeExecutable rawExecutable, DockerMachine dockerMachine) {
         this.rawExecutable = rawExecutable;
-        this.executable = new SynchronousDockerComposeExecutable(rawExecutable, log::debug);
+        this.command = new Command(rawExecutable, log::debug);
         this.dockerMachine = dockerMachine;
     }
 
     @Override
     public void build() throws IOException, InterruptedException {
-        executeDockerComposeCommand(throwingOnError(), "build");
+        command.execute(Command.throwingOnError(), "build");
     }
 
     @Override
     public void up() throws IOException, InterruptedException {
-        executeDockerComposeCommand(throwingOnError(), "up", "-d");
+        command.execute(Command.throwingOnError(), "up", "-d");
     }
 
     @Override
     public void down() throws IOException, InterruptedException {
-        executeDockerComposeCommand(swallowingDownCommandDoesNotExist(), "down", "--volumes");
+        command.execute(swallowingDownCommandDoesNotExist(), "down", "--volumes");
     }
 
     @Override
     public void kill() throws IOException, InterruptedException {
-        executeDockerComposeCommand(throwingOnError(), "kill");
+        command.execute(Command.throwingOnError(), "kill");
     }
 
     @Override
     public void rm() throws IOException, InterruptedException {
-        executeDockerComposeCommand(throwingOnError(), "rm", "--force", "-v");
+        command.execute(Command.throwingOnError(), "rm", "--force", "-v");
     }
 
     @Override
@@ -91,7 +89,7 @@ public class DefaultDockerCompose implements DockerCompose {
             DockerComposeExecArgument dockerComposeExecArgument) throws IOException, InterruptedException {
         verifyDockerComposeVersionAtLeast(VERSION_1_7_0, "You need at least docker-compose 1.7 to run docker-compose exec");
         String[] fullArgs = constructFullDockerComposeExecArguments(dockerComposeExecOption, containerName, dockerComposeExecArgument);
-        return executeDockerComposeCommand(throwingOnError(), fullArgs);
+        return command.execute(Command.throwingOnError(), fullArgs);
     }
 
     private void verifyDockerComposeVersionAtLeast(Version targetVersion, String message) throws IOException, InterruptedException {
@@ -99,7 +97,7 @@ public class DefaultDockerCompose implements DockerCompose {
     }
 
     private Version version() throws IOException, InterruptedException {
-        String versionOutput = executeDockerComposeCommand(throwingOnError(), "-v");
+        String versionOutput = command.execute(Command.throwingOnError(), "-v");
         return DockerComposeVersion.parseFromDockerComposeVersion(versionOutput);
     }
 
@@ -115,7 +113,7 @@ public class DefaultDockerCompose implements DockerCompose {
 
     @Override
     public ContainerNames ps() throws IOException, InterruptedException {
-        String psOutput = executeDockerComposeCommand(throwingOnError(), "ps");
+        String psOutput = command.execute(Command.throwingOnError(), "ps");
         return ContainerNames.parseFromDockerComposePs(psOutput);
     }
 
@@ -150,38 +148,15 @@ public class DefaultDockerCompose implements DockerCompose {
 
     @Override
     public Ports ports(String service) throws IOException, InterruptedException {
-        String psOutput = executeDockerComposeCommand(throwingOnError(), "ps", service);
+        String psOutput = command.execute(Command.throwingOnError(), "ps", service);
         validState(!Strings.isNullOrEmpty(psOutput), "No container with name '" + service + "' found");
         return Ports.parseFromDockerComposePs(psOutput, dockerMachine.getIp());
     }
 
-    private ErrorHandler throwingOnError() {
-        return (exitCode, output, commands) -> {
-            String message = constructNonZeroExitErrorMessage(exitCode, commands) + "\nThe output was:\n" + output;
-            throw new DockerComposeExecutionException(message);
-        };
-    }
-
-    private String executeDockerComposeCommand(ErrorHandler errorHandler, String... commands)
-            throws IOException, InterruptedException {
-        ProcessResult result = executable.run(commands);
-
-        if (result.exitCode() != 0) {
-            errorHandler.handle(result.exitCode(), result.output(), commands);
-        }
-
-        return result.output();
-    }
-
-
-    private String constructNonZeroExitErrorMessage(int exitCode, String... commands) {
-        return "'docker-compose " + Arrays.stream(commands).collect(joining(" ")) + "' returned exit code " + exitCode;
-    }
-
     private ErrorHandler swallowingDownCommandDoesNotExist() {
-        return (exitCode, output, commands) -> {
+        return (exitCode, output, commandName, commands) -> {
             if (downCommandWasPresent(output)) {
-                throwingOnError().handle(exitCode, output, commands);
+                Command.throwingOnError().handle(exitCode, output, commandName, commands);
             }
 
             log.warn("It looks like `docker-compose down` didn't work.");
