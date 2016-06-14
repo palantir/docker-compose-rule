@@ -34,13 +34,13 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-public class LocalBuilderTest {
+public class LocalBuilderShould {
 
     @Rule
     public ExpectedException exception = ExpectedException.none();
 
     @Test
-    public void localBuilderWithAdditionalEnvironmentSetTwiceOverridesPreviousEnvironment_daemon() throws Exception {
+    public void override_previous_environment_when_additional_environment_set_twice_daemon() throws Exception {
         Map<String, String> environment1 = ImmutableMap.of("ENV_1", "VAL_1");
         Map<String, String> environment2 = ImmutableMap.of("ENV_2", "VAL_2");
         DockerMachine localMachine = new LocalBuilder(DAEMON, newHashMap()).withEnvironment(environment1)
@@ -51,7 +51,7 @@ public class LocalBuilderTest {
     }
 
     @Test
-    public void localBuilderWithAdditionalEnvironmentSetAndIndividualEnvironmentIsUnionOfTheTwo_daemon() throws Exception {
+    public void be_union_of_additional_environment_and_individual_environment_when_both_set_daemon() throws Exception {
         Map<String, String> environment = ImmutableMap.<String, String>builder()
                                                        .put("ENV_1", "VAL_1")
                                                        .put("ENV_2", "VAL_2")
@@ -64,7 +64,7 @@ public class LocalBuilderTest {
     }
 
     @Test
-    public void localBuilderWithAdditionalEnvironmentSetTwiceOverridesPreviousEnvironment_remote() throws Exception {
+    public void override_previous_environment_with_additional_environment_set_twice_remote() throws Exception {
         Map<String, String> dockerVariables = ImmutableMap.<String, String>builder()
                 .put(DOCKER_HOST, "tcp://192.168.99.100:2376")
                 .build();
@@ -78,7 +78,7 @@ public class LocalBuilderTest {
     }
 
     @Test
-    public void localBuilderWithAdditionalEnvironmentSetAndIndividualEnvironmentIsUnionOfTheTwo_remote() throws Exception {
+    public void be_union_of_additional_environment_and_individual_environment_when_both_set_remote() throws Exception {
         Map<String, String> dockerVariables = ImmutableMap.<String, String>builder()
                 .put(DOCKER_HOST, "tcp://192.168.99.100:2376")
                 .build();
@@ -94,7 +94,7 @@ public class LocalBuilderTest {
     }
 
     @Test
-    public void localBuilderWithAdditionalEnvironmentGetsVariableOverriden() throws Exception {
+    public void get_variable_overriden_with_additional_environment() throws Exception {
         Map<String, String> environment = ImmutableMap.<String, String>builder()
                 .put("ENV_1", "VAL_1")
                 .put("ENV_2", "VAL_2")
@@ -112,7 +112,7 @@ public class LocalBuilderTest {
     }
 
     @Test
-    public void localBuilderHasInvalidVariables_daemon() throws Exception {
+    public void have_invalid_variables_daemon() throws Exception {
         Map<String, String> invalidDockerVariables = ImmutableMap.<String, String>builder()
                 .put(DOCKER_HOST, "tcp://192.168.99.100:2376")
                 .put(DOCKER_TLS_VERIFY, "1")
@@ -130,7 +130,7 @@ public class LocalBuilderTest {
     }
 
     @Test
-    public void localBuilderHasInvalidAdditionalVariables_daemon() throws Exception {
+    public void have_invalid_additional_variables_daemon() throws Exception {
         exception.expect(IllegalStateException.class);
         exception.expectMessage("The following variables");
         exception.expectMessage(DOCKER_HOST);
@@ -141,7 +141,7 @@ public class LocalBuilderTest {
     }
 
     @Test
-    public void localBuilderHasInvalidAdditionalVariables_remote() throws Exception {
+    public void have_invalid_additional_variables_remote() throws Exception {
         Map<String, String> dockerVariables = ImmutableMap.<String, String>builder()
                                                           .put(DOCKER_HOST, "tcp://192.168.99.100:2376")
                                                           .put(DOCKER_TLS_VERIFY, "1")
@@ -158,13 +158,13 @@ public class LocalBuilderTest {
     }
 
     @Test
-    public void localBuilderReturnsLocalhostAsIp_daemon() throws Exception {
+    public void return_localhost_as_ip_daemon() throws Exception {
         DockerMachine localMachine = new LocalBuilder(DAEMON, newHashMap()).build();
         assertThat(localMachine.getIp(), is(LOCALHOST));
     }
 
     @Test
-    public void localBuilderReturnsDockerHostAsIp_remote() throws Exception {
+    public void return_docker_host_as_ip_remote() throws Exception {
         Map<String, String> dockerVariables = ImmutableMap.<String, String>builder()
                 .put(DOCKER_HOST, "tcp://192.168.99.100:2376")
                 .put(DOCKER_TLS_VERIFY, "1")
@@ -176,7 +176,7 @@ public class LocalBuilderTest {
     }
 
     @Test
-    public void local_builder_has_missing_docker_host_remote() throws Exception {
+    public void have_missing_docker_host_remote() throws Exception {
         exception.expect(IllegalStateException.class);
         exception.expectMessage("Missing required environment variables: ");
         exception.expectMessage(DOCKER_HOST);
@@ -184,7 +184,7 @@ public class LocalBuilderTest {
     }
 
     @Test
-    public void local_builder_builds_without_tls_remote() throws Exception {
+    public void build_without_tls_remote() throws Exception {
         Map<String, String> dockerVariables = ImmutableMap.<String, String>builder()
                                                           .put(DOCKER_HOST, "tcp://192.168.99.100:2376")
                                                           .build();
@@ -194,7 +194,7 @@ public class LocalBuilderTest {
     }
 
     @Test
-    public void local_builder_has_missing_cert_path_remote() throws Exception {
+    public void have_missing_cert_path_remote() throws Exception {
         Map<String, String> dockerVariables = ImmutableMap.<String, String>builder()
                 .put(DOCKER_HOST, "tcp://192.168.99.100:2376")
                 .put(DOCKER_TLS_VERIFY, "1")
@@ -207,7 +207,7 @@ public class LocalBuilderTest {
     }
 
     @Test
-    public void local_builder_builds_with_tls_remote() throws Exception {
+    public void build_with_tls_remote() throws Exception {
         Map<String, String> dockerVariables = ImmutableMap.<String, String>builder()
                 .put(DOCKER_HOST, "tcp://192.168.99.100:2376")
                 .put(DOCKER_TLS_VERIFY, "1")

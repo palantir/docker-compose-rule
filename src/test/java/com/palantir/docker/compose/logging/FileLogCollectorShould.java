@@ -45,7 +45,7 @@ import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
 
 @SuppressWarnings("unchecked")
-public class FileLogCollectorTest {
+public class FileLogCollectorShould {
 
     @Rule
     public TemporaryFolder logDirectoryParent = new TemporaryFolder();
@@ -63,7 +63,7 @@ public class FileLogCollectorTest {
     }
 
     @Test
-    public void cannot_be_created_when_trying_to_use_a_file_as_the_log_directory() throws IOException {
+    public void throw_exception_when_created_with_file_as_the_log_directory() throws IOException {
         File file = logDirectoryParent.newFile("cannot-use");
 
         exception.expect(IllegalArgumentException.class);
@@ -73,7 +73,7 @@ public class FileLogCollectorTest {
     }
 
     @Test
-    public void creates_the_log_directory_if_it_does_not_already_exist() throws IOException {
+    public void create_the_log_directory_if_it_does_not_already_exist() throws IOException {
         File doesNotExistYetDirectory = logDirectoryParent.getRoot()
                 .toPath()
                 .resolve("doesNotExist")
@@ -83,7 +83,8 @@ public class FileLogCollectorTest {
     }
 
     @Test
-    public void cannot_be_created_if_the_log_directory_does_not_exist_and_cannot_be_created() throws IOException {
+    public void throw_exception_when_created_if_the_log_directory_does_not_exist_and_cannot_be_created()
+            throws IOException {
         File cannotBeCreatedDirectory = cannotBeCreatedDirectory();
 
         exception.expect(IllegalArgumentException.class);
@@ -94,7 +95,7 @@ public class FileLogCollectorTest {
     }
 
     @Test
-    public void when_no_containers_are_running_no_logs_are_collected() throws IOException, InterruptedException {
+    public void not_collect_any_logs_when_no_containers_are_running() throws IOException, InterruptedException {
         when(compose.ps()).thenReturn(new ContainerNames(emptyList()));
         logCollector.startCollecting(compose);
         logCollector.stopCollecting();
@@ -102,7 +103,8 @@ public class FileLogCollectorTest {
     }
 
     @Test
-    public void when_one_container_is_running_and_terminates_before_start_collecting_is_run_logs_are_collected() throws Exception {
+    public void collect_logs_when_one_container_is_running_and_terminates_before_start_collecting_is_run()
+            throws Exception {
         when(compose.ps()).thenReturn(new ContainerNames("db"));
         when(compose.writeLogs(eq("db"), any(OutputStream.class))).thenAnswer((args) -> {
             OutputStream outputStream = (OutputStream) args.getArguments()[1];
@@ -116,7 +118,8 @@ public class FileLogCollectorTest {
     }
 
     @Test
-    public void when_one_container_is_running_and_does_not_terminate_until_after_start_collecting_is_run_logs_are_collected() throws Exception {
+    public void collect_logs_when_one_container_is_running_and_does_not_terminate_until_after_start_collecting_is_run()
+            throws Exception {
         when(compose.ps()).thenReturn(new ContainerNames("db"));
         CountDownLatch latch = new CountDownLatch(1);
         when(compose.writeLogs(eq("db"), any(OutputStream.class))).thenAnswer((args) -> {
@@ -135,7 +138,8 @@ public class FileLogCollectorTest {
     }
 
     @Test
-    public void when_one_container_is_running_and_does_not_terminate_the_logs_are_still_collected() throws IOException, InterruptedException {
+    public void collect_logs_when_one_container_is_running_and_does_not_terminate()
+            throws IOException, InterruptedException {
         when(compose.ps()).thenReturn(new ContainerNames("db"));
         CountDownLatch latch = new CountDownLatch(1);
         when(compose.writeLogs(eq("db"), any(OutputStream.class))).thenAnswer((args) -> {
@@ -159,7 +163,7 @@ public class FileLogCollectorTest {
     }
 
     @Test
-    public void two_containers_have_logs_collected_in_parallel() throws IOException, InterruptedException {
+    public void collect_logs_in_parallel_for_two_containers() throws IOException, InterruptedException {
         when(compose.ps()).thenReturn(new ContainerNames(asList("db", "db2")));
         CountDownLatch dbLatch = new CountDownLatch(1);
         when(compose.writeLogs(eq("db"), any(OutputStream.class))).thenAnswer((args) -> {
@@ -188,7 +192,8 @@ public class FileLogCollectorTest {
     }
 
     @Test
-    public void a_started_collector_cannot_be_starteda_second_time() throws IOException, InterruptedException {
+    public void throw_exception_when_trying_to_start_a_started_collector_a_second_time()
+            throws IOException, InterruptedException {
         when(compose.ps()).thenReturn(new ContainerNames("db"));
         logCollector.startCollecting(compose);
         exception.expect(RuntimeException.class);

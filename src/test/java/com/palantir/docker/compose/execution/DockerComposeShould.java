@@ -38,7 +38,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-public class DockerComposeTest {
+public class DockerComposeShould {
 
     @Rule
     public ExpectedException exception = ExpectedException.none();
@@ -58,19 +58,19 @@ public class DockerComposeTest {
     }
 
     @Test
-    public void up_calls_docker_compose_up_with_daemon_flag() throws IOException, InterruptedException {
+    public void call_docker_compose_up_with_daemon_flag_on_up() throws IOException, InterruptedException {
         compose.up();
         verify(executor).execute("up", "-d");
     }
 
     @Test
-    public void rm_calls_docker_compose_rm_with_force_and_volume_flags() throws IOException, InterruptedException {
+    public void call_docker_compose_rm_with_force_and_volume_flags_on_rm() throws IOException, InterruptedException {
         compose.rm();
         verify(executor).execute("rm", "--force", "-v");
     }
 
     @Test
-    public void ps_parses_and_returns_container_names() throws IOException, InterruptedException {
+    public void parse_and_returns_container_names_on_ps() throws IOException, InterruptedException {
         when(executedProcess.getInputStream()).thenReturn(toInputStream("ps\n----\ndir_db_1"));
         ContainerNames containerNames = compose.ps();
         verify(executor).execute("ps");
@@ -78,7 +78,7 @@ public class DockerComposeTest {
     }
 
     @Test
-    public void logs_calls_docker_compose_with_no_colour_flag() throws IOException, InterruptedException {
+    public void call_docker_compose_with_no_colour_flag_on_logs() throws IOException, InterruptedException {
         when(executedProcess.getInputStream()).thenReturn(
                 toInputStream("docker-compose version 1.5.6, build 1ad8866"),
                 toInputStream("logs"));
@@ -89,7 +89,8 @@ public class DockerComposeTest {
     }
 
     @Test
-    public void logs_calls_docker_compose_with_the_follow_flag_when_the_version_is_at_least_1_7_0() throws IOException, InterruptedException {
+    public void call_docker_compose_with_the_follow_flag_when_the_version_is_at_least_1_7_0_on_logs()
+            throws IOException, InterruptedException {
         when(executedProcess.getInputStream()).thenReturn(
                 toInputStream("docker-compose version 1.7.0, build 1ad8866"),
                 toInputStream("logs"));
@@ -100,7 +101,7 @@ public class DockerComposeTest {
     }
 
     @Test
-    public void when_kill_exits_with_a_non_zero_exit_code_an_exception_is_thrown() throws IOException, InterruptedException {
+    public void throw_exception_when_kill_exits_with_a_non_zero_exit_code() throws IOException, InterruptedException {
         when(executedProcess.exitValue()).thenReturn(1);
         exception.expect(DockerComposeExecutionException.class);
         exception.expectMessage("'docker-compose kill' returned exit code 1");
@@ -108,14 +109,16 @@ public class DockerComposeTest {
     }
 
     @Test
-    public void when_down_fails_because_the_command_does_not_exist_then_an_exception_is_not_thrown() throws IOException, InterruptedException {
+    public void not_throw_exception_when_down_fails_because_the_command_does_not_exist()
+            throws IOException, InterruptedException {
         when(executedProcess.exitValue()).thenReturn(1);
         when(executedProcess.getInputStream()).thenReturn(toInputStream("No such command: down"));
         compose.down();
     }
 
     @Test
-    public void when_down_fails_for_a_reason_other_than_the_command_not_being_present_then_an_exception_is_thrown() throws IOException, InterruptedException {
+    public void throw_exception_when_down_fails_for_a_reason_other_than_the_command_not_being_present()
+            throws IOException, InterruptedException {
         when(executedProcess.exitValue()).thenReturn(1);
         when(executedProcess.getInputStream()).thenReturn(toInputStream(""));
 
@@ -125,20 +128,21 @@ public class DockerComposeTest {
     }
 
     @Test
-    public void when_down_exists_if_uses_the_remove_volumes_flag() throws IOException, InterruptedException {
+    public void use_the_remove_volumes_flag_when_down_exists() throws IOException, InterruptedException {
         compose.down();
         verify(executor).execute("down", "--volumes");
     }
 
     @Test
-    public void calling_ports_parses_the_ps_output() throws IOException, InterruptedException {
+    public void parse_the_ps_output_on_ports() throws IOException, InterruptedException {
         Ports ports = compose.ports("db");
         verify(executor).execute("ps", "db");
         assertThat(ports, is(new Ports(new DockerPort("0.0.0.0", 7000, 7000))));
     }
 
     @Test
-    public void when_there_is_no_container_found_for_ports_an_i_s_e_is_thrown() throws IOException, InterruptedException {
+    public void throw_illegal_state_exception_when_there_is_no_container_found_for_ports()
+            throws IOException, InterruptedException {
         when(executedProcess.getInputStream()).thenReturn(toInputStream(""));
         exception.expect(IllegalStateException.class);
         exception.expectMessage("No container with name 'db' found");
@@ -146,14 +150,16 @@ public class DockerComposeTest {
     }
 
     @Test
-    public void docker_compose_exec_passes_concatenated_arguments_to_executor() throws IOException, InterruptedException {
+    public void pass_concatenated_arguments_to_executor_on_docker_compose_exec()
+            throws IOException, InterruptedException {
         when(executedProcess.getInputStream()).thenReturn(toInputStream("docker-compose version 1.7.0rc1, build 1ad8866"));
         compose.exec(options("-d"), "container_1", arguments("ls"));
         verify(executor, times(1)).execute("exec", "-d", "container_1", "ls");
     }
 
     @Test
-    public void docker_compose_exec_fails_if_docker_compose_version_is_prior_1_7() throws IOException, InterruptedException {
+    public void fail_if_docker_compose_version_is_prior_1_7_on_docker_compose_exec()
+            throws IOException, InterruptedException {
         when(executedProcess.getInputStream()).thenReturn(toInputStream("docker-compose version 1.5.6, build 1ad8866"));
         exception.expect(IllegalStateException.class);
         exception.expectMessage("You need at least docker-compose 1.7 to run docker-compose exec");
@@ -161,7 +167,7 @@ public class DockerComposeTest {
     }
 
     @Test
-    public void docker_compose_exec_returns_the_output_from_the_executed_process() throws Exception {
+    public void return_the_output_from_the_executed_process_on_docker_compose_exec() throws Exception {
         String lsString = "-rw-r--r--  1 user  1318458867  11326 Mar  9 17:47 LICENSE\n"
                              + "-rw-r--r--  1 user  1318458867  12570 May 12 14:51 README.md";
 

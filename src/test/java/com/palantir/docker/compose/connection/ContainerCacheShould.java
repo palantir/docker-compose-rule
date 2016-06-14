@@ -25,7 +25,7 @@ import com.palantir.docker.compose.execution.DockerCompose;
 import org.junit.Before;
 import org.junit.Test;
 
-public class ContainerCacheTest {
+public class ContainerCacheShould {
 
     private static final String CONTAINER_NAME = "container";
 
@@ -38,13 +38,13 @@ public class ContainerCacheTest {
     }
 
     @Test
-    public void getting_a_new_container_returns_a_container_with_the_specified_name() {
+    public void return_a_container_with_the_specified_name_when_getting_a_new_container() {
         Container container = containers.container(CONTAINER_NAME);
         assertThat(container, is(new Container(CONTAINER_NAME, dockerCompose)));
     }
 
     @Test
-    public void getting_a_container_twice_returns_the_same_object() {
+    public void return_the_same_object_when_getting_a_container_twice() {
         Container container = containers.container(CONTAINER_NAME);
         Container sameContainer = containers.container(CONTAINER_NAME);
         assertThat(container, is(sameInstance(sameContainer)));
