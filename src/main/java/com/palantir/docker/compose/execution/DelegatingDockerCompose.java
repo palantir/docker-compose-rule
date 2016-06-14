@@ -21,10 +21,10 @@ import com.palantir.docker.compose.connection.Ports;
 import java.io.IOException;
 import java.io.OutputStream;
 
-public abstract class DelegatingDockerCompose implements DockerCompose {
+abstract class DelegatingDockerCompose implements DockerCompose {
     private final DockerCompose dockerCompose;
 
-    public DelegatingDockerCompose(DockerCompose dockerCompose) {
+    protected DelegatingDockerCompose(DockerCompose dockerCompose) {
         this.dockerCompose = dockerCompose;
     }
 
@@ -78,4 +78,9 @@ public abstract class DelegatingDockerCompose implements DockerCompose {
     public Ports ports(String service) throws IOException, InterruptedException {
         return dockerCompose.ports(service);
     }
+
+    protected final DockerCompose getDockerCompose() {
+        return dockerCompose;
+    }
+
 }

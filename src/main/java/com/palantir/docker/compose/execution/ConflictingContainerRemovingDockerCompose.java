@@ -46,11 +46,9 @@ public class ConflictingContainerRemovingDockerCompose extends DelegatingDockerC
 
     @Override
     public void up() throws IOException, InterruptedException {
-        int currRetryAttempt = 0;
-
-        while (true) {
+        for (int currRetryAttempt = 0; currRetryAttempt <= retryAttempts; currRetryAttempt++) {
             try {
-                super.up();
+                getDockerCompose().up();
                 return;
             } catch (DockerExecutionException e) {
                 Set<String> conflictingContainerNames = getConflictingContainerNames(e.getMessage());
@@ -59,16 +57,10 @@ public class ConflictingContainerRemovingDockerCompose extends DelegatingDockerC
                     throw e;
                 }
 
-                if (currRetryAttempt == retryAttempts) {
-                    break;
-                }
-
                 log.debug("docker-compose up failed due to container name conflicts (container names: {}). "
-                        + "Removing containers and attempting docker-compose up again (attempt {}).",
+                                + "Removing containers and attempting docker-compose up again (attempt {}).",
                         conflictingContainerNames, currRetryAttempt + 1);
                 removeContainers(conflictingContainerNames);
-
-                currRetryAttempt++;
             }
         }
 
