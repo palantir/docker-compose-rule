@@ -23,8 +23,6 @@ import static java.util.stream.Collectors.joining;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
-import com.google.common.base.Supplier;
-import com.google.common.base.Suppliers;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
 import java.util.Collection;
@@ -35,17 +33,16 @@ import java.util.stream.Collectors;
 public final class RemoteEnvironmentValidator implements EnvironmentValidator {
 
     private static final Set<String> SECURE_VARIABLES = ImmutableSet.of(DOCKER_TLS_VERIFY, DOCKER_CERT_PATH);
-    private static final Supplier<RemoteEnvironmentValidator> SUPPLIER = Suppliers.memoize(
-            () -> new RemoteEnvironmentValidator());
+    private static final RemoteEnvironmentValidator VALIDATOR = new RemoteEnvironmentValidator();
 
     public static RemoteEnvironmentValidator instance() {
-        return SUPPLIER.get();
+        return VALIDATOR;
     }
 
     private RemoteEnvironmentValidator() {
     }
 
-    public Map<String, String> validate(Map<String, String> dockerEnvironment) {
+    public void validateEnvironmentVariables(Map<String, String> dockerEnvironment) {
         Collection<String> missingVariables = getMissingEnvVariables(dockerEnvironment);
         String errorMessage = missingVariables.stream()
                                               .collect(joining(", ",
@@ -54,7 +51,6 @@ public final class RemoteEnvironmentValidator implements EnvironmentValidator {
                                                                        + "ensure they are set on the DockerComposition."));
 
         Preconditions.checkState(missingVariables.isEmpty(), errorMessage);
-        return dockerEnvironment;
     }
 
     private Collection<String> getMissingEnvVariables(Map<String, String> dockerEnvironment) {

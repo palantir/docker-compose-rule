@@ -15,8 +15,8 @@
  */
 package com.palantir.docker.compose.configuration;
 
-import com.google.common.base.Optional;
 import java.util.Map;
+import java.util.Optional;
 
 public enum DockerType implements HostIpResolver, EnvironmentValidator {
     DAEMON(DaemonEnvironmentValidator.instance(), new DaemonHostIpResolver()),
@@ -31,8 +31,8 @@ public enum DockerType implements HostIpResolver, EnvironmentValidator {
     }
 
     @Override
-    public Map<String, String> validate(Map<String, String> dockerEnvironment) {
-        return validator.validate(dockerEnvironment);
+    public void validateEnvironmentVariables(Map<String, String> dockerEnvironment) {
+        validator.validateEnvironmentVariables(dockerEnvironment);
     }
 
     @Override
@@ -43,13 +43,13 @@ public enum DockerType implements HostIpResolver, EnvironmentValidator {
     public static Optional<DockerType> getFirstValidDockerTypeForEnvironment(Map<String, String> environment) {
         for (DockerType currType : DockerType.values()) {
             try {
-                currType.validate(environment);
+                currType.validateEnvironmentVariables(environment);
                 return Optional.of(currType);
             } catch (IllegalStateException e) {
                 // ignore and try next type
             }
         }
-        return Optional.absent();
+        return Optional.empty();
     }
 
 }

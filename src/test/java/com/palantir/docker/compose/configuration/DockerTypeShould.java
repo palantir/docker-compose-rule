@@ -21,9 +21,9 @@ import static com.palantir.docker.compose.configuration.EnvironmentVariables.DOC
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
-import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableMap;
 import java.util.Map;
+import java.util.Optional;
 import org.junit.Test;
 
 public class DockerTypeShould {
@@ -49,7 +49,7 @@ public class DockerTypeShould {
         Map<String, String> variables = ImmutableMap.<String, String>builder()
                 .put(DOCKER_TLS_VERIFY, "1")
                 .build();
-        assertThat(DockerType.getFirstValidDockerTypeForEnvironment(variables), is(Optional.absent()));
+        assertThat(DockerType.getFirstValidDockerTypeForEnvironment(variables), is(Optional.empty()));
     }
 
 }

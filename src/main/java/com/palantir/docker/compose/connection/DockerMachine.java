@@ -21,7 +21,6 @@ import static com.palantir.docker.compose.configuration.EnvironmentVariables.DOC
 import static com.palantir.docker.compose.configuration.EnvironmentVariables.DOCKER_HOST;
 import static com.palantir.docker.compose.configuration.EnvironmentVariables.DOCKER_TLS_VERIFY;
 
-import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableMap;
 import com.palantir.docker.compose.configuration.AdditionalEnvironmentValidator;
 import com.palantir.docker.compose.configuration.DockerType;
@@ -29,6 +28,7 @@ import com.palantir.docker.compose.configuration.RemoteHostIpResolver;
 import com.palantir.docker.compose.execution.DockerConfiguration;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -69,7 +69,7 @@ public class DockerMachine implements DockerConfiguration {
                             + "Proceeding with {} as the type.", FALLBACK_DOCKER_TYPE);
         }
 
-        return new LocalBuilder(dockerType.or(FALLBACK_DOCKER_TYPE), systemEnv);
+        return new LocalBuilder(dockerType.orElse(FALLBACK_DOCKER_TYPE), systemEnv);
     }
 
     public static LocalBuilder localMachine(DockerType dockerType) {
@@ -98,7 +98,7 @@ public class DockerMachine implements DockerConfiguration {
         }
 
         public DockerMachine build() {
-            dockerType.validate(systemEnvironment);
+            dockerType.validateEnvironmentVariables(systemEnvironment);
             AdditionalEnvironmentValidator.validate(additionalEnvironment);
             Map<String, String> environment = ImmutableMap.<String, String>builder()
                     .putAll(systemEnvironment)
@@ -149,7 +149,7 @@ public class DockerMachine implements DockerConfiguration {
         }
 
         public DockerMachine build() {
-            DockerType.REMOTE.validate(dockerEnvironment);
+            DockerType.REMOTE.validateEnvironmentVariables(dockerEnvironment);
             AdditionalEnvironmentValidator.validate(additionalEnvironment);
 
             String dockerHost = dockerEnvironment.getOrDefault(DOCKER_HOST, "");

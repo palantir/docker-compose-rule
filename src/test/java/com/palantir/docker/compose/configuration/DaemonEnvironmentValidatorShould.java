@@ -18,8 +18,6 @@ package com.palantir.docker.compose.configuration;
 import static com.palantir.docker.compose.configuration.EnvironmentVariables.DOCKER_CERT_PATH;
 import static com.palantir.docker.compose.configuration.EnvironmentVariables.DOCKER_HOST;
 import static com.palantir.docker.compose.configuration.EnvironmentVariables.DOCKER_TLS_VERIFY;
-import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertThat;
 
 import com.google.common.collect.ImmutableMap;
 import java.util.Map;
@@ -39,7 +37,7 @@ public class DaemonEnvironmentValidatorShould {
                                                     .put("ANOTHER_VARIABLE", "ANOTHER_VALUE")
                                                     .build();
 
-        assertThat(DaemonEnvironmentValidator.instance().validate(variables), is(variables));
+        DaemonEnvironmentValidator.instance().validateEnvironmentVariables(variables);
     }
 
     @Test
@@ -56,7 +54,7 @@ public class DaemonEnvironmentValidatorShould {
         exception.expectMessage(DOCKER_CERT_PATH);
         exception.expectMessage(DOCKER_TLS_VERIFY);
         exception.expectMessage("They cannot be set when connecting to a local docker daemon");
-        assertThat(DaemonEnvironmentValidator.instance().validate(variables), is(variables));
+        DaemonEnvironmentValidator.instance().validateEnvironmentVariables(variables);
     }
 
 }

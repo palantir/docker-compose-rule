@@ -40,7 +40,7 @@ public final class DaemonEnvironmentValidator implements EnvironmentValidator {
 
     private DaemonEnvironmentValidator() {}
 
-    public Map<String, String> validate(Map<String, String> dockerEnvironment) {
+    public void validateEnvironmentVariables(Map<String, String> dockerEnvironment) {
         Set<String> invalidVariables = ILLEGAL_VARIABLES.stream()
                                                          .filter(dockerEnvironment::containsKey)
                                                          .collect(Collectors.toSet());
@@ -50,7 +50,6 @@ public final class DaemonEnvironmentValidator implements EnvironmentValidator {
                                                                "These variables were set: ",
                                                                ". They cannot be set when connecting to a local docker daemon."));
         checkState(invalidVariables.isEmpty(), errorMessage);
-        return dockerEnvironment;
     }
 
 }
