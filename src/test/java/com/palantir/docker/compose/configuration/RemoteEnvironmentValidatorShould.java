@@ -18,8 +18,6 @@ package com.palantir.docker.compose.configuration;
 import static com.palantir.docker.compose.configuration.EnvironmentVariables.DOCKER_CERT_PATH;
 import static com.palantir.docker.compose.configuration.EnvironmentVariables.DOCKER_HOST;
 import static com.palantir.docker.compose.configuration.EnvironmentVariables.DOCKER_TLS_VERIFY;
-import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertThat;
 
 import com.google.common.collect.ImmutableMap;
 import java.util.Map;
@@ -41,7 +39,7 @@ public class RemoteEnvironmentValidatorShould {
         exception.expect(IllegalStateException.class);
         exception.expectMessage("Missing required environment variables: ");
         exception.expectMessage(DOCKER_HOST);
-        RemoteEnvironmentValidator.validate(variables);
+        RemoteEnvironmentValidator.instance().validateEnvironmentVariables(variables);
     }
 
     @Test
@@ -51,11 +49,10 @@ public class RemoteEnvironmentValidatorShould {
                 .put(DOCKER_TLS_VERIFY, "1")
                 .build();
 
-        new RemoteEnvironmentValidator(variables);
         exception.expect(IllegalStateException.class);
         exception.expectMessage("Missing required environment variables: ");
         exception.expectMessage(DOCKER_CERT_PATH);
-        RemoteEnvironmentValidator.validate(variables);
+        RemoteEnvironmentValidator.instance().validateEnvironmentVariables(variables);
     }
 
     @Test
@@ -65,7 +62,7 @@ public class RemoteEnvironmentValidatorShould {
                                                     .put("SOME_VARIABLE", "SOME_VALUE")
                                                     .build();
 
-        assertThat(RemoteEnvironmentValidator.validate(variables), is(variables));
+        RemoteEnvironmentValidator.instance().validateEnvironmentVariables(variables);
     }
 
     @Test
@@ -77,6 +74,6 @@ public class RemoteEnvironmentValidatorShould {
                 .put("SOME_VARIABLE", "SOME_VALUE")
                 .build();
 
-        assertThat(RemoteEnvironmentValidator.validate(variables), is(variables));
+        RemoteEnvironmentValidator.instance().validateEnvironmentVariables(variables);
     }
 }

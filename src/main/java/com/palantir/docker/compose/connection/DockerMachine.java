@@ -23,17 +23,19 @@ import static com.palantir.docker.compose.configuration.EnvironmentVariables.DOC
 
 import com.google.common.collect.ImmutableMap;
 import com.palantir.docker.compose.configuration.AdditionalEnvironmentValidator;
-import com.palantir.docker.compose.configuration.DaemonEnvironmentValidator;
-import com.palantir.docker.compose.configuration.DaemonHostIpResolver;
 import com.palantir.docker.compose.configuration.DockerType;
-import com.palantir.docker.compose.configuration.HostIpResolver;
-import com.palantir.docker.compose.configuration.RemoteEnvironmentValidator;
 import com.palantir.docker.compose.configuration.RemoteHostIpResolver;
 import com.palantir.docker.compose.execution.DockerConfiguration;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class DockerMachine implements DockerConfiguration {
+
+    private static final Logger log = LoggerFactory.getLogger(DockerMachine.class);
+    private static final DockerType FALLBACK_DOCKER_TYPE = DockerType.DAEMON;
 
     private final String hostIp;
     private final Map<String, String> environment;
@@ -59,7 +61,15 @@ public class DockerMachine implements DockerConfiguration {
     }
 
     public static LocalBuilder localMachine() {
-        return localMachine(DockerType.getDefaultLocalDockerType());
+        Map<String, String> systemEnv = System.getenv();
+        Optional<DockerType> dockerType = DockerType.getFirstValidDockerTypeForEnvironment(systemEnv);
+        if (!dockerType.isPresent()) {
+            log.debug(
+                    "Failed to determine Docker type (daemon or remote) based on current environment. "
+                            + "Proceeding with {} as the type.", FALLBACK_DOCKER_TYPE);
+        }
+
+        return new LocalBuilder(dockerType.orElse(FALLBACK_DOCKER_TYPE), systemEnv);
     }
 
     public static LocalBuilder localMachine(DockerType dockerType) {
@@ -88,14 +98,7 @@ public class DockerMachine implements DockerConfiguration {
         }
 
         public DockerMachine build() {
-            HostIpResolver hostIp;
-            if (DockerType.DAEMON == dockerType) {
-                DaemonEnvironmentValidator.validate(systemEnvironment);
-                hostIp = new DaemonHostIpResolver();
-            } else {
-                RemoteEnvironmentValidator.validate(systemEnvironment);
-                hostIp = new RemoteHostIpResolver();
-            }
+            dockerType.validateEnvironmentVariables(systemEnvironment);
             AdditionalEnvironmentValidator.validate(additionalEnvironment);
             Map<String, String> environment = ImmutableMap.<String, String>builder()
                     .putAll(systemEnvironment)
@@ -103,7 +106,7 @@ public class DockerMachine implements DockerConfiguration {
                     .build();
 
             String dockerHost = systemEnvironment.getOrDefault(DOCKER_HOST, "");
-            return new DockerMachine(hostIp.resolveIp(dockerHost), environment);
+            return new DockerMachine(dockerType.resolveIp(dockerHost), environment);
         }
     }
 
@@ -146,7 +149,7 @@ public class DockerMachine implements DockerConfiguration {
         }
 
         public DockerMachine build() {
-            RemoteEnvironmentValidator.validate(dockerEnvironment);
+            DockerType.REMOTE.validateEnvironmentVariables(dockerEnvironment);
             AdditionalEnvironmentValidator.validate(additionalEnvironment);
 
             String dockerHost = dockerEnvironment.getOrDefault(DOCKER_HOST, "");

@@ -18,43 +18,38 @@ package com.palantir.docker.compose.configuration;
 import static com.palantir.docker.compose.configuration.EnvironmentVariables.DOCKER_CERT_PATH;
 import static com.palantir.docker.compose.configuration.EnvironmentVariables.DOCKER_HOST;
 import static com.palantir.docker.compose.configuration.EnvironmentVariables.DOCKER_TLS_VERIFY;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
 
 import com.google.common.collect.ImmutableMap;
 import java.util.Map;
-import org.junit.Rule;
+import java.util.Optional;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 
-public class DaemonEnvironmentValidatorShould {
-
-    @Rule
-    public ExpectedException exception = ExpectedException.none();
+public class DockerTypeShould {
 
     @Test
-    public void validate_successfully_when_docker_environment_does_not_contain_docker_variables() throws Exception {
-        Map<String, String> variables = ImmutableMap.<String, String>builder()
-                                                    .put("SOME_VARIABLE", "SOME_VALUE")
-                                                    .put("ANOTHER_VARIABLE", "ANOTHER_VALUE")
-                                                    .build();
-
-        DaemonEnvironmentValidator.instance().validateEnvironmentVariables(variables);
-    }
-
-    @Test
-    public void throw_exception_when_docker_environment_contains_illegal_docker_variables() throws Exception {
+    public void return_remote_as_first_valid_type_if_environment_is_illegal_for_daemon() {
         Map<String, String> variables = ImmutableMap.<String, String>builder()
                 .put(DOCKER_HOST, "tcp://192.168.99.100:2376")
                 .put(DOCKER_TLS_VERIFY, "1")
                 .put(DOCKER_CERT_PATH, "/path/to/certs")
                 .build();
+        assertThat(DockerType.getFirstValidDockerTypeForEnvironment(variables), is(Optional.of(DockerType.REMOTE)));
+    }
 
-        exception.expect(IllegalStateException.class);
-        exception.expectMessage("These variables were set:");
-        exception.expectMessage(DOCKER_HOST);
-        exception.expectMessage(DOCKER_CERT_PATH);
-        exception.expectMessage(DOCKER_TLS_VERIFY);
-        exception.expectMessage("They cannot be set when connecting to a local docker daemon");
-        DaemonEnvironmentValidator.instance().validateEnvironmentVariables(variables);
+    @Test
+    public void return_daemon_as_first_valid_type_if_environment_is_illegal_for_remote() {
+        Map<String, String> variables = ImmutableMap.of();
+        assertThat(DockerType.getFirstValidDockerTypeForEnvironment(variables), is(Optional.of(DockerType.DAEMON)));
+    }
+
+    @Test
+    public void return_absent_as_first_valid_type_if_environment_is_illegal_for_all() {
+        Map<String, String> variables = ImmutableMap.<String, String>builder()
+                .put(DOCKER_TLS_VERIFY, "1")
+                .build();
+        assertThat(DockerType.getFirstValidDockerTypeForEnvironment(variables), is(Optional.empty()));
     }
 
 }
