@@ -87,8 +87,8 @@ public class DockerPort {
             log.debug("Received 404, assuming port active");
             return true;
         } catch (SSLHandshakeException e) {
-            log.debug("Received SSL response, assuming port active");
-            return true;
+            log.debug("Received bad SSL response, assuming port inactive");
+            return false;
         } catch (IOException e) {
             log.trace("Error acquiring http connection, assuming port open but inactive", e);
             return false;
