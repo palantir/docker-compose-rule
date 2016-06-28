@@ -26,6 +26,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.palantir.docker.compose.connection.Container;
 import com.palantir.docker.compose.connection.ContainerNames;
 import com.palantir.docker.compose.connection.DockerMachine;
 import com.palantir.docker.compose.connection.DockerPort;
@@ -48,6 +49,7 @@ public class DockerComposeShould {
     private final DockerCompose compose = new DefaultDockerCompose(executor, dockerMachine);
 
     private final Process executedProcess = mock(Process.class);
+    private final Container container = mock(Container.class);
 
     @Before
     public void setup() throws IOException, InterruptedException {
@@ -55,6 +57,7 @@ public class DockerComposeShould {
         when(executor.execute(anyVararg())).thenReturn(executedProcess);
         when(executedProcess.getInputStream()).thenReturn(toInputStream("0.0.0.0:7000->7000/tcp"));
         when(executedProcess.exitValue()).thenReturn(0);
+        when(container.getContainerName()).thenReturn("my-container");
     }
 
     @Test
@@ -67,6 +70,18 @@ public class DockerComposeShould {
     public void call_docker_compose_rm_with_force_and_volume_flags_on_rm() throws IOException, InterruptedException {
         compose.rm();
         verify(executor).execute("rm", "--force", "-v");
+    }
+
+    @Test
+    public void call_docker_compose_stop_on_stop() throws IOException, InterruptedException {
+        compose.stop(container);
+        verify(executor).execute("stop", "my-container");
+    }
+
+    @Test
+    public void call_docker_compose_start_on_start() throws IOException, InterruptedException {
+        compose.start(container);
+        verify(executor).execute("start", "my-container");
     }
 
     @Test

@@ -18,6 +18,7 @@ package com.palantir.docker.compose.execution;
 import com.palantir.docker.compose.connection.Container;
 import com.palantir.docker.compose.connection.ContainerNames;
 import com.palantir.docker.compose.connection.Ports;
+import com.palantir.docker.compose.connection.State;
 import java.io.IOException;
 import java.io.OutputStream;
 
@@ -54,6 +55,16 @@ abstract class DelegatingDockerCompose implements DockerCompose {
     }
 
     @Override
+    public void start(Container container) throws IOException, InterruptedException {
+        dockerCompose.start(container);
+    }
+
+    @Override
+    public void stop(Container container) throws IOException, InterruptedException {
+        dockerCompose.stop(container);
+    }
+
+    @Override
     public String exec(DockerComposeExecOption dockerComposeExecOption, String containerName,
             DockerComposeExecArgument dockerComposeExecArgument) throws IOException, InterruptedException {
         return dockerCompose.exec(dockerComposeExecOption, containerName, dockerComposeExecArgument);
@@ -77,6 +88,11 @@ abstract class DelegatingDockerCompose implements DockerCompose {
     @Override
     public Ports ports(String service) throws IOException, InterruptedException {
         return dockerCompose.ports(service);
+    }
+
+    @Override
+    public State state(String service) throws IOException, InterruptedException {
+        return dockerCompose.state(service);
     }
 
     protected final DockerCompose getDockerCompose() {

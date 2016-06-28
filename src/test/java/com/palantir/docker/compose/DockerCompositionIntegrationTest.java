@@ -24,7 +24,9 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 
 import com.google.common.collect.ImmutableList;
+import com.palantir.docker.compose.configuration.DockerComposeFiles;
 import com.palantir.docker.compose.connection.Container;
+import com.palantir.docker.compose.connection.State;
 import com.palantir.docker.compose.connection.waiting.HealthCheck;
 import com.palantir.docker.compose.connection.waiting.SuccessOrFailure;
 import java.io.IOException;
@@ -41,12 +43,15 @@ public class DockerCompositionIntegrationTest {
 
     private static final List<String> CONTAINERS = ImmutableList.of("db", "db2", "db3", "db4");
 
+    private final DockerComposeRule rule = DockerComposeRule.builder()
+            .files(DockerComposeFiles.from("src/test/resources/docker-compose.yaml"))
+            .waitingForService("db", toHaveAllPortsOpen())
+            .waitingForService("db2", toHaveAllPortsOpen())
+            .waitingForServices(ImmutableList.of("db3", "db4"), toAllHaveAllPortsOpen())
+            .build();
+
     @Rule
-    public DockerComposition composition = DockerComposition.of("src/test/resources/docker-compose.yaml")
-                                                            .waitingForService("db", toHaveAllPortsOpen())
-                                                            .waitingForService("db2", toHaveAllPortsOpen())
-                                                            .waitingForServices(ImmutableList.of("db3", "db4"), toAllHaveAllPortsOpen())
-                                                            .build();
+    public DockerComposition composition = new DockerComposition(rule);
 
     private HealthCheck<List<Container>> toAllHaveAllPortsOpen() {
         return containers -> {
@@ -60,6 +65,7 @@ public class DockerCompositionIntegrationTest {
 
     @Rule
     public ExpectedException exception = ExpectedException.none();
+
     @Rule
     public TemporaryFolder logFolder = new TemporaryFolder();
 
@@ -96,6 +102,53 @@ public class DockerCompositionIntegrationTest {
         forEachContainer(container -> {
             try {
                 assertThat(composition.portOnContainerWithInternalMapping("db", 5432).isListeningNow(), is(true));
+            } catch (IOException | InterruptedException e) {
+                propagate(e);
+            }
+        });
+    }
+
+    @Test
+    public void can_stop_and_start_containers() {
+        forEachContainer(containerName -> {
+            try {
+                Container container = rule.containers().container(containerName);
+
+                container.stop();
+                assertThat(container.state(), is(State.Exit));
+
+                container.start();
+                assertThat(container.state(), is(State.Up));
+            } catch (IOException | InterruptedException e) {
+                propagate(e);
+            }
+        });
+    }
+
+    @Test
+    public void stop_can_be_run_on_stopped_container() {
+        forEachContainer(containerName -> {
+            try {
+                Container container = rule.containers().container(containerName);
+
+                container.stop();
+                assertThat(container.state(), is(State.Exit));
+
+                container.stop();
+            } catch (IOException | InterruptedException e) {
+                propagate(e);
+            }
+        });
+    }
+
+    @Test
+    public void start_can_be_run_on_running_container() {
+        forEachContainer(containerName -> {
+            try {
+                Container container = rule.containers().container(containerName);
+
+                container.start();
+                assertThat(container.state(), is(State.Up));
             } catch (IOException | InterruptedException e) {
                 propagate(e);
             }
