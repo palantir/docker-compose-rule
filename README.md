@@ -125,7 +125,7 @@ We support docker-compose exec command which runs a new command in a running con
 dockerCompose.exec(dockerComposeExecOption, containerName, dockerComposeExecArgument)
 ```
 
-Jut be aware that you need at least docker-compose 1.7 to run docker-compose exec
+Just be aware that you need at least docker-compose 1.7 to run docker-compose exec
 
 
 Collecting logs
