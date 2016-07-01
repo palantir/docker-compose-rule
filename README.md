@@ -230,7 +230,7 @@ The variable `SOME_VARIABLE` will be available in the process that calls `docker
 ### How to use a `DockerMachine`
 
 When creating a `DockerComposition` an additional parameter may be specified. That being the custom `DockerMachine`,
-by default - if no `dockerMachine` parameter is specified - `DockerComposition` will use connect to the local Docker
+by default - if no `dockerMachine` parameter is specified - `DockerComposition` will connect to the local Docker
 daemon, similarly to how the `docker` cli works.
 
 ```java
