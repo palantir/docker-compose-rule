@@ -26,7 +26,8 @@ import org.junit.Test;
 
 public class HostNetworkedPortsIntegrationTest {
     @Rule
-    public DockerComposition composition = DockerComposition.of("src/test/resources/host-networked-docker-compose.yaml")
+    public DockerComposeRule docker = DockerComposeRule.builder()
+            .file("src/test/resources/host-networked-docker-compose.yaml")
             .waitingForHostNetworkedPort(5432, toBeOpen())
             .build();
 
@@ -36,7 +37,7 @@ public class HostNetworkedPortsIntegrationTest {
 
     @Test public void
     can_access_host_networked_ports() {
-        assertThat(composition.hostNetworkedPort(5432).getInternalPort(), is(5432));
-        assertThat(composition.hostNetworkedPort(5432).getExternalPort(), is(5432));
+        assertThat(docker.hostNetworkedPort(5432).getInternalPort(), is(5432));
+        assertThat(docker.hostNetworkedPort(5432).getExternalPort(), is(5432));
     }
 }
