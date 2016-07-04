@@ -26,6 +26,11 @@ import com.palantir.docker.compose.execution.DockerCompose;
 import java.util.List;
 import org.joda.time.Duration;
 
+/**
+ * @deprecated
+ * Please use `DockerComposeRule.builder()` instead, it has all the same methods.
+ */
+@Deprecated
 public class DockerCompositionBuilder {
     private final Builder builder;
 
