@@ -44,7 +44,7 @@ public class Container {
 
     public SuccessOrFailure portIsListeningOnHttp(int internalPort, Function<DockerPort, String> urlFunction) {
         try {
-            DockerPort port = portMappedInternallyTo(internalPort);
+            DockerPort port = port(internalPort);
             if (!port.isListeningNow()) {
                 return SuccessOrFailure.failure(internalPort + " is not listening");
             }
@@ -65,7 +65,15 @@ public class Container {
                            .orElseThrow(() -> new IllegalArgumentException("No port mapped externally to '" + externalPort + "' for container '" + containerName + "'"));
     }
 
+    /**
+     * @deprecated Please use `port(internalPort)` instead.
+     */
+    @Deprecated
     public DockerPort portMappedInternallyTo(int internalPort) {
+        return port(internalPort);
+    }
+
+    public DockerPort port(int internalPort) {
         return portMappings.get()
                            .stream()
                            .filter(port -> port.getInternalPort() == internalPort)
