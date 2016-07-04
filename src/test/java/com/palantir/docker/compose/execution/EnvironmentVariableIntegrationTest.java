@@ -20,7 +20,7 @@ import static com.palantir.docker.compose.matchers.IOMatchers.fileContainingStri
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
-import com.palantir.docker.compose.DockerComposition;
+import com.palantir.docker.compose.DockerComposeRule;
 import com.palantir.docker.compose.connection.DockerMachine;
 import java.nio.file.Path;
 import org.junit.Rule;
@@ -38,11 +38,13 @@ public class EnvironmentVariableIntegrationTest {
                                                    .withAdditionalEnvironmentVariable("SOME_VARIABLE", "SOME_VALUE")
                                                    .build();
 
-        DockerComposition dockerComposition =
-                DockerComposition.of("src/test/resources/environment/docker-compose.yaml", dockerMachine)
-                        .waitingForService("env-test", toHaveAllPortsOpen())
-                        .saveLogsTo(temporaryFolder.getRoot().getAbsolutePath())
-                        .build();
+        DockerComposeRule dockerComposition = DockerComposeRule.builder()
+                .file("src/test/resources/environment/docker-compose.yaml")
+                .machine(dockerMachine)
+                .waitingForService("env-test", toHaveAllPortsOpen())
+                .saveLogsTo(temporaryFolder.getRoot().getAbsolutePath())
+                .build();
+
         try {
             dockerComposition.before();
         } finally {
