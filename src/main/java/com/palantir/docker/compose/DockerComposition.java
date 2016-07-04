@@ -25,6 +25,13 @@ import com.palantir.docker.compose.execution.DockerComposeExecOption;
 import java.io.IOException;
 import org.junit.rules.ExternalResource;
 
+/**
+ * @deprecated Please use the DockerComposeRule class directly instead.
+ *
+ * Note, if you want to make this transition incrementally, you can use `DockerComposition#rule()` to access the underlying
+ * DockerComposeRule instance.
+ */
+@Deprecated
 public class DockerComposition extends ExternalResource {
 
     private DockerComposeRule rule;
@@ -41,6 +48,10 @@ public class DockerComposition extends ExternalResource {
     @Override
     public void after() {
         rule.after();
+    }
+
+    public DockerComposeRule rule() {
+        return rule;
     }
 
     public DockerPort portOnContainerWithExternalMapping(String container, int portNumber) throws IOException, InterruptedException {
