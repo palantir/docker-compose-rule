@@ -19,7 +19,6 @@ import static com.google.common.base.Throwables.propagate;
 import static com.palantir.docker.compose.connection.waiting.HealthChecks.toHaveAllPortsOpen;
 import static com.palantir.docker.compose.execution.DockerComposeExecArgument.arguments;
 import static com.palantir.docker.compose.execution.DockerComposeExecOption.options;
-
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 
@@ -32,7 +31,6 @@ import com.palantir.docker.compose.connection.waiting.SuccessOrFailure;
 import java.io.IOException;
 import java.util.List;
 import java.util.function.Consumer;
-
 import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
@@ -43,15 +41,13 @@ public class DockerCompositionIntegrationTest {
 
     private static final List<String> CONTAINERS = ImmutableList.of("db", "db2", "db3", "db4");
 
-    private final DockerComposeRule rule = DockerComposeRule.builder()
+    @Rule
+    public final DockerComposeRule docker = DockerComposeRule.builder()
             .files(DockerComposeFiles.from("src/test/resources/docker-compose.yaml"))
             .waitingForService("db", toHaveAllPortsOpen())
             .waitingForService("db2", toHaveAllPortsOpen())
             .waitingForServices(ImmutableList.of("db3", "db4"), toAllHaveAllPortsOpen())
             .build();
-
-    @Rule
-    public DockerComposition composition = new DockerComposition(rule);
 
     private HealthCheck<List<Container>> toAllHaveAllPortsOpen() {
         return containers -> {
@@ -64,10 +60,10 @@ public class DockerCompositionIntegrationTest {
     }
 
     @Rule
-    public ExpectedException exception = ExpectedException.none();
+    public TemporaryFolder logFolder = new TemporaryFolder();
 
     @Rule
-    public TemporaryFolder logFolder = new TemporaryFolder();
+    public ExpectedException exception = ExpectedException.none();
 
     private void forEachContainer(Consumer<String> consumer) {
         CONTAINERS.forEach(consumer);
@@ -75,36 +71,24 @@ public class DockerCompositionIntegrationTest {
 
     @Test
     public void should_run_docker_compose_up_using_the_specified_docker_compose_file_to_bring_postgres_up() throws InterruptedException, IOException {
-        forEachContainer((container) -> {
-            try {
-                assertThat(composition.portOnContainerWithExternalMapping("db", 5442).isListeningNow(), is(true));
-            } catch (IOException | InterruptedException e) {
-                propagate(e);
-            }
+        forEachContainer(container -> {
+            assertThat(docker.containers().container(container).port(5432).isListeningNow(), is(true));
         });
     }
 
     @Test
     public void after_test_is_executed_the_launched_postgres_container_is_no_longer_listening() throws IOException, InterruptedException {
-        composition.after();
+        docker.after();
 
         forEachContainer(container -> {
-            try {
-                assertThat(composition.portOnContainerWithInternalMapping("db", 5432).isListeningNow(), is(false));
-            } catch (IOException | InterruptedException e) {
-                propagate(e);
-            }
+            assertThat(docker.containers().container(container).port(5432).isListeningNow(), is(false));
         });
     }
 
     @Test
     public void can_access_external_port_for_internal_port_of_machine() throws IOException, InterruptedException {
         forEachContainer(container -> {
-            try {
-                assertThat(composition.portOnContainerWithInternalMapping("db", 5432).isListeningNow(), is(true));
-            } catch (IOException | InterruptedException e) {
-                propagate(e);
-            }
+            assertThat(docker.containers().container(container).port(5432).isListeningNow(), is(true));
         });
     }
 
@@ -112,7 +96,7 @@ public class DockerCompositionIntegrationTest {
     public void can_stop_and_start_containers() {
         forEachContainer(containerName -> {
             try {
-                Container container = rule.containers().container(containerName);
+                Container container = docker.containers().container(containerName);
 
                 container.stop();
                 assertThat(container.state(), is(State.Exit));
@@ -129,7 +113,7 @@ public class DockerCompositionIntegrationTest {
     public void stop_can_be_run_on_stopped_container() {
         forEachContainer(containerName -> {
             try {
-                Container container = rule.containers().container(containerName);
+                Container container = docker.containers().container(containerName);
 
                 container.stop();
                 assertThat(container.state(), is(State.Exit));
@@ -145,7 +129,7 @@ public class DockerCompositionIntegrationTest {
     public void start_can_be_run_on_running_container() {
         forEachContainer(containerName -> {
             try {
-                Container container = rule.containers().container(containerName);
+                Container container = docker.containers().container(containerName);
 
                 container.start();
                 assertThat(container.state(), is(State.Up));
@@ -158,7 +142,7 @@ public class DockerCompositionIntegrationTest {
     @Ignore // This test will not run on Circle CI because it does not currently support docker-compose exec.
     @Test
     public void exec_returns_output() throws Exception {
-        assertThat(composition.exec(options(), CONTAINERS.get(0), arguments("echo", "hello")), is("hello"));
+        assertThat(docker.exec(options(), CONTAINERS.get(0), arguments("echo", "hello")), is("hello"));
     }
 
 }

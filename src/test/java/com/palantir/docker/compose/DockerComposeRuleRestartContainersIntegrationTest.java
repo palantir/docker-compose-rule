@@ -30,9 +30,10 @@ public class DockerComposeRuleRestartContainersIntegrationTest {
 
     @Test
     public void test_docker_compose_rule_fails_with_existing_containers() throws IOException, InterruptedException {
-        DockerComposition composition = DockerComposition.of(DOCKER_COMPOSE_YAML_PATH).build();
+        DockerComposeRule composition = DockerComposeRule.builder().file(DOCKER_COMPOSE_YAML_PATH).build();
         composition.before();
-        composition = DockerComposition.of(DOCKER_COMPOSE_YAML_PATH)
+        composition = DockerComposeRule.builder()
+                .file(DOCKER_COMPOSE_YAML_PATH)
                 .removeConflictingContainersOnStartup(false)
                 .build();
 
@@ -43,10 +44,10 @@ public class DockerComposeRuleRestartContainersIntegrationTest {
 
     @Test
     public void test_docker_compose_rule_removes_existing_containers() throws IOException, InterruptedException {
-        DockerComposition composition = DockerComposition.of(DOCKER_COMPOSE_YAML_PATH).build();
+        DockerComposeRule composition = DockerComposeRule.builder().file(DOCKER_COMPOSE_YAML_PATH).build();
         composition.before();
 
-        composition = DockerComposition.of(DOCKER_COMPOSE_YAML_PATH).build();
+        composition = DockerComposeRule.builder().file(DOCKER_COMPOSE_YAML_PATH).build();
         composition.before();
         composition.after();
     }

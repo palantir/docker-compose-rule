@@ -40,13 +40,15 @@ dependencies {
 For the most basic use simply add a `DockerComposition` object as a `@ClassRule` or `@Rule` in a JUnit test class.
 
 ```java
-public class DockerCompositionTest {
+public class MyIntegrationTest {
 
     @ClassRule
-    public static DockerComposition composition = DockerComposition.of("src/test/resources/docker-compose.yml").build();
+    public static DockerComposeRule docker = DockerComposeRule.builder()
+            .file("src/test/resources/docker-compose.yml")
+            .build();
 
     @Test
-    public void testThatDependsOnDockerComposition() throws InterruptedException, IOException {
+    public void testThatUsesSomeDockerServices() throws InterruptedException, IOException {
        ...
     }
 
@@ -71,10 +73,11 @@ Waiting for a service to be available
 To wait for services to be available before executing tests use the following methods on the DockerComposition object:
 
 ```java
-public class DockerCompositionTest {
+public class MyEndToEndTest {
 
     @ClassRule
-    public static DockerComposition composition = DockerComposition.of("src/test/resources/docker-compose.yml")
+    public static DockerComposeRule docker = DockerComposeRule.builder()
+        .file("src/test/resources/docker-compose.yml")
         .waitingForService("db", HealthChecks.toHaveAllPortsOpen())
         .waitingForService("web", HealthChecks.toRespondOverHttp(8080, (port) -> port.inFormat("https://$HOST:$EXTERNAL_PORT")))
         .waitingForService("other", (container) -> customServiceCheck(container), Duration.standardMinutes(2))
@@ -89,8 +92,8 @@ public class DockerCompositionTest {
 }
 ```
 
-The entrypoint method `waitingForService(String container, HealthCheck<Container> check[, Duration timeout])` will make sure the healthcheck passes for that container before the tests start. 
-The entrypoint method `waitingForServices(List<String> containers, HealthCheck<List<Container>> check[, Duration timeout])` will make sure the healthcheck passes for the cluster of containers before the tests start. 
+The entrypoint method `waitingForService(String container, HealthCheck<Container> check[, Duration timeout])` will make sure the healthcheck passes for that container before the tests start.
+The entrypoint method `waitingForServices(List<String> containers, HealthCheck<List<Container>> check[, Duration timeout])` will make sure the healthcheck passes for the cluster of containers before the tests start.
 The entrypoint method `waitingForHostNetworkedPort(int portNumber, HealthCheck<DockerPort> check[, Duration timeout])` will make sure the healthcheck passes for a particular host networked port.
 
 We provide 2 default healthChecks in the HealthChecks class:
@@ -103,17 +106,30 @@ Accessing services in containers from outside a container
 
 In tests it is likely services inside containers will need to be accessed in order to assert that they are behaving correctly. In addition, when tests run on Mac the Docker contains will be inside a Virtual Box machine and so must be accessed on an external IP address rather than the loopback interface.
 
-It is recommended to only specify internal ports in the `docker-compose.yml` as described in the [https://docs.docker.com/compose/compose-file/#ports](reference). This makes tests independent of the environment on the host machine and of each other.
+It is recommended to only specify internal ports in the `docker-compose.yml` as described in the [https://docs.docker.com/compose/compose-file/#ports](reference). This makes tests independent of the environment on the host machine and of each other.  Docker will then randomly allocate an external port. For example:
 
-There are then two methods for accessing port information:
-
-```java
-DockerPort portOnContainerWithExternalMapping(String container, int portNumber)
-
-DockerPort portOnContainerWithInternalMapping(String container, int portNumber)
+```yaml
+postgres:
+  image: postgres:9.5
+  ports:
+    - 5432
 ```
 
-In both cases the port in the Docker compose file must be referenced. Using the latter method no external port needs to be declared, this will be allocated by Docker at runtime and the DockerPort object contains the dynamic port and IP assignment.
+Given a `DockerComposeRule` instance called `docker`, you could then access a service called
+`postgres` as follows
+
+```java
+DockerPort postgres = docker.containers()
+        .container("postgres")
+        .port(5432);
+```
+
+You could then interpolate the host IP address and random external port as follows:
+
+```java
+String url = postgres.inFormat("jdbc:postgresql://$HOST:$EXTERNAL_PORT/mydb");
+// e.g. "jdbc:postgresql://192.168.99.100:33045/mydb"
+```
 
 Run docker-compose exec
 ---------------------------------------------------------
@@ -137,9 +153,10 @@ To record the logs from your containers specify a location:
 public class DockerCompositionTest {
 
     @ClassRule
-    public static DockerComposition composition = DockerComposition.of("src/test/resources/docker-compose.yml")
-                                                    .saveLogsTo("build/dockerLogs/dockerCompositionTest")
-                                                    .build();
+    public static DockerComposeRule docker = DockerComposeRule.builder()
+            .file("src/test/resources/docker-compose.yml")
+            .saveLogsTo("build/dockerLogs/dockerCompositionTest")
+            .build();
 
     @Test
     public void testRecordsLogs() throws InterruptedException, IOException {
@@ -159,9 +176,10 @@ To skip shutdown of containers after tests are finished executing:
 ```java
 public class DockerCompositionTest {
     @ClassRule
-    public static DockerComposition composition = DockerComposition.of("src/test/resources/docker-compose.yml")
-                                                .skipShutdown(true)
-                                                .build();
+    public static DockerComposeRule docker = DockerComposeRule.builder()
+            .file("src/test/resources/docker-compose.yml")
+            .skipShutdown(true)
+            .build();
 }
 ```
 
@@ -170,7 +188,7 @@ This can shorten iteration time when services take a long time to start. Remembe
 Docker Machine
 --------------
 
-Docker is able to connect to daemon's that either live on the machine where the client is running, or somewhere remote.
+Docker is able to connect to daemons that either live on the machine where the client is running, or somewhere remote.
 Using the `docker` client, you are able to control which daemon to connect to using the `DOCKER_HOST` environment
 variable.
 

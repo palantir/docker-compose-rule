@@ -162,6 +162,7 @@ public class DockerComposeRuleShould {
         DockerPort expectedPort = env.port("db", IP, 5433, 5432);
         withComposeExecutableReturningContainerFor("db");
 
+        @SuppressWarnings("deprecation") // intentionally using the deprecated method temporarily
         DockerPort actualPort = rule.containers().container("db").portMappedInternallyTo(5432);
 
         assertThat(actualPort, is(expectedPort));
@@ -172,8 +173,8 @@ public class DockerComposeRuleShould {
         env.ports("db", IP, 5432, 8080);
         withComposeExecutableReturningContainerFor("db");
 
-        rule.containers().container("db").portMappedInternallyTo(5432);
-        rule.containers().container("db").portMappedInternallyTo(8080);
+        rule.containers().container("db").port(5432);
+        rule.containers().container("db").port(8080);
 
         verify(dockerCompose, times(1)).ports("db");
     }

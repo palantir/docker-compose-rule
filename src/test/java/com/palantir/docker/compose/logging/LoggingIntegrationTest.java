@@ -21,7 +21,7 @@ import static com.palantir.docker.compose.matchers.IOMatchers.matchingPattern;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 
-import com.palantir.docker.compose.DockerComposition;
+import com.palantir.docker.compose.DockerComposeRule;
 import java.io.File;
 import java.io.IOException;
 import org.junit.Before;
@@ -29,29 +29,29 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
-public class DockerCompositionLoggingIntegrationTest {
+public class LoggingIntegrationTest {
 
     @Rule
     public TemporaryFolder logFolder = new TemporaryFolder();
 
-    private DockerComposition loggingComposition;
+    private DockerComposeRule dockerComposeRule;
 
     @Before
     public void setUp() throws Exception {
-        loggingComposition = DockerComposition.of("src/test/resources/docker-compose.yaml")
+        dockerComposeRule = DockerComposeRule.builder()
+                .file("src/test/resources/docker-compose.yaml")
                 .waitingForService("db", toHaveAllPortsOpen())
                 .waitingForService("db2", toHaveAllPortsOpen())
                 .saveLogsTo(logFolder.getRoot().getAbsolutePath())
                 .build();
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void logs_can_be_saved_to_a_directory() throws IOException, InterruptedException {
         try {
-            loggingComposition.before();
+            dockerComposeRule.before();
         } finally {
-            loggingComposition.after();
+            dockerComposeRule.after();
         }
         assertThat(new File(logFolder.getRoot(), "db.log"), is(fileWithConents(matchingPattern(
                 ".*Attaching to \\w+_db_1.*server started.*"))));

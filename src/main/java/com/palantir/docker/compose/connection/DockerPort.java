@@ -104,7 +104,7 @@ public class DockerPort {
      * <ul>
      *     <li>$HOST - the hostname/ip address of the docker port</li>
      *     <li>$EXTERNAL_PORT - the external version of the docker port</li>
-     *     <li>$INTERNAL_PORT - the internal versino of the docker port</li>
+     *     <li>$INTERNAL_PORT - the internal version of the docker port</li>
      * </ul>
      *
      * @param format a format string using the substitutions listed above
