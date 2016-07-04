@@ -28,6 +28,7 @@ import com.palantir.docker.compose.connection.Container;
 import com.palantir.docker.compose.connection.ContainerNames;
 import com.palantir.docker.compose.connection.DockerMachine;
 import com.palantir.docker.compose.connection.Ports;
+import com.palantir.docker.compose.connection.State;
 import java.io.IOException;
 import java.io.OutputStream;
 import org.apache.commons.io.IOUtils;
@@ -82,6 +83,16 @@ public class DefaultDockerCompose implements DockerCompose {
     @Override
     public void rm() throws IOException, InterruptedException {
         command.execute(Command.throwingOnError(), "rm", "--force", "-v");
+    }
+
+    @Override
+    public void start(Container container) throws IOException, InterruptedException {
+        command.execute(Command.throwingOnError(), "start", container.getContainerName());
+    }
+
+    @Override
+    public void stop(Container container) throws IOException, InterruptedException {
+        command.execute(Command.throwingOnError(), "stop", container.getContainerName());
     }
 
     @Override
@@ -148,9 +159,12 @@ public class DefaultDockerCompose implements DockerCompose {
 
     @Override
     public Ports ports(String service) throws IOException, InterruptedException {
-        String psOutput = command.execute(Command.throwingOnError(), "ps", service);
-        validState(!Strings.isNullOrEmpty(psOutput), "No container with name '" + service + "' found");
-        return Ports.parseFromDockerComposePs(psOutput, dockerMachine.getIp());
+        return Ports.parseFromDockerComposePs(psOutput(service), dockerMachine.getIp());
+    }
+
+    @Override
+    public State state(String service) throws IOException, InterruptedException {
+        return State.parseFromDockerComposePs(psOutput(service));
     }
 
     private ErrorHandler swallowingDownCommandDoesNotExist() {
@@ -169,4 +183,9 @@ public class DefaultDockerCompose implements DockerCompose {
         return !output.contains("No such command");
     }
 
+    private String psOutput(String service) throws IOException, InterruptedException {
+        String psOutput = command.execute(Command.throwingOnError(), "ps", service);
+        validState(!Strings.isNullOrEmpty(psOutput), "No container with name '" + service + "' found");
+        return psOutput;
+    }
 }

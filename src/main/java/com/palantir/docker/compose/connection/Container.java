@@ -25,12 +25,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class Container {
-
-    private static final Logger log = LoggerFactory.getLogger(Container.class);
 
     private final String containerName;
     private final DockerCompose dockerComposeProcess;
@@ -75,6 +71,18 @@ public class Container {
                            .filter(port -> port.getInternalPort() == internalPort)
                            .findFirst()
                            .orElseThrow(() -> new IllegalArgumentException("No internal port '" + internalPort + "' for container '" + containerName + "'"));
+    }
+
+    public void start() throws IOException, InterruptedException {
+        dockerComposeProcess.start(this);
+    }
+
+    public void stop() throws IOException, InterruptedException {
+        dockerComposeProcess.stop(this);
+    }
+
+    public State state() throws IOException, InterruptedException {
+        return dockerComposeProcess.state(containerName);
     }
 
     private Ports getDockerPorts() {
