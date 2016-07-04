@@ -106,7 +106,14 @@ Accessing services in containers from outside a container
 
 In tests it is likely services inside containers will need to be accessed in order to assert that they are behaving correctly. In addition, when tests run on Mac the Docker contains will be inside a Virtual Box machine and so must be accessed on an external IP address rather than the loopback interface.
 
-It is recommended to only specify internal ports in the `docker-compose.yml` as described in the [https://docs.docker.com/compose/compose-file/#ports](reference). This makes tests independent of the environment on the host machine and of each other.  Docker will then randomly allocate an external port.
+It is recommended to only specify internal ports in the `docker-compose.yml` as described in the [https://docs.docker.com/compose/compose-file/#ports](reference). This makes tests independent of the environment on the host machine and of each other.  Docker will then randomly allocate an external port. For example:
+
+```yaml
+postgres:
+  image: postgres:9.5
+  ports:
+    - 5432
+```
 
 Given a `DockerComposeRule` instance called `docker`, you could then access a service called
 `postgres` as follows
@@ -114,7 +121,7 @@ Given a `DockerComposeRule` instance called `docker`, you could then access a se
 ```java
 DockerPort postgres = docker.containers()
         .container("postgres")
-        .portOnContainerWithInternalMapping(5432);
+        .port(5432);
 ```
 
 You could then interpolate the host IP address and random external port as follows:
