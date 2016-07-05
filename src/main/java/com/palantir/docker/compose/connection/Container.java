@@ -93,6 +93,10 @@ public class Container {
         return dockerComposeProcess.state(containerName);
     }
 
+    public void up() throws IOException, InterruptedException {
+        dockerComposeProcess.up(this);
+    }
+
     private Ports getDockerPorts() {
         try {
             return dockerComposeProcess.ports(containerName);
