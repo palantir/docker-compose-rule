@@ -15,25 +15,19 @@
  */
 package com.palantir.docker.compose;
 
-import com.palantir.docker.compose.connection.Container;
-import com.palantir.docker.compose.connection.State;
-import com.palantir.docker.compose.connection.waiting.ClusterHealthCheck;
-import com.palantir.docker.compose.connection.waiting.ClusterWait;
-import com.palantir.docker.compose.connection.waiting.HealthChecks;
-import com.palantir.docker.compose.execution.DockerExecutionException;
-import org.joda.time.Duration;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
-
-import java.io.IOException;
-
 import static com.palantir.docker.compose.connection.waiting.ClusterHealthCheck.serviceHealthCheck;
 import static com.palantir.docker.compose.connection.waiting.HealthChecks.toHaveAllPortsOpen;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
+
+import com.palantir.docker.compose.connection.Container;
+import com.palantir.docker.compose.connection.State;
+import com.palantir.docker.compose.connection.waiting.ClusterWait;
+import java.io.IOException;
+import org.joda.time.Duration;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
 public class DockerComposeRuleUpContainerIntegrationTest {
 
