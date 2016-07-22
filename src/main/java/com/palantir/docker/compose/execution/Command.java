@@ -26,6 +26,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Arrays;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -68,12 +69,14 @@ public class Command {
     private ProcessResult run(String... commands) throws IOException, InterruptedException {
         Process process = executable.execute(commands);
 
-        Future<String> outputProcessing = newSingleThreadExecutor()
+        ExecutorService exec = newSingleThreadExecutor();
+        Future<String> outputProcessing = exec
                 .submit(() -> processOutputFrom(process));
 
         String output = waitForResultFrom(outputProcessing);
 
         process.waitFor(MINUTES_TO_WAIT_AFTER_STD_OUT_CLOSES, TimeUnit.MINUTES);
+        exec.shutdown();
 
         return new ProcessResult(process.exitValue(), output);
     }
