@@ -96,6 +96,14 @@ public class CommandShould {
         assertThat(consumedLogLines, contains("line 1", "line 2"));
     }
 
+    @Test public void
+    not_create_long_lived_threads_after_execution() throws IOException, InterruptedException {
+        int preThreadCount = Thread.getAllStackTraces().entrySet().size();
+        dockerComposeCommand.execute(errorHandler, "rm", "-f");
+        int postThreadCount = Thread.getAllStackTraces().entrySet().size();
+        assertThat("command thread pool has exited", preThreadCount == postThreadCount);
+    }
+
     private void givenTheUnderlyingProcessHasOutput(String output) {
         when(executedProcess.getInputStream()).thenReturn(toInputStream(output));
     }
