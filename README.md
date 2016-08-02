@@ -247,8 +247,7 @@ The variable `SOME_VARIABLE` will be available in the process that calls `docker
 
 ### How to use a `DockerMachine`
 
-When creating a `DockerComposeRule` an additional parameter may be specified. That being the custom `DockerMachine`,
-by default - if no `dockerMachine` parameter is specified - `DockerComposeRule` will connect to the local Docker
+When creating a `DockerComposeRule`, a custom `DockerMachine` may be specified. If no `DockerMachine` is specified, `DockerComposeRule` will connect to the local Docker
 daemon, similarly to how the `docker` cli works.
 
 ```java
