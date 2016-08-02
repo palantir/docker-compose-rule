@@ -37,7 +37,7 @@ dependencies {
 }
 ```
 
-For the most basic use simply add a `DockerComposition` object as a `@ClassRule` or `@Rule` in a JUnit test class.
+For the most basic use simply add a `DockerComposeRule` object as a `@ClassRule` or `@Rule` in a JUnit test class.
 
 ```java
 public class MyIntegrationTest {
@@ -70,7 +70,7 @@ To run the tests from your IDE you will need to add the environment variables gi
 Waiting for a service to be available
 -------------------------------------
 
-To wait for services to be available before executing tests use the following methods on the DockerComposition object:
+To wait for services to be available before executing tests use the following methods on the `DockerComposeRule` object:
 
 ```java
 public class MyEndToEndTest {
@@ -150,12 +150,12 @@ Collecting logs
 To record the logs from your containers specify a location:
 
 ```java
-public class DockerCompositionTest {
+public class DockerComposeRuleTest {
 
     @ClassRule
     public static DockerComposeRule docker = DockerComposeRule.builder()
             .file("src/test/resources/docker-compose.yml")
-            .saveLogsTo("build/dockerLogs/dockerCompositionTest")
+            .saveLogsTo("build/dockerLogs/dockerComposeRuleTest")
             .build();
 
     @Test
@@ -174,7 +174,7 @@ Skipping shutdown
 To skip shutdown of containers after tests are finished executing:
 
 ```java
-public class DockerCompositionTest {
+public class DockerComposeRuleTest {
     @ClassRule
     public static DockerComposeRule docker = DockerComposeRule.builder()
             .file("src/test/resources/docker-compose.yml")
@@ -247,7 +247,7 @@ The variable `SOME_VARIABLE` will be available in the process that calls `docker
 
 ### How to use a `DockerMachine`
 
-When creating a `DockerComposition` an additional parameter may be specified. That being the custom `DockerMachine`,
+When creating a `DockerComposeRule` an additional parameter may be specified. That being the custom `DockerMachine`,
 by default - if no `dockerMachine` parameter is specified - `DockerComposition` will connect to the local Docker
 daemon, similarly to how the `docker` cli works.
 
