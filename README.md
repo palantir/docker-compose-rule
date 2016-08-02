@@ -273,11 +273,12 @@ can do this with this example command:
 
 Semantics of how this works is explained here: [Docker compose reference](https://docs.docker.com/compose/reference/overview/)
 
-To use this functionality inside docker-compose-rule, supply extra files to your `DockerComposition.of(...)` builder
+To use this functionality inside docker-compose-rule, supply a `DockerComposeFiles` object to your `DockerComposeRule` builder:
 
 ```java
-DockerComposition composition = DockerComposition.of("file1.yml", "file2.yml")
-   ...
+DockerComposeRule docker = DockerComposeRule.builder()
+            .files(DockerComposeFiles.from("file1.yml", "file2.yml"))
+            .build()
 ```
 
 Using a custom version of docker-compose
