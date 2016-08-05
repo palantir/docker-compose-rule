@@ -84,4 +84,11 @@ public class RetryingDockerComposeShould {
         verifyRetryerWasNotUsed();
         verify(dockerCompose).exec(options("-d"), CONTAINER_NAME, arguments("ls"));
     }
+
+    @Test
+    public void calls_run_on_the_underlying_docker_compose_and_not_invoke_retryer() throws IOException, InterruptedException {
+        retryingDockerCompose.run(DockerComposeRunOption.options("-d"), CONTAINER_NAME, DockerComposeRunArgument.arguments("ls"));
+        verifyRetryerWasNotUsed();
+        verify(dockerCompose).run(DockerComposeRunOption.options("-d"), CONTAINER_NAME, DockerComposeRunArgument.arguments("ls"));
+    }
 }

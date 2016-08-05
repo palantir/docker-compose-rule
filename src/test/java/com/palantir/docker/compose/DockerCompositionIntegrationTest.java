@@ -28,6 +28,8 @@ import com.palantir.docker.compose.connection.Container;
 import com.palantir.docker.compose.connection.State;
 import com.palantir.docker.compose.connection.waiting.HealthCheck;
 import com.palantir.docker.compose.connection.waiting.SuccessOrFailure;
+import com.palantir.docker.compose.execution.DockerComposeRunArgument;
+import com.palantir.docker.compose.execution.DockerComposeRunOption;
 import java.io.IOException;
 import java.util.List;
 import java.util.function.Consumer;
@@ -145,4 +147,8 @@ public class DockerCompositionIntegrationTest {
         assertThat(docker.exec(options(), CONTAINERS.get(0), arguments("echo", "hello")), is("hello"));
     }
 
+    @Test
+    public void run_returns_output() throws Exception {
+        assertThat(docker.run(DockerComposeRunOption.options("--entrypoint", "echo"), CONTAINERS.get(0), DockerComposeRunArgument.arguments("hello")), is("hello"));
+    }
 }

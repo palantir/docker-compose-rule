@@ -182,9 +182,16 @@ public class DockerComposeShould {
     }
 
     @Test
+    public void pass_concatenated_arguments_to_executor_on_docker_compose_run()
+            throws IOException, InterruptedException {
+        compose.run(DockerComposeRunOption.options("-d"), "container_1", DockerComposeRunArgument.arguments("ls"));
+        verify(executor, times(1)).execute("run", "-d", "container_1", "ls");
+    }
+
+    @Test
     public void return_the_output_from_the_executed_process_on_docker_compose_exec() throws Exception {
         String lsString = "-rw-r--r--  1 user  1318458867  11326 Mar  9 17:47 LICENSE\n"
-                             + "-rw-r--r--  1 user  1318458867  12570 May 12 14:51 README.md";
+                + "-rw-r--r--  1 user  1318458867  12570 May 12 14:51 README.md";
 
         String versionString = "docker-compose version 1.7.0rc1, build 1ad8866";
 
@@ -196,6 +203,20 @@ public class DockerComposeShould {
         DockerCompose processCompose = new DefaultDockerCompose(processExecutor, dockerMachine);
 
         assertThat(processCompose.exec(options(), "container_1", arguments("ls", "-l")), is(lsString));
+    }
+
+    @Test
+    public void return_the_output_from_the_executed_process_on_docker_compose_run() throws Exception {
+        String lsString = "-rw-r--r--  1 user  1318458867  11326 Mar  9 17:47 LICENSE\n"
+                + "-rw-r--r--  1 user  1318458867  12570 May 12 14:51 README.md";
+
+        DockerComposeExecutable processExecutor = mock(DockerComposeExecutable.class);
+
+        addProcessToExecutor(processExecutor, processWithOutput(lsString), "run", "-it", "container_1", "ls", "-l");
+
+        DockerCompose processCompose = new DefaultDockerCompose(processExecutor, dockerMachine);
+
+        assertThat(processCompose.run(DockerComposeRunOption.options("-it"), "container_1", DockerComposeRunArgument.arguments("ls", "-l")), is(lsString));
     }
 
     private void addProcessToExecutor(DockerComposeExecutable dockerComposeExecutable, Process process, String... commands) throws Exception {

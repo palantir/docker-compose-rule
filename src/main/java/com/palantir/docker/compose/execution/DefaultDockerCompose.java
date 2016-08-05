@@ -103,6 +103,13 @@ public class DefaultDockerCompose implements DockerCompose {
         return command.execute(Command.throwingOnError(), fullArgs);
     }
 
+    @Override
+    public String run(DockerComposeRunOption dockerComposeRunOption, String containerName,
+            DockerComposeRunArgument dockerComposeRunArgument) throws IOException, InterruptedException {
+        String[] fullArgs = constructFullDockerComposeRunArguments(dockerComposeRunOption, containerName, dockerComposeRunArgument);
+        return command.execute(Command.throwingOnError(), fullArgs);
+    }
+
     private void verifyDockerComposeVersionAtLeast(Version targetVersion, String message) throws IOException, InterruptedException {
         validState(version().greaterThanOrEqualTo(targetVersion), message);
     }
@@ -119,6 +126,16 @@ public class DefaultDockerCompose implements DockerCompose {
                                                                             .add(containerName)
                                                                             .addAll(dockerComposeExecArgument.asList())
                                                                             .build();
+        return fullArgs.toArray(new String[fullArgs.size()]);
+    }
+
+    private String[] constructFullDockerComposeRunArguments(DockerComposeRunOption dockerComposeRunOption,
+            String containerName, DockerComposeRunArgument dockerComposeRunArgument) {
+        ImmutableList<String> fullArgs = new ImmutableList.Builder<String>().add("run")
+                .addAll(dockerComposeRunOption.asList())
+                .add(containerName)
+                .addAll(dockerComposeRunArgument.asList())
+                .build();
         return fullArgs.toArray(new String[fullArgs.size()]);
     }
 
