@@ -22,13 +22,9 @@ import org.immutables.value.Value;
 @Value.Immutable
 public abstract class DockerComposeRunOption {
     @Value.Parameter
-    protected abstract String[] options();
+    public abstract List<String> options();
 
     public static DockerComposeRunOption options(String... options) {
-        return ImmutableDockerComposeRunOption.of(options);
-    }
-
-    public List<String> asList() {
-        return Arrays.asList(options());
+        return ImmutableDockerComposeRunOption.of(Arrays.asList(options));
     }
 }
