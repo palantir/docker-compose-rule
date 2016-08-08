@@ -17,20 +17,14 @@ package com.palantir.docker.compose.execution;
 
 import java.util.Arrays;
 import java.util.List;
-
 import org.immutables.value.Value;
 
 @Value.Immutable
 public abstract class DockerComposeExecArgument {
-
     @Value.Parameter
-    protected abstract String[] arguments();
+    public abstract List<String> arguments();
 
     public static DockerComposeExecArgument arguments(String... arguments) {
-        return ImmutableDockerComposeExecArgument.of(arguments);
-    }
-
-    public List<String> asList() {
-        return Arrays.asList(arguments());
+        return ImmutableDockerComposeExecArgument.of(Arrays.asList(arguments));
     }
 }
