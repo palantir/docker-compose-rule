@@ -22,6 +22,8 @@ import com.palantir.docker.compose.connection.DockerPort;
 import com.palantir.docker.compose.execution.DockerCompose;
 import com.palantir.docker.compose.execution.DockerComposeExecArgument;
 import com.palantir.docker.compose.execution.DockerComposeExecOption;
+import com.palantir.docker.compose.execution.DockerComposeRunArgument;
+import com.palantir.docker.compose.execution.DockerComposeRunOption;
 import java.io.IOException;
 import org.junit.rules.ExternalResource;
 
@@ -99,6 +101,11 @@ public class DockerComposition extends ExternalResource {
     public String exec(DockerComposeExecOption options, String containerName, DockerComposeExecArgument arguments)
             throws IOException, InterruptedException {
         return rule.exec(options, containerName, arguments);
+    }
+
+    public String run(DockerComposeRunOption options, String containerName, DockerComposeRunArgument arguments)
+            throws IOException, InterruptedException {
+        return rule.run(options, containerName, arguments);
     }
 
     public DockerPort hostNetworkedPort(int port) {

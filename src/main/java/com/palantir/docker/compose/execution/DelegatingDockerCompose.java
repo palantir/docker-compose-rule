@@ -76,6 +76,12 @@ abstract class DelegatingDockerCompose implements DockerCompose {
     }
 
     @Override
+    public String run(DockerComposeRunOption dockerComposeRunOption, String containerName,
+            DockerComposeRunArgument dockerComposeRunArgument) throws IOException, InterruptedException {
+        return dockerCompose.run(dockerComposeRunOption, containerName, dockerComposeRunArgument);
+    }
+
+    @Override
     public ContainerNames ps() throws IOException, InterruptedException {
         return dockerCompose.ps();
     }

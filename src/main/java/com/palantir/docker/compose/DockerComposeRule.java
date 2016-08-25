@@ -24,6 +24,8 @@ import com.palantir.docker.compose.execution.DockerCompose;
 import com.palantir.docker.compose.execution.DockerComposeExecArgument;
 import com.palantir.docker.compose.execution.DockerComposeExecOption;
 import com.palantir.docker.compose.execution.DockerComposeExecutable;
+import com.palantir.docker.compose.execution.DockerComposeRunArgument;
+import com.palantir.docker.compose.execution.DockerComposeRunOption;
 import com.palantir.docker.compose.execution.DockerExecutable;
 import com.palantir.docker.compose.execution.RetryingDockerCompose;
 import com.palantir.docker.compose.logging.DoNothingLogCollector;
@@ -163,6 +165,11 @@ public abstract class DockerComposeRule extends ExternalResource {
     public String exec(DockerComposeExecOption options, String containerName,
             DockerComposeExecArgument arguments) throws IOException, InterruptedException {
         return dockerCompose().exec(options, containerName, arguments);
+    }
+
+    public String run(DockerComposeRunOption options, String containerName,
+            DockerComposeRunArgument arguments) throws IOException, InterruptedException {
+        return dockerCompose().run(options, containerName, arguments);
     }
 
     public static ImmutableDockerComposeRule.Builder builder() {
