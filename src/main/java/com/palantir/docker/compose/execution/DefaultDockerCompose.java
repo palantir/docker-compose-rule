@@ -86,6 +86,11 @@ public class DefaultDockerCompose implements DockerCompose {
     }
 
     @Override
+    public void up(Container container) throws IOException, InterruptedException {
+        command.execute(Command.throwingOnError(), "up", "-d",  container.getContainerName());
+    }
+
+    @Override
     public void start(Container container) throws IOException, InterruptedException {
         command.execute(Command.throwingOnError(), "start", container.getContainerName());
     }

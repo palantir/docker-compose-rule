@@ -55,6 +55,11 @@ abstract class DelegatingDockerCompose implements DockerCompose {
     }
 
     @Override
+    public void up(Container container) throws IOException, InterruptedException {
+        dockerCompose.up(container);
+    }
+
+    @Override
     public void start(Container container) throws IOException, InterruptedException {
         dockerCompose.start(container);
     }
