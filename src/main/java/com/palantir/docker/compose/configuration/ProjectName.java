@@ -22,17 +22,18 @@ import java.util.List;
 import java.util.UUID;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
-import org.immutables.value.Value;
-import org.immutables.value.Value.Style.ImplementationVisibility;
+import org.immutables.value.Value.Check;
+import org.immutables.value.Value.Immutable;
+import org.immutables.value.Value.Parameter;
 
-@Value.Immutable
-@Value.Style(visibility = ImplementationVisibility.PACKAGE)
+@Immutable
+@PackageVisible
 public abstract class ProjectName {
 
-    @Value.Parameter
+    @Parameter
     protected abstract String projectName();
 
-    @Value.Check
+    @Check
     protected void validate() {
         checkState(projectName().trim().length() > 0, "ProjectName must not be blank.");
 
@@ -57,6 +58,8 @@ public abstract class ProjectName {
 
     /**
      * @param name A name consisting of lowercase letters and numbers only.
+     * @return The corresponding project name
+     * @see ProjectName
      */
     public static ProjectName fromString(String name) {
         return ImmutableProjectName.of(name);
