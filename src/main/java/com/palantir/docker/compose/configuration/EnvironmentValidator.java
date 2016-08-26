@@ -26,6 +26,8 @@ public interface EnvironmentValidator {
      * If the validator determines the state represented by the map is invalid (either because
      * required values are missing or forbidden values are present), the method should throw
      * an exception.
+     *
+     * @param dockerEnvironment A map representing the docker environment
      */
     void validateEnvironmentVariables(Map<String, String> dockerEnvironment);
 

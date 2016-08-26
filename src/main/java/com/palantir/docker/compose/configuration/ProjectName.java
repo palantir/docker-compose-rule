@@ -58,6 +58,8 @@ public abstract class ProjectName {
 
     /**
      * @param name A name consisting of lowercase letters and numbers only.
+     * @return The corresponding project name
+     * @see ProjectName
      */
     public static ProjectName fromString(String name) {
         return ImmutableProjectName.of(name);
