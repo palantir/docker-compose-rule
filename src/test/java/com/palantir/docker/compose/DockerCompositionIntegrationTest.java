@@ -141,6 +141,39 @@ public class DockerCompositionIntegrationTest {
         });
     }
 
+    @Test
+    public void can_kill_and_start_containers() {
+        forEachContainer(containerName -> {
+            try {
+                Container container = docker.containers().container(containerName);
+
+                container.kill();
+                assertThat(container.state(), is(State.Exit));
+
+                container.start();
+                assertThat(container.state(), is(State.Up));
+            } catch (IOException | InterruptedException e) {
+                propagate(e);
+            }
+        });
+    }
+
+    @Test
+    public void kill_can_be_run_on_killed_container() {
+        forEachContainer(containerName -> {
+            try {
+                Container container = docker.containers().container(containerName);
+
+                container.kill();
+                assertThat(container.state(), is(State.Exit));
+
+                container.kill();
+            } catch (IOException | InterruptedException e) {
+                propagate(e);
+            }
+        });
+    }
+
     @Ignore // This test will not run on Circle CI because it does not currently support docker-compose exec.
     @Test
     public void exec_returns_output() throws Exception {

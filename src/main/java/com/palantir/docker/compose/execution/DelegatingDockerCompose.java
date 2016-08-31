@@ -70,6 +70,11 @@ abstract class DelegatingDockerCompose implements DockerCompose {
     }
 
     @Override
+    public void kill(Container container) throws IOException, InterruptedException {
+        dockerCompose.kill(container);
+    }
+
+    @Override
     public String exec(DockerComposeExecOption dockerComposeExecOption, String containerName,
             DockerComposeExecArgument dockerComposeExecArgument) throws IOException, InterruptedException {
         return dockerCompose.exec(dockerComposeExecOption, containerName, dockerComposeExecArgument);

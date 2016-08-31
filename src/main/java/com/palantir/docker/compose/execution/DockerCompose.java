@@ -31,6 +31,7 @@ public interface DockerCompose {
     void up(Container container) throws IOException, InterruptedException;
     void start(Container container) throws IOException, InterruptedException;
     void stop(Container container) throws IOException, InterruptedException;
+    void kill(Container container) throws IOException, InterruptedException;
     String exec(DockerComposeExecOption dockerComposeExecOption, String containerName, DockerComposeExecArgument dockerComposeExecArgument) throws IOException, InterruptedException;
     String run(DockerComposeRunOption dockerComposeRunOption, String containerName, DockerComposeRunArgument dockerComposeRunArgument) throws IOException, InterruptedException;
     ContainerNames ps() throws IOException, InterruptedException;
