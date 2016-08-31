@@ -101,6 +101,11 @@ public class DefaultDockerCompose implements DockerCompose {
     }
 
     @Override
+    public void kill(Container container) throws IOException, InterruptedException {
+        command.execute(Command.throwingOnError(), "kill", container.getContainerName());
+    }
+
+    @Override
     public String exec(DockerComposeExecOption dockerComposeExecOption, String containerName,
             DockerComposeExecArgument dockerComposeExecArgument) throws IOException, InterruptedException {
         verifyDockerComposeVersionAtLeast(VERSION_1_7_0, "You need at least docker-compose 1.7 to run docker-compose exec");

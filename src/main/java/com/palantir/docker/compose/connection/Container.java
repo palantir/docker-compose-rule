@@ -89,6 +89,10 @@ public class Container {
         dockerComposeProcess.stop(this);
     }
 
+    public void kill() throws IOException, InterruptedException {
+        dockerComposeProcess.kill(this);
+    }
+
     public State state() throws IOException, InterruptedException {
         return dockerComposeProcess.state(containerName);
     }
