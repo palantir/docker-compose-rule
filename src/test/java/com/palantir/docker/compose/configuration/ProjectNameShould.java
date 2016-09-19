@@ -79,5 +79,11 @@ public class ProjectNameShould {
         exception.expectMessage("ProjectName 'Crazy#Proj ect!Name' not allowed, please use lowercase letters and numbers only.");
         ProjectName.fromString("Crazy#Proj ect!Name");
     }
+
+    @Test
+    public void should_return_the_project_name_when_asString_called() {
+        String projectName = ProjectName.fromString("projectname").asString();
+        assertThat(projectName, is("projectname"));
+    }
 }
 

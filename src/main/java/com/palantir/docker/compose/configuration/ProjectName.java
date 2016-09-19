@@ -48,6 +48,10 @@ public abstract class ProjectName {
         return !illegalCharacters.test(projectName());
     }
 
+    public String asString() {
+        return projectName();
+    }
+
     public List<String> constructComposeFileCommand() {
         return ImmutableList.of("--project-name", projectName());
     }
