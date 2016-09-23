@@ -40,7 +40,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @Value.Immutable
-@Value.Style(depluralize = true)
+@Depluralized
 public abstract class DockerComposeRule extends ExternalResource {
     public static final Duration DEFAULT_TIMEOUT = Duration.standardMinutes(2);
     public static final int DEFAULT_RETRY_ATTEMPTS = 2;
