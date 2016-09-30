@@ -16,20 +16,25 @@
 package com.palantir.docker.compose.execution;
 
 import java.io.IOException;
+import org.joda.time.Duration;
+import org.joda.time.ReadableDuration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class Retryer {
     private static final Logger log = LoggerFactory.getLogger(Retryer.class);
+    public static final ReadableDuration STANDARD_DELAY = Duration.standardSeconds(5);
 
     public interface RetryableDockerOperation<T> {
         T call() throws IOException, InterruptedException;
     }
 
     private final int retryAttempts;
+    private final ReadableDuration delay;
 
-    public Retryer(int retryAttempts) {
+    public Retryer(int retryAttempts, ReadableDuration delay) {
         this.retryAttempts = retryAttempts;
+        this.delay = delay;
     }
 
     public <T> T runWithRetries(RetryableDockerOperation<T> operation) throws IOException, InterruptedException {
@@ -39,7 +44,8 @@ public class Retryer {
                 return operation.call();
             } catch (DockerExecutionException e) {
                 lastExecutionException = e;
-                log.warn("Caught exception: " + e.getMessage() + ". Retrying.");
+                log.warn("Caught exception: {}. Retrying after {}", e.getMessage(), delay);
+                Thread.sleep(delay.getMillis());
             }
         }
 

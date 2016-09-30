@@ -15,20 +15,24 @@
  */
 package com.palantir.docker.compose.execution;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.google.common.base.Stopwatch;
 import com.palantir.docker.compose.utils.MockitoMultiAnswer;
+import java.util.concurrent.TimeUnit;
+import org.joda.time.Duration;
 import org.junit.Test;
 
 public class RetryerShould {
     private final Retryer.RetryableDockerOperation<String> operation = mock(Retryer.RetryableDockerOperation.class);
-    private final Retryer retryer = new Retryer(1);
+    private final Retryer retryer = new Retryer(1, Duration.millis(0));
 
     @Test
     public void not_retry_if_the_operation_was_successful_and_return_result() throws Exception {
@@ -36,6 +40,20 @@ public class RetryerShould {
 
         assertThat(retryer.runWithRetries(operation), is("hi"));
         verify(operation).call();
+    }
+
+    @Test
+    public void retryer_should_wait_after_failure_before_trying_again() throws Exception {
+        Retryer timeRetryer = new Retryer(1, Duration.millis(100));
+
+        Stopwatch stopwatch = Stopwatch.createStarted();
+        when(operation.call()).thenThrow(new DockerExecutionException()).thenAnswer(i -> {
+            assertThat(stopwatch.elapsed(TimeUnit.MILLISECONDS), greaterThan(100L));
+            return "success";
+        });
+
+        String result = timeRetryer.runWithRetries(operation);
+        assertThat(result, is("success"));
     }
 
     @Test

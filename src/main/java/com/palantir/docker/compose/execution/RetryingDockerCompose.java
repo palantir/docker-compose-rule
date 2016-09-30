@@ -22,7 +22,7 @@ public class RetryingDockerCompose extends DelegatingDockerCompose {
     private final Retryer retryer;
 
     public RetryingDockerCompose(int retryAttempts, DockerCompose dockerCompose) {
-        this(new Retryer(retryAttempts), dockerCompose);
+        this(new Retryer(retryAttempts, Retryer.STANDARD_DELAY), dockerCompose);
     }
 
     public RetryingDockerCompose(Retryer retryer, DockerCompose dockerCompose) {
