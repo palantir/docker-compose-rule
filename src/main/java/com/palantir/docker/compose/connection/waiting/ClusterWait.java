@@ -22,16 +22,16 @@ import java.util.Optional;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
-import org.joda.time.Duration;
+import org.joda.time.ReadableDuration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class ClusterWait {
     private static final Logger log = LoggerFactory.getLogger(ClusterWait.class);
     private final ClusterHealthCheck clusterHealthCheck;
-    private final Duration timeout;
+    private final ReadableDuration timeout;
 
-    public ClusterWait(ClusterHealthCheck clusterHealthCheck, Duration timeout) {
+    public ClusterWait(ClusterHealthCheck clusterHealthCheck, ReadableDuration timeout) {
         this.clusterHealthCheck = clusterHealthCheck;
         this.timeout = timeout;
     }

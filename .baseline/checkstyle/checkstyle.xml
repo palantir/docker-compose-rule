@@ -91,7 +91,6 @@
         <module name="EqualsHashCode"/>
         <module name="FallThrough"/> <!-- Java Style Guide: Fall-through: commented -->
         <module name="FileContentsHolder"/> <!-- Required for SuppressionCommentFilter -->
-        <module name="FinalClass"/> <!-- Java Coding Guidelines: Private constructors -->
         <module name="GenericWhitespace"> <!-- Java Style Guide: Horizontal whitespace -->
             <message key="ws.followed" value="GenericWhitespace ''{0}'' is followed by whitespace."/>
             <message key="ws.preceded" value="GenericWhitespace ''{0}'' is preceded with whitespace."/>

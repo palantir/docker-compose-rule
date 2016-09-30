@@ -30,7 +30,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public final class RemoteEnvironmentValidator implements EnvironmentValidator {
+public class RemoteEnvironmentValidator implements EnvironmentValidator {
 
     private static final Set<String> SECURE_VARIABLES = ImmutableSet.of(DOCKER_TLS_VERIFY, DOCKER_CERT_PATH);
     private static final RemoteEnvironmentValidator VALIDATOR = new RemoteEnvironmentValidator();
@@ -39,9 +39,9 @@ public final class RemoteEnvironmentValidator implements EnvironmentValidator {
         return VALIDATOR;
     }
 
-    private RemoteEnvironmentValidator() {
-    }
+    private RemoteEnvironmentValidator() {}
 
+    @Override
     public void validateEnvironmentVariables(Map<String, String> dockerEnvironment) {
         Collection<String> missingVariables = getMissingEnvVariables(dockerEnvironment);
         String errorMessage = missingVariables.stream()
