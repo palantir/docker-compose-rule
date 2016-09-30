@@ -41,7 +41,9 @@ public class RetryerShould {
     @Test
     public void retry_the_operation_if_it_failed_once_and_return_the_result_of_the_next_successful_call() throws Exception {
         when(operation.call()).thenAnswer(MockitoMultiAnswer.<String>of(
-                firstInvocation  -> { throw new DockerExecutionException(); },
+                firstInvocation -> {
+                    throw new DockerExecutionException();
+                },
                 secondInvocation -> "hola"
         ));
 
@@ -54,8 +56,12 @@ public class RetryerShould {
         DockerExecutionException finalException = new DockerExecutionException();
 
         when(operation.call()).thenAnswer(MockitoMultiAnswer.<String>of(
-                firstInvocation  -> { throw new DockerExecutionException(); },
-                secondInvocation -> { throw finalException; }
+                firstInvocation -> {
+                    throw new DockerExecutionException();
+                },
+                secondInvocation -> {
+                    throw finalException;
+                }
         ));
 
         try {
