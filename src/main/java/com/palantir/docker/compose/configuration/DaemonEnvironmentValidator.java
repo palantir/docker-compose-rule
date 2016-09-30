@@ -28,7 +28,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public final class DaemonEnvironmentValidator implements EnvironmentValidator {
+public class DaemonEnvironmentValidator implements EnvironmentValidator {
 
     private static final Set<String> ILLEGAL_VARIABLES = ImmutableSet.of(DOCKER_TLS_VERIFY, DOCKER_HOST, DOCKER_CERT_PATH);
     private static final Supplier<DaemonEnvironmentValidator> SUPPLIER = Suppliers.memoize(
@@ -40,6 +40,7 @@ public final class DaemonEnvironmentValidator implements EnvironmentValidator {
 
     private DaemonEnvironmentValidator() {}
 
+    @Override
     public void validateEnvironmentVariables(Map<String, String> dockerEnvironment) {
         Set<String> invalidVariables = ILLEGAL_VARIABLES.stream()
                                                          .filter(dockerEnvironment::containsKey)

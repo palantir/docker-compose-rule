@@ -24,7 +24,7 @@ import com.palantir.docker.compose.connection.DockerPort;
 import com.palantir.docker.compose.connection.waiting.HealthCheck;
 import com.palantir.docker.compose.execution.DockerCompose;
 import java.util.List;
-import org.joda.time.Duration;
+import org.joda.time.ReadableDuration;
 
 /**
  * @deprecated
@@ -48,17 +48,17 @@ public class DockerCompositionBuilder {
         return this;
     }
 
-    public DockerCompositionBuilder waitingForServices(List<String> services, HealthCheck<List<Container>> check, Duration timeout) {
+    public DockerCompositionBuilder waitingForServices(List<String> services, HealthCheck<List<Container>> check, ReadableDuration timeout) {
         builder.waitingForServices(services, check, timeout);
         return this;
     }
 
-    public DockerCompositionBuilder waitingForService(String serviceName, HealthCheck<Container> check, Duration timeout) {
+    public DockerCompositionBuilder waitingForService(String serviceName, HealthCheck<Container> check, ReadableDuration timeout) {
         builder.waitingForService(serviceName, check, timeout);
         return this;
     }
 
-    public DockerCompositionBuilder waitingForHostNetworkedPort(int port, HealthCheck<DockerPort> healthCheck, Duration timeout) {
+    public DockerCompositionBuilder waitingForHostNetworkedPort(int port, HealthCheck<DockerPort> healthCheck, ReadableDuration timeout) {
         builder.waitingForHostNetworkedPort(port, healthCheck, timeout);
         return this;
     }

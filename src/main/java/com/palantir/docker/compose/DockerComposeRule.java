@@ -35,6 +35,7 @@ import java.io.IOException;
 import java.util.List;
 import org.immutables.value.Value;
 import org.joda.time.Duration;
+import org.joda.time.ReadableDuration;
 import org.junit.rules.ExternalResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -196,7 +197,7 @@ public abstract class DockerComposeRule extends ExternalResource {
             return waitingForService(serviceName, healthCheck, DEFAULT_TIMEOUT);
         }
 
-        public ImmutableDockerComposeRule.Builder waitingForService(String serviceName, HealthCheck<Container> healthCheck, Duration timeout) {
+        public ImmutableDockerComposeRule.Builder waitingForService(String serviceName, HealthCheck<Container> healthCheck, ReadableDuration timeout) {
             ClusterHealthCheck clusterHealthCheck = serviceHealthCheck(serviceName, healthCheck);
             return addClusterWait(new ClusterWait(clusterHealthCheck, timeout));
         }
@@ -205,7 +206,7 @@ public abstract class DockerComposeRule extends ExternalResource {
             return waitingForServices(services, healthCheck, DEFAULT_TIMEOUT);
         }
 
-        public ImmutableDockerComposeRule.Builder waitingForServices(List<String> services, HealthCheck<List<Container>> healthCheck, Duration timeout) {
+        public ImmutableDockerComposeRule.Builder waitingForServices(List<String> services, HealthCheck<List<Container>> healthCheck, ReadableDuration timeout) {
             ClusterHealthCheck clusterHealthCheck = serviceHealthCheck(services, healthCheck);
             return addClusterWait(new ClusterWait(clusterHealthCheck, timeout));
         }
@@ -214,7 +215,7 @@ public abstract class DockerComposeRule extends ExternalResource {
             return waitingForHostNetworkedPort(port, healthCheck, DEFAULT_TIMEOUT);
         }
 
-        public ImmutableDockerComposeRule.Builder waitingForHostNetworkedPort(int port, HealthCheck<DockerPort> healthCheck, Duration timeout) {
+        public ImmutableDockerComposeRule.Builder waitingForHostNetworkedPort(int port, HealthCheck<DockerPort> healthCheck, ReadableDuration timeout) {
             ClusterHealthCheck clusterHealthCheck = transformingHealthCheck(cluster -> new DockerPort(cluster.ip(), port, port), healthCheck);
             return addClusterWait(new ClusterWait(clusterHealthCheck, timeout));
         }
