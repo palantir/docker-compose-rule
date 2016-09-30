@@ -28,9 +28,7 @@ import com.palantir.docker.compose.execution.DockerComposeExecutable;
 import com.palantir.docker.compose.execution.DockerComposeRunArgument;
 import com.palantir.docker.compose.execution.DockerComposeRunOption;
 import com.palantir.docker.compose.execution.DockerExecutable;
-import com.palantir.docker.compose.execution.GracefulShutdownStrategy;
 import com.palantir.docker.compose.execution.RetryingDockerCompose;
-import com.palantir.docker.compose.execution.SkipShutdownStrategy;
 import com.palantir.docker.compose.logging.DoNothingLogCollector;
 import com.palantir.docker.compose.logging.FileLogCollector;
 import com.palantir.docker.compose.logging.LogCollector;
@@ -92,7 +90,7 @@ public abstract class DockerComposeRule extends ExternalResource {
 
     @Value.Default
     public ShutdownStrategy shutdownStrategy() {
-        return new GracefulShutdownStrategy();
+        return ShutdownStrategy.GRACEFUL;
     }
 
     @Value.Default
@@ -178,12 +176,12 @@ public abstract class DockerComposeRule extends ExternalResource {
         }
 
         /**
-         * @deprecated Please use <code>shutdownStrategy(new SkipShutdownStrategy())</code> instead.
+         * @deprecated Please use <code>shutdownStrategy(ShutdownStrategy.SKIP)</code> instead.
          */
         @Deprecated
         public Builder skipShutdown(boolean skipShutdown) {
             if (skipShutdown) {
-                return shutdownStrategy(new SkipShutdownStrategy());
+                return shutdownStrategy(ShutdownStrategy.SKIP);
             }
 
             return this;

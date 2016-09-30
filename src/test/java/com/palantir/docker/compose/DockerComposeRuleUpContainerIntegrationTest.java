@@ -15,6 +15,7 @@
  */
 package com.palantir.docker.compose;
 
+import static com.palantir.docker.compose.configuration.ShutdownStrategy.AGGRESSIVE;
 import static com.palantir.docker.compose.connection.waiting.ClusterHealthCheck.serviceHealthCheck;
 import static com.palantir.docker.compose.connection.waiting.HealthChecks.toHaveAllPortsOpen;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -37,7 +38,11 @@ public class DockerComposeRuleUpContainerIntegrationTest {
 
     @Before
     public void setUp() throws Exception {
-        dockerComposeRule = DockerComposeRule.builder().file(DOCKER_COMPOSE_YAML_PATH).build();
+        dockerComposeRule = DockerComposeRule
+                .builder()
+                .shutdownStrategy(AGGRESSIVE)
+                .file(DOCKER_COMPOSE_YAML_PATH)
+                .build();
     }
 
     @After
