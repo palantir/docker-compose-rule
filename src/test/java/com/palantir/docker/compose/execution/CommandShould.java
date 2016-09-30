@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -96,6 +97,8 @@ public class CommandShould {
         assertThat(consumedLogLines, contains("line 1", "line 2"));
     }
 
+    // flaky test: https://circleci.com/gh/palantir/docker-compose-rule/378, 370, 367, 366
+    @Ignore
     @Test public void
     not_create_long_lived_threads_after_execution() throws IOException, InterruptedException {
         int preThreadCount = Thread.getAllStackTraces().entrySet().size();
