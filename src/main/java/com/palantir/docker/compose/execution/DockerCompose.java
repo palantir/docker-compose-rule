@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 public interface DockerCompose {
+    void pull() throws IOException, InterruptedException;
     void build() throws IOException, InterruptedException;
     void up() throws IOException, InterruptedException;
     void down() throws IOException, InterruptedException;

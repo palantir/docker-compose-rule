@@ -97,6 +97,16 @@ public class DockerComposeRuleShould {
     }
 
     @Test
+    public void calls_pull_build_and_up_when_tests_are_run_and_pullOnStartup_is_true() throws InterruptedException, IOException {
+        defaultBuilder().pullOnStartup(true)
+                        .build()
+                        .before();
+        verify(dockerCompose).pull();
+        verify(dockerCompose).build();
+        verify(dockerCompose).up();
+    }
+
+    @Test
     public void call_kill_and_rm_after_tests_are_run() throws IOException, InterruptedException {
         rule.after();
         verify(dockerCompose).kill();

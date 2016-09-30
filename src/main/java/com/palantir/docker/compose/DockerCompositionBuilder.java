@@ -108,6 +108,11 @@ public class DockerCompositionBuilder {
         return this;
     }
 
+    public DockerCompositionBuilder pullOnStartup(boolean pullOnStartup) {
+        builder.pullOnStartup(pullOnStartup);
+        return this;
+    }
+
     public DockerComposition build() {
         DockerComposeRule rule = builder.build();
         return new DockerComposition(rule);

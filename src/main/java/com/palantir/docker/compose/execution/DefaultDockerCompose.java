@@ -61,6 +61,11 @@ public class DefaultDockerCompose implements DockerCompose {
     }
 
     @Override
+    public void pull() throws IOException, InterruptedException {
+        command.execute(Command.throwingOnError(), "pull");
+    }
+
+    @Override
     public void build() throws IOException, InterruptedException {
         command.execute(Command.throwingOnError(), "build");
     }
