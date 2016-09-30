@@ -176,7 +176,7 @@ public abstract class DockerComposeRule extends ExternalResource {
         }
 
         /**
-         * @deprecated Please use <code>shutdownStrategy(ShutdownStrategy.SKIP)</code> instead.
+         * @deprecated Please use {@link DockerComposeRule#shutdownStrategy()} with {@link ShutdownStrategy#SKIP} instead.
          */
         @Deprecated
         public Builder skipShutdown(boolean skipShutdown) {
