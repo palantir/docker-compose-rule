@@ -8,6 +8,7 @@ import static com.palantir.docker.compose.connection.waiting.ClusterHealthCheck.
 
 import com.palantir.docker.compose.configuration.DockerComposeFiles;
 import com.palantir.docker.compose.configuration.ProjectName;
+import com.palantir.docker.compose.configuration.ShutdownStrategy;
 import com.palantir.docker.compose.connection.Cluster;
 import com.palantir.docker.compose.connection.Container;
 import com.palantir.docker.compose.connection.ContainerCache;
@@ -27,7 +28,9 @@ import com.palantir.docker.compose.execution.DockerComposeExecutable;
 import com.palantir.docker.compose.execution.DockerComposeRunArgument;
 import com.palantir.docker.compose.execution.DockerComposeRunOption;
 import com.palantir.docker.compose.execution.DockerExecutable;
+import com.palantir.docker.compose.execution.GracefulShutdownStrategy;
 import com.palantir.docker.compose.execution.RetryingDockerCompose;
+import com.palantir.docker.compose.execution.SkipShutdownStrategy;
 import com.palantir.docker.compose.logging.DoNothingLogCollector;
 import com.palantir.docker.compose.logging.FileLogCollector;
 import com.palantir.docker.compose.logging.LogCollector;
@@ -88,6 +91,11 @@ public abstract class DockerComposeRule extends ExternalResource {
     }
 
     @Value.Default
+    public ShutdownStrategy shutdownStrategy() {
+        return new GracefulShutdownStrategy();
+    }
+
+    @Value.Default
     public DockerCompose dockerCompose() {
         DockerCompose dockerCompose = new DefaultDockerCompose(dockerComposeExecutable(), machine());
         return new RetryingDockerCompose(retryAttempts(), dockerCompose);
@@ -104,11 +112,6 @@ public abstract class DockerComposeRule extends ExternalResource {
     @Value.Default
     protected int retryAttempts() {
         return DEFAULT_RETRY_ATTEMPTS;
-    }
-
-    @Value.Default
-    protected boolean skipShutdown() {
-        return false;
     }
 
     @Value.Default
@@ -143,20 +146,7 @@ public abstract class DockerComposeRule extends ExternalResource {
     @Override
     public void after() {
         try {
-            if (skipShutdown()) {
-                log.error("******************************************************************************************\n"
-                        + "* docker-compose-rule has been configured to skip docker-compose shutdown:               *\n"
-                        + "* this means the containers will be left running after tests finish executing.           *\n"
-                        + "* If you see this message when running on CI it means you are potentially abandoning     *\n"
-                        + "* long running processes and leaking resources.                                          *\n"
-                        + "*******************************************************************************************");
-            } else {
-                log.debug("Killing docker-compose cluster");
-                dockerCompose().down();
-                dockerCompose().kill();
-                dockerCompose().rm();
-            }
-
+            shutdownStrategy().shutdown(dockerCompose());
             logCollector().stopCollecting();
         } catch (IOException | InterruptedException e) {
             throw new RuntimeException("Error cleaning up docker compose cluster", e);
@@ -185,6 +175,18 @@ public abstract class DockerComposeRule extends ExternalResource {
 
         public Builder saveLogsTo(String path) {
             return logCollector(FileLogCollector.fromPath(path));
+        }
+
+        /**
+         * @deprecated Please use <code>shutdownStrategy(new SkipShutdownStrategy())</code> instead.
+         */
+        @Deprecated
+        public Builder skipShutdown(boolean skipShutdown) {
+            if (skipShutdown) {
+                return shutdownStrategy(new SkipShutdownStrategy());
+            }
+
+            return this;
         }
 
         public Builder waitingForService(String serviceName, HealthCheck<Container> healthCheck) {
