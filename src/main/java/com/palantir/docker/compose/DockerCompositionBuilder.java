@@ -15,7 +15,6 @@
  */
 package com.palantir.docker.compose;
 
-import com.palantir.docker.compose.ImmutableDockerComposeRule.Builder;
 import com.palantir.docker.compose.configuration.DockerComposeFiles;
 import com.palantir.docker.compose.configuration.ProjectName;
 import com.palantir.docker.compose.connection.Container;
@@ -32,7 +31,7 @@ import org.joda.time.ReadableDuration;
  */
 @Deprecated
 public class DockerCompositionBuilder {
-    private final Builder builder;
+    private final DockerComposeRule.Builder builder;
 
     public DockerCompositionBuilder() {
         this.builder = DockerComposeRule.builder();
