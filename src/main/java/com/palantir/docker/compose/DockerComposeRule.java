@@ -173,49 +173,43 @@ public abstract class DockerComposeRule extends ExternalResource {
         return dockerCompose().run(options, containerName, arguments);
     }
 
-    public static ImmutableDockerComposeRule.Builder builder() {
-        return ImmutableDockerComposeRule.builder();
+    public static Builder builder() {
+        return new Builder();
     }
 
-    public abstract static class Builder {
+    public static class Builder extends ImmutableDockerComposeRule.Builder {
 
-        public abstract ImmutableDockerComposeRule.Builder files(DockerComposeFiles files);
-
-        public ImmutableDockerComposeRule.Builder file(String dockerComposeYmlFile) {
+        public Builder file(String dockerComposeYmlFile) {
             return files(DockerComposeFiles.from(dockerComposeYmlFile));
         }
 
-        public abstract ImmutableDockerComposeRule.Builder logCollector(LogCollector logCollector);
-
-        public ImmutableDockerComposeRule.Builder saveLogsTo(String path) {
+        public Builder saveLogsTo(String path) {
             return logCollector(FileLogCollector.fromPath(path));
         }
 
-        public abstract ImmutableDockerComposeRule.Builder addClusterWait(ClusterWait clusterWait);
-
-        public ImmutableDockerComposeRule.Builder waitingForService(String serviceName, HealthCheck<Container> healthCheck) {
+        public Builder waitingForService(String serviceName, HealthCheck<Container> healthCheck) {
             return waitingForService(serviceName, healthCheck, DEFAULT_TIMEOUT);
         }
 
-        public ImmutableDockerComposeRule.Builder waitingForService(String serviceName, HealthCheck<Container> healthCheck, ReadableDuration timeout) {
+        public Builder waitingForService(String serviceName, HealthCheck<Container> healthCheck, ReadableDuration timeout) {
             ClusterHealthCheck clusterHealthCheck = serviceHealthCheck(serviceName, healthCheck);
             return addClusterWait(new ClusterWait(clusterHealthCheck, timeout));
         }
 
-        public ImmutableDockerComposeRule.Builder waitingForServices(List<String> services, HealthCheck<List<Container>> healthCheck) {
+        public Builder waitingForServices(List<String> services, HealthCheck<List<Container>> healthCheck) {
             return waitingForServices(services, healthCheck, DEFAULT_TIMEOUT);
         }
 
-        public ImmutableDockerComposeRule.Builder waitingForServices(List<String> services, HealthCheck<List<Container>> healthCheck, ReadableDuration timeout) {
+        public Builder waitingForServices(List<String> services, HealthCheck<List<Container>> healthCheck, ReadableDuration timeout) {
             ClusterHealthCheck clusterHealthCheck = serviceHealthCheck(services, healthCheck);
             return addClusterWait(new ClusterWait(clusterHealthCheck, timeout));
         }
 
-        public ImmutableDockerComposeRule.Builder waitingForHostNetworkedPort(int port, HealthCheck<DockerPort> healthCheck) {
+        public Builder waitingForHostNetworkedPort(int port, HealthCheck<DockerPort> healthCheck) {
             return waitingForHostNetworkedPort(port, healthCheck, DEFAULT_TIMEOUT);
         }
 
-        public ImmutableDockerComposeRule.Builder waitingForHostNetworkedPort(int port, HealthCheck<DockerPort> healthCheck, ReadableDuration timeout) {
+        public Builder waitingForHostNetworkedPort(int port, HealthCheck<DockerPort> healthCheck, ReadableDuration timeout) {
             ClusterHealthCheck clusterHealthCheck = transformingHealthCheck(cluster -> new DockerPort(cluster.ip(), port, port), healthCheck);
             return addClusterWait(new ClusterWait(clusterHealthCheck, timeout));
         }
