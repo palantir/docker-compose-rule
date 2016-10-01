@@ -15,13 +15,15 @@
  */
 package com.palantir.docker.compose;
 
+import static com.palantir.docker.compose.configuration.ShutdownStrategy.AGGRESSIVE;
+
 import com.palantir.docker.compose.execution.DockerExecutionException;
 import java.io.IOException;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-public class DockerComposeRuleRestartContainersIntegrationTest {
+public class RemoveConflictingContainersIntegrationTest {
 
     private static final String DOCKER_COMPOSE_YAML_PATH = "src/test/resources/named-containers-docker-compose.yaml";
 
@@ -29,25 +31,33 @@ public class DockerComposeRuleRestartContainersIntegrationTest {
     public ExpectedException exception = ExpectedException.none();
 
     @Test
-    public void test_docker_compose_rule_fails_with_existing_containers() throws IOException, InterruptedException {
-        DockerComposeRule composition = DockerComposeRule.builder().file(DOCKER_COMPOSE_YAML_PATH).build();
-        composition.before();
-        composition = DockerComposeRule.builder()
+    public void removeConflictingContainersOnStartup_off_should_fail_fast_if_containers_exist() throws IOException, InterruptedException {
+        DockerComposeRule composition = DockerComposeRule.builder()
                 .file(DOCKER_COMPOSE_YAML_PATH)
+                .retryAttempts(0)
+                .build();
+        composition.before();
+
+        DockerComposeRule conflictingComposition = DockerComposeRule.builder()
+                .file(DOCKER_COMPOSE_YAML_PATH)
+                .retryAttempts(0)
                 .removeConflictingContainersOnStartup(false)
                 .build();
 
         exception.expect(DockerExecutionException.class);
         exception.expectMessage("'docker-compose up -d' returned exit code");
-        composition.before();
+
+        conflictingComposition.before();
     }
 
     @Test
-    public void test_docker_compose_rule_removes_existing_containers() throws IOException, InterruptedException {
-        DockerComposeRule composition = DockerComposeRule.builder().file(DOCKER_COMPOSE_YAML_PATH).build();
+    public void by_default_existing_containers_should_be_removed_silently() throws IOException, InterruptedException {
+        DockerComposeRule composition = DockerComposeRule.builder()
+                .file(DOCKER_COMPOSE_YAML_PATH)
+                .retryAttempts(0)
+                .shutdownStrategy(AGGRESSIVE)
+                .build();
         composition.before();
-
-        composition = DockerComposeRule.builder().file(DOCKER_COMPOSE_YAML_PATH).build();
         composition.before();
         composition.after();
     }
