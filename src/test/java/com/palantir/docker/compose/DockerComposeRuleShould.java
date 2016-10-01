@@ -263,7 +263,7 @@ public class DockerComposeRuleShould {
         return container;
     }
 
-    private ImmutableDockerComposeRule.Builder defaultBuilder() {
+    private DockerComposeRule.Builder defaultBuilder() {
         return DockerComposeRule.builder().dockerCompose(dockerCompose)
                                           .files(mockFiles)
                                           .machine(machine)
