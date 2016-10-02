@@ -133,8 +133,6 @@ public abstract class DockerComposeRule extends ExternalResource {
         }
         upDockerCompose.up();
 
-        log.debug("Starting log collection");
-
         logCollector().startCollecting(dockerCompose());
         log.debug("Waiting for services");
         clusterWaits().forEach(clusterWait -> clusterWait.waitUntilReady(containers()));

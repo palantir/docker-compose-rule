@@ -40,7 +40,7 @@ public class ClusterWait {
         final AtomicReference<Optional<SuccessOrFailure>> lastSuccessOrFailure = new AtomicReference<>(
                 Optional.empty());
 
-        log.debug("Waiting for cluster to be healthy");
+        log.info("Waiting for cluster to be healthy");
         try {
             Awaitility.await()
                     .pollInterval(50, TimeUnit.MILLISECONDS)
