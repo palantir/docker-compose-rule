@@ -17,6 +17,7 @@ package com.palantir.docker.compose.execution;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.Matchers.lessThan;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
@@ -40,6 +41,19 @@ public class RetryerShould {
 
         assertThat(retryer.runWithRetries(operation), is("hi"));
         verify(operation).call();
+    }
+
+    @Test
+    public void should_not_pause_after_last_failure() throws Exception {
+        Retryer failFast = new Retryer(0, Duration.standardSeconds(1));
+        when(operation.call()).thenThrow(new DockerExecutionException());
+        Stopwatch stopwatch = Stopwatch.createStarted();
+        try {
+            failFast.runWithRetries(operation);
+        } catch (DockerExecutionException e) {
+            // expected
+        }
+        assertThat(stopwatch.elapsed(TimeUnit.MILLISECONDS), lessThan(1000L));
     }
 
     @Test

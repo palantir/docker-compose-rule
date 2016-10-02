@@ -45,7 +45,9 @@ public class Retryer {
             } catch (DockerExecutionException e) {
                 lastExecutionException = e;
                 log.warn("Caught exception: {}. Retrying after {}", e.getMessage(), delay);
-                Thread.sleep(delay.getMillis());
+                if (i < retryAttempts) {
+                    Thread.sleep(delay.getMillis());
+                }
             }
         }
 
