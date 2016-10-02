@@ -2,7 +2,7 @@ machine:
   pre:
     - curl -sSL https://s3.amazonaws.com/circle-downloads/install-circleci-docker.sh | bash -s -- 1.10.0
   java:
-    version: oraclejdk8 
+    version: oraclejdk8
   services:
     - docker
   environment:
@@ -15,10 +15,15 @@ dependencies:
     - ./gradlew resolveConfigurations
 
 test:
-  pre:
-    - ./gradlew findbugsMain findbugsTest checkstyleMain checkstyleTest javadoc --info
   override:
-    - ./gradlew test --info
+    - ? >
+        case $CIRCLE_NODE_INDEX in
+        0) ./gradlew test --info ;;
+        1) ./gradlew findbugsMain findbugsTest checkstyleMain checkstyleTest javadoc --info ;;
+        esac
+      :
+        parallel: true
+        timeout: 1200
   post:
     - mkdir -p $CIRCLE_TEST_REPORTS/junit/
     - find . -type f -regex ".*/build/test-results/.*xml" -exec cp {} $CIRCLE_TEST_REPORTS/junit/ \;
