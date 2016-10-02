@@ -35,6 +35,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.palantir.docker.compose.configuration.DockerComposeFiles;
 import com.palantir.docker.compose.configuration.MockDockerEnvironment;
+import com.palantir.docker.compose.configuration.ShutdownStrategy;
 import com.palantir.docker.compose.connection.Container;
 import com.palantir.docker.compose.connection.ContainerNames;
 import com.palantir.docker.compose.connection.DockerMachine;
@@ -81,12 +82,21 @@ public class DockerComposeRuleShould {
     private DockerComposeFiles mockFiles = mock(DockerComposeFiles.class);
     private DockerMachine machine = mock(DockerMachine.class);
     private LogCollector logCollector = mock(LogCollector.class);
+    private ShutdownStrategy shutdownStrategy = mock(ShutdownStrategy.class);
     private DockerComposeRule rule;
 
     @Before public void
     setup() {
         when(machine.getIp()).thenReturn(IP);
         rule = defaultBuilder().build();
+    }
+
+    private DockerComposeRule.Builder defaultBuilder() {
+        return DockerComposeRule.builder().dockerCompose(dockerCompose)
+                                          .files(mockFiles)
+                                          .machine(machine)
+                                          .logCollector(logCollector)
+                                          .shutdownStrategy(shutdownStrategy);
     }
 
     @Test
@@ -97,10 +107,9 @@ public class DockerComposeRuleShould {
     }
 
     @Test
-    public void call_kill_and_rm_after_tests_are_run() throws IOException, InterruptedException {
+    public void calls_shutdownStrategy_in_after_method() throws IOException, InterruptedException {
         rule.after();
-        verify(dockerCompose).kill();
-        verify(dockerCompose).rm();
+        verify(shutdownStrategy).shutdown(dockerCompose);
     }
 
     @Test
@@ -261,12 +270,5 @@ public class DockerComposeRuleShould {
         final Container container = new Container(containerName, dockerCompose);
         when(dockerCompose.container(containerName)).thenReturn(container);
         return container;
-    }
-
-    private DockerComposeRule.Builder defaultBuilder() {
-        return DockerComposeRule.builder().dockerCompose(dockerCompose)
-                                          .files(mockFiles)
-                                          .machine(machine)
-                                          .logCollector(logCollector);
     }
 }
