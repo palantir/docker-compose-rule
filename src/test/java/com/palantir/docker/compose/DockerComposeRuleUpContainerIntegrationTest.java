@@ -26,33 +26,23 @@ import com.palantir.docker.compose.connection.State;
 import com.palantir.docker.compose.connection.waiting.ClusterWait;
 import java.io.IOException;
 import org.joda.time.Duration;
-import org.junit.After;
-import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 
 public class DockerComposeRuleUpContainerIntegrationTest {
 
-    private static final String DOCKER_COMPOSE_YAML_PATH = "src/test/resources/docker-compose.yaml";
+    private static final String SERVICE_NAME = "infinite-netcat-loop";
 
-    private DockerComposeRule dockerComposeRule;
-
-    @Before
-    public void setUp() throws Exception {
-        dockerComposeRule = DockerComposeRule
-                .builder()
-                .shutdownStrategy(AGGRESSIVE)
-                .file(DOCKER_COMPOSE_YAML_PATH)
-                .build();
-    }
-
-    @After
-    public void tearDown() throws Exception {
-        dockerComposeRule.after();
-    }
+    @Rule
+    public final DockerComposeRule dockerComposeRule = DockerComposeRule
+            .builder()
+            .shutdownStrategy(AGGRESSIVE)
+            .file("src/test/resources/up-integration-test.yaml")
+            .build();
 
     @Test
     public void test_docker_compose_rule_up_container() throws IOException, InterruptedException {
-        Container container = dockerComposeRule.containers().container("db");
+        Container container = dockerComposeRule.containers().container(SERVICE_NAME);
 
         container.up();
 
@@ -61,12 +51,12 @@ public class DockerComposeRuleUpContainerIntegrationTest {
 
     @Test
     public void test_docker_compose_rule_up_container_with_healthcheck() throws IOException, InterruptedException {
-        Container container = dockerComposeRule.containers().container("db");
+        Container container = dockerComposeRule.containers().container(SERVICE_NAME);
 
         container.up();
 
         // to prove that we can use healthcheck manually after starting a single container
-        new ClusterWait(serviceHealthCheck("db", toHaveAllPortsOpen()), Duration.standardSeconds(5))
+        new ClusterWait(serviceHealthCheck(SERVICE_NAME, toHaveAllPortsOpen()), Duration.standardSeconds(5))
                 .waitUntilReady(dockerComposeRule.containers());
 
         assertThat(container.state(), is(State.Up));

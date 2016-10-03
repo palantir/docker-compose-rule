@@ -15,7 +15,8 @@ public class SkipShutdownStrategy implements ShutdownStrategy {
 
     @Override
     public void shutdown(DockerCompose dockerCompose) throws IOException, InterruptedException {
-        log.warn("******************************************************************************************\n"
+        log.warn("\n"
+                + "******************************************************************************************\n"
                 + "* docker-compose-rule has been configured to skip docker-compose shutdown:               *\n"
                 + "* this means the containers will be left running after tests finish executing.           *\n"
                 + "* If you see this message when running on CI it means you are potentially abandoning     *\n"

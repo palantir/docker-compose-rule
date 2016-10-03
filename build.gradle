@@ -72,3 +72,9 @@ dependencies {
     testCompile "com.github.tomakehurst:wiremock:2.0.6-beta"
     testCompile "com.google.code.findbugs:jsr305:3.0.0"
 }
+
+// Instead of copying files out of `$buildDir/test-results/` on CircleCI, we can
+// just write them into the right place straight away.
+if (System.env.CIRCLE_TEST_REPORTS) {
+    test.reports.junitXml.destination = file(System.env.CIRCLE_TEST_REPORTS)
+}

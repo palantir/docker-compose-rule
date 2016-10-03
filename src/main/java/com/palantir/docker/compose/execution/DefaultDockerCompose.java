@@ -56,7 +56,7 @@ public class DefaultDockerCompose implements DockerCompose {
 
     public DefaultDockerCompose(DockerComposeExecutable rawExecutable, DockerMachine dockerMachine) {
         this.rawExecutable = rawExecutable;
-        this.command = new Command(rawExecutable, log::debug);
+        this.command = new Command(rawExecutable, log::trace);
         this.dockerMachine = dockerMachine;
     }
 
