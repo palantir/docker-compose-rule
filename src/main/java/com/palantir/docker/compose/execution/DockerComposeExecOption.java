@@ -15,9 +15,9 @@
  */
 package com.palantir.docker.compose.execution;
 
+import com.google.common.collect.ImmutableList;
 import java.util.Arrays;
 import java.util.List;
-
 import org.immutables.value.Value;
 
 @Value.Immutable
@@ -27,5 +27,9 @@ public abstract class DockerComposeExecOption {
 
     public static DockerComposeExecOption options(String... options) {
         return ImmutableDockerComposeExecOption.of(Arrays.asList(options));
+    }
+
+    public static DockerComposeExecOption noOptions() {
+        return ImmutableDockerComposeExecOption.of(ImmutableList.of());
     }
 }
