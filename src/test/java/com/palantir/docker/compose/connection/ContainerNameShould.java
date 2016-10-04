@@ -10,10 +10,17 @@ import static org.junit.Assert.assertThat;
 import org.junit.Test;
 
 public class ContainerNameShould {
+
     @Test
-    public void parse_a_semantic_name_correctly_from_a_single_line() {
-        ContainerName names = ContainerName.fromPsLine("dir_db_1 other line contents");
-        assertThat(names, is(ImmutableContainerName.of("db")));
+    public void parse_a_semantic_and_raw_name_correctly_from_a_single_line() {
+        ContainerName actual = ContainerName.fromPsLine("dir_db_1 other line contents");
+
+        ContainerName expected = ImmutableContainerName.builder()
+                .rawName("dir_db_1")
+                .semanticName("db")
+                .build();
+
+        assertThat(actual, is(expected));
     }
 
 }

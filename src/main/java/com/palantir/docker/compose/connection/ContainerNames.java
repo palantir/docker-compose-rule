@@ -29,7 +29,7 @@ public class ContainerNames {
 
     public static ContainerNames of(String... containerNames) {
         List<ContainerName> testNames = Arrays.stream(containerNames)
-                .map(ImmutableContainerName::of)
+                .map(testName -> ImmutableContainerName.builder().semanticName(testName).rawName("123456_" + testName + "_1").build())
                 .collect(toList());
         return new ContainerNames(testNames);
     }

@@ -12,7 +12,8 @@ import org.immutables.value.Value;
 @Value.Immutable
 public abstract class ContainerName {
 
-    @Value.Parameter
+    public abstract String rawName();
+
     public abstract String semanticName();
 
     @Override
@@ -24,7 +25,10 @@ public abstract class ContainerName {
         String[] lineComponents = psLine.split(" ");
         String rawName = lineComponents[0];
         String semanticName = withoutDirectory(withoutScaleNumber(rawName));
-        return ImmutableContainerName.of(semanticName);
+        return ImmutableContainerName.builder()
+                .rawName(rawName)
+                .semanticName(semanticName)
+                .build();
     }
 
     private static String withoutDirectory(String rawName) {
