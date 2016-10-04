@@ -16,14 +16,12 @@
 package com.palantir.docker.compose.connection;
 
 import static java.util.Collections.emptyList;
-import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
 
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
-import java.util.function.Function;
 import java.util.stream.Stream;
 
 public class ContainerNames implements Iterable<String> {
@@ -50,25 +48,9 @@ public class ContainerNames implements Iterable<String> {
         return Arrays.stream(psContainerOutput.split("\n"))
                      .map(String::trim)
                      .filter(line -> !line.isEmpty())
-                     .map(line -> line.split(" "))
-                     .map(psColumns -> psColumns[0])
-                     .map(withoutDirectory().andThen(withoutScaleNumber()))
+                     .map(ContainerName::fromPsLine)
+                     .map(ContainerName::semanticName)
                      .collect(toList());
-    }
-
-    public static Function<String, String> withoutDirectory() {
-        return fullname -> Arrays.stream(fullname.split("_"))
-                .skip(1)
-                .collect(joining("_"));
-    }
-
-    public static Function<String, String> withoutScaleNumber() {
-        return fullname -> {
-            final String[] components = fullname.split("_");
-            return Arrays.stream(components)
-                    .limit(components.length - 1)
-                    .collect(joining("_"));
-        };
     }
 
     @Override
