@@ -4,8 +4,8 @@
 
 package com.palantir.docker.compose.configuration;
 
+import com.palantir.docker.compose.DockerComposeRule;
 import com.palantir.docker.compose.execution.AggressiveShutdownStrategy;
-import com.palantir.docker.compose.execution.DockerCompose;
 import com.palantir.docker.compose.execution.GracefulShutdownStrategy;
 import com.palantir.docker.compose.execution.SkipShutdownStrategy;
 import java.io.IOException;
@@ -20,6 +20,6 @@ public interface ShutdownStrategy {
     ShutdownStrategy GRACEFUL = new GracefulShutdownStrategy();
     ShutdownStrategy SKIP = new SkipShutdownStrategy();
 
-    void shutdown(DockerCompose dockerCompose) throws IOException, InterruptedException;
+    void shutdown(DockerComposeRule rule) throws IOException, InterruptedException;
 
 }

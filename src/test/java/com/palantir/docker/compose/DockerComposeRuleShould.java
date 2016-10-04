@@ -109,7 +109,7 @@ public class DockerComposeRuleShould {
     @Test
     public void calls_shutdownStrategy_in_after_method() throws IOException, InterruptedException {
         rule.after();
-        verify(shutdownStrategy).shutdown(dockerCompose);
+        verify(shutdownStrategy).shutdown(rule);
     }
 
     @Test
