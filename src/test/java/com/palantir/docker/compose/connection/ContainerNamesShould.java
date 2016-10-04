@@ -18,6 +18,7 @@ package com.palantir.docker.compose.connection;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 
+import com.palantir.docker.compose.TestContainerNames;
 import org.junit.Test;
 
 public class ContainerNamesShould {
@@ -59,6 +60,6 @@ public class ContainerNamesShould {
     }
 
     public static ContainerNames containerNames(String... names) {
-        return ContainerNames.of(names);
+        return TestContainerNames.of(names);
     }
 }

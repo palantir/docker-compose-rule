@@ -8,7 +8,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
 import com.palantir.docker.compose.configuration.ShutdownStrategy;
-import com.palantir.docker.compose.connection.ContainerNames;
 import com.palantir.docker.compose.logging.DoNothingLogCollector;
 import org.junit.Test;
 
@@ -23,12 +22,12 @@ public class AggressiveShutdownStrategyIntegrationTest {
                 .shutdownStrategy(ShutdownStrategy.AGGRESSIVE)
                 .build();
 
-        assertThat(rule.dockerCompose().ps(), is(ContainerNames.of()));
+        assertThat(rule.dockerCompose().ps(), is(TestContainerNames.of()));
 
         rule.before();
         rule.after();
 
-        assertThat(rule.dockerCompose().ps(), is(ContainerNames.of()));
+        assertThat(rule.dockerCompose().ps(), is(TestContainerNames.of()));
     }
 
 }
