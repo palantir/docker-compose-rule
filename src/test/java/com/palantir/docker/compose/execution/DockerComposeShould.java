@@ -18,6 +18,7 @@ package com.palantir.docker.compose.execution;
 import static com.palantir.docker.compose.execution.DockerComposeExecArgument.arguments;
 import static com.palantir.docker.compose.execution.DockerComposeExecOption.options;
 import static org.apache.commons.io.IOUtils.toInputStream;
+import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.anyVararg;
@@ -27,13 +28,15 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.palantir.docker.compose.connection.Container;
-import com.palantir.docker.compose.connection.ContainerNames;
+import com.palantir.docker.compose.connection.ContainerName;
 import com.palantir.docker.compose.connection.DockerMachine;
 import com.palantir.docker.compose.connection.DockerPort;
+import com.palantir.docker.compose.connection.ImmutableContainerName;
 import com.palantir.docker.compose.connection.Ports;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -87,9 +90,9 @@ public class DockerComposeShould {
     @Test
     public void parse_and_returns_container_names_on_ps() throws IOException, InterruptedException {
         when(executedProcess.getInputStream()).thenReturn(toInputStream("ps\n----\ndir_db_1"));
-        ContainerNames containerNames = compose.ps();
+        List<ContainerName> containerNames = compose.ps();
         verify(executor).execute("ps");
-        assertThat(containerNames, is(new ContainerNames("db")));
+        assertThat(containerNames, contains(ImmutableContainerName.builder().semanticName("db").rawName("dir_db_1").build()));
     }
 
     @Test

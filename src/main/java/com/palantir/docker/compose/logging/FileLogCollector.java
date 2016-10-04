@@ -17,11 +17,12 @@ package com.palantir.docker.compose.logging;
 
 import static com.google.common.base.Preconditions.checkArgument;
 
-import com.palantir.docker.compose.connection.ContainerNames;
+import com.palantir.docker.compose.connection.ContainerName;
 import com.palantir.docker.compose.execution.DockerCompose;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -56,12 +57,13 @@ public class FileLogCollector implements LogCollector {
         if (executor != null) {
             throw new RuntimeException("Cannot start collecting the same logs twice");
         }
-        ContainerNames containerNames = dockerCompose.ps();
+        List<ContainerName> containerNames = dockerCompose.ps();
         if (containerNames.size() == 0) {
             return;
         }
         executor = Executors.newFixedThreadPool(containerNames.size());
         containerNames.stream()
+                      .map(ContainerName::semanticName)
                       .forEachOrdered(container -> this.collectLogs(container, dockerCompose));
     }
 

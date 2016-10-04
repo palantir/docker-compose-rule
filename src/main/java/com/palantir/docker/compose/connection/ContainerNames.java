@@ -16,98 +16,33 @@
 package com.palantir.docker.compose.connection;
 
 import static java.util.Collections.emptyList;
-import static java.util.Collections.singletonList;
-import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
 
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Objects;
-import java.util.function.Function;
 import java.util.stream.Stream;
 
-public class ContainerNames implements Iterable<String> {
+public class ContainerNames {
 
-    private final List<String> containerNames;
+    private ContainerNames() {}
 
-    public ContainerNames(String singleContainerName) {
-        this(singletonList(singleContainerName));
-    }
-
-    public ContainerNames(List<String> containerNames) {
-        this.containerNames = containerNames;
-    }
-
-    public static ContainerNames parseFromDockerComposePs(String psOutput) {
-        String[] splitOnSeparator = psOutput.split("-+\n");
-        if (splitOnSeparator.length < 2) {
-            return new ContainerNames(emptyList());
+    public static List<ContainerName> parseFromDockerComposePs(String psOutput) {
+        String[] psHeadAndBody = psOutput.split("-+\n");
+        if (psHeadAndBody.length < 2) {
+            return emptyList();
         }
-        return new ContainerNames(getContainerNamesAtStartOfLines(splitOnSeparator[1]));
+
+        String psBody = psHeadAndBody[1];
+        return psBodyLines(psBody)
+                .map(ContainerName::fromPsLine)
+                .collect(toList());
     }
 
-    private static List<String> getContainerNamesAtStartOfLines(String psContainerOutput) {
-        return Arrays.stream(psContainerOutput.split("\n"))
-                     .map(String::trim)
-                     .filter(line -> !line.isEmpty())
-                     .map(line -> line.split(" "))
-                     .map(psColumns -> psColumns[0])
-                     .map(withoutDirectory().andThen(withoutScaleNumber()))
-                     .collect(toList());
-    }
-
-    public static Function<String, String> withoutDirectory() {
-        return fullname -> Arrays.stream(fullname.split("_"))
-                .skip(1)
-                .collect(joining("_"));
-    }
-
-    public static Function<String, String> withoutScaleNumber() {
-        return fullname -> {
-            final String[] components = fullname.split("_");
-            return Arrays.stream(components)
-                    .limit(components.length - 1)
-                    .collect(joining("_"));
-        };
-    }
-
-    @Override
-    public Iterator<String> iterator() {
-        return containerNames.iterator();
-    }
-
-    public Stream<String> stream() {
-        return containerNames.stream();
-    }
-
-    public int size() {
-        return containerNames.size();
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(containerNames);
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        ContainerNames other = (ContainerNames) obj;
-        return Objects.equals(containerNames, other.containerNames);
-    }
-
-    @Override
-    public String toString() {
-        return "ContainerNames [containerNames=" + containerNames + "]";
+    private static Stream<String> psBodyLines(String psBody) {
+        String[] lines = psBody.split("\n");
+        return Arrays.stream(lines)
+                .map(String::trim)
+                .filter(line -> !line.isEmpty());
     }
 
 }

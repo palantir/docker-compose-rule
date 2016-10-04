@@ -16,11 +16,12 @@
 package com.palantir.docker.compose.execution;
 
 import com.palantir.docker.compose.connection.Container;
-import com.palantir.docker.compose.connection.ContainerNames;
+import com.palantir.docker.compose.connection.ContainerName;
 import com.palantir.docker.compose.connection.Ports;
 import com.palantir.docker.compose.connection.State;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.List;
 
 public interface DockerCompose {
     void build() throws IOException, InterruptedException;
@@ -34,7 +35,7 @@ public interface DockerCompose {
     void kill(Container container) throws IOException, InterruptedException;
     String exec(DockerComposeExecOption dockerComposeExecOption, String containerName, DockerComposeExecArgument dockerComposeExecArgument) throws IOException, InterruptedException;
     String run(DockerComposeRunOption dockerComposeRunOption, String containerName, DockerComposeRunArgument dockerComposeRunArgument) throws IOException, InterruptedException;
-    ContainerNames ps() throws IOException, InterruptedException;
+    List<ContainerName> ps() throws IOException, InterruptedException;
     Container container(String containerName);
     boolean writeLogs(String container, OutputStream output) throws IOException;
     Ports ports(String service) throws IOException, InterruptedException;

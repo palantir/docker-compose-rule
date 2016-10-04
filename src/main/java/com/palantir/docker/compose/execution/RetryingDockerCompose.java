@@ -15,8 +15,9 @@
  */
 package com.palantir.docker.compose.execution;
 
-import com.palantir.docker.compose.connection.ContainerNames;
+import com.palantir.docker.compose.connection.ContainerName;
 import java.io.IOException;
+import java.util.List;
 
 public class RetryingDockerCompose extends DelegatingDockerCompose {
     private final Retryer retryer;
@@ -39,7 +40,7 @@ public class RetryingDockerCompose extends DelegatingDockerCompose {
     }
 
     @Override
-    public ContainerNames ps() throws IOException, InterruptedException {
+    public List<ContainerName> ps() throws IOException, InterruptedException {
         return retryer.runWithRetries(super::ps);
     }
 }
