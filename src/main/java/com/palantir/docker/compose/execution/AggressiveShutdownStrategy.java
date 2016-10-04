@@ -6,6 +6,7 @@ package com.palantir.docker.compose.execution;
 
 import static java.util.stream.Collectors.toList;
 
+import com.google.common.base.Throwables;
 import com.palantir.docker.compose.DockerComposeRule;
 import com.palantir.docker.compose.configuration.ShutdownStrategy;
 import com.palantir.docker.compose.connection.ContainerName;
@@ -24,10 +25,34 @@ public class AggressiveShutdownStrategy implements ShutdownStrategy {
 
     @Override
     public void shutdown(DockerComposeRule rule) throws IOException, InterruptedException {
-        List<ContainerName> running = rule.dockerCompose().ps();
+        List<ContainerName> runningContainers = rule.dockerCompose().ps();
 
-        log.info("Shutting down {}", running.stream().map(ContainerName::semanticName).collect(toList()));
-        rule.docker().rm(running.stream().map(ContainerName::rawName).collect(toList()));
+        log.info("Shutting down {}", runningContainers.stream().map(ContainerName::semanticName).collect(toList()));
+        removeContainersCatchingBtrfs(rule, runningContainers);
+
+        log.debug("First shutdown attempted failed due to btrfs volume error... retrying");
+        removeContainersCatchingBtrfs(rule, runningContainers);
+
+        log.warn("Couldn't shut down containers due to btrfs volume error, "
+                + "see https://circleci.com/docs/docker-btrfs-error/ for more info.");
+    }
+
+    private void removeContainersCatchingBtrfs(DockerComposeRule rule, List<ContainerName> runningContainers) throws IOException, InterruptedException {
+        try {
+            removeContainers(rule, runningContainers);
+        } catch (DockerExecutionException exception) {
+            if (!exception.getMessage().contains("Driver btrfs failed to remove")) {
+                throw Throwables.propagate(exception);
+            }
+        }
+    }
+
+    private void removeContainers(DockerComposeRule rule, List<ContainerName> running) throws IOException, InterruptedException {
+        List<String> rawContainerNames = running.stream()
+                .map(ContainerName::rawName)
+                .collect(toList());
+
+        rule.docker().rm(rawContainerNames);
         log.debug("Finished shutdown");
     }
 
