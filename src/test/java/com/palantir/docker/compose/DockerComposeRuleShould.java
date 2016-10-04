@@ -208,7 +208,7 @@ public class DockerComposeRuleShould {
             throws IOException, InterruptedException {
         File logLocation = logFolder.newFolder();
         DockerComposeRule loggingComposition = DockerComposeRule.builder().from(rule).saveLogsTo(logLocation.getAbsolutePath()).build();
-        when(dockerCompose.ps()).thenReturn(new ContainerNames(ImmutableList.of("db")));
+        when(dockerCompose.ps()).thenReturn(ContainerNames.of("db"));
         CountDownLatch latch = new CountDownLatch(1);
         when(dockerCompose.writeLogs(eq("db"), any(OutputStream.class))).thenAnswer((args) -> {
             OutputStream outputStream = (OutputStream) args.getArguments()[1];

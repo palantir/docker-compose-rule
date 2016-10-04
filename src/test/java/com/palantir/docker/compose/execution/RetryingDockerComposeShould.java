@@ -26,7 +26,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
-import com.google.common.collect.ImmutableList;
 import com.palantir.docker.compose.connection.ContainerNames;
 import java.io.IOException;
 import org.junit.Before;
@@ -36,7 +35,7 @@ public class RetryingDockerComposeShould {
     private final DockerCompose dockerCompose = mock(DockerCompose.class);
     private final Retryer retryer = mock(Retryer.class);
     private final RetryingDockerCompose retryingDockerCompose = new RetryingDockerCompose(retryer, dockerCompose);
-    private final ContainerNames someContainerNames = new ContainerNames(ImmutableList.of("hey"));
+    private final ContainerNames someContainerNames = ContainerNames.of("hey");
     private static final String CONTAINER_NAME = "container";
 
     @Before

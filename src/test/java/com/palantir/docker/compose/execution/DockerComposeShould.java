@@ -26,7 +26,6 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.google.common.collect.ImmutableList;
 import com.palantir.docker.compose.connection.Container;
 import com.palantir.docker.compose.connection.ContainerNames;
 import com.palantir.docker.compose.connection.DockerMachine;
@@ -90,7 +89,7 @@ public class DockerComposeShould {
         when(executedProcess.getInputStream()).thenReturn(toInputStream("ps\n----\ndir_db_1"));
         ContainerNames containerNames = compose.ps();
         verify(executor).execute("ps");
-        assertThat(containerNames, is(new ContainerNames(ImmutableList.of("db"))));
+        assertThat(containerNames, is(ContainerNames.of("db")));
     }
 
     @Test

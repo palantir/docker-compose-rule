@@ -30,7 +30,11 @@ public class ContainerNames implements Iterable<String> {
 
     private final List<String> containerNames;
 
-    public ContainerNames(List<String> containerNames) {
+    public static ContainerNames of(String... containerNames) {
+        return new ContainerNames(Arrays.asList(containerNames));
+    }
+
+    private ContainerNames(List<String> containerNames) {
         this.containerNames = containerNames;
     }
 
