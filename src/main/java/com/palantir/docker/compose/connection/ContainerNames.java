@@ -20,22 +20,29 @@ import static java.util.stream.Collectors.toList;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Stream;
 
 public class ContainerNames {
 
     private ContainerNames() {}
 
     public static List<ContainerName> parseFromDockerComposePs(String psOutput) {
-        String[] splitOnSeparator = psOutput.split("-+\n");
-        if (splitOnSeparator.length < 2) {
+        String[] psHeadAndBody = psOutput.split("-+\n");
+        if (psHeadAndBody.length < 2) {
             return emptyList();
         }
-        String psBody = splitOnSeparator[1];
-        return Arrays.stream(psBody.split("\n"))
-                .map(String::trim)
-                .filter(line -> !line.isEmpty())
+
+        String psBody = psHeadAndBody[1];
+        return psBodyLines(psBody)
                 .map(ContainerName::fromPsLine)
                 .collect(toList());
+    }
+
+    private static Stream<String> psBodyLines(String psBody) {
+        String[] lines = psBody.split("\n");
+        return Arrays.stream(lines)
+                .map(String::trim)
+                .filter(line -> !line.isEmpty());
     }
 
 }

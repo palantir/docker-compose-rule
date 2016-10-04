@@ -21,7 +21,7 @@ public class TestContainerNames {
                 .collect(toList());
     }
 
-    private static ImmutableContainerName testContainerName(String testName) {
+    private static ContainerName testContainerName(String testName) {
         return ImmutableContainerName.builder()
                 .semanticName(testName)
                 .rawName("123456_" + testName + "_1")

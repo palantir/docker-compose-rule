@@ -25,6 +25,7 @@ public class AggressiveShutdownStrategyIntegrationTest {
         assertThat(rule.dockerCompose().ps(), is(TestContainerNames.of()));
 
         rule.before();
+        assertThat(rule.dockerCompose().ps().size(), is(2));
         rule.after();
 
         assertThat(rule.dockerCompose().ps(), is(TestContainerNames.of()));
