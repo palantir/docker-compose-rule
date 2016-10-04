@@ -17,6 +17,7 @@ package com.palantir.docker.compose.logging;
 
 import static com.google.common.base.Preconditions.checkArgument;
 
+import com.palantir.docker.compose.connection.ContainerName;
 import com.palantir.docker.compose.connection.ContainerNames;
 import com.palantir.docker.compose.execution.DockerCompose;
 import java.io.File;
@@ -62,6 +63,7 @@ public class FileLogCollector implements LogCollector {
         }
         executor = Executors.newFixedThreadPool(containerNames.size());
         containerNames.stream()
+                      .map(ContainerName::semanticName)
                       .forEachOrdered(container -> this.collectLogs(container, dockerCompose));
     }
 

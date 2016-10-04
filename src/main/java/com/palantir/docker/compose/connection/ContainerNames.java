@@ -19,20 +19,22 @@ import static java.util.Collections.emptyList;
 import static java.util.stream.Collectors.toList;
 
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Stream;
 
-public class ContainerNames implements Iterable<String> {
+public class ContainerNames {
 
-    private final List<String> containerNames;
+    private final List<ContainerName> containerNames;
 
     public static ContainerNames of(String... containerNames) {
-        return new ContainerNames(Arrays.asList(containerNames));
+        List<ContainerName> testNames = Arrays.stream(containerNames)
+                .map(ImmutableContainerName::of)
+                .collect(toList());
+        return new ContainerNames(testNames);
     }
 
-    private ContainerNames(List<String> containerNames) {
+    private ContainerNames(List<ContainerName> containerNames) {
         this.containerNames = containerNames;
     }
 
@@ -41,24 +43,16 @@ public class ContainerNames implements Iterable<String> {
         if (splitOnSeparator.length < 2) {
             return new ContainerNames(emptyList());
         }
-        return new ContainerNames(getContainerNamesAtStartOfLines(splitOnSeparator[1]));
+        String psBody = splitOnSeparator[1];
+        List<ContainerName> names = Arrays.stream(psBody.split("\n"))
+                .map(String::trim)
+                .filter(line -> !line.isEmpty())
+                .map(ContainerName::fromPsLine)
+                .collect(toList());
+        return new ContainerNames(names);
     }
 
-    private static List<String> getContainerNamesAtStartOfLines(String psContainerOutput) {
-        return Arrays.stream(psContainerOutput.split("\n"))
-                     .map(String::trim)
-                     .filter(line -> !line.isEmpty())
-                     .map(ContainerName::fromPsLine)
-                     .map(ContainerName::semanticName)
-                     .collect(toList());
-    }
-
-    @Override
-    public Iterator<String> iterator() {
-        return containerNames.iterator();
-    }
-
-    public Stream<String> stream() {
+    public Stream<ContainerName> stream() {
         return containerNames.stream();
     }
 
