@@ -24,11 +24,23 @@ public abstract class ContainerName {
     public static ContainerName fromPsLine(String psLine) {
         String[] lineComponents = psLine.split(" ");
         String rawName = lineComponents[0];
+
+        if (probablyCustomName(rawName)) {
+            return ImmutableContainerName.builder()
+                .rawName(rawName)
+                .semanticName(rawName)
+                .build();
+        }
+
         String semanticName = withoutDirectory(withoutScaleNumber(rawName));
         return ImmutableContainerName.builder()
                 .rawName(rawName)
                 .semanticName(semanticName)
                 .build();
+    }
+
+    private static boolean probablyCustomName(String rawName) {
+        return !(rawName.split("_").length >= 3);
     }
 
     private static String withoutDirectory(String rawName) {
