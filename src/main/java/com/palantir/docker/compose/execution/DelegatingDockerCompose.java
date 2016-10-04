@@ -16,11 +16,12 @@
 package com.palantir.docker.compose.execution;
 
 import com.palantir.docker.compose.connection.Container;
-import com.palantir.docker.compose.connection.ContainerNames;
+import com.palantir.docker.compose.connection.ContainerName;
 import com.palantir.docker.compose.connection.Ports;
 import com.palantir.docker.compose.connection.State;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.List;
 
 abstract class DelegatingDockerCompose implements DockerCompose {
     private final DockerCompose dockerCompose;
@@ -87,7 +88,7 @@ abstract class DelegatingDockerCompose implements DockerCompose {
     }
 
     @Override
-    public ContainerNames ps() throws IOException, InterruptedException {
+    public List<ContainerName> ps() throws IOException, InterruptedException {
         return dockerCompose.ps();
     }
 

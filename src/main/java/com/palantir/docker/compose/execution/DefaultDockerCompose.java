@@ -25,12 +25,14 @@ import com.google.common.collect.ImmutableList;
 import com.palantir.docker.compose.configuration.DockerComposeFiles;
 import com.palantir.docker.compose.configuration.ProjectName;
 import com.palantir.docker.compose.connection.Container;
+import com.palantir.docker.compose.connection.ContainerName;
 import com.palantir.docker.compose.connection.ContainerNames;
 import com.palantir.docker.compose.connection.DockerMachine;
 import com.palantir.docker.compose.connection.Ports;
 import com.palantir.docker.compose.connection.State;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.List;
 import org.apache.commons.io.IOUtils;
 import org.joda.time.Duration;
 import org.slf4j.Logger;
@@ -150,7 +152,7 @@ public class DefaultDockerCompose implements DockerCompose {
     }
 
     @Override
-    public ContainerNames ps() throws IOException, InterruptedException {
+    public List<ContainerName> ps() throws IOException, InterruptedException {
         String psOutput = command.execute(Command.throwingOnError(), "ps");
         return ContainerNames.parseFromDockerComposePs(psOutput);
     }
