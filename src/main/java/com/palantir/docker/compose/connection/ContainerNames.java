@@ -16,7 +16,6 @@
 package com.palantir.docker.compose.connection;
 
 import static java.util.Collections.emptyList;
-import static java.util.Collections.singletonList;
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
 
@@ -30,10 +29,6 @@ import java.util.stream.Stream;
 public class ContainerNames implements Iterable<String> {
 
     private final List<String> containerNames;
-
-    public ContainerNames(String singleContainerName) {
-        this(singletonList(singleContainerName));
-    }
 
     public ContainerNames(List<String> containerNames) {
         this.containerNames = containerNames;

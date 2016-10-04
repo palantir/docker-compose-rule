@@ -35,6 +35,7 @@ import com.palantir.docker.compose.execution.DockerCompose;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.Arrays;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import org.apache.commons.io.IOUtils;
@@ -105,7 +106,7 @@ public class FileLogCollectorShould {
     @Test
     public void collect_logs_when_one_container_is_running_and_terminates_before_start_collecting_is_run()
             throws Exception {
-        when(compose.ps()).thenReturn(new ContainerNames("db"));
+        when(compose.ps()).thenReturn(containerNames("db"));
         when(compose.writeLogs(eq("db"), any(OutputStream.class))).thenAnswer((args) -> {
             OutputStream outputStream = (OutputStream) args.getArguments()[1];
             IOUtils.write("log", outputStream);
@@ -120,7 +121,7 @@ public class FileLogCollectorShould {
     @Test
     public void collect_logs_when_one_container_is_running_and_does_not_terminate_until_after_start_collecting_is_run()
             throws Exception {
-        when(compose.ps()).thenReturn(new ContainerNames("db"));
+        when(compose.ps()).thenReturn(containerNames("db"));
         CountDownLatch latch = new CountDownLatch(1);
         when(compose.writeLogs(eq("db"), any(OutputStream.class))).thenAnswer((args) -> {
             if (!latch.await(1, TimeUnit.SECONDS)) {
@@ -140,7 +141,7 @@ public class FileLogCollectorShould {
     @Test
     public void collect_logs_when_one_container_is_running_and_does_not_terminate()
             throws IOException, InterruptedException {
-        when(compose.ps()).thenReturn(new ContainerNames("db"));
+        when(compose.ps()).thenReturn(containerNames("db"));
         CountDownLatch latch = new CountDownLatch(1);
         when(compose.writeLogs(eq("db"), any(OutputStream.class))).thenAnswer((args) -> {
             OutputStream outputStream = (OutputStream) args.getArguments()[1];
@@ -194,7 +195,7 @@ public class FileLogCollectorShould {
     @Test
     public void throw_exception_when_trying_to_start_a_started_collector_a_second_time()
             throws IOException, InterruptedException {
-        when(compose.ps()).thenReturn(new ContainerNames("db"));
+        when(compose.ps()).thenReturn(containerNames("db"));
         logCollector.startCollecting(compose);
         exception.expect(RuntimeException.class);
         exception.expectMessage("Cannot start collecting the same logs twice");
@@ -209,4 +210,7 @@ public class FileLogCollectorShould {
         return cannotBeCreatedDirectory;
     }
 
+    private static ContainerNames containerNames(String... names) {
+        return new ContainerNames(Arrays.asList(names));
+    }
 }

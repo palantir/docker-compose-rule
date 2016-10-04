@@ -15,11 +15,10 @@
  */
 package com.palantir.docker.compose.connection;
 
-import static java.util.Arrays.asList;
-import static java.util.Collections.emptyList;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 
+import java.util.Arrays;
 import org.junit.Test;
 
 public class ContainerNamesShould {
@@ -27,37 +26,40 @@ public class ContainerNamesShould {
     @Test
     public void result_in_no_container_names_when_ps_output_is_empty() {
         ContainerNames names = ContainerNames.parseFromDockerComposePs("\n----\n");
-        assertThat(names, is(new ContainerNames(emptyList())));
+        assertThat(names, is(containerNames()));
     }
 
     @Test
     public void result_in_a_single_container_name_when_ps_output_has_a_single_container() {
         ContainerNames names = ContainerNames.parseFromDockerComposePs("\n----\ndir_db_1 other line contents");
-        assertThat(names, is(new ContainerNames("db")));
+        assertThat(names, is(containerNames("db")));
     }
 
     @Test
     public void allow_containers_with_underscores_in_their_name() {
         ContainerNames names = ContainerNames.parseFromDockerComposePs("\n----\ndir_left_right_1 other line contents");
-        assertThat(names, is(new ContainerNames("left_right")));
+        assertThat(names, is(containerNames("left_right")));
     }
 
     @Test
     public void result_in_two_container_names_when_ps_output_has_two_containers() {
         ContainerNames names = ContainerNames.parseFromDockerComposePs("\n----\ndir_db_1 other line contents\ndir_db2_1 other stuff");
-        assertThat(names, is(new ContainerNames(asList("db", "db2"))));
+        assertThat(names, is(containerNames("db", "db2")));
     }
 
     @Test
     public void ignore_an_empty_line_in_ps_output() {
         ContainerNames names = ContainerNames.parseFromDockerComposePs("\n----\ndir_db_1 other line contents\n\n");
-        assertThat(names, is(new ContainerNames("db")));
+        assertThat(names, is(containerNames("db")));
     }
 
     @Test
     public void ignore_a_line_with_ony_spaces_in_ps_output() {
         ContainerNames names = ContainerNames.parseFromDockerComposePs("\n----\ndir_db_1 other line contents\n   \n");
-        assertThat(names, is(new ContainerNames("db")));
+        assertThat(names, is(containerNames("db")));
     }
 
+    public static ContainerNames containerNames(String... names) {
+        return new ContainerNames(Arrays.asList(names));
+    }
 }
