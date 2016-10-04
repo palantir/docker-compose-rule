@@ -62,24 +62,4 @@ public class AggressiveShutdownStrategyTest {
         verify(mockDocker, times(2)).rm(anyListOf(String.class));
     }
 
-    @Test
-    public void normal_rm_errors_should_be_rethrown() throws Exception {
-        exception.expectMessage("Some other error");
-
-        doThrow(new DockerExecutionException("Some other error")).when(mockDocker).rm(anyListOf(String.class));
-        ShutdownStrategy.AGGRESSIVE.shutdown(rule);
-    }
-
-    @Test
-    public void after_a_btrfs_failure_a_real_exception_should_be_rethrown() throws Exception {
-        exception.expectMessage("real exception");
-
-        doThrow(new DockerExecutionException(btrfs_message))
-                .doThrow(new DockerExecutionException("real exception"))
-                .when(mockDocker)
-                .rm(anyListOf(String.class));
-
-        ShutdownStrategy.AGGRESSIVE.shutdown(rule);
-    }
-
 }

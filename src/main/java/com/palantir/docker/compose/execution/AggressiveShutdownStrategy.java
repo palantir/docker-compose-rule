@@ -6,7 +6,6 @@ package com.palantir.docker.compose.execution;
 
 import static java.util.stream.Collectors.toList;
 
-import com.google.common.base.Throwables;
 import com.palantir.docker.compose.DockerComposeRule;
 import com.palantir.docker.compose.configuration.ShutdownStrategy;
 import com.palantir.docker.compose.connection.ContainerName;
@@ -28,22 +27,25 @@ public class AggressiveShutdownStrategy implements ShutdownStrategy {
         List<ContainerName> runningContainers = rule.dockerCompose().ps();
 
         log.info("Shutting down {}", runningContainers.stream().map(ContainerName::semanticName).collect(toList()));
-        removeContainersCatchingBtrfs(rule, runningContainers);
+        if (removeContainersCatchingErrors(rule, runningContainers)) {
+            return;
+        }
 
         log.debug("First shutdown attempted failed due to btrfs volume error... retrying");
-        removeContainersCatchingBtrfs(rule, runningContainers);
+        if (removeContainersCatchingErrors(rule, runningContainers)) {
+            return;
+        }
 
         log.warn("Couldn't shut down containers due to btrfs volume error, "
                 + "see https://circleci.com/docs/docker-btrfs-error/ for more info.");
     }
 
-    private void removeContainersCatchingBtrfs(DockerComposeRule rule, List<ContainerName> runningContainers) throws IOException, InterruptedException {
+    private boolean removeContainersCatchingErrors(DockerComposeRule rule, List<ContainerName> runningContainers) throws IOException, InterruptedException {
         try {
             removeContainers(rule, runningContainers);
+            return true;
         } catch (DockerExecutionException exception) {
-            if (!exception.getMessage().contains("Driver btrfs failed to remove")) {
-                throw Throwables.propagate(exception);
-            }
+            return false;
         }
     }
 
