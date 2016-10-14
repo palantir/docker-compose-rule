@@ -168,6 +168,14 @@ public class DockerComposeRuleTest {
 
 This will automatically record logs for all containers in real time to the specified directory. Collection will stop when the containers terminate.
 
+The `LogDirectory` class contains utility methods to generate these paths.  For example, you can write logs directly into the `$CIRCLE_ARTIFACTS` directory on CI (but fall back to `build/dockerLogs` locally) using:
+
+```java
+    .saveLogsTo(circleAwareLogDirectory(MyTest.class))
+```
+
+Methods in `LogDirectory` are intended to be statically imported for readability.
+
 Skipping shutdown
 -----------------
 

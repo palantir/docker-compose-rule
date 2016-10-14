@@ -71,6 +71,7 @@ dependencies {
     testCompile "org.mockito:mockito-core:$mockitoVersion"
     testCompile "com.github.tomakehurst:wiremock:2.0.6-beta"
     testCompile "com.google.code.findbugs:jsr305:3.0.0"
+    testCompile "com.github.stefanbirkner:system-rules:1.16.1"
 }
 
 // Instead of copying files out of `$buildDir/test-results/` on CircleCI, we can

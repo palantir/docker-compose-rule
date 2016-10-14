@@ -32,6 +32,7 @@ import com.palantir.docker.compose.execution.RetryingDockerCompose;
 import com.palantir.docker.compose.logging.DoNothingLogCollector;
 import com.palantir.docker.compose.logging.FileLogCollector;
 import com.palantir.docker.compose.logging.LogCollector;
+import com.palantir.docker.compose.logging.LogDirectory;
 import java.io.IOException;
 import java.util.List;
 import org.immutables.value.Value;
@@ -169,6 +170,14 @@ public abstract class DockerComposeRule extends ExternalResource {
             return files(DockerComposeFiles.from(dockerComposeYmlFile));
         }
 
+        /**
+         * Save the output of docker logs to files, stored in the <code>path</code> directory.
+         *
+         * See {@link LogDirectory} for some useful utilities, for example:
+         * {@link LogDirectory#circleAwareLogDirectory}.
+         *
+         * @param path directory into which log files should be saved
+         */
         public Builder saveLogsTo(String path) {
             return logCollector(FileLogCollector.fromPath(path));
         }
