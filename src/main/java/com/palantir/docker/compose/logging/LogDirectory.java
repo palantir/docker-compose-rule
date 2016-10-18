@@ -21,8 +21,12 @@ public class LogDirectory {
      * @param testClass the JUnit test class whose name will appear on the log folder
      */
     public static String circleAwareLogDirectory(Class<?> testClass) {
+        return circleAwareLogDirectory(testClass.getSimpleName());
+    }
+
+    public static String circleAwareLogDirectory(String logDirectoryName) {
         String artifactRoot = Optional.ofNullable(System.getenv("CIRCLE_ARTIFACTS")).orElse("build");
-        return artifactRoot + "/dockerLogs/" + testClass.getSimpleName();
+        return artifactRoot + "/dockerLogs/" + logDirectoryName;
     }
 
     /**

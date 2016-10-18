@@ -37,5 +37,13 @@ public class LogDirectoryTest {
         assertThat(directory, is("/tmp/circle-artifacts.g4DjuuD/dockerLogs/SomeTestClass"));
     }
 
+    @Test
+    public void circleAwareLogDirectory_should_append_logDirectoryName_to_path() {
+        variablesRule.set("CIRCLE_ARTIFACTS", "/tmp/circle-artifacts.123456");
+
+        String directory = LogDirectory.circleAwareLogDirectory("some-path");
+        assertThat(directory, is("/tmp/circle-artifacts.123456/dockerLogs/some-path"));
+    }
+
     private static class SomeTestClass {}
 }
