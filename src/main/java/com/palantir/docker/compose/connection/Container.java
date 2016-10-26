@@ -15,8 +15,6 @@
  */
 package com.palantir.docker.compose.connection;
 
-import com.google.common.base.Supplier;
-import com.google.common.base.Suppliers;
 import com.google.common.base.Throwables;
 import com.palantir.docker.compose.connection.waiting.SuccessOrFailure;
 import com.palantir.docker.compose.execution.DockerCompose;
@@ -30,8 +28,6 @@ public class Container {
 
     private final String containerName;
     private final DockerCompose dockerComposeProcess;
-
-    private final Supplier<Ports> portMappings = Suppliers.memoize(this::getDockerPorts);
 
     public Container(String containerName, DockerCompose dockerComposeProcess) {
         this.containerName = containerName;
@@ -58,8 +54,7 @@ public class Container {
     }
 
     public DockerPort portMappedExternallyTo(int externalPort) {
-        return portMappings.get()
-                           .stream()
+        return getDockerPorts().stream()
                            .filter(port -> port.getExternalPort() == externalPort)
                            .findFirst()
                            .orElseThrow(() -> new IllegalArgumentException("No port mapped externally to '" + externalPort + "' for container '" + containerName + "'"));
@@ -74,8 +69,7 @@ public class Container {
     }
 
     public DockerPort port(int internalPort) {
-        return portMappings.get()
-                           .stream()
+        return getDockerPorts().stream()
                            .filter(port -> port.getInternalPort() == internalPort)
                            .findFirst()
                            .orElseThrow(() -> new IllegalArgumentException("No internal port '" + internalPort + "' for container '" + containerName + "'"));
@@ -132,13 +126,13 @@ public class Container {
     }
 
     public SuccessOrFailure areAllPortsOpen() {
-        List<Integer> unavaliablePorts = portMappings.get().stream()
+        List<Integer> unavailablePorts = getDockerPorts().stream()
                 .filter(port -> !port.isListeningNow())
                 .map(DockerPort::getInternalPort)
                 .collect(Collectors.toList());
 
-        boolean allPortsOpen = unavaliablePorts.isEmpty();
-        String failureMessage = "The following ports failed to open: " + unavaliablePorts;
+        boolean allPortsOpen = unavailablePorts.isEmpty();
+        String failureMessage = "The following ports failed to open: " + unavailablePorts;
 
         return SuccessOrFailure.fromBoolean(allPortsOpen, failureMessage);
     }

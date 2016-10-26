@@ -57,11 +57,25 @@ public class ContainerShould {
     }
 
     @Test
-    public void call_docker_ports_once_when_two_ports_are_requested() throws Exception {
+    public void call_docker_ports_once_for_each_port_requested() throws Exception {
         env.ports("service", IP, 8080, 8081);
+
         container.port(8080);
-        container.port(8081);
         verify(dockerComposeProcess, times(1)).ports("service");
+
+        container.port(8081);
+        verify(dockerComposeProcess, times(2)).ports("service");
+    }
+
+    @Test
+    public void call_docker_ports_twice_when_same_port_requested_twice() throws Exception {
+        env.ports("service", IP, 8080);
+
+        container.port(8080);
+        verify(dockerComposeProcess, times(1)).ports("service");
+
+        container.port(8080);
+        verify(dockerComposeProcess, times(2)).ports("service");
     }
 
     @Test
