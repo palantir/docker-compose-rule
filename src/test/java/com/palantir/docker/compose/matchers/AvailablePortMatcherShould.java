@@ -18,7 +18,7 @@ package com.palantir.docker.compose.matchers;
 import static com.google.common.collect.Lists.newArrayList;
 import static com.palantir.docker.compose.matchers.AvailablePortMatcher.areAvailable;
 import static java.util.Collections.emptyList;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 import com.palantir.docker.compose.connection.DockerPort;
 import java.util.List;
