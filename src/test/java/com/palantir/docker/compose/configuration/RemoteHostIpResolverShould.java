@@ -16,7 +16,7 @@
 package com.palantir.docker.compose.configuration;
 
 import static com.palantir.docker.compose.configuration.EnvironmentVariables.TCP_PROTOCOL;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 import org.hamcrest.Matchers;
 import org.junit.Rule;

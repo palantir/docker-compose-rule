@@ -15,10 +15,10 @@
  */
 package com.palantir.docker.compose.execution;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.lessThan;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
 
 import com.github.zafarkhaja.semver.Version;
 import org.junit.Test;
@@ -38,13 +38,13 @@ public class DockerComposeVersionShould {
 
     @Test
     public void return_equals_for_the_same_version_strings() throws Exception {
-        assertEquals(Version.valueOf("2.1.2").compareTo(Version.valueOf("2.1.2")), 0);
+        assertThat(Version.valueOf("2.1.2").compareTo(Version.valueOf("2.1.2")), is(0));
     }
 
     @Test
     public void remove_non_digits_when_passing_version_string() {
-        assertEquals(
+        assertThat(
                 DockerComposeVersion.parseFromDockerComposeVersion("docker-compose version 1.7.0rc1, build 1ad8866"),
-                Version.valueOf("1.7.0"));
+                is(Version.valueOf("1.7.0")));
     }
 }
