@@ -23,6 +23,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import org.apache.commons.lang3.Validate;
 import org.slf4j.Logger;
@@ -60,7 +61,7 @@ public class FileLogCollector implements LogCollector {
         if (serviceNames.size() == 0) {
             return;
         }
-
+        executor = Executors.newFixedThreadPool(serviceNames.size());
         serviceNames.stream().forEachOrdered(service -> this.collectLogs(service, dockerCompose));
     }
 

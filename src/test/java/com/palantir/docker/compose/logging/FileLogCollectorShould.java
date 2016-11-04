@@ -28,7 +28,7 @@ import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import com.palantir.docker.compose.TestContainerNames;
+import com.google.common.collect.ImmutableList;
 import com.palantir.docker.compose.execution.DockerCompose;
 import java.io.File;
 import java.io.IOException;
@@ -94,7 +94,7 @@ public class FileLogCollectorShould {
 
     @Test
     public void not_collect_any_logs_when_no_containers_are_running() throws IOException, InterruptedException {
-        when(compose.ps()).thenReturn(TestContainerNames.of());
+        when(compose.services()).thenReturn(ImmutableList.of());
         logCollector.startCollecting(compose);
         logCollector.stopCollecting();
         assertThat(logDirectory.list(), is(emptyArray()));
@@ -103,7 +103,7 @@ public class FileLogCollectorShould {
     @Test
     public void collect_logs_when_one_container_is_running_and_terminates_before_start_collecting_is_run()
             throws Exception {
-        when(compose.ps()).thenReturn(TestContainerNames.of("db"));
+        when(compose.services()).thenReturn(ImmutableList.of("db"));
         when(compose.writeLogs(eq("db"), any(OutputStream.class))).thenAnswer((args) -> {
             OutputStream outputStream = (OutputStream) args.getArguments()[1];
             IOUtils.write("log", outputStream);
@@ -118,7 +118,7 @@ public class FileLogCollectorShould {
     @Test
     public void collect_logs_when_one_container_is_running_and_does_not_terminate_until_after_start_collecting_is_run()
             throws Exception {
-        when(compose.ps()).thenReturn(TestContainerNames.of("db"));
+        when(compose.services()).thenReturn(ImmutableList.of("db"));
         CountDownLatch latch = new CountDownLatch(1);
         when(compose.writeLogs(eq("db"), any(OutputStream.class))).thenAnswer((args) -> {
             if (!latch.await(1, TimeUnit.SECONDS)) {
@@ -138,7 +138,7 @@ public class FileLogCollectorShould {
     @Test
     public void collect_logs_when_one_container_is_running_and_does_not_terminate()
             throws IOException, InterruptedException {
-        when(compose.ps()).thenReturn(TestContainerNames.of("db"));
+        when(compose.services()).thenReturn(ImmutableList.of("db"));
         CountDownLatch latch = new CountDownLatch(1);
         when(compose.writeLogs(eq("db"), any(OutputStream.class))).thenAnswer((args) -> {
             OutputStream outputStream = (OutputStream) args.getArguments()[1];
@@ -162,7 +162,7 @@ public class FileLogCollectorShould {
 
     @Test
     public void collect_logs_in_parallel_for_two_containers() throws IOException, InterruptedException {
-        when(compose.ps()).thenReturn(TestContainerNames.of("db", "db2"));
+        when(compose.services()).thenReturn(ImmutableList.of("db", "db2"));
         CountDownLatch dbLatch = new CountDownLatch(1);
         when(compose.writeLogs(eq("db"), any(OutputStream.class))).thenAnswer((args) -> {
             OutputStream outputStream = (OutputStream) args.getArguments()[1];
@@ -192,7 +192,7 @@ public class FileLogCollectorShould {
     @Test
     public void throw_exception_when_trying_to_start_a_started_collector_a_second_time()
             throws IOException, InterruptedException {
-        when(compose.ps()).thenReturn(TestContainerNames.of("db"));
+        when(compose.services()).thenReturn(ImmutableList.of("db"));
         logCollector.startCollecting(compose);
         exception.expect(RuntimeException.class);
         exception.expectMessage("Cannot start collecting the same logs twice");
