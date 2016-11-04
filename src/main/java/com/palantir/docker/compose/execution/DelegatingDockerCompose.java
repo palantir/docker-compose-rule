@@ -93,6 +93,11 @@ abstract class DelegatingDockerCompose implements DockerCompose {
     }
 
     @Override
+    public List<String> services() throws IOException, InterruptedException {
+        return dockerCompose.services();
+    }
+
+    @Override
     public Container container(String containerName) {
         return dockerCompose.container(containerName);
     }
