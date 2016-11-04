@@ -20,7 +20,7 @@ import static com.palantir.docker.compose.matchers.IOMatchers.fileContainingStri
 import static com.palantir.docker.compose.matchers.IOMatchers.fileWithName;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.arrayContaining;
-import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.core.Is.is;
 import static org.joda.time.Duration.millis;
 import static org.mockito.Matchers.any;
@@ -50,7 +50,6 @@ import com.palantir.docker.compose.logging.LogCollector;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -84,7 +83,6 @@ public class DockerComposeRuleShould {
     private DockerComposeFiles mockFiles = mock(DockerComposeFiles.class);
     private DockerMachine machine = mock(DockerMachine.class);
     private LogCollector logCollector = mock(LogCollector.class);
-    private ShutdownStrategy shutdownStrategy = mock(ShutdownStrategy.class);
     private ImmutableDockerComposeRule rule;
 
     @Before public void
@@ -97,8 +95,7 @@ public class DockerComposeRuleShould {
         return DockerComposeRule.builder().dockerCompose(dockerCompose)
                                           .files(mockFiles)
                                           .machine(machine)
-                                          .logCollector(logCollector)
-                                          .shutdownStrategy(shutdownStrategy);
+                                          .logCollector(logCollector);
     }
 
     @Test
@@ -110,6 +107,12 @@ public class DockerComposeRuleShould {
 
     @Test
     public void calls_shutdownStrategy_in_after_method() throws IOException, InterruptedException {
+        ShutdownStrategy shutdownStrategy = mock(ShutdownStrategy.class);
+        rule = DockerComposeRule.builder()
+                .dockerCompose(dockerCompose)
+                .files(mockFiles)
+                .shutdownStrategy(shutdownStrategy)
+                .build();
         rule.after();
         verify(shutdownStrategy).shutdown(rule);
     }
@@ -279,17 +282,16 @@ public class DockerComposeRuleShould {
 
     @Test
     public void union_cluster_waits_from_builder_instead_of_overwriting() {
-        Collection<ClusterWait> originalAssignment = ImmutableList.of(
-                mock(ClusterWait.class),
-                mock(ClusterWait.class));
-        Collection<ClusterWait> secondAssignment = ImmutableList.of(mock(ClusterWait.class));
+
+        ClusterWait firstWait = mock(ClusterWait.class);
+        ClusterWait secondWait = mock(ClusterWait.class);
 
         DockerComposeRule twoAssignments = defaultBuilder()
-                .clusterWaits(originalAssignment)
-                .clusterWaits(secondAssignment)
+                .clusterWaits(ImmutableList.of(firstWait))
+                .clusterWaits(ImmutableList.of(secondWait))
                 .build();
 
-        assertThat(twoAssignments.clusterWaits(), hasSize(3));
+        assertThat(twoAssignments.clusterWaits(), contains(firstWait, secondWait));
     }
 
     @Test
