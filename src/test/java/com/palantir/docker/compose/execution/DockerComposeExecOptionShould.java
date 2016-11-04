@@ -13,23 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.palantir.docker.compose.execution;
 
-import com.google.common.collect.ImmutableList;
-import java.util.Arrays;
-import java.util.List;
-import org.immutables.value.Value;
+import static com.palantir.docker.compose.execution.DockerComposeExecOption.noOptions;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.collection.IsEmptyCollection.empty;
 
-@Value.Immutable
-public abstract class DockerComposeExecOption {
-    @Value.Parameter
-    public abstract List<String> options();
+import org.junit.Test;
 
-    public static DockerComposeExecOption options(String... options) {
-        return ImmutableDockerComposeExecOption.of(Arrays.asList(options));
-    }
+public class DockerComposeExecOptionShould {
 
-    public static DockerComposeExecOption noOptions() {
-        return ImmutableDockerComposeExecOption.of(ImmutableList.of());
+    @Test public void
+    be_constructable_with_no_args() {
+        DockerComposeExecOption option = noOptions();
+        assertThat(option.options(), empty());
     }
 }
