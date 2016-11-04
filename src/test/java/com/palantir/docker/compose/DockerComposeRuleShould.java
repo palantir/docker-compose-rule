@@ -20,6 +20,7 @@ import static com.palantir.docker.compose.matchers.IOMatchers.fileContainingStri
 import static com.palantir.docker.compose.matchers.IOMatchers.fileWithName;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.arrayContaining;
+import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.core.Is.is;
 import static org.joda.time.Duration.millis;
 import static org.mockito.Matchers.any;
@@ -39,6 +40,7 @@ import com.palantir.docker.compose.configuration.ShutdownStrategy;
 import com.palantir.docker.compose.connection.Container;
 import com.palantir.docker.compose.connection.DockerMachine;
 import com.palantir.docker.compose.connection.DockerPort;
+import com.palantir.docker.compose.connection.waiting.ClusterWait;
 import com.palantir.docker.compose.connection.waiting.HealthCheck;
 import com.palantir.docker.compose.connection.waiting.SuccessOrFailure;
 import com.palantir.docker.compose.execution.Docker;
@@ -81,8 +83,7 @@ public class DockerComposeRuleShould {
     private DockerComposeFiles mockFiles = mock(DockerComposeFiles.class);
     private DockerMachine machine = mock(DockerMachine.class);
     private LogCollector logCollector = mock(LogCollector.class);
-    private ShutdownStrategy shutdownStrategy = mock(ShutdownStrategy.class);
-    private DockerComposeRule rule;
+    private ImmutableDockerComposeRule rule;
 
     @Before public void
     setup() {
@@ -94,8 +95,7 @@ public class DockerComposeRuleShould {
         return DockerComposeRule.builder().dockerCompose(dockerCompose)
                                           .files(mockFiles)
                                           .machine(machine)
-                                          .logCollector(logCollector)
-                                          .shutdownStrategy(shutdownStrategy);
+                                          .logCollector(logCollector);
     }
 
     @Test
@@ -107,6 +107,12 @@ public class DockerComposeRuleShould {
 
     @Test
     public void calls_shutdownStrategy_in_after_method() throws IOException, InterruptedException {
+        ShutdownStrategy shutdownStrategy = mock(ShutdownStrategy.class);
+        rule = DockerComposeRule.builder()
+                .dockerCompose(dockerCompose)
+                .files(mockFiles)
+                .shutdownStrategy(shutdownStrategy)
+                .build();
         rule.after();
         verify(shutdownStrategy).shutdown(rule);
     }
@@ -116,7 +122,7 @@ public class DockerComposeRuleShould {
         AtomicInteger timesCheckCalled = new AtomicInteger(0);
         withComposeExecutableReturningContainerFor("db");
         HealthCheck<Container> checkCalledOnce = (container) -> SuccessOrFailure.fromBoolean(timesCheckCalled.incrementAndGet() == 1, "not called once yet");
-        DockerComposeRule.builder().from(rule).waitingForService("db", checkCalledOnce).build().before();
+        defaultBuilder().waitingForService("db", checkCalledOnce).build().before();
         assertThat(timesCheckCalled.get(), is(1));
     }
 
@@ -128,8 +134,7 @@ public class DockerComposeRuleShould {
 
         when(healthCheck.isHealthy(containers)).thenReturn(SuccessOrFailure.success());
 
-
-        DockerComposeRule.builder().from(rule).waitingForServices(ImmutableList.of("db1", "db2"), healthCheck).build().before();
+        defaultBuilder().waitingForServices(ImmutableList.of("db1", "db2"), healthCheck).build().before();
 
         verify(healthCheck).isHealthy(containers);
     }
@@ -139,7 +144,7 @@ public class DockerComposeRuleShould {
         AtomicInteger timesCheckCalled = new AtomicInteger(0);
         withComposeExecutableReturningContainerFor("db");
         HealthCheck<Container> checkCalledTwice = (container) -> SuccessOrFailure.fromBoolean(timesCheckCalled.incrementAndGet() == 2, "not called twice yet");
-        DockerComposeRule.builder().from(rule).waitingForService("db", checkCalledTwice).build().before();
+        defaultBuilder().waitingForService("db", checkCalledTwice).build().before();
         assertThat(timesCheckCalled.get(), is(2));
     }
 
@@ -152,7 +157,7 @@ public class DockerComposeRuleShould {
         exception.expectMessage("failed to pass a startup check");
         exception.expectMessage("oops");
 
-        DockerComposeRule.builder().from(rule).waitingForService("db", (container) -> SuccessOrFailure.failure("oops"), millis(200)).build().before();
+        defaultBuilder().waitingForService("db", (container) -> SuccessOrFailure.failure("oops"), millis(200)).build().before();
     }
 
     @Test
@@ -198,7 +203,7 @@ public class DockerComposeRuleShould {
         exception.expect(IllegalStateException.class);
         exception.expectMessage(nonExistentContainer);
 
-        DockerComposeRule.builder().from(rule).waitingForService(nonExistentContainer, toHaveAllPortsOpen()).build().before();
+        defaultBuilder().waitingForService(nonExistentContainer, toHaveAllPortsOpen()).build().before();
     }
 
     @SuppressWarnings("unchecked")
@@ -206,7 +211,12 @@ public class DockerComposeRuleShould {
     public void be_able_to_save_logs_to_a_directory_while_containers_are_running()
             throws IOException, InterruptedException {
         File logLocation = logFolder.newFolder();
-        DockerComposeRule loggingComposition = DockerComposeRule.builder().from(rule).saveLogsTo(logLocation.getAbsolutePath()).build();
+        DockerComposeRule loggingComposition = DockerComposeRule.builder()
+                .dockerCompose(dockerCompose)
+                .files(mockFiles)
+                .machine(machine)
+                .saveLogsTo(logLocation.getAbsolutePath())
+                .build();
         when(dockerCompose.ps()).thenReturn(TestContainerNames.of("db"));
         CountDownLatch latch = new CountDownLatch(1);
         when(dockerCompose.writeLogs(eq("db"), any(OutputStream.class))).thenAnswer((args) -> {
@@ -224,9 +234,14 @@ public class DockerComposeRuleShould {
 
     @Test
     public void not_shut_down_when_skipShutdown_is_true() throws InterruptedException {
-        defaultBuilder().skipShutdown(true)
-                        .build()
-                        .after();
+        DockerComposeRule.builder()
+                .dockerCompose(dockerCompose)
+                .files(mockFiles)
+                .machine(machine)
+                .logCollector(logCollector)
+                .skipShutdown(true)
+                .build()
+                .after();
         verifyNoMoreInteractions(dockerCompose);
         verify(logCollector, times(1)).stopCollecting();
     }
@@ -263,6 +278,31 @@ public class DockerComposeRuleShould {
         exception.expect(DockerExecutionException.class);
         exception.expectMessage("The name \"conflictingContainer\" is already in use");
         rule.before();
+    }
+
+    @Test
+    public void union_cluster_waits_from_builder_instead_of_overwriting() {
+
+        ClusterWait firstWait = mock(ClusterWait.class);
+        ClusterWait secondWait = mock(ClusterWait.class);
+
+        DockerComposeRule twoAssignments = defaultBuilder()
+                .clusterWaits(ImmutableList.of(firstWait))
+                .clusterWaits(ImmutableList.of(secondWait))
+                .build();
+
+        assertThat(twoAssignments.clusterWaits(), contains(firstWait, secondWait));
+    }
+
+    @Test
+    public void disallow_overwriting_in_builder() {
+        exception.expect(IllegalStateException.class);
+        exception.expectMessage("Builder of DockerComposeRule is strict, attribute is already set: docker");
+
+        DockerComposeRule.builder()
+                .docker(mock(Docker.class))
+                .docker(mock(Docker.class))
+                .build();
     }
 
     public Container withComposeExecutableReturningContainerFor(String containerName) {

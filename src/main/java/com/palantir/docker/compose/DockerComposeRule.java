@@ -43,7 +43,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @Value.Immutable
-@Depluralized
+@CustomImmutablesStyle
 public abstract class DockerComposeRule extends ExternalResource {
     public static final Duration DEFAULT_TIMEOUT = Duration.standardMinutes(2);
     public static final int DEFAULT_RETRY_ATTEMPTS = 2;
@@ -219,6 +219,10 @@ public abstract class DockerComposeRule extends ExternalResource {
         public Builder waitingForHostNetworkedPort(int port, HealthCheck<DockerPort> healthCheck, ReadableDuration timeout) {
             ClusterHealthCheck clusterHealthCheck = transformingHealthCheck(cluster -> new DockerPort(cluster.ip(), port, port), healthCheck);
             return addClusterWait(new ClusterWait(clusterHealthCheck, timeout));
+        }
+
+        public Builder clusterWaits(Iterable<? extends ClusterWait> elements) {
+            return addAllClusterWaits(elements);
         }
     }
 

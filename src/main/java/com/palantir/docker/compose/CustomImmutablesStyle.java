@@ -20,5 +20,5 @@ import java.lang.annotation.Target;
 import org.immutables.value.Value.Style;
 
 @Target({ElementType.PACKAGE, ElementType.TYPE})
-@Style(depluralize = true)
-@interface Depluralized {}
+@Style(depluralize = true, strictBuilder = true)
+@interface CustomImmutablesStyle {}
