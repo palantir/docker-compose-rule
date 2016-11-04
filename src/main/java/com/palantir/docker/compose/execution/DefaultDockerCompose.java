@@ -32,6 +32,7 @@ import com.palantir.docker.compose.connection.Ports;
 import com.palantir.docker.compose.connection.State;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.Arrays;
 import java.util.List;
 import org.apache.commons.io.IOUtils;
 import org.joda.time.Duration;
@@ -47,6 +48,7 @@ public class DefaultDockerCompose implements DockerCompose {
     private final Command command;
     private final DockerMachine dockerMachine;
     private final DockerComposeExecutable rawExecutable;
+
 
     public DefaultDockerCompose(DockerComposeFiles dockerComposeFiles, DockerMachine dockerMachine, ProjectName projectName) {
         this(DockerComposeExecutable.builder()
@@ -155,6 +157,12 @@ public class DefaultDockerCompose implements DockerCompose {
     public List<ContainerName> ps() throws IOException, InterruptedException {
         String psOutput = command.execute(Command.throwingOnError(), "ps");
         return ContainerNames.parseFromDockerComposePs(psOutput);
+    }
+
+    @Override
+    public List<String> services() throws IOException, InterruptedException {
+        String servicesOutput = command.execute(Command.throwingOnError(), "config", "--services");
+        return Arrays.asList(servicesOutput.split("\n"));
     }
 
     @Override

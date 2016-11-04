@@ -217,7 +217,7 @@ public class DockerComposeRuleShould {
                 .machine(machine)
                 .saveLogsTo(logLocation.getAbsolutePath())
                 .build();
-        when(dockerCompose.ps()).thenReturn(TestContainerNames.of("db"));
+        when(dockerCompose.services()).thenReturn(ImmutableList.of("db"));
         CountDownLatch latch = new CountDownLatch(1);
         when(dockerCompose.writeLogs(eq("db"), any(OutputStream.class))).thenAnswer((args) -> {
             OutputStream outputStream = (OutputStream) args.getArguments()[1];
