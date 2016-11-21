@@ -112,6 +112,22 @@ public class LocalBuilderShould {
     }
 
     @Test
+    public void override_system_environment_with_additional_environment() throws Exception {
+        Map<String, String> systemEnv = ImmutableMap.<String, String>builder()
+                .put("ENV_1", "VAL_1")
+                .build();
+        Map<String, String> overrideEnv = ImmutableMap.<String, String>builder()
+                .put("ENV_1", "DIFFERENT_VALUE")
+                .build();
+        DockerMachine localMachine = new LocalBuilder(DAEMON, systemEnv)
+                .withEnvironment(overrideEnv)
+                .build();
+
+        assertThat(localMachine, not(containsEnvironment(systemEnv)));
+        assertThat(localMachine, containsEnvironment(overrideEnv));
+    }
+
+    @Test
     public void have_invalid_variables_daemon() throws Exception {
         Map<String, String> invalidDockerVariables = ImmutableMap.<String, String>builder()
                 .put(DOCKER_HOST, "tcp://192.168.99.100:2376")
