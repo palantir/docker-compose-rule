@@ -22,7 +22,6 @@ import static com.palantir.docker.compose.configuration.EnvironmentVariables.DOC
 import static com.palantir.docker.compose.configuration.EnvironmentVariables.DOCKER_TLS_VERIFY;
 
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Maps;
 import com.palantir.docker.compose.configuration.AdditionalEnvironmentValidator;
 import com.palantir.docker.compose.configuration.DockerType;
 import com.palantir.docker.compose.configuration.RemoteHostIpResolver;
@@ -101,15 +100,12 @@ public class DockerMachine implements DockerConfiguration {
         public DockerMachine build() {
             dockerType.validateEnvironmentVariables(systemEnvironment);
             AdditionalEnvironmentValidator.validate(additionalEnvironment);
-            Map<String, String> combinedEnvironment = Maps.newHashMap();
+            Map<String, String> combinedEnvironment = newHashMap();
             combinedEnvironment.putAll(systemEnvironment);
             combinedEnvironment.putAll(additionalEnvironment);
-            Map<String, String> environment = ImmutableMap.<String, String>builder()
-                    .putAll(combinedEnvironment)
-                    .build();
 
             String dockerHost = systemEnvironment.getOrDefault(DOCKER_HOST, "");
-            return new DockerMachine(dockerType.resolveIp(dockerHost), environment);
+            return new DockerMachine(dockerType.resolveIp(dockerHost), ImmutableMap.copyOf(combinedEnvironment));
         }
     }
 
