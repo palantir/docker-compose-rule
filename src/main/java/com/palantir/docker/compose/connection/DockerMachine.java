@@ -100,13 +100,12 @@ public class DockerMachine implements DockerConfiguration {
         public DockerMachine build() {
             dockerType.validateEnvironmentVariables(systemEnvironment);
             AdditionalEnvironmentValidator.validate(additionalEnvironment);
-            Map<String, String> environment = ImmutableMap.<String, String>builder()
-                    .putAll(systemEnvironment)
-                    .putAll(additionalEnvironment)
-                    .build();
+            Map<String, String> combinedEnvironment = newHashMap();
+            combinedEnvironment.putAll(systemEnvironment);
+            combinedEnvironment.putAll(additionalEnvironment);
 
             String dockerHost = systemEnvironment.getOrDefault(DOCKER_HOST, "");
-            return new DockerMachine(dockerType.resolveIp(dockerHost), environment);
+            return new DockerMachine(dockerType.resolveIp(dockerHost), ImmutableMap.copyOf(combinedEnvironment));
         }
     }
 
