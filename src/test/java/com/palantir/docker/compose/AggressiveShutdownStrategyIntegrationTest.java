@@ -6,6 +6,7 @@ package com.palantir.docker.compose;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
 
 import com.palantir.docker.compose.configuration.ShutdownStrategy;
 import com.palantir.docker.compose.logging.DoNothingLogCollector;
@@ -13,15 +14,15 @@ import org.junit.Test;
 
 public class AggressiveShutdownStrategyIntegrationTest {
 
+    private final DockerComposeRule rule = DockerComposeRule.builder()
+            .file("src/test/resources/shutdown-strategy.yaml")
+            .logCollector(new DoNothingLogCollector())
+            .retryAttempts(0)
+            .shutdownStrategy(ShutdownStrategy.AGGRESSIVE)
+            .build();
+
     @Test
     public void shut_down_multiple_containers_immediately() throws Exception {
-        DockerComposeRule rule = DockerComposeRule.builder()
-                .file("src/test/resources/shutdown-strategy.yaml")
-                .logCollector(new DoNothingLogCollector())
-                .retryAttempts(0)
-                .shutdownStrategy(ShutdownStrategy.AGGRESSIVE)
-                .build();
-
         assertThat(rule.dockerCompose().ps(), is(TestContainerNames.of()));
 
         rule.before();
@@ -31,4 +32,14 @@ public class AggressiveShutdownStrategyIntegrationTest {
         assertThat(rule.dockerCompose().ps(), is(TestContainerNames.of()));
     }
 
+    @Test
+    public void clean_up_created_networks_when_shutting_down() throws Exception {
+        String networksBeforeRun = rule.docker().listNetworks();
+
+        rule.before();
+        assertThat(rule.docker().listNetworks(), is(not(networksBeforeRun)));
+        rule.after();
+
+        assertThat(rule.docker().listNetworks(), is(networksBeforeRun));
+    }
 }

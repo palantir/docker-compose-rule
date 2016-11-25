@@ -46,4 +46,11 @@ public class DockerShould {
         verify(executor).execute("rm", "-f", "testContainer");
     }
 
+    @Test
+    public void call_docker_network_ls() throws IOException, InterruptedException {
+        docker.listNetworks();
+
+        verify(executor).execute("network", "ls");
+    }
+
 }
