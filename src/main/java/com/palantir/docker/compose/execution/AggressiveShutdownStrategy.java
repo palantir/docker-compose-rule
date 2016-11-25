@@ -55,7 +55,12 @@ public class AggressiveShutdownStrategy implements ShutdownStrategy {
                 .collect(toList());
 
         rule.docker().rm(rawContainerNames);
+        removeNetworks(rule);
         log.debug("Finished shutdown");
+    }
+
+    private void removeNetworks(DockerComposeRule rule) throws IOException, InterruptedException {
+        rule.dockerCompose().down();
     }
 
 }
