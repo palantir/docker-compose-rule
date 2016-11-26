@@ -35,7 +35,7 @@ public class AggressiveShutdownStrategy implements ShutdownStrategy {
         try {
             removeContainers(rule, runningContainers);
         } catch (DockerExecutionException exception) {
-            log.error("Error while trying to remove containers", exception);
+            log.error("Error while trying to remove containers: {}", exception.getMessage());
         }
     }
 
@@ -45,7 +45,6 @@ public class AggressiveShutdownStrategy implements ShutdownStrategy {
                 .collect(toList());
 
         rule.docker().rm(rawContainerNames);
-        removeNetworks(rule);
         log.debug("Finished shutdown");
     }
 

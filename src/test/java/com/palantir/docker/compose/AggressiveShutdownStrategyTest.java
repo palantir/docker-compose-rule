@@ -33,7 +33,7 @@ public class AggressiveShutdownStrategyTest {
 
     @Before
     public void before() {
-        when(rule.dockerCompose()).thenReturn(mock(DockerCompose.class));
+        when(rule.dockerCompose()).thenReturn(mockDockerCompose);
         when(rule.docker()).thenReturn(mockDocker);
     }
 
