@@ -27,25 +27,15 @@ public class AggressiveShutdownStrategy implements ShutdownStrategy {
         List<ContainerName> runningContainers = rule.dockerCompose().ps();
 
         log.info("Shutting down {}", runningContainers.stream().map(ContainerName::semanticName).collect(toList()));
-        if (removeContainersCatchingErrors(rule, runningContainers)) {
-            return;
-        }
-
-        log.debug("First shutdown attempted failed due to btrfs volume error... retrying");
-        if (removeContainersCatchingErrors(rule, runningContainers)) {
-            return;
-        }
-
-        log.warn("Couldn't shut down containers due to btrfs volume error, "
-                + "see https://circleci.com/docs/docker-btrfs-error/ for more info.");
+        removeContainersCatchingErrors(rule, runningContainers);
+        removeNetworks(rule);
     }
 
-    private boolean removeContainersCatchingErrors(DockerComposeRule rule, List<ContainerName> runningContainers) throws IOException, InterruptedException {
+    private void removeContainersCatchingErrors(DockerComposeRule rule, List<ContainerName> runningContainers) throws IOException, InterruptedException {
         try {
             removeContainers(rule, runningContainers);
-            return true;
         } catch (DockerExecutionException exception) {
-            return false;
+            log.error("Error while trying to remove containers", exception);
         }
     }
 

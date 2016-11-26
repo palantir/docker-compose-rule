@@ -26,11 +26,10 @@ public class AggressiveShutdownStrategyTest {
     public final ExpectedException exception = ExpectedException.none();
 
     private final DockerComposeRule rule = mock(DockerComposeRule.class);
+    private final DockerCompose mockDockerCompose = mock(DockerCompose.class);
     private final Docker mockDocker = mock(Docker.class);
 
-    private static final String btrfs_message = "'docker rm -f test-1.container.name test-2.container.name' "
-            + "returned exit code 1\nThe output was:\nFailed to remove container (test-1.container.name): "
-            + "Error response from daemon: Driver btrfs failed to remove root filesystem ";
+    private static final String error_msg = "Random DockerExecutionException message";
 
     @Before
     public void before() {
@@ -39,27 +38,14 @@ public class AggressiveShutdownStrategyTest {
     }
 
     @Test
-    public void first_btrfs_error_should_be_caught_silently_and_retried() throws Exception {
-        doThrow(new DockerExecutionException(btrfs_message))
-                .doNothing()
+    public void docker_compose_down_should_be_called_despite_docker_rm_throwing_exception() throws Exception {
+        doThrow(new DockerExecutionException(error_msg))
                 .when(mockDocker)
                 .rm(anyListOf(String.class));
 
         ShutdownStrategy.AGGRESSIVE.shutdown(rule);
 
-        verify(mockDocker, times(2)).rm(anyListOf(String.class));
-    }
-
-    @Test
-    public void after_two_btrfs_failures_we_should_just_log_and_continue() throws Exception {
-        doThrow(new DockerExecutionException(btrfs_message))
-                .doThrow(new DockerExecutionException(btrfs_message))
-                .when(mockDocker)
-                .rm(anyListOf(String.class));
-
-        ShutdownStrategy.AGGRESSIVE.shutdown(rule);
-
-        verify(mockDocker, times(2)).rm(anyListOf(String.class));
+        verify(mockDockerCompose, times(1)).down();
     }
 
 }
