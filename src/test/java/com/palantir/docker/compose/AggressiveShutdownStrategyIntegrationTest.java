@@ -8,8 +8,11 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 
+import com.google.common.collect.Sets;
 import com.palantir.docker.compose.configuration.ShutdownStrategy;
 import com.palantir.docker.compose.logging.DoNothingLogCollector;
+import java.util.Arrays;
+import java.util.Set;
 import org.junit.Test;
 
 public class AggressiveShutdownStrategyIntegrationTest {
@@ -34,12 +37,16 @@ public class AggressiveShutdownStrategyIntegrationTest {
 
     @Test
     public void clean_up_created_networks_when_shutting_down() throws Exception {
-        String networksBeforeRun = rule.docker().listNetworks();
+        Set<String> networksBeforeRun = parseLinesFromOutputString(rule.docker().listNetworks());
 
         rule.before();
-        assertThat(rule.docker().listNetworks(), is(not(networksBeforeRun)));
+        assertThat(parseLinesFromOutputString(rule.docker().listNetworks()), is(not(networksBeforeRun)));
         rule.after();
 
-        assertThat(rule.docker().listNetworks(), is(networksBeforeRun));
+        assertThat(parseLinesFromOutputString(rule.docker().listNetworks()), is(networksBeforeRun));
+    }
+
+    private Set<String> parseLinesFromOutputString(String output) {
+        return Sets.newHashSet(Arrays.asList(output.split("\n")));
     }
 }
