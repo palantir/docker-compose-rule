@@ -199,6 +199,14 @@ public class FileLogCollectorShould {
         logCollector.startCollecting(compose);
     }
 
+    @Test
+    public void allow_starting_the_collector_after_it_has_been_stopped() throws IOException, InterruptedException {
+        when(compose.ps()).thenReturn(TestContainerNames.of("db"));
+        logCollector.startCollecting(compose);
+        logCollector.stopCollecting();
+        logCollector.startCollecting(compose);
+    }
+
     private File cannotBeCreatedDirectory() {
         File cannotBeCreatedDirectory = mock(File.class);
         when(cannotBeCreatedDirectory.isFile()).thenReturn(false);
