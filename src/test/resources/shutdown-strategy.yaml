@@ -1,14 +1,11 @@
-version: "2"
+infinite-netcat-loop:
+  image: appropriate/nc
+  command: sh -c 'while true; do nc -l 8080 < ./entrypoint.sh; done'
+  ports:
+    - "8080"
 
-services:
-  infinite-netcat-loop:
-    image: appropriate/nc
-    command: sh -c 'while true; do nc -l 8080 < ./entrypoint.sh; done'
-    ports:
-      - "8080"
-
-  infinite-netcat-loop2:
-    image: appropriate/nc
-    command: sh -c 'while true; do nc -l 8080 < ./entrypoint.sh; done'
-    ports:
-      - "8080"
+infinite-netcat-loop2:
+  image: appropriate/nc
+  command: sh -c 'while true; do nc -l 8080 < ./entrypoint.sh; done'
+  ports:
+    - "8080"

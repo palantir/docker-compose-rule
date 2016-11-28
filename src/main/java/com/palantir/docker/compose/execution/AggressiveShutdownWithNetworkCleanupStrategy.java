@@ -15,37 +15,26 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Shuts down containers as fast as possible, without giving them time to finish
- * IO or clean up any resources.
+ * Shuts down containers as fast as possible while cleaning up any networks that were created.
  */
-public class AggressiveShutdownStrategy implements ShutdownStrategy {
+public class AggressiveShutdownWithNetworkCleanupStrategy implements ShutdownStrategy {
 
-    private static final Logger log = LoggerFactory.getLogger(AggressiveShutdownStrategy.class);
+    private static final Logger log = LoggerFactory.getLogger(AggressiveShutdownWithNetworkCleanupStrategy.class);
 
     @Override
     public void shutdown(DockerComposeRule rule) throws IOException, InterruptedException {
         List<ContainerName> runningContainers = rule.dockerCompose().ps();
 
         log.info("Shutting down {}", runningContainers.stream().map(ContainerName::semanticName).collect(toList()));
-        if (removeContainersCatchingErrors(rule, runningContainers)) {
-            return;
-        }
-
-        log.debug("First shutdown attempted failed due to btrfs volume error... retrying");
-        if (removeContainersCatchingErrors(rule, runningContainers)) {
-            return;
-        }
-
-        log.warn("Couldn't shut down containers due to btrfs volume error, "
-                + "see https://circleci.com/docs/docker-btrfs-error/ for more info.");
+        removeContainersCatchingErrors(rule, runningContainers);
+        removeNetworks(rule);
     }
 
-    private boolean removeContainersCatchingErrors(DockerComposeRule rule, List<ContainerName> runningContainers) throws IOException, InterruptedException {
+    private void removeContainersCatchingErrors(DockerComposeRule rule, List<ContainerName> runningContainers) throws IOException, InterruptedException {
         try {
             removeContainers(rule, runningContainers);
-            return true;
         } catch (DockerExecutionException exception) {
-            return false;
+            log.error("Error while trying to remove containers: {}", exception.getMessage());
         }
     }
 
@@ -58,4 +47,7 @@ public class AggressiveShutdownStrategy implements ShutdownStrategy {
         log.debug("Finished shutdown");
     }
 
+    private void removeNetworks(DockerComposeRule rule) throws IOException, InterruptedException {
+        rule.dockerCompose().down();
+    }
 }
