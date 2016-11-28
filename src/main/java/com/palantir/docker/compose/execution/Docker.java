@@ -40,4 +40,7 @@ public class Docker {
                 ObjectArrays.concat(new String[] {"rm", "-f"}, containerNames, String.class));
     }
 
+    public String listNetworks() throws IOException, InterruptedException {
+        return command.execute(Command.throwingOnError(), "network", "ls");
+    }
 }
