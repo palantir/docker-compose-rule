@@ -28,6 +28,7 @@ import static org.mockito.Mockito.when;
 
 import com.palantir.docker.compose.TestContainerNames;
 import com.palantir.docker.compose.connection.ContainerName;
+import com.palantir.docker.compose.execution.Retryer.RetryableDockerOperation;
 import java.io.IOException;
 import java.util.List;
 import org.junit.Before;
@@ -46,10 +47,14 @@ public class RetryingDockerComposeShould {
     }
 
     private void retryerJustCallsOperation() throws IOException, InterruptedException {
-        when(retryer.runWithRetries(any(Retryer.RetryableDockerOperation.class))).thenAnswer(invocation -> {
-            Retryer.RetryableDockerOperation operation = (Retryer.RetryableDockerOperation) invocation.getArguments()[0];
+        when(retryer.runWithRetries(anyOperation())).thenAnswer(invocation -> {
+            Retryer.RetryableDockerOperation<?> operation = (Retryer.RetryableDockerOperation<?>) invocation.getArguments()[0];
             return operation.call();
         });
+    }
+
+    private static RetryableDockerOperation<?> anyOperation() {
+        return any(Retryer.RetryableDockerOperation.class);
     }
 
     @Test
@@ -73,11 +78,11 @@ public class RetryingDockerComposeShould {
     }
 
     private void verifyRetryerWasUsed() throws IOException, InterruptedException {
-        verify(retryer).runWithRetries(any(Retryer.RetryableDockerOperation.class));
+        verify(retryer).runWithRetries(anyOperation());
     }
 
     private void verifyRetryerWasNotUsed() throws IOException, InterruptedException {
-        verify(retryer, times(0)).runWithRetries(any(Retryer.RetryableDockerOperation.class));
+        verify(retryer, times(0)).runWithRetries(anyOperation());
     }
 
     @Test

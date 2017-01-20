@@ -1,1 +1,3 @@
 rootProject.name='docker-compose-rule'
+
+include 'docker-compose-rule-core'
