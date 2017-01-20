@@ -23,59 +23,40 @@ repositories {
     jcenter()
 }
 
-apply from: "gradle/idea.gradle"
-apply plugin: 'java'
-
 group = 'com.palantir.docker.compose'
 version "git describe --tags --dirty".execute().text.trim()
 
 apply plugin: 'com.palantir.baseline-config'
-apply plugin: 'com.palantir.baseline-checkstyle'
-apply plugin: 'com.palantir.baseline-eclipse'
-apply plugin: 'com.palantir.baseline-findbugs'
-apply plugin: 'com.palantir.baseline-idea'
-apply from: "${rootDir}/gradle/publish.gradle"
+apply from: "${rootDir}/gradle/idea.gradle"
 
-apply plugin: 'org.inferred.processors'
 apply plugin: 'com.palantir.configuration-resolver'
 
-sourceCompatibility = 1.8
-targetCompatibility = 1.8
+subprojects {
+    apply from: "${rootDir}/gradle/idea.gradle"
+    apply plugin: 'java'
 
-configurations.all {
-    exclude module: 'slf4j-log4j12'
-    resolutionStrategy.force(
-            "org.slf4j:slf4j-api:$slf4jVersion",
-            "org.slf4j:slf4j-log4j12:$slf4jVersion",
-    )
-}
+    apply plugin: 'com.palantir.baseline-checkstyle'
+    apply plugin: 'com.palantir.baseline-eclipse'
+    apply plugin: 'com.palantir.baseline-findbugs'
+    apply plugin: 'com.palantir.baseline-idea'
+    apply from: "${rootDir}/gradle/publish.gradle"
 
-dependencies {
-    compile "org.slf4j:slf4j-api:$slf4jVersion"
-    compile "org.apache.commons:commons-lang3:3.0"
-    compile "commons-io:commons-io:2.4"
-    compile "com.google.guava:guava:$guavaVersion"
-    compile "joda-time:joda-time:$jodaVersion"
-    compile "com.github.zafarkhaja:java-semver:$javaSemverVersion"
+    apply plugin: 'org.inferred.processors'
+    apply plugin: 'com.palantir.configuration-resolver'
 
-    compile "junit:junit:$junitVersion"
-    compile 'com.jayway.awaitility:awaitility:1.6.5'
+    sourceCompatibility = 1.8
+    targetCompatibility = 1.8
 
-    processor 'org.immutables:value:2.1.14'
+    repositories {
+        mavenCentral()
+        jcenter()
+    }
 
-    testCompile "org.slf4j:slf4j-log4j12:$slf4jVersion"
-    testCompile "org.apache.logging.log4j:log4j-core:$log4jVersion"
-    testCompile "org.apache.logging.log4j:log4j-slf4j-impl:$log4jVersion"
-
-    testCompile "org.hamcrest:hamcrest-all:$hamcrestVersion"
-    testCompile "org.mockito:mockito-core:$mockitoVersion"
-    testCompile "com.github.tomakehurst:wiremock:2.0.6-beta"
-    testCompile "com.google.code.findbugs:jsr305:3.0.0"
-    testCompile "com.github.stefanbirkner:system-rules:1.16.1"
-}
-
-// Instead of copying files out of `$buildDir/test-results/` on CircleCI, we can
-// just write them into the right place straight away.
-if (System.env.CIRCLE_TEST_REPORTS) {
-    test.reports.junitXml.destination = file(System.env.CIRCLE_TEST_REPORTS)
+    configurations.all {
+        exclude module: 'slf4j-log4j12'
+        resolutionStrategy.force(
+                "org.slf4j:slf4j-api:$slf4jVersion",
+                "org.slf4j:slf4j-log4j12:$slf4jVersion",
+        )
+    }
 }
