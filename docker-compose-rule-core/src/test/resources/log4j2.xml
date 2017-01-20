@@ -18,7 +18,7 @@
 
 <Configuration monitorInterval="5">
     <Appenders>
-        <RollingFile name="LOG" fileName="logs/magritte.log" filePattern="logs/magritte-%d{yyyy-MM-dd}.log.gz">
+        <RollingFile name="LOG" fileName="logs/docker-compose-rule.log" filePattern="logs/docker-compose-rule-%d{yyyy-MM-dd}.log.gz">
             <PatternLayout pattern="%d{ISO8601} %-5p - %t %c - %m%n"/>
             <Policies>
                 <TimeBasedTriggeringPolicy interval="1"/>
