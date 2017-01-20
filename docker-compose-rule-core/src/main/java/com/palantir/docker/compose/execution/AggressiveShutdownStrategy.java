@@ -6,7 +6,6 @@ package com.palantir.docker.compose.execution;
 
 import static java.util.stream.Collectors.toList;
 
-import com.palantir.docker.compose.DockerComposeRule;
 import com.palantir.docker.compose.configuration.ShutdownStrategy;
 import com.palantir.docker.compose.connection.ContainerName;
 import java.io.IOException;
@@ -23,16 +22,16 @@ public class AggressiveShutdownStrategy implements ShutdownStrategy {
     private static final Logger log = LoggerFactory.getLogger(AggressiveShutdownStrategy.class);
 
     @Override
-    public void shutdown(DockerComposeRule rule) throws IOException, InterruptedException {
-        List<ContainerName> runningContainers = rule.dockerCompose().ps();
+    public void shutdown(DockerCompose dockerCompose, Docker docker) throws IOException, InterruptedException {
+        List<ContainerName> runningContainers = dockerCompose.ps();
 
         log.info("Shutting down {}", runningContainers.stream().map(ContainerName::semanticName).collect(toList()));
-        if (removeContainersCatchingErrors(rule, runningContainers)) {
+        if (removeContainersCatchingErrors(docker, runningContainers)) {
             return;
         }
 
         log.debug("First shutdown attempted failed due to btrfs volume error... retrying");
-        if (removeContainersCatchingErrors(rule, runningContainers)) {
+        if (removeContainersCatchingErrors(docker, runningContainers)) {
             return;
         }
 
@@ -40,21 +39,21 @@ public class AggressiveShutdownStrategy implements ShutdownStrategy {
                 + "see https://circleci.com/docs/docker-btrfs-error/ for more info.");
     }
 
-    private boolean removeContainersCatchingErrors(DockerComposeRule rule, List<ContainerName> runningContainers) throws IOException, InterruptedException {
+    private boolean removeContainersCatchingErrors(Docker docker, List<ContainerName> runningContainers) throws IOException, InterruptedException {
         try {
-            removeContainers(rule, runningContainers);
+            removeContainers(docker, runningContainers);
             return true;
         } catch (DockerExecutionException exception) {
             return false;
         }
     }
 
-    private void removeContainers(DockerComposeRule rule, List<ContainerName> running) throws IOException, InterruptedException {
+    private void removeContainers(Docker docker, List<ContainerName> running) throws IOException, InterruptedException {
         List<String> rawContainerNames = running.stream()
                 .map(ContainerName::rawName)
                 .collect(toList());
 
-        rule.docker().rm(rawContainerNames);
+        docker.rm(rawContainerNames);
         log.debug("Finished shutdown");
     }
 

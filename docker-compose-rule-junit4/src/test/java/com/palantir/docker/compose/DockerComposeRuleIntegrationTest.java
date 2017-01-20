@@ -39,7 +39,7 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
 
-public class DockerCompositionIntegrationTest {
+public class DockerComposeRuleIntegrationTest {
 
     private static final List<String> CONTAINERS = ImmutableList.of("db", "db2", "db3", "db4");
 

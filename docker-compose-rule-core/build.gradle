@@ -6,7 +6,6 @@ dependencies {
     compile "joda-time:joda-time:$jodaVersion"
     compile "com.github.zafarkhaja:java-semver:$javaSemverVersion"
 
-    compile "junit:junit:$junitVersion"
     compile 'com.jayway.awaitility:awaitility:1.6.5'
 
     processor 'org.immutables:value:2.1.14'
@@ -15,6 +14,7 @@ dependencies {
     testCompile "org.apache.logging.log4j:log4j-core:$log4jVersion"
     testCompile "org.apache.logging.log4j:log4j-slf4j-impl:$log4jVersion"
 
+    testCompile "junit:junit:$junitVersion"
     testCompile "org.hamcrest:hamcrest-all:$hamcrestVersion"
     testCompile "org.mockito:mockito-core:$mockitoVersion"
     testCompile "com.github.tomakehurst:wiremock:2.0.6-beta"

@@ -114,7 +114,7 @@ public class DockerComposeRuleShould {
                 .shutdownStrategy(shutdownStrategy)
                 .build();
         rule.after();
-        verify(shutdownStrategy).shutdown(rule);
+        verify(shutdownStrategy).shutdown(dockerCompose, rule.docker());
     }
 
     @Test

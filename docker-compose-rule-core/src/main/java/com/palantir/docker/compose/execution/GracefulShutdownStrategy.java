@@ -4,7 +4,6 @@
 
 package com.palantir.docker.compose.execution;
 
-import com.palantir.docker.compose.DockerComposeRule;
 import com.palantir.docker.compose.configuration.ShutdownStrategy;
 import java.io.IOException;
 import org.slf4j.Logger;
@@ -19,11 +18,11 @@ public class GracefulShutdownStrategy implements ShutdownStrategy {
     private static final Logger log = LoggerFactory.getLogger(GracefulShutdownStrategy.class);
 
     @Override
-    public void shutdown(DockerComposeRule rule) throws IOException, InterruptedException {
+    public void shutdown(DockerCompose dockerCompose, Docker docker) throws IOException, InterruptedException {
         log.debug("Killing docker-compose cluster");
-        rule.dockerCompose().down();
-        rule.dockerCompose().kill();
-        rule.dockerCompose().rm();
+        dockerCompose.down();
+        dockerCompose.kill();
+        dockerCompose.rm();
     }
 
 }

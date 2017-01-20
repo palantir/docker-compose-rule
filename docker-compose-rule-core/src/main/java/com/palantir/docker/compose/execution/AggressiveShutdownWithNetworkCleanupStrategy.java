@@ -6,7 +6,6 @@ package com.palantir.docker.compose.execution;
 
 import static java.util.stream.Collectors.toList;
 
-import com.palantir.docker.compose.DockerComposeRule;
 import com.palantir.docker.compose.configuration.ShutdownStrategy;
 import com.palantir.docker.compose.connection.ContainerName;
 import java.io.IOException;
@@ -22,32 +21,32 @@ public class AggressiveShutdownWithNetworkCleanupStrategy implements ShutdownStr
     private static final Logger log = LoggerFactory.getLogger(AggressiveShutdownWithNetworkCleanupStrategy.class);
 
     @Override
-    public void shutdown(DockerComposeRule rule) throws IOException, InterruptedException {
-        List<ContainerName> runningContainers = rule.dockerCompose().ps();
+    public void shutdown(DockerCompose dockerCompose, Docker docker) throws IOException, InterruptedException {
+        List<ContainerName> runningContainers = dockerCompose.ps();
 
         log.info("Shutting down {}", runningContainers.stream().map(ContainerName::semanticName).collect(toList()));
-        removeContainersCatchingErrors(rule, runningContainers);
-        removeNetworks(rule);
+        removeContainersCatchingErrors(docker, runningContainers);
+        removeNetworks(dockerCompose);
     }
 
-    private void removeContainersCatchingErrors(DockerComposeRule rule, List<ContainerName> runningContainers) throws IOException, InterruptedException {
+    private void removeContainersCatchingErrors(Docker docker, List<ContainerName> runningContainers) throws IOException, InterruptedException {
         try {
-            removeContainers(rule, runningContainers);
+            removeContainers(docker, runningContainers);
         } catch (DockerExecutionException exception) {
             log.error("Error while trying to remove containers: {}", exception.getMessage());
         }
     }
 
-    private void removeContainers(DockerComposeRule rule, List<ContainerName> running) throws IOException, InterruptedException {
+    private void removeContainers(Docker docker, List<ContainerName> running) throws IOException, InterruptedException {
         List<String> rawContainerNames = running.stream()
                 .map(ContainerName::rawName)
                 .collect(toList());
 
-        rule.docker().rm(rawContainerNames);
+        docker.rm(rawContainerNames);
         log.debug("Finished shutdown");
     }
 
-    private void removeNetworks(DockerComposeRule rule) throws IOException, InterruptedException {
-        rule.dockerCompose().down();
+    private void removeNetworks(DockerCompose dockerCompose) throws IOException, InterruptedException {
+        dockerCompose.down();
     }
 }
