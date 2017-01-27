@@ -23,9 +23,6 @@ repositories {
     jcenter()
 }
 
-group = 'com.palantir.docker.compose'
-version "git describe --tags --dirty".execute().text.trim()
-
 apply plugin: 'com.palantir.baseline-config'
 apply from: "${rootDir}/gradle/idea.gradle"
 
@@ -51,6 +48,9 @@ subprojects {
         mavenCentral()
         jcenter()
     }
+
+    group = 'com.palantir.docker.compose'
+    version "git describe --tags --dirty".execute().text.trim()
 
     configurations.all {
         exclude module: 'slf4j-log4j12'
