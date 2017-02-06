@@ -19,28 +19,17 @@ import static com.google.common.collect.Lists.newArrayList;
 import static java.util.Collections.emptyList;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 import java.io.IOException;
-import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 public class PortsShould {
 
-    public static final String LOCALHOST_IP = "127.0.0.1";
+    private static final String LOCALHOST_IP = "127.0.0.1";
     @Rule
     public ExpectedException exception = ExpectedException.none();
-
-    private final DockerPort port = mock(DockerPort.class);
-
-    @Before
-    public void setup() {
-        when(port.getInternalPort()).thenReturn(7001);
-        when(port.getExternalPort()).thenReturn(7000);
-    }
 
     @Test
     public void result_in_no_ports_when_there_are_no_ports_in_ps_output() throws IOException, InterruptedException {
@@ -90,10 +79,10 @@ public class PortsShould {
         String psOutput =
                   "       Name                      Command               State                                         Ports                                        \n"
                 + "-------------------------------------------------------------------------------------------------------------------------------------------------\n"
-                + "magritte_magritte_1   /bin/sh -c /usr/local/bin/ ...   Up      0.0.0.0:7000->7000/tcp, 7001/tcp, 7002/tcp, 7003/tcp, 7004/tcp, 7005/tcp, 7006/tcp \n"
+                + "postgres_postgres_1   /bin/sh -c /usr/local/bin/ ...   Up      0.0.0.0:8880->8880/tcp, 8881/tcp, 8882/tcp, 8883/tcp, 8884/tcp, 8885/tcp, 8886/tcp \n"
                 + "";
         Ports ports = Ports.parseFromDockerComposePs(psOutput, LOCALHOST_IP);
-        Ports expected = new Ports(newArrayList(new DockerPort(LOCALHOST_IP, 7000, 7000)));
+        Ports expected = new Ports(newArrayList(new DockerPort(LOCALHOST_IP, 8880, 8880)));
         assertThat(ports, is(expected));
     }
 
