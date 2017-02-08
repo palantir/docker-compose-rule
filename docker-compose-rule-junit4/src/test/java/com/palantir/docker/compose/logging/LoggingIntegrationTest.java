@@ -37,7 +37,7 @@ public class LoggingIntegrationTest {
     private DockerComposeRule dockerComposeRule;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         dockerComposeRule = DockerComposeRule.builder()
                 .file("src/test/resources/docker-compose.yaml")
                 .waitingForService("db", toHaveAllPortsOpen())

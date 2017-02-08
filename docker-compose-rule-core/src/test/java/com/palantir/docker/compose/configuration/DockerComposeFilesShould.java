@@ -35,14 +35,14 @@ public class DockerComposeFilesShould {
     public final ExpectedException exception = ExpectedException.none();
 
     @Test
-    public void throw_exception_when_compose_file_is_not_specified() throws Exception {
+    public void throw_exception_when_compose_file_is_not_specified() {
         exception.expect(IllegalArgumentException.class);
         exception.expectMessage("A docker compose file must be specified.");
         DockerComposeFiles.from();
     }
 
     @Test
-    public void throw_exception_when_compose_file_does_not_exist() throws Exception {
+    public void throw_exception_when_compose_file_does_not_exist() {
         exception.expect(IllegalStateException.class);
         exception.expectMessage("The following docker-compose files:");
         exception.expectMessage("does-not-exist.yaml");

@@ -32,7 +32,7 @@ public class RemoteBuilderShould {
     public ExpectedException exception = ExpectedException.none();
 
     @Test
-    public void throw_exception_when_building_a_docker_machine_without_a_host() throws Exception {
+    public void throw_exception_when_building_a_docker_machine_without_a_host() {
         exception.expect(IllegalStateException.class);
         exception.expectMessage("Missing required environment variables");
         exception.expectMessage("DOCKER_HOST");
@@ -42,7 +42,7 @@ public class RemoteBuilderShould {
     }
 
     @Test
-    public void have_no_tls_environment_variables_when_a_docker_machine_is_built_without_tls() throws Exception {
+    public void have_no_tls_environment_variables_when_a_docker_machine_is_built_without_tls() {
         DockerMachine dockerMachine = DockerMachine.remoteMachine()
                                                    .host("tcp://192.168.99.100")
                                                    .withoutTLS()
@@ -56,7 +56,7 @@ public class RemoteBuilderShould {
     }
 
     @Test
-    public void have_tls_environment_variables_set_when_a_docker_machine_is_built_with_tls() throws Exception {
+    public void have_tls_environment_variables_set_when_a_docker_machine_is_built_with_tls() {
         DockerMachine dockerMachine = DockerMachine.remoteMachine()
                                                    .host("tcp://192.168.99.100")
                                                    .withTLS("/path/to/certs")
@@ -70,7 +70,7 @@ public class RemoteBuilderShould {
     }
 
     @Test
-    public void build_a_docker_machine_with_additional_environment_variables() throws Exception {
+    public void build_a_docker_machine_with_additional_environment_variables() {
         DockerMachine dockerMachine = DockerMachine.remoteMachine()
                                                    .host("tcp://192.168.99.100")
                                                    .withoutTLS()

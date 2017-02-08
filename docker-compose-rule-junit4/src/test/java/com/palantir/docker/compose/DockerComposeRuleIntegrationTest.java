@@ -72,14 +72,14 @@ public class DockerComposeRuleIntegrationTest {
     }
 
     @Test
-    public void should_run_docker_compose_up_using_the_specified_docker_compose_file_to_bring_postgres_up() throws InterruptedException, IOException {
+    public void should_run_docker_compose_up_using_the_specified_docker_compose_file_to_bring_postgres_up() {
         forEachContainer(container -> {
             assertThat(docker.containers().container(container).port(5432).isListeningNow(), is(true));
         });
     }
 
     @Test
-    public void after_test_is_executed_the_launched_postgres_container_is_no_longer_listening() throws IOException, InterruptedException {
+    public void after_test_is_executed_the_launched_postgres_container_is_no_longer_listening() {
         docker.after();
 
         forEachContainer(container -> {
@@ -88,7 +88,7 @@ public class DockerComposeRuleIntegrationTest {
     }
 
     @Test
-    public void can_access_external_port_for_internal_port_of_machine() throws IOException, InterruptedException {
+    public void can_access_external_port_for_internal_port_of_machine() {
         forEachContainer(container -> {
             assertThat(docker.containers().container(container).port(5432).isListeningNow(), is(true));
         });
