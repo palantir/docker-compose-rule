@@ -26,6 +26,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import com.palantir.docker.compose.configuration.MockDockerEnvironment;
+import com.palantir.docker.compose.execution.Docker;
 import com.palantir.docker.compose.execution.DockerCompose;
 import org.junit.Rule;
 import org.junit.Test;
@@ -38,9 +39,10 @@ public class ContainerShould {
     @Rule
     public ExpectedException exception = ExpectedException.none();
 
-    private final DockerCompose dockerComposeProcess = mock(DockerCompose.class);
-    private final MockDockerEnvironment env = new MockDockerEnvironment(dockerComposeProcess);
-    private final Container container = new Container("service", dockerComposeProcess);
+    private final Docker docker = mock(Docker.class);
+    private final DockerCompose dockerCompose = mock(DockerCompose.class);
+    private final MockDockerEnvironment env = new MockDockerEnvironment(dockerCompose);
+    private final Container container = new Container("service", docker, dockerCompose);
 
     @Test
     public void return_port_for_container_when_external_port_number_given() throws Exception {
@@ -61,7 +63,7 @@ public class ContainerShould {
         env.ports("service", IP, 8080, 8081);
         container.port(8080);
         container.port(8081);
-        verify(dockerComposeProcess, times(1)).ports("service");
+        verify(dockerCompose, times(1)).ports("service");
     }
 
     @Test

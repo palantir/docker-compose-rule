@@ -19,6 +19,7 @@ import com.google.common.base.Supplier;
 import com.google.common.base.Suppliers;
 import com.google.common.base.Throwables;
 import com.palantir.docker.compose.connection.waiting.SuccessOrFailure;
+import com.palantir.docker.compose.execution.Docker;
 import com.palantir.docker.compose.execution.DockerCompose;
 import java.io.IOException;
 import java.util.List;
@@ -29,13 +30,15 @@ import java.util.stream.Collectors;
 public class Container {
 
     private final String containerName;
-    private final DockerCompose dockerComposeProcess;
+    private final Docker docker;
+    private final DockerCompose dockerCompose;
 
     private final Supplier<Ports> portMappings = Suppliers.memoize(this::getDockerPorts);
 
-    public Container(String containerName, DockerCompose dockerComposeProcess) {
+    public Container(String containerName, Docker docker, DockerCompose dockerCompose) {
         this.containerName = containerName;
-        this.dockerComposeProcess = dockerComposeProcess;
+        this.docker = docker;
+        this.dockerCompose = dockerCompose;
     }
 
     public String getContainerName() {
@@ -82,28 +85,28 @@ public class Container {
     }
 
     public void start() throws IOException, InterruptedException {
-        dockerComposeProcess.start(this);
+        dockerCompose.start(this);
     }
 
     public void stop() throws IOException, InterruptedException {
-        dockerComposeProcess.stop(this);
+        dockerCompose.stop(this);
     }
 
     public void kill() throws IOException, InterruptedException {
-        dockerComposeProcess.kill(this);
+        dockerCompose.kill(this);
     }
 
     public State state() throws IOException, InterruptedException {
-        return dockerComposeProcess.state(containerName);
+        return dockerCompose.state(containerName);
     }
 
     public void up() throws IOException, InterruptedException {
-        dockerComposeProcess.up(this);
+        dockerCompose.up(this);
     }
 
     private Ports getDockerPorts() {
         try {
-            return dockerComposeProcess.ports(containerName);
+            return dockerCompose.ports(containerName);
         } catch (IOException | InterruptedException e) {
             throw Throwables.propagate(e);
         }

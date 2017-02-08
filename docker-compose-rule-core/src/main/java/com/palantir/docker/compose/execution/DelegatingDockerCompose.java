@@ -98,11 +98,6 @@ abstract class DelegatingDockerCompose implements DockerCompose {
     }
 
     @Override
-    public Container container(String containerName) {
-        return dockerCompose.container(containerName);
-    }
-
-    @Override
     public boolean writeLogs(String container, OutputStream output) throws IOException {
         return dockerCompose.writeLogs(container, output);
     }

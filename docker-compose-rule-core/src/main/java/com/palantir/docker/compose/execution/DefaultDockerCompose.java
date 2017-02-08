@@ -165,11 +165,6 @@ public class DefaultDockerCompose implements DockerCompose {
         return Arrays.asList(servicesOutput.split("\n"));
     }
 
-    @Override
-    public Container container(String containerName) {
-        return new Container(containerName, this);
-    }
-
     /**
      * Blocks until all logs collected from the container.
      * @return Whether the docker container terminated prior to log collection ending

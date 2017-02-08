@@ -306,8 +306,6 @@ public class DockerComposeRuleShould {
     }
 
     public Container withComposeExecutableReturningContainerFor(String containerName) {
-        final Container container = new Container(containerName, dockerCompose);
-        when(dockerCompose.container(containerName)).thenReturn(container);
-        return container;
+        return new Container(containerName, mockDocker, dockerCompose);
     }
 }
