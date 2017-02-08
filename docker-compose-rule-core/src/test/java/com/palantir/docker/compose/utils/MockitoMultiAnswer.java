@@ -30,6 +30,7 @@ public class MockitoMultiAnswer<T> implements Answer<T> {
         this.invocationHandlers = ImmutableList.copyOf(invocationHandlers);
     }
 
+    @SafeVarargs
     public static <T> MockitoMultiAnswer<T> of(Function<InvocationOnMock, T>... invocationHandlers) {
         return new MockitoMultiAnswer<>(Arrays.asList(invocationHandlers));
     }
