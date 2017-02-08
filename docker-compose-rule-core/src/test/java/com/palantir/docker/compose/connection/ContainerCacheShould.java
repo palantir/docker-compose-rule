@@ -19,28 +19,23 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.sameInstance;
 import static org.hamcrest.core.Is.is;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
+import com.palantir.docker.compose.execution.Docker;
 import com.palantir.docker.compose.execution.DockerCompose;
-import org.junit.Before;
 import org.junit.Test;
 
 public class ContainerCacheShould {
 
     private static final String CONTAINER_NAME = "container";
 
+    private final Docker docker = mock(Docker.class);
     private final DockerCompose dockerCompose = mock(DockerCompose.class);
-    private final ContainerCache containers = new ContainerCache(dockerCompose);
-
-    @Before
-    public void setup() {
-        when(dockerCompose.container(CONTAINER_NAME)).thenReturn(new Container(CONTAINER_NAME, dockerCompose));
-    }
+    private final ContainerCache containers = new ContainerCache(docker, dockerCompose);
 
     @Test
     public void return_a_container_with_the_specified_name_when_getting_a_new_container() {
         Container container = containers.container(CONTAINER_NAME);
-        assertThat(container, is(new Container(CONTAINER_NAME, dockerCompose)));
+        assertThat(container, is(new Container(CONTAINER_NAME, docker, dockerCompose)));
     }
 
     @Test
