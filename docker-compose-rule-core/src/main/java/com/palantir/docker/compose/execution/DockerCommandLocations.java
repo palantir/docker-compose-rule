@@ -18,26 +18,40 @@ package com.palantir.docker.compose.execution;
 import static java.util.Arrays.asList;
 
 import java.io.File;
+import java.nio.file.Paths;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Predicate;
+import java.util.stream.Stream;
+import org.apache.commons.lang3.StringUtils;
 
 public class DockerCommandLocations {
     private static final Predicate<String> IS_NOT_NULL = path -> path != null;
     private static final Predicate<String> FILE_EXISTS = path -> new File(path).exists();
 
     private final List<String> possiblePaths;
+    private final String exeName;
+    private final boolean lookInPath;
 
-    public DockerCommandLocations(String... possiblePaths) {
+    public DockerCommandLocations(String exeName, boolean lookInPath, String... possiblePaths) {
+        this.exeName = exeName;
+        this.lookInPath = lookInPath;
         this.possiblePaths = asList(possiblePaths);
     }
 
     public Optional<String> preferredLocation() {
+        List<String> envPath = (StringUtils.isNotBlank(exeName) && lookInPath)
+                ? Arrays.asList(System.getenv("PATH").split(File.pathSeparator)) :
+                Collections.emptyList();
 
-        return possiblePaths.stream()
-                .filter(IS_NOT_NULL)
-                .filter(FILE_EXISTS)
-                .findFirst();
+        return Stream.concat(
+                envPath.stream().map(path -> Paths.get(path, exeName).toAbsolutePath().toString()),
+                possiblePaths.stream())
+            .filter(IS_NOT_NULL)
+            .filter(FILE_EXISTS)
+            .findFirst();
     }
 
     @Override

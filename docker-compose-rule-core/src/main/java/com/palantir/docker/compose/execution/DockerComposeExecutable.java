@@ -29,6 +29,7 @@ public abstract class DockerComposeExecutable implements Executable {
     private static final Logger log = LoggerFactory.getLogger(DockerComposeExecutable.class);
 
     private static final DockerCommandLocations DOCKER_COMPOSE_LOCATIONS = new DockerCommandLocations(
+            "docker-compose", true,
             System.getenv("DOCKER_COMPOSE_LOCATION"),
             "/usr/local/bin/docker-compose",
             "/usr/bin/docker-compose"

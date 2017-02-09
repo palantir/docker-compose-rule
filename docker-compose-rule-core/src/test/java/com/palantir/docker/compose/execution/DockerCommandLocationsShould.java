@@ -41,6 +41,7 @@ public class DockerCommandLocationsShould {
     @Test public void
     provide_the_first_docker_command_location_if_it_exists() {
         DockerCommandLocations dockerCommandLocations = new DockerCommandLocations(
+                null, false,
                 badLocation,
                 goodLocation,
                 otherBadLocation);
@@ -52,6 +53,7 @@ public class DockerCommandLocationsShould {
     @Test public void
     skip_paths_from_environment_variables_that_are_unset() {
         DockerCommandLocations dockerCommandLocations = new DockerCommandLocations(
+                null, false,
                 System.getenv("AN_UNSET_DOCKER_COMPOSE_PATH"),
                 goodLocation);
 
@@ -62,6 +64,7 @@ public class DockerCommandLocationsShould {
     @Test public void
     have_no_preferred_path_when_all_possible_paths_are_all_invalid() {
         DockerCommandLocations dockerCommandLocations = new DockerCommandLocations(
+                null, false,
                 badLocation);
 
         assertThat(dockerCommandLocations.preferredLocation(),
