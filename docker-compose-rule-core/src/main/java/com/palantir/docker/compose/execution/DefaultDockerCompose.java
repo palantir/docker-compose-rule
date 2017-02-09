@@ -133,7 +133,7 @@ public class DefaultDockerCompose implements DockerCompose {
         return DockerComposeVersion.parseFromDockerComposeVersion(versionOutput);
     }
 
-    private String[] constructFullDockerComposeExecArguments(DockerComposeExecOption dockerComposeExecOption,
+    private static String[] constructFullDockerComposeExecArguments(DockerComposeExecOption dockerComposeExecOption,
             String containerName, DockerComposeExecArgument dockerComposeExecArgument) {
         ImmutableList<String> fullArgs = new ImmutableList.Builder<String>().add("exec")
                                                                             .addAll(dockerComposeExecOption.options())
@@ -143,7 +143,7 @@ public class DefaultDockerCompose implements DockerCompose {
         return fullArgs.toArray(new String[fullArgs.size()]);
     }
 
-    private String[] constructFullDockerComposeRunArguments(DockerComposeRunOption dockerComposeRunOption,
+    private static String[] constructFullDockerComposeRunArguments(DockerComposeRunOption dockerComposeRunOption,
             String containerName, DockerComposeRunArgument dockerComposeRunArgument) {
         ImmutableList<String> fullArgs = new ImmutableList.Builder<String>().add("run")
                 .addAll(dockerComposeRunOption.options())
@@ -204,7 +204,7 @@ public class DefaultDockerCompose implements DockerCompose {
         return State.parseFromDockerComposePs(psOutput(service));
     }
 
-    private ErrorHandler swallowingDownCommandDoesNotExist() {
+    private static ErrorHandler swallowingDownCommandDoesNotExist() {
         return (exitCode, output, commandName, commands) -> {
             if (downCommandWasPresent(output)) {
                 Command.throwingOnError().handle(exitCode, output, commandName, commands);
@@ -216,7 +216,7 @@ public class DefaultDockerCompose implements DockerCompose {
         };
     }
 
-    private boolean downCommandWasPresent(String output) {
+    private static boolean downCommandWasPresent(String output) {
         return !output.contains("No such command");
     }
 

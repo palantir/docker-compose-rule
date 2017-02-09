@@ -20,7 +20,6 @@ import static java.util.Collections.emptyList;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 
-import java.io.IOException;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -32,7 +31,7 @@ public class PortsShould {
     public ExpectedException exception = ExpectedException.none();
 
     @Test
-    public void result_in_no_ports_when_there_are_no_ports_in_ps_output() throws IOException, InterruptedException {
+    public void result_in_no_ports_when_there_are_no_ports_in_ps_output() {
         String psOutput = "------";
         Ports ports = Ports.parseFromDockerComposePs(psOutput, null);
         Ports expected = new Ports(emptyList());
@@ -40,7 +39,7 @@ public class PortsShould {
     }
 
     @Test
-    public void result_in_single_port_when_there_is_single_tcp_port_mapping() throws IOException, InterruptedException {
+    public void result_in_single_port_when_there_is_single_tcp_port_mapping() {
         String psOutput = "0.0.0.0:5432->5432/tcp";
         Ports ports = Ports.parseFromDockerComposePs(psOutput, LOCALHOST_IP);
         Ports expected = new Ports(newArrayList(new DockerPort(LOCALHOST_IP, 5432, 5432)));
@@ -49,8 +48,7 @@ public class PortsShould {
 
     @Test
     public void
-            result_in_single_port_with_ip_other_than_localhost_when_there_is_single_tcp_port_mapping()
-            throws IOException, InterruptedException {
+            result_in_single_port_with_ip_other_than_localhost_when_there_is_single_tcp_port_mapping() {
         String psOutput = "10.0.1.2:1234->2345/tcp";
         Ports ports = Ports.parseFromDockerComposePs(psOutput, LOCALHOST_IP);
         Ports expected = new Ports(newArrayList(new DockerPort("10.0.1.2", 1234, 2345)));
@@ -58,7 +56,7 @@ public class PortsShould {
     }
 
     @Test
-    public void result_in_two_ports_when_there_are_two_tcp_port_mappings() throws IOException, InterruptedException {
+    public void result_in_two_ports_when_there_are_two_tcp_port_mappings() {
         String psOutput = "0.0.0.0:5432->5432/tcp, 0.0.0.0:5433->5432/tcp";
         Ports ports = Ports.parseFromDockerComposePs(psOutput, LOCALHOST_IP);
         Ports expected = new Ports(newArrayList(new DockerPort(LOCALHOST_IP, 5432, 5432),
@@ -67,7 +65,7 @@ public class PortsShould {
     }
 
     @Test
-    public void result_in_no_ports_when_there_is_a_non_mapped_exposed_port() throws IOException, InterruptedException {
+    public void result_in_no_ports_when_there_is_a_non_mapped_exposed_port() {
         String psOutput = "5432/tcp";
         Ports ports = Ports.parseFromDockerComposePs(psOutput, LOCALHOST_IP);
         Ports expected = new Ports(emptyList());
@@ -75,7 +73,7 @@ public class PortsShould {
     }
 
     @Test
-    public void parse_actual_docker_compose_output() throws IOException, InterruptedException {
+    public void parse_actual_docker_compose_output() {
         String psOutput =
                   "       Name                      Command               State                                         Ports                                        \n"
                 + "-------------------------------------------------------------------------------------------------------------------------------------------------\n"
@@ -87,8 +85,7 @@ public class PortsShould {
     }
 
     @Test
-    public void throw_illegal_state_exception_when_no_running_container_found_for_service()
-            throws IOException, InterruptedException {
+    public void throw_illegal_state_exception_when_no_running_container_found_for_service() {
         exception.expect(IllegalArgumentException.class);
         exception.expectMessage("No container found");
         Ports.parseFromDockerComposePs("", "");

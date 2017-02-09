@@ -39,7 +39,7 @@ public class DockerCommandLocationsShould {
     }
 
     @Test public void
-    provide_the_first_docker_command_location_if_it_exists() throws IOException {
+    provide_the_first_docker_command_location_if_it_exists() {
         DockerCommandLocations dockerCommandLocations = new DockerCommandLocations(
                 badLocation,
                 goodLocation,

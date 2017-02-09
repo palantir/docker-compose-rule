@@ -15,7 +15,7 @@
  */
 package com.palantir.docker.compose.execution;
 
-import static org.mockito.Matchers.anySet;
+import static org.mockito.Matchers.anySetOf;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -91,7 +91,7 @@ public class ConflictingContainerRemovingDockerComposeShould {
         doThrow(new DockerExecutionException("The name \"" + conflictingContainer + "\" is already in use"))
                 .doNothing()
                 .when(dockerCompose).up();
-        doThrow(DockerExecutionException.class).when(docker).rm(anySet());
+        doThrow(DockerExecutionException.class).when(docker).rm(anySetOf(String.class));
 
         ConflictingContainerRemovingDockerCompose conflictingContainerRemovingDockerCompose =
                 new ConflictingContainerRemovingDockerCompose(dockerCompose, docker);
@@ -107,7 +107,7 @@ public class ConflictingContainerRemovingDockerComposeShould {
         doThrow(new DockerExecutionException("The name \"" + conflictingContainer + "\" is already in use"))
                 .doNothing()
                 .when(dockerCompose).up();
-        doThrow(RuntimeException.class).when(docker).rm(anySet());
+        doThrow(RuntimeException.class).when(docker).rm(anySetOf(String.class));
 
         exception.expect(RuntimeException.class);
         ConflictingContainerRemovingDockerCompose conflictingContainerRemovingDockerCompose =

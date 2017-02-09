@@ -24,17 +24,17 @@ import org.junit.Test;
 public class DaemonHostIpResolverShould {
 
     @Test
-    public void return_local_host_with_null() throws Exception {
+    public void return_local_host_with_null() {
         assertThat(new DaemonHostIpResolver().resolveIp(null), is(LOCALHOST));
     }
 
     @Test
-    public void return_local_host_with_blank() throws Exception {
+    public void return_local_host_with_blank() {
         assertThat(new DaemonHostIpResolver().resolveIp(""), is(LOCALHOST));
     }
 
     @Test
-    public void return_local_host_with_arbitrary() throws Exception {
+    public void return_local_host_with_arbitrary() {
         assertThat(new DaemonHostIpResolver().resolveIp("arbitrary"), is(LOCALHOST));
     }
 

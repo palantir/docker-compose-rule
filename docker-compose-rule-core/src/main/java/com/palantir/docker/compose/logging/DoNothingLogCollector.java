@@ -16,17 +16,16 @@
 package com.palantir.docker.compose.logging;
 
 import com.palantir.docker.compose.execution.DockerCompose;
-import java.io.IOException;
 
 public class DoNothingLogCollector implements LogCollector {
 
     @Override
-    public void startCollecting(DockerCompose dockerCompose) throws IOException, InterruptedException {
+    public void startCollecting(DockerCompose dockerCompose) {
 
     }
 
     @Override
-    public void stopCollecting() throws InterruptedException {
+    public void stopCollecting() {
 
     }
 

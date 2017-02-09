@@ -31,7 +31,7 @@ public class RemoteEnvironmentValidatorShould {
     public ExpectedException exception = ExpectedException.none();
 
     @Test
-    public void throw_exception_if_docker_host_is_not_set() throws Exception {
+    public void throw_exception_if_docker_host_is_not_set() {
         Map<String, String> variables = ImmutableMap.<String, String>builder()
                                                     .put("SOME_VARIABLE", "SOME_VALUE")
                                                     .build();
@@ -43,7 +43,7 @@ public class RemoteEnvironmentValidatorShould {
     }
 
     @Test
-    public void throw_exception_if_docker_cert_path_is_missing_and_tls_is_on() throws Exception {
+    public void throw_exception_if_docker_cert_path_is_missing_and_tls_is_on() {
         Map<String, String> variables = ImmutableMap.<String, String>builder()
                 .put(DOCKER_HOST, "tcp://192.168.99.100:2376")
                 .put(DOCKER_TLS_VERIFY, "1")
@@ -56,7 +56,7 @@ public class RemoteEnvironmentValidatorShould {
     }
 
     @Test
-    public void validate_environment_with_all_valid_variables_set_without_tls() throws Exception {
+    public void validate_environment_with_all_valid_variables_set_without_tls() {
         Map<String, String> variables = ImmutableMap.<String, String>builder()
                                                     .put(DOCKER_HOST, "tcp://192.168.99.100:2376")
                                                     .put("SOME_VARIABLE", "SOME_VALUE")
@@ -66,7 +66,7 @@ public class RemoteEnvironmentValidatorShould {
     }
 
     @Test
-    public void validate_environment_with_all_valid_variables_set_with_tls() throws Exception {
+    public void validate_environment_with_all_valid_variables_set_with_tls() {
         Map<String, String> variables = ImmutableMap.<String, String>builder()
                 .put(DOCKER_HOST, "tcp://192.168.99.100:2376")
                 .put(DOCKER_TLS_VERIFY, "1")
