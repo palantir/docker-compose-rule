@@ -34,6 +34,9 @@ import com.palantir.docker.compose.logging.FileLogCollector;
 import com.palantir.docker.compose.logging.LogCollector;
 import com.palantir.docker.compose.logging.LogDirectory;
 import java.io.IOException;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.X509Certificate;
 import java.util.List;
 import org.immutables.value.Value;
 import org.joda.time.Duration;
@@ -41,6 +44,8 @@ import org.joda.time.ReadableDuration;
 import org.junit.rules.ExternalResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.net.ssl.*;
 
 @Value.Immutable
 @CustomImmutablesStyle
@@ -189,6 +194,39 @@ public abstract class DockerComposeRule extends ExternalResource {
         public Builder skipShutdown(boolean skipShutdown) {
             if (skipShutdown) {
                 return shutdownStrategy(ShutdownStrategy.SKIP);
+            }
+
+            return this;
+        }
+
+        public Builder acceptAllCerts() {
+            try {
+                TrustManager trm = new X509TrustManager() {
+                    public X509Certificate[] getAcceptedIssuers() {
+                        return null;
+                    }
+
+                    public void checkClientTrusted(X509Certificate[] certs, String authType) {
+
+                    }
+
+                    public void checkServerTrusted(X509Certificate[] certs, String authType) {
+                    }
+                };
+
+                SSLContext sc = SSLContext.getInstance("SSL");
+                sc.init(null, new TrustManager[] { trm }, null);
+                HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
+
+                HostnameVerifier allHostsValid = new HostnameVerifier() {
+                    public boolean verify(String hostname, SSLSession session) {
+                        return true;
+                    }
+                };
+
+                HttpsURLConnection.setDefaultHostnameVerifier(allHostsValid);
+            } catch (NoSuchAlgorithmException | KeyManagementException e) {
+                log.error("Could not set all-trusting security manager", e);
             }
 
             return this;
