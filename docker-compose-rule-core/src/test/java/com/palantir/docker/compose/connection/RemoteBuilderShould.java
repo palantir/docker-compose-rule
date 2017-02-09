@@ -84,7 +84,7 @@ public class RemoteBuilderShould {
         validateEnvironmentConfiguredDirectly(dockerMachine, expected);
     }
 
-    private void validateEnvironmentConfiguredDirectly(DockerMachine dockerMachine, Map<String, String> expectedEnvironment) {
+    private static void validateEnvironmentConfiguredDirectly(DockerMachine dockerMachine, Map<String, String> expectedEnvironment) {
         ProcessBuilder process = dockerMachine.configuredDockerComposeProcess();
 
         Map<String, String> environment = process.environment();

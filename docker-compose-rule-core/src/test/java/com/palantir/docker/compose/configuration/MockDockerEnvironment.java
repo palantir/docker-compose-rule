@@ -74,7 +74,7 @@ public class MockDockerEnvironment {
         when(dockerComposeProcess.ports(service)).thenReturn(new Ports(ports));
     }
 
-    private DockerPort dockerPortSpy(String ip, int externalPortNumber, int internalPortNumber) {
+    private static DockerPort dockerPortSpy(String ip, int externalPortNumber, int internalPortNumber) {
         DockerPort port = new DockerPort(ip, externalPortNumber, internalPortNumber);
         return spy(port);
     }

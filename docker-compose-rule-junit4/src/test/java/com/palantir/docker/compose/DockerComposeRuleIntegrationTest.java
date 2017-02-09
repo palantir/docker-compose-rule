@@ -51,7 +51,7 @@ public class DockerComposeRuleIntegrationTest {
             .waitingForServices(ImmutableList.of("db3", "db4"), toAllHaveAllPortsOpen())
             .build();
 
-    private HealthCheck<List<Container>> toAllHaveAllPortsOpen() {
+    private static HealthCheck<List<Container>> toAllHaveAllPortsOpen() {
         return containers -> {
             boolean healthy = containers.stream()
                     .map(Container::areAllPortsOpen)
@@ -67,7 +67,7 @@ public class DockerComposeRuleIntegrationTest {
     @Rule
     public ExpectedException exception = ExpectedException.none();
 
-    private void forEachContainer(Consumer<String> consumer) {
+    private static void forEachContainer(Consumer<String> consumer) {
         CONTAINERS.forEach(consumer);
     }
 

@@ -198,7 +198,7 @@ public class FileLogCollectorShould {
         logCollector.startCollecting(compose);
     }
 
-    private File cannotBeCreatedDirectory() {
+    private static File cannotBeCreatedDirectory() {
         File cannotBeCreatedDirectory = mock(File.class);
         when(cannotBeCreatedDirectory.isFile()).thenReturn(false);
         when(cannotBeCreatedDirectory.mkdirs()).thenReturn(false);

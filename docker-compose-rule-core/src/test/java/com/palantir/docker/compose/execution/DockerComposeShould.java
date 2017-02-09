@@ -222,11 +222,11 @@ public class DockerComposeShould {
         assertThat(processCompose.run(DockerComposeRunOption.options("-it"), "container_1", DockerComposeRunArgument.arguments("ls", "-l")), is(lsString));
     }
 
-    private void addProcessToExecutor(DockerComposeExecutable dockerComposeExecutable, Process process, String... commands) throws Exception {
+    private static void addProcessToExecutor(DockerComposeExecutable dockerComposeExecutable, Process process, String... commands) throws Exception {
         when(dockerComposeExecutable.execute(commands)).thenReturn(process);
     }
 
-    private Process processWithOutput(String output) {
+    private static Process processWithOutput(String output) {
         Process mockedProcess = mock(Process.class);
         when(mockedProcess.getInputStream()).thenReturn(toInputStream(output));
         when(mockedProcess.exitValue()).thenReturn(0);
