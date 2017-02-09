@@ -50,13 +50,13 @@ public class MockDockerEnvironment {
 
     public DockerPort availableHttpService(String service, String ip, int externalPortNumber, int internalPortNumber) throws Exception {
         DockerPort port = availableService(service, ip, externalPortNumber, internalPortNumber);
-        doReturn(true).when(port).isHttpResponding(any());
+        doReturn(true).when(port).isHttpResponding(any(), false);
         return port;
     }
 
     public DockerPort unavailableHttpService(String service, String ip, int externalPortNumber, int internalPortNumber) throws Exception {
         DockerPort port = availableService(service, ip, externalPortNumber, internalPortNumber);
-        doReturn(false).when(port).isHttpResponding(any());
+        doReturn(false).when(port).isHttpResponding(any(), false);
         return port;
     }
 

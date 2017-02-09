@@ -66,7 +66,7 @@ public class DockerPort {
         }
     }
 
-    public boolean isHttpResponding(Function<DockerPort, String> urlFunction) {
+    public boolean isHttpResponding(Function<DockerPort, String> urlFunction, boolean andCheckStatus) {
         URL url;
         try {
             String urlString = urlFunction.apply(this);
@@ -85,7 +85,7 @@ public class DockerPort {
             return false;
         } catch (FileNotFoundException e) {
             log.debug("Received 404, assuming port active");
-            return true;
+            return !andCheckStatus;
         } catch (SSLHandshakeException e) {
             log.debug("Received bad SSL response, assuming port inactive");
             return false;

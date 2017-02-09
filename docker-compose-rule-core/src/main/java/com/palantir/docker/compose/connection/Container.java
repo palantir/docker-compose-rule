@@ -42,13 +42,21 @@ public class Container {
         return containerName;
     }
 
+    public SuccessOrFailure portIsListeningOnHttpAndCheckStatus2xx(int internalPort, Function<DockerPort, String> urlFunction) {
+        return portIsListeningOnHttp(internalPort, urlFunction, true);
+    }
+
     public SuccessOrFailure portIsListeningOnHttp(int internalPort, Function<DockerPort, String> urlFunction) {
+        return portIsListeningOnHttp(internalPort, urlFunction, false);
+    }
+
+    public SuccessOrFailure portIsListeningOnHttp(int internalPort, Function<DockerPort, String> urlFunction, boolean andCheckStatus) {
         try {
             DockerPort port = port(internalPort);
             if (!port.isListeningNow()) {
                 return SuccessOrFailure.failure(internalPort + " is not listening");
             }
-            if (!port.isHttpResponding(urlFunction)) {
+            if (!port.isHttpResponding(urlFunction, andCheckStatus)) {
                 return SuccessOrFailure.failure(internalPort + " does not have a http response from " + urlFunction.apply(port));
             }
             return SuccessOrFailure.success();
@@ -78,7 +86,7 @@ public class Container {
                            .stream()
                            .filter(port -> port.getInternalPort() == internalPort)
                            .findFirst()
-                           .orElseThrow(() -> new IllegalArgumentException("No internal port '" + internalPort + "' for container '" + containerName + "'"));
+                           .orElseThrow(() -> new IllegalArgumentException("No internal port '" + internalPort + "' for container '" + containerName + "': " + portMappings));
     }
 
     public void start() throws IOException, InterruptedException {
