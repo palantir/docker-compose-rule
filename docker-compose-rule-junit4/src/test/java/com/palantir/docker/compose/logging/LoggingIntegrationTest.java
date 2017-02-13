@@ -15,15 +15,21 @@
  */
 package com.palantir.docker.compose.logging;
 
-import static com.palantir.docker.compose.connection.waiting.HealthChecks.toHaveAllPortsOpen;
 import static com.palantir.docker.compose.matchers.IOMatchers.fileWithConents;
 import static com.palantir.docker.compose.matchers.IOMatchers.matchingPattern;
+import static java.util.stream.Collectors.toList;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 
 import com.palantir.docker.compose.DockerComposeRule;
+import com.palantir.docker.compose.connection.Container;
+import com.palantir.docker.compose.connection.DockerPort;
+import com.palantir.docker.compose.connection.waiting.HealthCheck;
+import com.palantir.docker.compose.connection.waiting.SuccessOrFailure;
 import java.io.File;
 import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.net.Socket;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -40,10 +46,24 @@ public class LoggingIntegrationTest {
     public void setUp() {
         dockerComposeRule = DockerComposeRule.builder()
                 .file("src/test/resources/docker-compose.yaml")
-                .waitingForService("db", toHaveAllPortsOpen())
-                .waitingForService("db2", toHaveAllPortsOpen())
+                .waitingForService("db", foo())
+                .waitingForService("db2", foo())
                 .saveLogsTo(logFolder.getRoot().getAbsolutePath())
                 .build();
+    }
+
+    private static HealthCheck<Container> foo() {
+        return target -> {
+            for (DockerPort port : target.ports().stream().collect(toList())) {
+                try (Socket socket = new Socket()) {
+                    socket.connect(new InetSocketAddress(port.getIp(), port.getExternalPort()), 500);
+                } catch (IOException e) {
+                    return SuccessOrFailure.fromException(new RuntimeException(
+                            "Port " + port.getInternalPort() + " failed to open", e));
+                }
+            }
+            return SuccessOrFailure.success();
+        };
     }
 
     @Test

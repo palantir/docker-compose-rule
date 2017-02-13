@@ -15,9 +15,15 @@
  */
 package com.palantir.docker.compose.connection.waiting;
 
+import static java.util.stream.Collectors.joining;
+
 import com.palantir.docker.compose.connection.Cluster;
 import com.palantir.docker.compose.connection.Container;
+import com.palantir.docker.compose.connection.State;
+import java.io.IOException;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Function;
 
 @FunctionalInterface
@@ -37,5 +43,26 @@ public interface ClusterHealthCheck {
         };
     }
 
-    SuccessOrFailure isClusterHealthy(Cluster cluster);
+    static ClusterHealthCheck nativeHealthChecks() {
+        return cluster -> {
+            Set<String> unhealthyContainers = new LinkedHashSet<>();
+            try {
+                for (Container container : cluster.allContainers()) {
+                    State state = container.state();
+                    if (state == State.UNHEALTHY) {
+                        unhealthyContainers.add(container.getContainerName());
+                    }
+                }
+                if (!unhealthyContainers.isEmpty()) {
+                    return SuccessOrFailure.failure(
+                            "The following containers are not healthy: " + unhealthyContainers.stream().collect(joining(", ")));
+                }
+                return SuccessOrFailure.success();
+            } catch (IOException e) {
+                return SuccessOrFailure.fromException(e);
+            }
+        };
+    }
+
+    SuccessOrFailure isClusterHealthy(Cluster cluster) throws InterruptedException;
 }
