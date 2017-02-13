@@ -97,11 +97,19 @@ public class Container {
     }
 
     public State state() throws IOException, InterruptedException {
-        return dockerCompose.state(containerName);
+        String id = dockerCompose.id(this).orElse(null);
+        if (id == null) {
+            return State.DOWN;
+        }
+        return docker.state(id);
     }
 
     public void up() throws IOException, InterruptedException {
         dockerCompose.up(this);
+    }
+
+    public Ports ports() {
+        return portMappings.get();
     }
 
     private Ports getDockerPorts() {
@@ -131,7 +139,7 @@ public class Container {
 
     @Override
     public String toString() {
-        return "Container{containerName='" + containerName + "}";
+        return "Container{containerName='" + containerName + "'}";
     }
 
     public SuccessOrFailure areAllPortsOpen() {

@@ -18,10 +18,10 @@ package com.palantir.docker.compose.execution;
 import com.palantir.docker.compose.connection.Container;
 import com.palantir.docker.compose.connection.ContainerName;
 import com.palantir.docker.compose.connection.Ports;
-import com.palantir.docker.compose.connection.State;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.List;
+import java.util.Optional;
 
 abstract class DelegatingDockerCompose implements DockerCompose {
     private final DockerCompose dockerCompose;
@@ -93,6 +93,11 @@ abstract class DelegatingDockerCompose implements DockerCompose {
     }
 
     @Override
+    public Optional<String> id(Container container) throws IOException, InterruptedException {
+        return dockerCompose.id(container);
+    }
+
+    @Override
     public List<String> services() throws IOException, InterruptedException {
         return dockerCompose.services();
     }
@@ -105,11 +110,6 @@ abstract class DelegatingDockerCompose implements DockerCompose {
     @Override
     public Ports ports(String service) throws IOException, InterruptedException {
         return dockerCompose.ports(service);
-    }
-
-    @Override
-    public State state(String service) throws IOException, InterruptedException {
-        return dockerCompose.state(service);
     }
 
     protected final DockerCompose getDockerCompose() {

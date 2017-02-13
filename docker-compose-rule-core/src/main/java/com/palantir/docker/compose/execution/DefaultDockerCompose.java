@@ -29,11 +29,11 @@ import com.palantir.docker.compose.connection.ContainerName;
 import com.palantir.docker.compose.connection.ContainerNames;
 import com.palantir.docker.compose.connection.DockerMachine;
 import com.palantir.docker.compose.connection.Ports;
-import com.palantir.docker.compose.connection.State;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import org.apache.commons.io.IOUtils;
 import org.joda.time.Duration;
 import org.slf4j.Logger;
@@ -160,6 +160,15 @@ public class DefaultDockerCompose implements DockerCompose {
     }
 
     @Override
+    public Optional<String> id(Container container) throws IOException, InterruptedException {
+        String id = command.execute(Command.throwingOnError(), "ps", "-q", container.getContainerName());
+        if (id.isEmpty()) {
+            return Optional.empty();
+        }
+        return Optional.of(id);
+    }
+
+    @Override
     public List<String> services() throws IOException, InterruptedException {
         String servicesOutput = command.execute(Command.throwingOnError(), "config", "--services");
         return Arrays.asList(servicesOutput.split("\n"));
@@ -192,11 +201,6 @@ public class DefaultDockerCompose implements DockerCompose {
     @Override
     public Ports ports(String service) throws IOException, InterruptedException {
         return Ports.parseFromDockerComposePs(psOutput(service), dockerMachine.getIp());
-    }
-
-    @Override
-    public State state(String service) throws IOException, InterruptedException {
-        return State.parseFromDockerComposePs(psOutput(service));
     }
 
     private static ErrorHandler swallowingDownCommandDoesNotExist() {

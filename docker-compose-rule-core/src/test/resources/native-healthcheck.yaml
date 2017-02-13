@@ -1,0 +1,15 @@
+version: "2.1"
+
+services:
+  noHealthcheck:
+    image: gliderlabs/alpine:3.4
+    command: sh -c 'while true; do sleep 10; done'
+
+  withHealthcheck:
+    image: gliderlabs/alpine:3.4
+    command: sh -c 'while true; do sleep 10; done'
+    healthcheck:
+      test: ["CMD", "test", "-f", "healthy"]
+      interval: 100ms
+      timeout: 1s
+      retries: 1

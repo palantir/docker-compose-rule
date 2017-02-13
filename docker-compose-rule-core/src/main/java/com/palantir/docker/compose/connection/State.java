@@ -15,22 +15,21 @@
  */
 package com.palantir.docker.compose.connection;
 
-import com.google.common.base.Preconditions;
-import com.google.common.base.Strings;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 public enum State {
-    Up, Exit;
+    DOWN, PAUSED, UNHEALTHY, HEALTHY;
 
-    private static final Pattern STATE_PATTERN = Pattern.compile("(Up|Exit)");
-    private static final int STATE_INDEX = 1;
+    /** Returns true if the container is up, unpaused and healthy. */
+    public boolean isHealthy() {
+        return this == HEALTHY;
+    }
 
-    public static State parseFromDockerComposePs(String psOutput) {
-        Preconditions.checkArgument(!Strings.isNullOrEmpty(psOutput), "No container found");
-        Matcher matcher = STATE_PATTERN.matcher(psOutput);
-        Preconditions.checkState(matcher.find(), "Could not parse status: %s", psOutput);
-        String matchedStatus = matcher.group(STATE_INDEX);
-        return valueOf(matchedStatus);
+    /** Returns true if the container is up but not necessarily unpaused or healthy. */
+    public boolean isUp() {
+        return this != DOWN;
+    }
+
+    /** Returns true if the container is paused. */
+    public boolean isPaused() {
+        return this == PAUSED;
     }
 }
