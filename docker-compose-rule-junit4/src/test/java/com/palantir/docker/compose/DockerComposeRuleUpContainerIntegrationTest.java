@@ -46,7 +46,7 @@ public class DockerComposeRuleUpContainerIntegrationTest {
 
         container.up();
 
-        assertThat(container.state(), is(State.Up));
+        assertThat(container.state(), is(State.HEALTHY));
     }
 
     @Test
@@ -59,6 +59,6 @@ public class DockerComposeRuleUpContainerIntegrationTest {
         new ClusterWait(serviceHealthCheck(SERVICE_NAME, toHaveAllPortsOpen()), Duration.standardSeconds(5))
                 .waitUntilReady(dockerComposeRule.containers());
 
-        assertThat(container.state(), is(State.Up));
+        assertThat(container.state(), is(State.HEALTHY));
     }
 }

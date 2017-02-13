@@ -101,10 +101,10 @@ public class DockerComposeRuleIntegrationTest {
                 Container container = docker.containers().container(containerName);
 
                 container.stop();
-                assertThat(container.state(), is(State.Exit));
+                assertThat(container.state(), is(State.DOWN));
 
                 container.start();
-                assertThat(container.state(), is(State.Up));
+                assertThat(container.state(), is(State.HEALTHY));
             } catch (IOException | InterruptedException e) {
                 propagate(e);
             }
@@ -118,7 +118,7 @@ public class DockerComposeRuleIntegrationTest {
                 Container container = docker.containers().container(containerName);
 
                 container.stop();
-                assertThat(container.state(), is(State.Exit));
+                assertThat(container.state(), is(State.DOWN));
 
                 container.stop();
             } catch (IOException | InterruptedException e) {
@@ -134,7 +134,7 @@ public class DockerComposeRuleIntegrationTest {
                 Container container = docker.containers().container(containerName);
 
                 container.start();
-                assertThat(container.state(), is(State.Up));
+                assertThat(container.state(), is(State.HEALTHY));
             } catch (IOException | InterruptedException e) {
                 propagate(e);
             }
@@ -148,10 +148,10 @@ public class DockerComposeRuleIntegrationTest {
                 Container container = docker.containers().container(containerName);
 
                 container.kill();
-                assertThat(container.state(), is(State.Exit));
+                assertThat(container.state(), is(State.DOWN));
 
                 container.start();
-                assertThat(container.state(), is(State.Up));
+                assertThat(container.state(), is(State.HEALTHY));
             } catch (IOException | InterruptedException e) {
                 propagate(e);
             }
@@ -165,7 +165,7 @@ public class DockerComposeRuleIntegrationTest {
                 Container container = docker.containers().container(containerName);
 
                 container.kill();
-                assertThat(container.state(), is(State.Exit));
+                assertThat(container.state(), is(State.DOWN));
 
                 container.kill();
             } catch (IOException | InterruptedException e) {

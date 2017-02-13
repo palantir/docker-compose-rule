@@ -15,10 +15,14 @@
  */
 package com.palantir.docker.compose.connection;
 
+import static java.util.stream.Collectors.toSet;
+
 import com.palantir.docker.compose.execution.Docker;
 import com.palantir.docker.compose.execution.DockerCompose;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 public class ContainerCache {
 
@@ -34,6 +38,10 @@ public class ContainerCache {
     public Container container(String containerName) {
         containers.putIfAbsent(containerName, new Container(containerName, docker, dockerCompose));
         return containers.get(containerName);
+    }
+
+    public Set<Container> containers() throws IOException, InterruptedException {
+        return dockerCompose.services().stream().map(this::container).collect(toSet());
     }
 
 }

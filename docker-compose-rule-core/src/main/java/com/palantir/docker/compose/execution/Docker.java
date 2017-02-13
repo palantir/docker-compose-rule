@@ -16,6 +16,7 @@
 package com.palantir.docker.compose.execution;
 
 import com.google.common.collect.ObjectArrays;
+import com.palantir.docker.compose.connection.State;
 import java.io.IOException;
 import java.util.Collection;
 import org.slf4j.Logger;
@@ -25,10 +26,25 @@ public class Docker {
 
     private static final Logger log = LoggerFactory.getLogger(Docker.class);
 
+    private static final String HEALTH_STATUS_FORMAT =
+            "--format="
+                    + "{{if not .State.Running}}DOWN"
+                    + "{{else if .State.Paused}}PAUSED"
+                    + "{{else if index .State \"Health\"}}"
+                    + "{{if eq .State.Health.Status \"healthy\"}}HEALTHY"
+                    + "{{else}}UNHEALTHY{{end}}"
+                    + "{{else}}HEALTHY{{end}}";
+
     private final Command command;
 
     public Docker(DockerExecutable rawExecutable) {
-        this.command = new Command(rawExecutable, log::debug);
+        this.command = new Command(rawExecutable, log::trace);
+    }
+
+    public State state(String containerId) throws IOException, InterruptedException {
+        String stateString = command.execute(
+                Command.throwingOnError(), "inspect", HEALTH_STATUS_FORMAT, containerId);
+        return State.valueOf(stateString);
     }
 
     public void rm(Collection<String> containerNames) throws IOException, InterruptedException {
