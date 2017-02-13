@@ -55,7 +55,7 @@ public class DockerComposeShould {
     private final Container container = mock(Container.class);
 
     @Before
-    public void setup() throws IOException, InterruptedException {
+    public void setup() throws IOException {
         when(dockerMachine.getIp()).thenReturn("0.0.0.0");
         when(executor.execute(anyVararg())).thenReturn(executedProcess);
         when(executedProcess.getInputStream()).thenReturn(toInputStream("0.0.0.0:7000->7000/tcp"));
@@ -96,7 +96,7 @@ public class DockerComposeShould {
     }
 
     @Test
-    public void call_docker_compose_with_no_colour_flag_on_logs() throws IOException, InterruptedException {
+    public void call_docker_compose_with_no_colour_flag_on_logs() throws IOException {
         when(executedProcess.getInputStream()).thenReturn(
                 toInputStream("docker-compose version 1.5.6, build 1ad8866"),
                 toInputStream("logs"));
@@ -108,7 +108,7 @@ public class DockerComposeShould {
 
     @Test
     public void call_docker_compose_with_the_follow_flag_when_the_version_is_at_least_1_7_0_on_logs()
-            throws IOException, InterruptedException {
+            throws IOException {
         when(executedProcess.getInputStream()).thenReturn(
                 toInputStream("docker-compose version 1.7.0, build 1ad8866"),
                 toInputStream("logs"));
@@ -222,11 +222,11 @@ public class DockerComposeShould {
         assertThat(processCompose.run(DockerComposeRunOption.options("-it"), "container_1", DockerComposeRunArgument.arguments("ls", "-l")), is(lsString));
     }
 
-    private void addProcessToExecutor(DockerComposeExecutable dockerComposeExecutable, Process process, String... commands) throws Exception {
+    private static void addProcessToExecutor(DockerComposeExecutable dockerComposeExecutable, Process process, String... commands) throws Exception {
         when(dockerComposeExecutable.execute(commands)).thenReturn(process);
     }
 
-    private Process processWithOutput(String output) {
+    private static Process processWithOutput(String output) {
         Process mockedProcess = mock(Process.class);
         when(mockedProcess.getInputStream()).thenReturn(toInputStream(output));
         when(mockedProcess.exitValue()).thenReturn(0);

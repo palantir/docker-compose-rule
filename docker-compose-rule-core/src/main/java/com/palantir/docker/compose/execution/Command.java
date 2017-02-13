@@ -87,7 +87,7 @@ public class Command {
                 .collect(joining(System.lineSeparator()));
     }
 
-    private String waitForResultFrom(Future<String> outputProcessing) {
+    private static String waitForResultFrom(Future<String> outputProcessing) {
         try {
             return outputProcessing.get(HOURS_TO_WAIT_FOR_STD_OUT_TO_CLOSE, TimeUnit.HOURS);
         } catch (InterruptedException | ExecutionException | TimeoutException e) {
@@ -95,7 +95,7 @@ public class Command {
         }
     }
 
-    private BufferedReader asReader(InputStream inputStream) {
+    private static BufferedReader asReader(InputStream inputStream) {
         return new BufferedReader(new InputStreamReader(inputStream, UTF_8));
     }
 }

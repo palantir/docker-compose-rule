@@ -18,8 +18,6 @@ package com.palantir.docker.compose.connection;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 
-import java.io.IOException;
-
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -30,33 +28,33 @@ public class StateShould {
     public final ExpectedException exception = ExpectedException.none();
 
     @Test
-    public void parse_actual_docker_compose_output_when_state_is_Up() throws IOException, InterruptedException {
+    public void parse_actual_docker_compose_output_when_state_is_Up() {
         String psOutput =
                 "       Name                      Command               State                                         Ports                                        \n"
                         + "-------------------------------------------------------------------------------------------------------------------------------------------------\n"
-                        + "magritte_magritte_1   /bin/sh -c /usr/local/bin/ ...   Up      0.0.0.0:7000->7000/tcp, 7001/tcp, 7002/tcp, 7003/tcp, 7004/tcp, 7005/tcp, 7006/tcp \n"
+                        + "postgres_postgres_1   /bin/sh -c /usr/local/bin/ ...   Up      0.0.0.0:8880->8880/tcp, 8881/tcp, 8882/tcp, 8883/tcp, 8884/tcp, 8885/tcp, 8886/tcp \n"
                         + "";
         State state = State.parseFromDockerComposePs(psOutput);
         assertThat(state, is(State.Up));
     }
 
     @Test
-    public void parse_actual_docker_compose_output_when_state_is_Exit() throws IOException, InterruptedException {
+    public void parse_actual_docker_compose_output_when_state_is_Exit() {
         String psOutput =
                 "       Name                      Command               State                                         Ports                                        \n"
                         + "-------------------------------------------------------------------------------------------------------------------------------------------------\n"
-                        + "magritte_magritte_1   /bin/sh -c /usr/local/bin/ ...   Exit      0.0.0.0:7000->7000/tcp, 7001/tcp, 7002/tcp, 7003/tcp, 7004/tcp, 7005/tcp, 7006/tcp \n"
+                        + "postgres_postgres_1   /bin/sh -c /usr/local/bin/ ...   Exit      0.0.0.0:8880->8880/tcp, 8881/tcp, 8882/tcp, 8883/tcp, 8884/tcp, 8885/tcp, 8886/tcp \n"
                         + "";
         State state = State.parseFromDockerComposePs(psOutput);
         assertThat(state, is(State.Exit));
     }
 
     @Test
-    public void throw_on_unknown_state() throws IOException, InterruptedException {
+    public void throw_on_unknown_state() {
         String psOutput =
                 "       Name                      Command               State                                         Ports                                        \n"
                         + "-------------------------------------------------------------------------------------------------------------------------------------------------\n"
-                        + "magritte_magritte_1   /bin/sh -c /usr/local/bin/ ...   WhatIsThis      0.0.0.0:7000->7000/tcp, 7001/tcp, 7002/tcp, 7003/tcp, 7004/tcp, 7005/tcp, 7006/tcp \n"
+                        + "postgres_postgres_1   /bin/sh -c /usr/local/bin/ ...   WhatIsThis      0.0.0.0:8880->8880/tcp, 8881/tcp, 8882/tcp, 8883/tcp, 8884/tcp, 8885/tcp, 8886/tcp \n"
                         + "";
         exception.expect(IllegalStateException.class);
         State.parseFromDockerComposePs(psOutput);

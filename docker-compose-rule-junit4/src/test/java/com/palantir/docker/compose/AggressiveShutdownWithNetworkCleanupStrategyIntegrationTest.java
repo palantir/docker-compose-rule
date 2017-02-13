@@ -46,7 +46,7 @@ public class AggressiveShutdownWithNetworkCleanupStrategyIntegrationTest {
         assertThat(parseLinesFromOutputString(rule.docker().listNetworks()), is(networksBeforeRun));
     }
 
-    private Set<String> parseLinesFromOutputString(String output) {
+    private static Set<String> parseLinesFromOutputString(String output) {
         return Sets.newHashSet(Arrays.asList(output.split("\n")));
     }
 }

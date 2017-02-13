@@ -20,7 +20,6 @@ import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.lessThan;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.fail;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -30,9 +29,13 @@ import com.palantir.docker.compose.utils.MockitoMultiAnswer;
 import java.util.concurrent.TimeUnit;
 import org.joda.time.Duration;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
 
+@RunWith(MockitoJUnitRunner.class)
 public class RetryerShould {
-    private final Retryer.RetryableDockerOperation<String> operation = mock(Retryer.RetryableDockerOperation.class);
+    @Mock private Retryer.RetryableDockerOperation<String> operation;
     private final Retryer retryer = new Retryer(1, Duration.millis(0));
 
     @Test

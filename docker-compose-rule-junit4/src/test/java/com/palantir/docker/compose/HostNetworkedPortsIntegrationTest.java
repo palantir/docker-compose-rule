@@ -31,7 +31,7 @@ public class HostNetworkedPortsIntegrationTest {
             .waitingForHostNetworkedPort(5432, toBeOpen())
             .build();
 
-    private HealthCheck<DockerPort> toBeOpen() {
+    private static HealthCheck<DockerPort> toBeOpen() {
         return port -> SuccessOrFailure.fromBoolean(port.isListeningNow(), "" + port + "was not listening");
     }
 
