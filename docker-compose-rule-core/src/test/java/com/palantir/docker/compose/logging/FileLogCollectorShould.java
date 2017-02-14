@@ -71,7 +71,7 @@ public class FileLogCollectorShould {
     }
 
     @Test
-    public void create_the_log_directory_if_it_does_not_already_exist() throws IOException {
+    public void create_the_log_directory_if_it_does_not_already_exist() {
         File doesNotExistYetDirectory = logDirectoryParent.getRoot()
                 .toPath()
                 .resolve("doesNotExist")
@@ -81,8 +81,7 @@ public class FileLogCollectorShould {
     }
 
     @Test
-    public void throw_exception_when_created_if_the_log_directory_does_not_exist_and_cannot_be_created()
-            throws IOException {
+    public void throw_exception_when_created_if_the_log_directory_does_not_exist_and_cannot_be_created() {
         File cannotBeCreatedDirectory = cannotBeCreatedDirectory();
 
         exception.expect(IllegalArgumentException.class);
@@ -199,7 +198,7 @@ public class FileLogCollectorShould {
         logCollector.startCollecting(compose);
     }
 
-    private File cannotBeCreatedDirectory() {
+    private static File cannotBeCreatedDirectory() {
         File cannotBeCreatedDirectory = mock(File.class);
         when(cannotBeCreatedDirectory.isFile()).thenReturn(false);
         when(cannotBeCreatedDirectory.mkdirs()).thenReturn(false);

@@ -60,7 +60,7 @@ public class ClusterWait {
         };
     }
 
-    private String serviceDidNotStartupExceptionMessage(
+    private static String serviceDidNotStartupExceptionMessage(
             AtomicReference<Optional<SuccessOrFailure>> lastSuccessOrFailure) {
         String healthcheckFailureMessage = lastSuccessOrFailure.get()
                 .flatMap(SuccessOrFailure::toOptionalFailureMessage)

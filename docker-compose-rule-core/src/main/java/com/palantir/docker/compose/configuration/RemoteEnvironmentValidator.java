@@ -53,7 +53,7 @@ public class RemoteEnvironmentValidator implements EnvironmentValidator {
         Preconditions.checkState(missingVariables.isEmpty(), errorMessage);
     }
 
-    private Collection<String> getMissingEnvVariables(Map<String, String> dockerEnvironment) {
+    private static Collection<String> getMissingEnvVariables(Map<String, String> dockerEnvironment) {
         Collection<String> requiredVariables = Sets.union(newHashSet(DOCKER_HOST),
                 secureVariablesRequired(dockerEnvironment));
         return requiredVariables.stream()
@@ -61,11 +61,11 @@ public class RemoteEnvironmentValidator implements EnvironmentValidator {
                                 .collect(Collectors.toSet());
     }
 
-    private Set<String> secureVariablesRequired(Map<String, String> dockerEnvironment) {
+    private static Set<String> secureVariablesRequired(Map<String, String> dockerEnvironment) {
         return certVerificationEnabled(dockerEnvironment) ? SECURE_VARIABLES : newHashSet();
     }
 
-    private boolean certVerificationEnabled(Map<String, String> dockerEnvironment) {
+    private static boolean certVerificationEnabled(Map<String, String> dockerEnvironment) {
         return dockerEnvironment.containsKey(DOCKER_TLS_VERIFY);
     }
 

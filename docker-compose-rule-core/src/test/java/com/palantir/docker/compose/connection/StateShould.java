@@ -18,8 +18,6 @@ package com.palantir.docker.compose.connection;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 
-import java.io.IOException;
-
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -30,7 +28,7 @@ public class StateShould {
     public final ExpectedException exception = ExpectedException.none();
 
     @Test
-    public void parse_actual_docker_compose_output_when_state_is_Up() throws IOException, InterruptedException {
+    public void parse_actual_docker_compose_output_when_state_is_Up() {
         String psOutput =
                 "       Name                      Command               State                                         Ports                                        \n"
                         + "-------------------------------------------------------------------------------------------------------------------------------------------------\n"
@@ -41,7 +39,7 @@ public class StateShould {
     }
 
     @Test
-    public void parse_actual_docker_compose_output_when_state_is_Exit() throws IOException, InterruptedException {
+    public void parse_actual_docker_compose_output_when_state_is_Exit() {
         String psOutput =
                 "       Name                      Command               State                                         Ports                                        \n"
                         + "-------------------------------------------------------------------------------------------------------------------------------------------------\n"
@@ -52,7 +50,7 @@ public class StateShould {
     }
 
     @Test
-    public void throw_on_unknown_state() throws IOException, InterruptedException {
+    public void throw_on_unknown_state() {
         String psOutput =
                 "       Name                      Command               State                                         Ports                                        \n"
                         + "-------------------------------------------------------------------------------------------------------------------------------------------------\n"

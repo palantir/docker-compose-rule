@@ -39,7 +39,7 @@ public class AggressiveShutdownStrategy implements ShutdownStrategy {
                 + "see https://circleci.com/docs/docker-btrfs-error/ for more info.");
     }
 
-    private boolean removeContainersCatchingErrors(Docker docker, List<ContainerName> runningContainers) throws IOException, InterruptedException {
+    private static boolean removeContainersCatchingErrors(Docker docker, List<ContainerName> runningContainers) throws IOException, InterruptedException {
         try {
             removeContainers(docker, runningContainers);
             return true;
@@ -48,7 +48,7 @@ public class AggressiveShutdownStrategy implements ShutdownStrategy {
         }
     }
 
-    private void removeContainers(Docker docker, List<ContainerName> running) throws IOException, InterruptedException {
+    private static void removeContainers(Docker docker, List<ContainerName> running) throws IOException, InterruptedException {
         List<String> rawContainerNames = running.stream()
                 .map(ContainerName::rawName)
                 .collect(toList());

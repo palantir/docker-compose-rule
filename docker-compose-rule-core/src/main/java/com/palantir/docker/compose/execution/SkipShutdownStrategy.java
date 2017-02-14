@@ -5,7 +5,6 @@
 package com.palantir.docker.compose.execution;
 
 import com.palantir.docker.compose.configuration.ShutdownStrategy;
-import java.io.IOException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,7 +13,7 @@ public class SkipShutdownStrategy implements ShutdownStrategy {
     private static final Logger log = LoggerFactory.getLogger(SkipShutdownStrategy.class);
 
     @Override
-    public void shutdown(DockerCompose dockerCompose, Docker docker) throws IOException, InterruptedException {
+    public void shutdown(DockerCompose dockerCompose, Docker docker) {
         log.warn("\n"
                 + "******************************************************************************************\n"
                 + "* docker-compose-rule has been configured to skip docker-compose shutdown:               *\n"

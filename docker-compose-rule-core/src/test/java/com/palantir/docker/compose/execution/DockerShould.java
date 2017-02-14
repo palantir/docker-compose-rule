@@ -33,7 +33,7 @@ public class DockerShould {
     private final Process executedProcess = mock(Process.class);
 
     @Before
-    public void setup() throws IOException, InterruptedException {
+    public void setup() throws IOException {
         when(executor.execute(anyVararg())).thenReturn(executedProcess);
         when(executedProcess.getInputStream()).thenReturn(toInputStream("0.0.0.0:7000->7000/tcp"));
         when(executedProcess.exitValue()).thenReturn(0);
