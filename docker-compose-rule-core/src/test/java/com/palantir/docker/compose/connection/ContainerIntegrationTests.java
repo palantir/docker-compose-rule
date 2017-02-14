@@ -9,7 +9,9 @@ import static com.palantir.docker.compose.execution.DockerComposeExecArgument.ar
 import static com.palantir.docker.compose.execution.DockerComposeExecOption.noOptions;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assume.assumeThat;
 
+import com.github.zafarkhaja.semver.Version;
 import com.jayway.awaitility.core.ConditionFactory;
 import com.palantir.docker.compose.configuration.DockerComposeFiles;
 import com.palantir.docker.compose.configuration.ProjectName;
@@ -20,6 +22,7 @@ import com.palantir.docker.compose.execution.DockerExecutable;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 import org.junit.Test;
+import org.mockito.internal.matchers.GreaterOrEqual;
 
 public class ContainerIntegrationTests {
 
@@ -33,7 +36,7 @@ public class ContainerIntegrationTests {
     @Test
     public void testStateChanges_withoutHealthCheck() throws IOException, InterruptedException {
         DockerCompose dockerCompose = new DefaultDockerCompose(
-                DockerComposeFiles.from("src/test/resources/native-healthcheck.yaml"),
+                DockerComposeFiles.from("src/test/resources/no-healthcheck.yaml"),
                 dockerMachine,
                 ProjectName.random());
 
@@ -46,8 +49,16 @@ public class ContainerIntegrationTests {
         assertEquals(State.DOWN, container.state());
     }
 
+    /**
+     * This test is not currently enabled in Circle as it does not provide a sufficiently recent version of docker-compose.
+     *
+     * @see <a href="https://github.com/palantir/docker-compose-rule/issues/156">Issue #156</a>
+     */
     @Test
     public void testStateChanges_withHealthCheck() throws IOException, InterruptedException {
+        assumeThat("docker version", Docker.version(), new GreaterOrEqual<>(Version.forIntegers(1, 12, 0)));
+        assumeThat("docker-compose version", DockerCompose.version(), new GreaterOrEqual<>(Version.forIntegers(1, 10, 0)));
+
         DockerCompose dockerCompose = new DefaultDockerCompose(
                 DockerComposeFiles.from("src/test/resources/native-healthcheck.yaml"),
                 dockerMachine,

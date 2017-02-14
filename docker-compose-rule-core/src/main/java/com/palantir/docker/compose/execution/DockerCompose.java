@@ -15,6 +15,7 @@
  */
 package com.palantir.docker.compose.execution;
 
+import com.github.zafarkhaja.semver.Version;
 import com.palantir.docker.compose.connection.Container;
 import com.palantir.docker.compose.connection.ContainerName;
 import com.palantir.docker.compose.connection.Ports;
@@ -24,6 +25,9 @@ import java.util.List;
 import java.util.Optional;
 
 public interface DockerCompose {
+    static Version version() throws IOException, InterruptedException {
+        return DockerComposeExecutable.version();
+    }
     void pull() throws IOException, InterruptedException;
     void build() throws IOException, InterruptedException;
     void up() throws IOException, InterruptedException;
