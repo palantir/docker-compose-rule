@@ -193,6 +193,22 @@ public class DockerComposeRuleTest {
 
 This can shorten iteration time when services take a long time to start. Remember to never leave it on in CI!
 
+Pull images on startup
+-----------------
+
+To pull images before starting the containers:
+
+```java
+public class DockerCompositionTest {
+    @ClassRule
+    public static DockerComposition composition = DockerComposition.of("src/test/resources/docker-compose.yml")
+                                                .pullOnStartup(true)
+                                                .build();
+}
+```
+
+This will make sure you are using the most up-to-date version of all the images included in the docker-compose.yml.
+
 Docker Machine
 --------------
 

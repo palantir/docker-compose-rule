@@ -119,6 +119,11 @@ public abstract class DockerComposeRule extends ExternalResource {
     }
 
     @Value.Default
+    protected boolean pullOnStartup() {
+        return false;
+    }
+
+    @Value.Default
     protected LogCollector logCollector() {
         return new DoNothingLogCollector();
     }
@@ -126,6 +131,10 @@ public abstract class DockerComposeRule extends ExternalResource {
     @Override
     public void before() throws IOException, InterruptedException {
         log.debug("Starting docker-compose cluster");
+        if (pullOnStartup()) {
+            dockerCompose().pull();
+        }
+
         dockerCompose().build();
 
         DockerCompose upDockerCompose = dockerCompose();
