@@ -47,14 +47,14 @@ public class ClusterWaitShould {
 
 
     @Test public void
-    return_when_a_cluster_is_ready() {
+    return_when_a_cluster_is_ready() throws InterruptedException {
         when(clusterHealthCheck.isClusterHealthy(cluster)).thenReturn(success());
         ClusterWait wait = new ClusterWait(clusterHealthCheck, DURATION);
         wait.waitUntilReady(cluster);
     }
 
     @Test public void
-    check_until_a_cluster_is_ready() {
+    check_until_a_cluster_is_ready() throws InterruptedException {
         when(clusterHealthCheck.isClusterHealthy(cluster)).thenReturn(failure("failure!"), success());
         ClusterWait wait = new ClusterWait(clusterHealthCheck, DURATION);
         wait.waitUntilReady(cluster);
@@ -62,7 +62,7 @@ public class ClusterWaitShould {
     }
 
     @Test(timeout = 2000L) public void
-    timeout_if_the_cluster_is_not_healthy() {
+    timeout_if_the_cluster_is_not_healthy() throws InterruptedException {
         when(clusterHealthCheck.isClusterHealthy(cluster)).thenReturn(failure("failure!"));
 
         exception.expect(IllegalStateException.class);

@@ -1,36 +1,28 @@
-machine:
-  pre:
-    - curl -sSL https://s3.amazonaws.com/circle-downloads/install-circleci-docker.sh | bash -s -- 1.10.0
-  java:
-    version: oraclejdk8
-  services:
-    - docker
-  environment:
-    TERM: dumb
+version: 2
+executorType: machine
+stages:
+  build:
+    workDir: ~/docker-compose-rule
+    parallel: 2
+    environment:
+      - TERM: dumb
+    steps:
+      - type: checkout
+      - type: shell
+        name: Install Docker Client
+        command: |
+          sudo initctl stop docker
+          sudo curl -L -o /tmp/docker.tgz https://get.docker.com/builds/Linux/x86_64/docker-1.13.1.tgz
+          sudo tar -xz -C /usr/bin --strip 1 -f /tmp/docker.tgz
 
-dependencies:
-  pre:
-    - sudo pip install docker-compose
-  override:
-    - ./gradlew resolveConfigurations
+          sudo curl -L "https://github.com/docker/compose/releases/download/1.11.1/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+          sudo chmod +x  /usr/local/bin/docker-compose
+          sudo initctl start docker
 
-test:
-  override:
-    - ? >
-        case $CIRCLE_NODE_INDEX in
-        0) ./gradlew test --info ;;
-        1) ./gradlew findbugsMain findbugsTest checkstyleMain checkstyleTest javadoc --info ;;
-        esac
-      :
-        parallel: true
-        timeout: 1200
-
-general:
-  artifacts:
-    - build/reports
-
-deployment:
-  release:
-    tag: /[0-9]+(\.[0-9]+)+/
-    commands:
-      - ./gradlew -i bintrayUpload
+      - type: shell
+        name: Run Gradle
+        command: >
+            case $CIRCLE_NODE_INDEX in
+            0) PATH=/usr/lib/jvm/jdk1.8.0/jre/bin/:$PATH ./gradlew test --info ;;
+            1) PATH=/usr/lib/jvm/jdk1.8.0/jre/bin/:$PATH ./gradlew {findbugs,checkstyle}{Main,Test} javadoc --info ;;
+            esac

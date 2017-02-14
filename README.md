@@ -3,7 +3,7 @@
 Docker Compose JUnit Rule
 =========================
 
-This is a small library for executing JUnit tests that interact with Docker Compose managed containers. It supports the following:
+This is a library for executing JUnit tests that interact with Docker Compose managed containers. It supports the following:
 
 - Starting containers defined in a docker-compose.yml before tests and tearing them down afterwards
 - Waiting for services to become available before running tests
@@ -55,7 +55,7 @@ public class MyIntegrationTest {
 }
 ```
 
-This will cause the containers defined in `src/test/resources/docker-compose.yml` to be started by Docker Compose before the test executes and then the containers will be killed and removed (along with associated volumes) once the test has finished executing.
+This will cause the containers defined in `src/test/resources/docker-compose.yml` to be started by Docker Compose before the test executes and then the containers will be killed and removed (along with associated volumes) once the test has finished executing. If the containers have healthchecks specified, either [in the docker image](https://docs.docker.com/engine/reference/builder/#/healthcheck) or [in the docker-compose config](https://docs.docker.com/compose/compose-file/#/healthcheck), the test will wait for them to become healthy.
 
 The `docker-compose.yml` file is referenced using the path given, relative to the working directory of the test. It will not be copied elsewhere and so references to shared directories and other resources for your containers can be made using path relative to this file as normal. If you wish to manually run the Docker containers for debugging the tests simply run `docker-compose up` in the same directory as the `docker-compose.yml`.
 
@@ -70,7 +70,7 @@ To run the tests from your IDE you will need to add the environment variables gi
 Waiting for a service to be available
 -------------------------------------
 
-To wait for services to be available before executing tests use the following methods on the `DockerComposeRule` object:
+To wait for services to be available before executing tests, either add health checks to the configuration, or use the following methods on the `DockerComposeRule` object:
 
 ```java
 public class MyEndToEndTest {

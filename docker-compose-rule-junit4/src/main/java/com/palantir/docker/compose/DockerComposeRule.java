@@ -104,7 +104,7 @@ public abstract class DockerComposeRule extends ExternalResource {
     public Cluster containers() {
         return ImmutableCluster.builder()
                 .ip(machine().getIp())
-                .containerCache(new ContainerCache(dockerCompose()))
+                .containerCache(new ContainerCache(docker(), dockerCompose()))
                 .build();
     }
 
@@ -116,6 +116,11 @@ public abstract class DockerComposeRule extends ExternalResource {
     @Value.Default
     protected boolean removeConflictingContainersOnStartup() {
         return true;
+    }
+
+    @Value.Default
+    protected ReadableDuration nativeServiceHealthCheckTimeout() {
+        return DEFAULT_TIMEOUT;
     }
 
     @Value.Default
@@ -136,6 +141,8 @@ public abstract class DockerComposeRule extends ExternalResource {
 
         logCollector().startCollecting(dockerCompose());
         log.debug("Waiting for services");
+        new ClusterWait(ClusterHealthCheck.nativeHealthChecks(), nativeServiceHealthCheckTimeout())
+                .waitUntilReady(containers());
         clusterWaits().forEach(clusterWait -> clusterWait.waitUntilReady(containers()));
         log.debug("docker-compose cluster started");
     }
