@@ -59,6 +59,8 @@ public abstract class DockerComposeExecutable implements Executable {
 
     @Override
     public Process execute(String... commands) throws IOException {
+        DockerForMacHostsIssue.issueWarning();
+
         List<String> args = ImmutableList.<String>builder()
                 .add(dockerComposePath())
                 .addAll(projectName().constructComposeFileCommand())
