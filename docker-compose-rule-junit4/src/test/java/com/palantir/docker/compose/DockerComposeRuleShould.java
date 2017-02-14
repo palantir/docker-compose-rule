@@ -113,8 +113,19 @@ public class DockerComposeRuleShould {
                 .files(mockFiles)
                 .shutdownStrategy(shutdownStrategy)
                 .build();
+
         rule.after();
         verify(shutdownStrategy).shutdown(dockerCompose, rule.docker());
+    }
+
+    @Test
+    public void calls_pull_build_and_up_when_tests_are_run_and_pullOnStartup_is_true() throws InterruptedException, IOException {
+        defaultBuilder().pullOnStartup(true)
+                        .build()
+                        .before();
+        verify(dockerCompose).pull();
+        verify(dockerCompose).build();
+        verify(dockerCompose).up();
     }
 
     @Test
