@@ -9,6 +9,7 @@ import com.palantir.docker.compose.execution.AggressiveShutdownWithNetworkCleanu
 import com.palantir.docker.compose.execution.Docker;
 import com.palantir.docker.compose.execution.DockerCompose;
 import com.palantir.docker.compose.execution.GracefulShutdownStrategy;
+import com.palantir.docker.compose.execution.KillDownShutdownStrategy;
 import com.palantir.docker.compose.execution.SkipShutdownStrategy;
 import java.io.IOException;
 
@@ -22,6 +23,7 @@ public interface ShutdownStrategy {
     ShutdownStrategy GRACEFUL = new GracefulShutdownStrategy();
     ShutdownStrategy SKIP = new SkipShutdownStrategy();
     ShutdownStrategy AGGRESSIVE_WITH_NETWORK_CLEANUP = new AggressiveShutdownWithNetworkCleanupStrategy();
+    ShutdownStrategy KILL_DOWN = new KillDownShutdownStrategy();
 
     void shutdown(DockerCompose dockerCompose, Docker docker) throws IOException, InterruptedException;
 
