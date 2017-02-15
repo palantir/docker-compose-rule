@@ -33,7 +33,7 @@ repositories {
     }
 }
 dependencies {
-    compile 'com.palantir.docker.compose:docker-compose-rule-junit4:<latest-tag-from-bintray>'
+    testCompile 'com.palantir.docker.compose:docker-compose-rule-junit4:<latest-tag-from-bintray>'
 }
 ```
 
