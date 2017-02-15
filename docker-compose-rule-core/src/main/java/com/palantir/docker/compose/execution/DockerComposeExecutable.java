@@ -28,12 +28,13 @@ import org.slf4j.LoggerFactory;
 public abstract class DockerComposeExecutable implements Executable {
     private static final Logger log = LoggerFactory.getLogger(DockerComposeExecutable.class);
 
-    private static final DockerCommandLocations DOCKER_COMPOSE_LOCATIONS = new DockerCommandLocations(
-            "docker-compose", true,
-            System.getenv("DOCKER_COMPOSE_LOCATION"),
-            "/usr/local/bin/docker-compose",
-            "/usr/bin/docker-compose"
-    );
+    private static final DockerCommandLocations DOCKER_COMPOSE_LOCATIONS = DockerCommandLocations.builder()
+            .executableName("docker-compose")
+            .additionalSearchLocations(DockerCommandLocations.optionals(
+                System.getenv("DOCKER_COMPOSE_LOCATION"),
+                "/usr/local/bin/docker-compose",
+                "/usr/bin/docker-compose"
+            )).build();
 
     @Value.Parameter protected abstract DockerComposeFiles dockerComposeFiles();
     @Value.Parameter protected abstract DockerConfiguration dockerConfiguration();
