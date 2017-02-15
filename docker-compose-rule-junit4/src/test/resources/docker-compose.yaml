@@ -1,35 +1,23 @@
 db:
-  image: kiasaki/alpine-postgres
-  environment:
-    - "POSTGRES_DB=source"
-    - "POSTGRES_USER=palantir"
-    - "POSTGRES_PASSWORD=palantir"
+  image: appropriate/nc
+  command: /bin/sh -c 'echo server started && nc -lk 5432'
   ports:
     - "5432"
 
 db2:
-  image: kiasaki/alpine-postgres
-  environment:
-    - "POSTGRES_DB=source"
-    - "POSTGRES_USER=palantir"
-    - "POSTGRES_PASSWORD=palantir"
+  image: appropriate/nc
+  command: /bin/sh -c 'echo server started && nc -lk 5432'
   ports:
     - "5432"
 
 db3:
-  image: kiasaki/alpine-postgres
-  environment:
-    - "POSTGRES_DB=source"
-    - "POSTGRES_USER=palantir"
-    - "POSTGRES_PASSWORD=palantir"
+  image: appropriate/nc
+  command: /bin/sh -c 'echo server started && nc -lk 5432'
   ports:
     - "5432"
 
 db4:
-  image: kiasaki/alpine-postgres
-  environment:
-    - "POSTGRES_DB=source"
-    - "POSTGRES_USER=palantir"
-    - "POSTGRES_PASSWORD=palantir"
+  image: appropriate/nc
+  command: /bin/sh -c 'echo server started && nc -lk 5432'
   ports:
     - "5432"

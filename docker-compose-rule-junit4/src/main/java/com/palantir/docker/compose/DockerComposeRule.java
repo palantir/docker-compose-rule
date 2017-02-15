@@ -91,7 +91,7 @@ public abstract class DockerComposeRule extends ExternalResource {
 
     @Value.Default
     public ShutdownStrategy shutdownStrategy() {
-        return ShutdownStrategy.GRACEFUL;
+        return ShutdownStrategy.KILL_DOWN;
     }
 
     @Value.Default
