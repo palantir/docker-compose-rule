@@ -43,6 +43,11 @@ public interface ClusterHealthCheck {
         };
     }
 
+    /**
+     * Returns a check that the native "healthcheck" status of the docker containers is not unhealthy.
+     *
+     * <p>Does not wait for DOWN or PAUSED containers, or containers with no healthcheck defined.
+     */
     static ClusterHealthCheck nativeHealthChecks() {
         return cluster -> {
             Set<String> unhealthyContainers = new LinkedHashSet<>();
