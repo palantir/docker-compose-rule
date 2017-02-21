@@ -40,6 +40,7 @@ import com.palantir.docker.compose.configuration.ShutdownStrategy;
 import com.palantir.docker.compose.connection.Container;
 import com.palantir.docker.compose.connection.DockerMachine;
 import com.palantir.docker.compose.connection.DockerPort;
+import com.palantir.docker.compose.connection.State;
 import com.palantir.docker.compose.connection.waiting.ClusterWait;
 import com.palantir.docker.compose.connection.waiting.HealthCheck;
 import com.palantir.docker.compose.connection.waiting.SuccessOrFailure;
@@ -51,10 +52,12 @@ import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.apache.commons.io.IOUtils;
+import org.joda.time.Duration;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -214,7 +217,7 @@ public class DockerComposeRuleShould {
         exception.expect(IllegalStateException.class);
         exception.expectMessage(nonExistentContainer);
 
-        defaultBuilder().waitingForService(nonExistentContainer, toHaveAllPortsOpen()).build().before();
+        defaultBuilder().waitingForService(nonExistentContainer, toHaveAllPortsOpen(), Duration.millis(100)).build().before();
     }
 
     @SuppressWarnings("unchecked")
@@ -223,12 +226,15 @@ public class DockerComposeRuleShould {
             throws IOException, InterruptedException {
         File logLocation = logFolder.newFolder();
         DockerComposeRule loggingComposition = DockerComposeRule.builder()
+                .docker(mockDocker)
                 .dockerCompose(dockerCompose)
                 .files(mockFiles)
                 .machine(machine)
                 .saveLogsTo(logLocation.getAbsolutePath())
                 .build();
         when(dockerCompose.services()).thenReturn(ImmutableList.of("db"));
+        when(dockerCompose.id(any())).thenReturn(Optional.of("abcde"));
+        when(mockDocker.state("abcde")).thenReturn(State.HEALTHY);
         CountDownLatch latch = new CountDownLatch(1);
         when(dockerCompose.writeLogs(eq("db"), any(OutputStream.class))).thenAnswer((args) -> {
             OutputStream outputStream = (OutputStream) args.getArguments()[1];
@@ -317,8 +323,6 @@ public class DockerComposeRuleShould {
     }
 
     public Container withComposeExecutableReturningContainerFor(String containerName) {
-        final Container container = new Container(containerName, dockerCompose);
-        when(dockerCompose.container(containerName)).thenReturn(container);
-        return container;
+        return new Container(containerName, mockDocker, dockerCompose);
     }
 }
