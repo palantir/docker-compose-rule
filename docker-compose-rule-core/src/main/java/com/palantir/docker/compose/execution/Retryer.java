@@ -44,13 +44,15 @@ public class Retryer {
                 return operation.call();
             } catch (DockerExecutionException e) {
                 lastExecutionException = e;
-                log.warn("Caught exception: {}. Retrying after {}", e.getMessage(), delay);
+                log.warn("Caught exception: {}");
+                log.warn("Retrying after {}", e.getMessage(), delay);
                 if (i < retryAttempts) {
                     Thread.sleep(delay.getMillis());
                 }
             }
         }
 
+        log.error("Exhausted all retry attempts. Tried {} times.", retryAttempts);
         throw lastExecutionException;
     }
 }
