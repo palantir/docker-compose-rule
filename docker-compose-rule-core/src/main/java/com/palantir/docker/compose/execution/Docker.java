@@ -25,6 +25,8 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import org.apache.commons.lang3.SystemUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,6 +43,7 @@ public class Docker {
                     + "{{if eq .State.Health.Status \"healthy\"}}HEALTHY"
                     + "{{else}}UNHEALTHY{{end}}"
                     + "{{else}}HEALTHY{{end}}";
+    private static final String HEALTH_STATUS_FORMAT_WINDOWS = HEALTH_STATUS_FORMAT.replaceAll("\"", "`\"");
 
     public static Version version() throws IOException, InterruptedException {
         Command command = new Command(
@@ -58,8 +61,8 @@ public class Docker {
     }
 
     public State state(String containerId) throws IOException, InterruptedException {
-        String stateString = command.execute(
-                Command.throwingOnError(), "inspect", HEALTH_STATUS_FORMAT, containerId);
+        String formatString = SystemUtils.IS_OS_WINDOWS ? HEALTH_STATUS_FORMAT_WINDOWS : HEALTH_STATUS_FORMAT;
+        String stateString = command.execute(Command.throwingOnError(), "inspect", formatString, containerId);
         return State.valueOf(stateString);
     }
 
