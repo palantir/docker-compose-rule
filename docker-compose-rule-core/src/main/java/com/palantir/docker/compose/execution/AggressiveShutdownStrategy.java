@@ -16,7 +16,10 @@ import org.slf4j.LoggerFactory;
 /**
  * Shuts down containers as fast as possible, without giving them time to finish
  * IO or clean up any resources.
+ *
+ * @deprecated Use {@link ShutdownStrategy#KILL_DOWN}
  */
+@Deprecated
 public class AggressiveShutdownStrategy implements ShutdownStrategy {
 
     private static final Logger log = LoggerFactory.getLogger(AggressiveShutdownStrategy.class);
