@@ -27,7 +27,7 @@ public class ContainerNames {
     private ContainerNames() {}
 
     public static List<ContainerName> parseFromDockerComposePs(String psOutput) {
-        String[] psHeadAndBody = psOutput.split("-+\n");
+        String[] psHeadAndBody = psOutput.split("-+(\r|\n)+");
         if (psHeadAndBody.length < 2) {
             return emptyList();
         }
@@ -39,7 +39,7 @@ public class ContainerNames {
     }
 
     private static Stream<String> psBodyLines(String psBody) {
-        String[] lines = psBody.split("\n");
+        String[] lines = psBody.split("(\r|\n)+");
         return Arrays.stream(lines)
                 .map(String::trim)
                 .filter(line -> !line.isEmpty());
