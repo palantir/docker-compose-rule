@@ -15,7 +15,10 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Shuts down containers as fast as possible while cleaning up any networks that were created.
+ *
+ * @deprecated Use {@link ShutdownStrategy#KILL_DOWN}
  */
+@Deprecated
 public class AggressiveShutdownWithNetworkCleanupStrategy implements ShutdownStrategy {
 
     private static final Logger log = LoggerFactory.getLogger(AggressiveShutdownWithNetworkCleanupStrategy.class);
