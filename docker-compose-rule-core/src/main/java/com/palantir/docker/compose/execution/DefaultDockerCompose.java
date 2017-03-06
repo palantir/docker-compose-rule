@@ -140,7 +140,11 @@ public class DefaultDockerCompose implements DockerCompose {
 
     private static String[] constructFullDockerComposeExecArguments(DockerComposeExecOption dockerComposeExecOption,
             String containerName, DockerComposeExecArgument dockerComposeExecArgument) {
+        // The "-T" option here disables pseudo-TTY allocation, which is not useful here since we are not using
+        // terminal features here (e.g. we are not sending ^C to kill the executed process).
+        // Disabling pseudo-TTY allocation means this will work on OS's that don't support TTY (i.e. Windows)
         ImmutableList<String> fullArgs = new ImmutableList.Builder<String>().add("exec")
+                                                                            .add("-T")
                                                                             .addAll(dockerComposeExecOption.options())
                                                                             .add(containerName)
                                                                             .addAll(dockerComposeExecArgument.arguments())
