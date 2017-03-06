@@ -51,6 +51,12 @@ public class ContainerNameShould {
     }
 
     @Test
+    public void allow_windows_newline_characters() {
+        List<ContainerName> names = ContainerNames.parseFromDockerComposePs("\r\n----\r\ndir_db_1 other line contents");
+        assertThat(names, contains(containerName("dir", "db", "1")));
+    }
+
+    @Test
     public void allow_containers_with_underscores_in_their_name() {
         List<ContainerName> names = ContainerNames.parseFromDockerComposePs("\n----\ndir_left_right_1 other line contents");
         assertThat(names, contains(containerName("dir", "left_right", "1")));

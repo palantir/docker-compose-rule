@@ -180,7 +180,7 @@ public class DefaultDockerCompose implements DockerCompose {
     @Override
     public List<String> services() throws IOException, InterruptedException {
         String servicesOutput = command.execute(Command.throwingOnError(), "config", "--services");
-        return Arrays.asList(servicesOutput.split("\n"));
+        return Arrays.asList(servicesOutput.split("(\r|\n)+"));
     }
 
     /**
