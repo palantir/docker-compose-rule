@@ -19,9 +19,9 @@ import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Optional;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
+import javax.annotation.Nullable;
 import org.apache.commons.lang3.SystemUtils;
 import org.immutables.value.Value;
 
@@ -46,24 +46,49 @@ public abstract class DockerCommandLocator {
 
     @Value.Default
     protected String path() {
-        String path = System.getenv("path");
+        String path = System.getenv("PATH");
         if (path == null) {
             throw new IllegalStateException("No path environment variable found");
         }
         return path;
     }
 
-    protected abstract Optional<String> locationOverride();
+    @Value.Check
+    protected void pathIsNotEmpty() {
+        if (path().isEmpty()) {
+            throw new IllegalStateException("Path variable was empty");
+        }
+    }
+
+    @Nullable
+    protected abstract String locationOverride();
+
+    @Value.Default
+    protected Stream<String> macSearchLocations() {
+        return Stream.of("/usr/local/bin", "/usr/bin");
+    }
+
+    @Value.Derived
+    protected Stream<String> searchLocations() {
+        Stream<String> pathLocations = Stream.concat(PATH_SPLITTER.splitAsStream(path()), macSearchLocations());
+        if (locationOverride() == null) {
+            return pathLocations;
+        }
+        return Stream.concat(Stream.of(locationOverride()), pathLocations);
+    }
 
     public String getLocation() {
-        Stream<String> overrideLocation = locationOverride().map(l -> Stream.of(l)).orElse(Stream.empty());
-        Stream<String> pathLocations = PATH_SPLITTER.splitAsStream(path());
-        return Stream.concat(overrideLocation, pathLocations)
+        return searchLocations()
                 .map(p -> Paths.get(p, executableName()))
                 .filter(Files::exists)
                 .findFirst()
                 .map(Path::toString)
                 .orElseThrow(() -> new IllegalStateException("Could not find " + command() + " in path"));
+    }
+
+    public static ImmutableDockerCommandLocator.Builder forCommand(String command) {
+        return ImmutableDockerCommandLocator.builder()
+                .command(command);
     }
 
 }

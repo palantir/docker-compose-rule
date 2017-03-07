@@ -17,18 +17,13 @@ package com.palantir.docker.compose.execution;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.spy;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -43,64 +38,78 @@ public class DockerCommandLocatorShould {
 
     @Rule public ExpectedException exception = ExpectedException.none();
 
-    private final DockerCommandLocator locator = spy(new DockerCommandLocator(command));
-
-    private final Map<String, String> env = new HashMap<>();
-
     private Path emptyFolder;
 
-    private Path firstFolder;
+    private Path firstPathFolder;
+    private Path secondPathFolder;
 
-    private Path secondFolder;
-
-    private String commandFile;
-
-    private String windowsCommandFile;
+    private String commandFileLocation;
+    private String windowsCommandFileLocation;
 
     private String pathString;
 
     @Before
     public void setup() throws IOException {
         emptyFolder = folder.newFolder("empty").toPath();
-        firstFolder = folder.newFolder("first").toPath();
-        secondFolder = folder.newFolder("second").toPath();
+        firstPathFolder = folder.newFolder("first").toPath();
+        secondPathFolder = folder.newFolder("second").toPath();
 
-        commandFile = Files.createFile(firstFolder.resolve(command)).toString();
-        windowsCommandFile = Files.createFile(firstFolder.resolve(windowsCommand)).toString();
-        Files.createFile(secondFolder.resolve(command));
-        Files.createFile(secondFolder.resolve(windowsCommand));
+        commandFileLocation = Files.createFile(firstPathFolder.resolve(command)).toString();
+        windowsCommandFileLocation = Files.createFile(firstPathFolder.resolve(windowsCommand)).toString();
+        Files.createFile(secondPathFolder.resolve(command));
+        Files.createFile(secondPathFolder.resolve(windowsCommand));
 
-        pathString = Stream.of(emptyFolder, firstFolder, secondFolder)
+        pathString = Stream.of(emptyFolder, firstPathFolder, secondPathFolder)
                 .map(Path::toString)
                 .collect(Collectors.joining(File.pathSeparator));
-
-        doReturn(env).when(locator).getEnv();
     }
 
     @Test public void
     provide_the_first_command_location() {
-        env.put("path", pathString);
-        doReturn(false).when(locator).isWindows();
-        assertThat(locator.getLocation(), is(commandFile));
-    }
-
-    @Test public void
-    provide_the_first_command_location_using_capitalised_path() {
-        env.put("PATH", pathString);
-        doReturn(false).when(locator).isWindows();
-        assertThat(locator.getLocation(), is(commandFile));
+        DockerCommandLocator locator = DockerCommandLocator.forCommand(command)
+                .path(pathString)
+                .isWindows(false)
+                .build();
+        assertThat(locator.getLocation(), is(commandFileLocation));
     }
 
     @Test public void
     provide_the_first_command_location_on_windows() {
-        env.put("path", pathString);
-        doReturn(true).when(locator).isWindows();
-        assertThat(locator.getLocation(), is(windowsCommandFile));
+        DockerCommandLocator locator = DockerCommandLocator.forCommand(command)
+                .path(pathString)
+                .isWindows(true)
+                .build();
+        assertThat(locator.getLocation(), is(windowsCommandFileLocation));
+    }
+
+    @Test public void
+    provide_command_in_override_location() {
+        DockerCommandLocator locator = DockerCommandLocator.forCommand(command)
+                .path(firstPathFolder.toString())
+                .locationOverride(secondPathFolder.toString())
+                .isWindows(false)
+                .build();
+        assertThat(locator.getLocation(), is(secondPathFolder.resolve(command).toString()));
+    }
+
+    @Test public void
+    provide_command_in_docker_for_mac_install_location() {
+        DockerCommandLocator locator = DockerCommandLocator.forCommand(command)
+                .path(emptyFolder.toString())
+                .macSearchLocations(Stream.of(secondPathFolder.toString()))
+                .isWindows(false)
+                .build();
+        assertThat(locator.getLocation(), is(secondPathFolder.resolve(command).toString()));
     }
 
     @Test public void
     fail_when_no_paths_contain_command() {
-        env.put("path", emptyFolder.toString());
+        DockerCommandLocator locator = DockerCommandLocator.forCommand(command)
+                .path(emptyFolder.toString())
+                .macSearchLocations(Stream.empty())
+                .isWindows(false)
+                .build();
+
         exception.expect(IllegalStateException.class);
         exception.expectMessage("Could not find " + command + " in path");
         locator.getLocation();
@@ -109,7 +118,10 @@ public class DockerCommandLocatorShould {
     @Test public void
     fail_when_no_path_variable_is_set() {
         exception.expect(IllegalStateException.class);
-        exception.expectMessage("Could not find path variable in env");
-        locator.getLocation();
+        exception.expectMessage("Path variable was empty");
+
+        DockerCommandLocator.forCommand(command)
+                .path("")
+                .build();
     }
 }

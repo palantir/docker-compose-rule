@@ -30,7 +30,10 @@ public abstract class DockerComposeExecutable implements Executable {
     private static final Logger log = LoggerFactory.getLogger(DockerComposeExecutable.class);
 
     private static String defaultDockerComposePath() {
-        String pathToUse = new DockerCommandLocator("docker-compose").getLocation();
+        DockerCommandLocator commandLocator = DockerCommandLocator.forCommand("docker-compose")
+                .locationOverride(System.getenv("DOCKER_COMPOSE_LOCATION"))
+                .build();
+        String pathToUse = commandLocator.getLocation();
         log.debug("Using docker-compose found at " + pathToUse);
         return pathToUse;
     }

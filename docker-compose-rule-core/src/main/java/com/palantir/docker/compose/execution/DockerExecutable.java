@@ -35,7 +35,10 @@ public abstract class DockerExecutable implements Executable {
 
     @Value.Derived
     protected String dockerPath() {
-        String pathToUse = new DockerCommandLocator("docker").getLocation();
+        DockerCommandLocator commandLocator = DockerCommandLocator.forCommand("docker")
+                .locationOverride(System.getenv("DOCKER_LOCATION"))
+                .build();
+        String pathToUse = commandLocator.getLocation();
         log.debug("Using docker found at " + pathToUse);
         return pathToUse;
     }
