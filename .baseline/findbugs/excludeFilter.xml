@@ -9,7 +9,7 @@
     <!-- Ignore the following bug patterns in test code -->
     <!-- (i.e., classes ending in 'Test' or 'Tests', and inner classes of same) -->
     <Match>
-        <Class name="~.*\.*Tests?(\$.*)?" />
+        <Class name="~.*\.*(Test|Tests|Should)?(\$.*)?" />
         <Or>
             <Bug pattern="NP_NONNULL_FIELD_NOT_INITIALIZED_IN_CONSTRUCTOR"/> <!-- common in tests to have non-final variables instantiated in @Before methods, which FindBugs can't detect -->
             <Bug pattern="NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE"/> <!-- if a null is dereferenced, test will fail anyway. Plus assertNotNull() is often a bad pattern. -->

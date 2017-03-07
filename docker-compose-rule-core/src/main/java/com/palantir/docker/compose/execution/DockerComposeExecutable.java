@@ -29,19 +29,9 @@ import org.slf4j.LoggerFactory;
 public abstract class DockerComposeExecutable implements Executable {
     private static final Logger log = LoggerFactory.getLogger(DockerComposeExecutable.class);
 
-    private static final DockerCommandLocations DOCKER_COMPOSE_LOCATIONS = new DockerCommandLocations(
-            System.getenv("DOCKER_COMPOSE_LOCATION"),
-            "/usr/local/bin/docker-compose",
-            "/usr/bin/docker-compose"
-    );
-
     private static String defaultDockerComposePath() {
-        String pathToUse = DOCKER_COMPOSE_LOCATIONS.preferredLocation()
-                .orElseThrow(() -> new IllegalStateException(
-                        "Could not find docker-compose, looked in: " + DOCKER_COMPOSE_LOCATIONS));
-
+        String pathToUse = new DockerCommandLocator("docker-compose").getLocation();
         log.debug("Using docker-compose found at " + pathToUse);
-
         return pathToUse;
     }
 
