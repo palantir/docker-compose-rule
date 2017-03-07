@@ -62,7 +62,7 @@ public abstract class DockerCommandLocations {
         return pathLocations().map(p -> Paths.get(p));
     }
 
-    public static DockerCommandLocations withLocationOverride(String override) {
+    public static DockerCommandLocations withOverride(String override) {
         return ImmutableDockerCommandLocations.builder()
                 .locationOverride(override)
                 .build();

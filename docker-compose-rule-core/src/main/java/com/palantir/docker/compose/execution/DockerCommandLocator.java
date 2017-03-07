@@ -44,7 +44,7 @@ public abstract class DockerCommandLocator {
 
     @Value.Derived
     protected DockerCommandLocations searchLocations() {
-        return DockerCommandLocations.withLocationOverride(locationOverride());
+        return DockerCommandLocations.withOverride(locationOverride());
     }
 
     public String getLocation() {
