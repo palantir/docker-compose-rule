@@ -15,19 +15,14 @@
  */
 package com.palantir.docker.compose.execution;
 
-import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.regex.Pattern;
-import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import org.apache.commons.lang3.SystemUtils;
 import org.immutables.value.Value;
 
 @Value.Immutable
 public abstract class DockerCommandLocator {
-    private static final Pattern PATH_SPLITTER = Pattern.compile(File.pathSeparator);
 
     protected abstract String command();
 
@@ -44,42 +39,18 @@ public abstract class DockerCommandLocator {
         return command();
     }
 
-    @Value.Default
-    protected String path() {
-        String path = System.getenv("PATH");
-        if (path == null) {
-            throw new IllegalStateException("No path environment variable found");
-        }
-        return path;
-    }
-
-    @Value.Check
-    protected void pathIsNotEmpty() {
-        if (path().isEmpty()) {
-            throw new IllegalStateException("Path variable was empty");
-        }
-    }
-
     @Nullable
     protected abstract String locationOverride();
 
-    @Value.Default
-    protected Stream<String> macSearchLocations() {
-        return Stream.of("/usr/local/bin", "/usr/bin");
-    }
-
     @Value.Derived
-    protected Stream<String> searchLocations() {
-        Stream<String> pathLocations = Stream.concat(PATH_SPLITTER.splitAsStream(path()), macSearchLocations());
-        if (locationOverride() == null) {
-            return pathLocations;
-        }
-        return Stream.concat(Stream.of(locationOverride()), pathLocations);
+    protected DockerCommandLocations searchLocations() {
+        return DockerCommandLocations.withLocationOverride(locationOverride());
     }
 
     public String getLocation() {
         return searchLocations()
-                .map(p -> Paths.get(p, executableName()))
+                .forCommand()
+                .map(p -> p.resolve(executableName()))
                 .filter(Files::exists)
                 .findFirst()
                 .map(Path::toString)
