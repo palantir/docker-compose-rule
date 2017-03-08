@@ -36,18 +36,20 @@ public class RemoveConflictingContainersIntegrationTest {
                 .file(DOCKER_COMPOSE_YAML_PATH)
                 .retryAttempts(0)
                 .build();
-        composition.before();
-
         DockerComposeRule conflictingComposition = DockerComposeRule.builder()
                 .file(DOCKER_COMPOSE_YAML_PATH)
                 .retryAttempts(0)
                 .removeConflictingContainersOnStartup(false)
                 .build();
-
-        exception.expect(DockerExecutionException.class);
-        exception.expectMessage("'docker-compose up -d' returned exit code");
-
-        conflictingComposition.before();
+        try {
+            composition.before();
+            exception.expect(DockerExecutionException.class);
+            exception.expectMessage("'docker-compose up -d' returned exit code");
+            conflictingComposition.before();
+        } finally {
+            composition.after();
+            conflictingComposition.after();
+        }
     }
 
     @Test
