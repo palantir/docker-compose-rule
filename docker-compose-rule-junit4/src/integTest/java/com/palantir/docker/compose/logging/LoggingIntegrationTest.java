@@ -39,7 +39,7 @@ public class LoggingIntegrationTest {
     @Before
     public void setUp() {
         dockerComposeRule = DockerComposeRule.builder()
-                .file("src/test/resources/docker-compose.yaml")
+                .file("src/integTest/resources/docker-compose.yaml")
                 .waitingForService("db", toHaveAllPortsOpen())
                 .waitingForService("db2", toHaveAllPortsOpen())
                 .saveLogsTo(logFolder.getRoot().getAbsolutePath())

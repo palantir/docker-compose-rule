@@ -37,7 +37,7 @@ public class DockerComposeRuleUpContainerIntegrationTest {
     public final DockerComposeRule dockerComposeRule = DockerComposeRule
             .builder()
             .shutdownStrategy(AGGRESSIVE)
-            .file("src/test/resources/up-integration-test.yaml")
+            .file("src/integTest/resources/up-integration-test.yaml")
             .build();
 
     @Test

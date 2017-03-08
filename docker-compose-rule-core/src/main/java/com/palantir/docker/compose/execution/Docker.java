@@ -25,7 +25,6 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
 import org.apache.commons.lang3.SystemUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,7 +34,7 @@ public class Docker {
     private static final Logger log = LoggerFactory.getLogger(Docker.class);
 
     // Without java escape characters: ^(\d+)\.(\d+)\.(\d+)(?:-.*)?$
-    private static final Pattern VERSION_PATTERN = Pattern.compile("^Docker version (\\d+)\\.(\\d+)\\.(\\d+)(?:-.*)?$");
+    private static final Pattern VERSION_PATTERN = Pattern.compile("^Docker version (\\d+)\\.(\\d+)\\.(\\d+)(?:(-|,).*)?$");
     private static final String HEALTH_STATUS_FORMAT =
             "--format="
                     + "{{if not .State.Running}}DOWN"

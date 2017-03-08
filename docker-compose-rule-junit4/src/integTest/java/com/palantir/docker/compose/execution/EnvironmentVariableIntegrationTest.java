@@ -39,7 +39,7 @@ public class EnvironmentVariableIntegrationTest {
                                                    .build();
 
         DockerComposeRule dockerComposition = DockerComposeRule.builder()
-                .file("src/test/resources/environment/docker-compose.yaml")
+                .file("src/integTest/resources/environment/docker-compose.yaml")
                 .machine(dockerMachine)
                 .waitingForService("env-test", toHaveAllPortsOpen())
                 .saveLogsTo(temporaryFolder.getRoot().getAbsolutePath())

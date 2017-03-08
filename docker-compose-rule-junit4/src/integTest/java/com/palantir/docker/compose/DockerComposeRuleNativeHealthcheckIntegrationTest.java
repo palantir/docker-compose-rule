@@ -53,7 +53,7 @@ public class DockerComposeRuleNativeHealthcheckIntegrationTest {
         assumeThat("docker-compose version", DockerCompose.version(), new GreaterOrEqual<>(Version.forIntegers(1, 10, 0)));
 
         rule = DockerComposeRule.builder()
-                .file("src/test/resources/native-healthcheck.yaml")
+                .file("src/integTest/resources/native-healthcheck.yaml")
                 .build();
         Future<?> beforeFuture = pool.submit(() -> {
             rule.before();

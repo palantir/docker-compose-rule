@@ -22,7 +22,6 @@ import static org.junit.Assume.assumeTrue;
 import com.palantir.docker.compose.connection.DockerPort;
 import com.palantir.docker.compose.connection.waiting.HealthCheck;
 import com.palantir.docker.compose.connection.waiting.SuccessOrFailure;
-
 import org.apache.commons.lang3.SystemUtils;
 import org.junit.Test;
 
@@ -40,7 +39,7 @@ public class HostNetworkedPortsIntegrationTest {
         assumeTrue("Host ports are only accessible on linux", SystemUtils.IS_OS_LINUX);
 
         DockerComposeRule docker = DockerComposeRule.builder()
-                .file("src/test/resources/host-networked-docker-compose.yaml")
+                .file("src/integTest/resources/host-networked-docker-compose.yaml")
                 .waitingForHostNetworkedPort(5432, toBeOpen())
                 .build();
         try {

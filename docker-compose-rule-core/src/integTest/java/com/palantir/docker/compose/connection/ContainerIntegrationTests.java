@@ -36,7 +36,7 @@ public class ContainerIntegrationTests {
     @Test
     public void testStateChanges_withoutHealthCheck() throws IOException, InterruptedException {
         DockerCompose dockerCompose = new DefaultDockerCompose(
-                DockerComposeFiles.from("src/test/resources/no-healthcheck.yaml"),
+                DockerComposeFiles.from("src/integTest/resources/no-healthcheck.yaml"),
                 dockerMachine,
                 ProjectName.random());
 
@@ -60,7 +60,7 @@ public class ContainerIntegrationTests {
         assumeThat("docker-compose version", DockerCompose.version(), new GreaterOrEqual<>(Version.forIntegers(1, 10, 0)));
 
         DockerCompose dockerCompose = new DefaultDockerCompose(
-                DockerComposeFiles.from("src/test/resources/native-healthcheck.yaml"),
+                DockerComposeFiles.from("src/integTest/resources/native-healthcheck.yaml"),
                 dockerMachine,
                 ProjectName.random());
 

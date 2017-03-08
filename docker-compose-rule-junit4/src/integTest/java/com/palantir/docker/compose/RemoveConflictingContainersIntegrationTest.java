@@ -25,7 +25,7 @@ import org.junit.rules.ExpectedException;
 
 public class RemoveConflictingContainersIntegrationTest {
 
-    private static final String DOCKER_COMPOSE_YAML_PATH = "src/test/resources/named-containers-docker-compose.yaml";
+    private static final String DOCKER_COMPOSE_YAML_PATH = "src/integTest/resources/named-containers-docker-compose.yaml";
 
     @Rule
     public ExpectedException exception = ExpectedException.none();
