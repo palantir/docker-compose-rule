@@ -52,6 +52,14 @@ public class DockerCommandLocationsShould {
     }
 
     @Test public void
+    contain_the_contents_of_the_path_with_a_windows_environment_variable() {
+        environmentVariables.set("PATH", null);
+        environmentVariables.set("Path", "/windows");
+
+        assertThat(DockerCommandLocations.pathLocations(), hasItem(Paths.get("/windows")));
+    }
+
+    @Test public void
     return_just_the_mac_locations_if_no_path_variable_is_present() {
         environmentVariables.set("PATH", null);
 

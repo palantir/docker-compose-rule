@@ -16,7 +16,6 @@
 
 package com.palantir.docker.compose.execution;
 
-import static com.google.common.base.MoreObjects.firstNonNull;
 import static java.util.stream.Collectors.toList;
 
 import com.google.common.collect.ImmutableList;
@@ -36,7 +35,10 @@ public class DockerCommandLocations {
     }
 
     public static List<Path> pathLocations() {
-        String path = firstNonNull(System.getenv("PATH"), firstNonNull(System.getenv("path"), File.pathSeparator));
+        String path = Stream.of(System.getenv("PATH"), System.getenv("path"), System.getenv("Path"))
+                .filter(s -> s != null)
+                .findFirst()
+                .orElse(File.pathSeparator);
         Stream<String> pathLocations = Arrays.stream(path.split(File.pathSeparator));
         return Stream.concat(pathLocations, MAC_SEARCH_LOCATIONS.stream())
                 .map(p -> Paths.get(p))
