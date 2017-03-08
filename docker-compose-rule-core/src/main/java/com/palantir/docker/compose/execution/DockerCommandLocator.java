@@ -15,8 +15,7 @@
  */
 package com.palantir.docker.compose.execution;
 
-import static java.util.Collections.singletonList;
-
+import com.google.common.collect.ImmutableList;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -28,11 +27,18 @@ import org.immutables.value.Value;
 @Value.Immutable
 public abstract class DockerCommandLocator {
 
+    private static final List<String> MAC_SEARCH_LOCATIONS = ImmutableList.of("/usr/local/bin", "/usr/bin");
+
     protected abstract String command();
 
     @Value.Default
     protected boolean isWindows() {
         return SystemUtils.IS_OS_WINDOWS;
+    }
+
+    @Value.Default
+    protected List<String> macSearchLocations() {
+        return MAC_SEARCH_LOCATIONS;
     }
 
     @Value.Derived
@@ -46,22 +52,17 @@ public abstract class DockerCommandLocator {
     @Nullable
     protected abstract String locationOverride();
 
-    @Value.Derived
-    protected List<Path> searchLocations() {
-        if (locationOverride() == null) {
-            return DockerCommandLocations.pathLocations();
-        }
-        return singletonList(Paths.get(locationOverride()));
-    }
-
     public String getLocation() {
-        return searchLocations()
+        if (locationOverride() != null) {
+            return locationOverride();
+        }
+        return macSearchLocations()
                 .stream()
-                .map(p -> p.resolve(executableName()))
+                .map(p -> Paths.get(p, executableName()))
                 .filter(Files::exists)
                 .findFirst()
                 .map(Path::toString)
-                .orElseThrow(() -> new IllegalStateException("Could not find " + command() + " in " + searchLocations()));
+                .orElse(executableName());
     }
 
     public static ImmutableDockerCommandLocator.Builder forCommand(String command) {
