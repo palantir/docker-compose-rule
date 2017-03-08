@@ -26,7 +26,7 @@ import org.mockito.internal.matchers.GreaterOrEqual;
 
 public class ContainerIntegrationTests {
 
-    private static final ConditionFactory wait = await().atMost(1, TimeUnit.SECONDS);
+    private static final ConditionFactory wait = await().atMost(10, TimeUnit.SECONDS);
 
     private final DockerMachine dockerMachine = DockerMachine.localMachine().build();
     private final Docker docker = new Docker(DockerExecutable.builder()
