@@ -24,6 +24,7 @@ import java.nio.file.Path;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.contrib.java.lang.system.EnvironmentVariables;
 import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
 
@@ -34,6 +35,8 @@ public class DockerCommandLocatorShould {
     @Rule public TemporaryFolder folder = new TemporaryFolder();
 
     @Rule public ExpectedException exception = ExpectedException.none();
+
+    @Rule public EnvironmentVariables environmentVariables = new EnvironmentVariables();
 
     private Path firstPathFolder;
 
@@ -46,12 +49,13 @@ public class DockerCommandLocatorShould {
 
         commandFileLocation = Files.createFile(firstPathFolder.resolve(command)).toString();
         windowsCommandFileLocation = Files.createFile(firstPathFolder.resolve(windowsCommand)).toString();
+
+        environmentVariables.set("PATH", firstPathFolder.toString());
     }
 
     @Test public void
     provide_the_first_command_location() {
         DockerCommandLocator locator = DockerCommandLocator.forCommand(command)
-                .locationOverride(firstPathFolder.toString())
                 .isWindows(false)
                 .build();
         assertThat(locator.getLocation(), is(commandFileLocation));
@@ -60,7 +64,6 @@ public class DockerCommandLocatorShould {
     @Test public void
     provide_the_first_command_location_on_windows() {
         DockerCommandLocator locator = DockerCommandLocator.forCommand(command)
-                .locationOverride(firstPathFolder.toString())
                 .isWindows(true)
                 .build();
         assertThat(locator.getLocation(), is(windowsCommandFileLocation));
@@ -68,14 +71,28 @@ public class DockerCommandLocatorShould {
 
     @Test public void
     fail_when_no_paths_contain_command() {
+        environmentVariables.set("PATH", null);
+
         DockerCommandLocator locator = DockerCommandLocator.forCommand(command)
-                .locationOverride(null)
                 .isWindows(false)
                 .build();
 
         exception.expect(IllegalStateException.class);
-        exception.expectMessage("Could not find " + command + " in path");
+        exception.expectMessage("Could not find " + command + " in [/usr/local/bin, /usr/bin]");
         locator.getLocation();
+    }
+
+    @Test public void
+    allow_the_path_to_be_overriden() throws IOException {
+        Path overrideFolder = folder.newFolder("override").toPath();
+        String overridenCommand = Files.createFile(overrideFolder.resolve(command)).toString();
+
+        DockerCommandLocator locator = DockerCommandLocator.forCommand(command)
+                .locationOverride(overrideFolder.toString())
+                .isWindows(false)
+                .build();
+
+        assertThat(locator.getLocation(), is(overridenCommand));
     }
 
 }

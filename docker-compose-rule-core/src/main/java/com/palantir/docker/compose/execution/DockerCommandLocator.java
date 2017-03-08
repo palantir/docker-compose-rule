@@ -15,8 +15,12 @@
  */
 package com.palantir.docker.compose.execution;
 
+import static java.util.Collections.singletonList;
+
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.List;
 import javax.annotation.Nullable;
 import org.apache.commons.lang3.SystemUtils;
 import org.immutables.value.Value;
@@ -43,18 +47,21 @@ public abstract class DockerCommandLocator {
     protected abstract String locationOverride();
 
     @Value.Derived
-    protected DockerCommandLocations searchLocations() {
-        return DockerCommandLocations.withOverride(locationOverride());
+    protected List<Path> searchLocations() {
+        if (locationOverride() == null) {
+            return DockerCommandLocations.pathLocations();
+        }
+        return singletonList(Paths.get(locationOverride()));
     }
 
     public String getLocation() {
         return searchLocations()
-                .forCommand()
+                .stream()
                 .map(p -> p.resolve(executableName()))
                 .filter(Files::exists)
                 .findFirst()
                 .map(Path::toString)
-                .orElseThrow(() -> new IllegalStateException("Could not find " + command() + " in path"));
+                .orElseThrow(() -> new IllegalStateException("Could not find " + command() + " in " + searchLocations()));
     }
 
     public static ImmutableDockerCommandLocator.Builder forCommand(String command) {
