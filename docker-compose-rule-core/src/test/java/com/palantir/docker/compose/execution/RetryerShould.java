@@ -61,11 +61,20 @@ public class RetryerShould {
 
     @Test
     public void retryer_should_wait_after_failure_before_trying_again() throws Exception {
+        // Force Windows to use more granular sleeps - see http://stackoverflow.com/questions/824110/accurate-sleep-for-java-on-windows
+        new Thread(() -> {
+            try {
+                Thread.sleep(Long.MAX_VALUE);
+            } catch (InterruptedException e) {
+                // Ignore
+            }
+        }).start();
+
         Retryer timeRetryer = new Retryer(1, Duration.millis(100));
 
         Stopwatch stopwatch = Stopwatch.createStarted();
         when(operation.call()).thenThrow(new DockerExecutionException()).thenAnswer(i -> {
-            assertThat(stopwatch.elapsed(TimeUnit.MILLISECONDS), greaterThan(100L));
+            assertThat(stopwatch.elapsed(TimeUnit.MILLISECONDS), greaterThan(98L));
             return "success";
         });
 
