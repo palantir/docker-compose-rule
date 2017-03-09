@@ -5,6 +5,7 @@ dependencies {
     compile "com.google.guava:guava:$guavaVersion"
     compile "joda-time:joda-time:$jodaVersion"
     compile "com.github.zafarkhaja:java-semver:$javaSemverVersion"
+    compile "com.google.code.findbugs:jsr305:3.0.0"
 
     compile 'com.jayway.awaitility:awaitility:1.6.5'
 
@@ -18,7 +19,6 @@ dependencies {
     testCompile "org.hamcrest:hamcrest-all:$hamcrestVersion"
     testCompile "org.mockito:mockito-core:$mockitoVersion"
     testCompile "com.github.tomakehurst:wiremock:2.0.6-beta"
-    testCompile "com.google.code.findbugs:jsr305:3.0.0"
     testCompile "com.github.stefanbirkner:system-rules:1.16.1"
 }
 
