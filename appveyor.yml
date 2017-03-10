@@ -7,7 +7,7 @@ build_script:
   - gradlew.bat compileJava compileTestJava --info --no-daemon
 
 test_script:
-  - choco install docker-compose
+  - cinst -y docker-compose
   - gradlew.bat test windowsSmokeTest --info --no-daemon
 
 branches:
