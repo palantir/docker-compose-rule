@@ -7,7 +7,7 @@ build_script:
   - gradlew.bat compileJava compileTestJava --info --no-daemon
 
 test_script:
-  - cinst -y docker-compose
+  - cinst -y docker docker-compose
   - gradlew.bat test windowsSmokeTest --info --no-daemon
 
 branches:
@@ -17,8 +17,6 @@ branches:
 
 cache:
   - C:\Users\appveyor\.gradle
-
-image: Visual Studio 2017
 
 environment:
   matrix:
