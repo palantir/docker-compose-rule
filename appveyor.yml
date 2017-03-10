@@ -18,7 +18,7 @@ branches:
 cache:
   - C:\Users\appveyor\.gradle
 
-image: Windows Server 2016
+image: image: Visual Studio 2017
 
 environment:
   matrix:
