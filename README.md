@@ -104,7 +104,7 @@ We provide 2 default healthChecks in the HealthChecks class:
 Accessing services in containers from outside a container
 ---------------------------------------------------------
 
-In tests it is likely services inside containers will need to be accessed in order to assert that they are behaving correctly. In addition, when tests run on Mac the Docker containers will be inside a Virtual Box machine and so must be accessed on an external IP address rather than the loopback interface.
+In tests it is likely services inside containers will need to be accessed in order to assert that they are behaving correctly. In addition, when tests run on Mac, the Docker containers will be inside a Virtual Box machine and so must be accessed on an external IP address rather than the loopback interface.
 
 It is recommended to only specify internal ports in the `docker-compose.yml` as described in the [https://docs.docker.com/compose/compose-file/#ports](reference). This makes tests independent of the environment on the host machine and of each other.  Docker will then randomly allocate an external port. For example:
 
