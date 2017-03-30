@@ -213,9 +213,9 @@ public class DefaultDockerCompose implements DockerCompose {
     }
 
     private static ErrorHandler swallowingDownCommandDoesNotExist() {
-        return (exitCode, output, commandName, commands) -> {
+        return (exitCode, output, error, commandName, commands) -> {
             if (downCommandWasPresent(output)) {
-                Command.throwingOnError().handle(exitCode, output, commandName, commands);
+                Command.throwingOnError().handle(exitCode, output, error, commandName, commands);
             }
 
             log.warn("It looks like `docker-compose down` didn't work.");

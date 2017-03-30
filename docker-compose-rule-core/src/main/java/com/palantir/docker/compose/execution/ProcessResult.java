@@ -18,10 +18,18 @@ package com.palantir.docker.compose.execution;
 public class ProcessResult {
     private int exitCode;
     private final String output;
+    private final String error;
 
     public ProcessResult(int exitCode, String output) {
         this.exitCode = exitCode;
         this.output = output;
+        this.error = null;
+    }
+
+    public ProcessResult(int exitCode, String output, String error) {
+        this.exitCode = exitCode;
+        this.output = output;
+        this.error = error;
     }
 
     public int exitCode() {
@@ -30,5 +38,9 @@ public class ProcessResult {
 
     public String output() {
         return output;
+    }
+
+    public String error() {
+        return error;
     }
 }

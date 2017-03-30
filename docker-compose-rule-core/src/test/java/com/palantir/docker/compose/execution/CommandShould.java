@@ -59,7 +59,7 @@ public class CommandShould {
         givenTheUnderlyingProcessTerminatesWithAnExitCodeOf(expectedExitCode);
         dockerComposeCommand.execute(errorHandler, "rm", "-f");
 
-        verify(errorHandler).handle(expectedExitCode, "", "docker-compose", "rm", "-f");
+        verify(errorHandler).handle(expectedExitCode, "", null, "docker-compose", "rm", "-f");
     }
 
     @Test public void
