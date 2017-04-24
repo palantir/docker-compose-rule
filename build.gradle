@@ -1,13 +1,13 @@
 buildscript {
     repositories {
         mavenCentral()
-        jcenter()
         maven {
             url "https://dl.bintray.com/palantir/releases"
         }
         maven {
             url 'https://plugins.gradle.org/m2/'
         }
+        jcenter()
     }
     dependencies {
         classpath 'com.palantir:gradle-baseline-java:0.9.0'
