@@ -1,7 +1,6 @@
 buildscript {
     repositories {
         mavenCentral()
-        jcenter()
         maven {
             url "https://dl.bintray.com/palantir/releases"
         }
@@ -20,7 +19,6 @@ buildscript {
 
 repositories {
     mavenCentral()
-    jcenter()
 }
 
 apply plugin: 'com.palantir.baseline-config'
