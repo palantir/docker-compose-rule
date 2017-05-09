@@ -15,6 +15,7 @@
  */
 package com.palantir.docker.compose.execution;
 
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.anySetOf;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
@@ -24,6 +25,8 @@ import static org.mockito.Mockito.verifyZeroInteractions;
 
 import com.google.common.collect.ImmutableSet;
 import java.io.IOException;
+import java.util.Set;
+
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -126,6 +129,30 @@ public class ConflictingContainerRemovingDockerComposeShould {
         ConflictingContainerRemovingDockerCompose conflictingContainerRemovingDockerCompose =
                 new ConflictingContainerRemovingDockerCompose(dockerCompose, docker);
         conflictingContainerRemovingDockerCompose.up();
+    }
+
+    @Test
+    public void parse_container_names_from_error_message() {
+        String conflictingContainer = "conflictingContainer";
+
+        ConflictingContainerRemovingDockerCompose conflictingContainerRemovingDockerCompose =
+                new ConflictingContainerRemovingDockerCompose(dockerCompose, docker);
+        Set<String> conflictingContainerNames = conflictingContainerRemovingDockerCompose
+                .getConflictingContainerNames("The name \"" + conflictingContainer + "\" is already in use");
+
+        assertEquals(ImmutableSet.of(conflictingContainer), conflictingContainerNames);
+    }
+
+    @Test
+    public void parse_container_names_from_error_message_since_v13() {
+        String conflictingContainer = "conflictingContainer";
+
+        ConflictingContainerRemovingDockerCompose conflictingContainerRemovingDockerCompose =
+                new ConflictingContainerRemovingDockerCompose(dockerCompose, docker);
+        Set<String> conflictingContainerNames = conflictingContainerRemovingDockerCompose
+                .getConflictingContainerNames("The container name \"" + conflictingContainer + "\" is already in use");
+
+        assertEquals(ImmutableSet.of(conflictingContainer), conflictingContainerNames);
     }
 
 }

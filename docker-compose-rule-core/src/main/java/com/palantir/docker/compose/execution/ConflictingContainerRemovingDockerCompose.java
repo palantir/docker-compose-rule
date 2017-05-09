@@ -27,7 +27,7 @@ import org.slf4j.LoggerFactory;
 
 public class ConflictingContainerRemovingDockerCompose extends DelegatingDockerCompose {
     private static final Logger log = LoggerFactory.getLogger(ConflictingContainerRemovingDockerCompose.class);
-    private static final Pattern NAME_CONFLICT_PATTERN = Pattern.compile("The name \"([^\"]*)\" is already in use");
+    private static final Pattern NAME_CONFLICT_PATTERN = Pattern.compile("name \"([^\"]*)\" is already in use");
 
     private final Docker docker;
     private final int retryAttempts;
@@ -78,7 +78,7 @@ public class ConflictingContainerRemovingDockerCompose extends DelegatingDockerC
         }
     }
 
-    private static Set<String> getConflictingContainerNames(String output) {
+    Set<String> getConflictingContainerNames(String output) {
         ImmutableSet.Builder<String> builder = ImmutableSet.builder();
         Matcher matcher = NAME_CONFLICT_PATTERN.matcher(output);
         while (matcher.find()) {
