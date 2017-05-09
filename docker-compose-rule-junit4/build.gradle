@@ -23,3 +23,15 @@ dependencies {
 if (System.env.CIRCLE_TEST_REPORTS) {
     test.reports.junitXml.destination = file(System.env.CIRCLE_TEST_REPORTS)
 }
+
+task windowsSmokeTest(type: Test) {
+    testClassesDir = sourceSets.integTest.output.classesDir
+    classpath = sourceSets.integTest.runtimeClasspath
+
+    reports.html.destination = "${project.buildDir}/reports/integTest"
+    reports.junitXml.destination = "${project.buildDir}/integTest-results"
+    binResultsDir = file("${project.buildDir}/integTest-results/binary/integTest")
+
+    include '**/windows/**'
+}
+

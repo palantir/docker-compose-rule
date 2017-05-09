@@ -18,7 +18,7 @@ test:
   override:
     - ? >
         case $CIRCLE_NODE_INDEX in
-        0) ./gradlew test --info ;;
+        0) ./gradlew test integTest --info ;;
         1) ./gradlew findbugsMain findbugsTest checkstyleMain checkstyleTest javadoc --info ;;
         esac
       :

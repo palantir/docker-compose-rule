@@ -18,7 +18,7 @@ import org.junit.Test;
 public class AggressiveShutdownWithNetworkCleanupStrategyIntegrationTest {
 
     private final DockerComposeRule rule = DockerComposeRule.builder()
-            .file("src/test/resources/shutdown-strategy-with-network.yaml")
+            .file("src/integTest/resources/shutdown-strategy-with-network.yaml")
             .logCollector(new DoNothingLogCollector())
             .retryAttempts(0)
             .shutdownStrategy(ShutdownStrategy.AGGRESSIVE_WITH_NETWORK_CLEANUP)

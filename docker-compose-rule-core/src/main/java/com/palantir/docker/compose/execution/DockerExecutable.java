@@ -26,12 +26,6 @@ import org.slf4j.LoggerFactory;
 public abstract class DockerExecutable implements Executable {
     private static final Logger log = LoggerFactory.getLogger(DockerExecutable.class);
 
-    private static final DockerCommandLocations DOCKER_LOCATIONS = new DockerCommandLocations(
-            System.getenv("DOCKER_LOCATION"),
-            "/usr/local/bin/docker",
-            "/usr/bin/docker"
-    );
-
     @Value.Parameter protected abstract DockerConfiguration dockerConfiguration();
 
     @Override
@@ -41,12 +35,11 @@ public abstract class DockerExecutable implements Executable {
 
     @Value.Derived
     protected String dockerPath() {
-        String pathToUse = DOCKER_LOCATIONS.preferredLocation()
-                .orElseThrow(() -> new IllegalStateException(
-                        "Could not find docker, looked in: " + DOCKER_LOCATIONS));
-
+        DockerCommandLocator commandLocator = DockerCommandLocator.forCommand("docker")
+                .locationOverride(System.getenv("DOCKER_LOCATION"))
+                .build();
+        String pathToUse = commandLocator.getLocation();
         log.debug("Using docker found at " + pathToUse);
-
         return pathToUse;
     }
 
@@ -66,4 +59,5 @@ public abstract class DockerExecutable implements Executable {
     public static ImmutableDockerExecutable.Builder builder() {
         return ImmutableDockerExecutable.builder();
     }
+
 }

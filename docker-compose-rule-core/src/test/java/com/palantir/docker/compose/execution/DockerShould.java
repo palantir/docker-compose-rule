@@ -62,7 +62,7 @@ public class DockerShould {
 
     @Test
     public void understand_old_version_format() throws IOException, InterruptedException {
-        when(executedProcess.getInputStream()).thenReturn(toInputStream("Docker version 1.7.2"));
+        when(executedProcess.getInputStream()).thenReturn(toInputStream("Docker version 1.7.2, build abcdef"));
 
         Version version = docker.configuredVersion();
         assertThat(version, is(Version.valueOf("1.7.2")));

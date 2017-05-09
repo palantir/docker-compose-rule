@@ -20,6 +20,7 @@ import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.lessThan;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.fail;
+import static org.junit.Assume.assumeTrue;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -27,6 +28,7 @@ import static org.mockito.Mockito.when;
 import com.google.common.base.Stopwatch;
 import com.palantir.docker.compose.utils.MockitoMultiAnswer;
 import java.util.concurrent.TimeUnit;
+import org.apache.commons.lang3.SystemUtils;
 import org.joda.time.Duration;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -61,11 +63,13 @@ public class RetryerShould {
 
     @Test
     public void retryer_should_wait_after_failure_before_trying_again() throws Exception {
+        assumeTrue("Not running on Windows as Thread.sleep isn't accurate there", !SystemUtils.IS_OS_WINDOWS);
+
         Retryer timeRetryer = new Retryer(1, Duration.millis(100));
 
         Stopwatch stopwatch = Stopwatch.createStarted();
         when(operation.call()).thenThrow(new DockerExecutionException()).thenAnswer(i -> {
-            assertThat(stopwatch.elapsed(TimeUnit.MILLISECONDS), greaterThan(100L));
+            assertThat(stopwatch.elapsed(TimeUnit.MILLISECONDS), greaterThan(98L));
             return "success";
         });
 

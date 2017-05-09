@@ -36,6 +36,7 @@ subprojects {
     apply plugin: 'com.palantir.baseline-eclipse'
     apply plugin: 'com.palantir.baseline-findbugs'
     apply plugin: 'com.palantir.baseline-idea'
+    apply from: "${rootDir}/gradle/integTest.gradle"
     apply from: "${rootDir}/gradle/publish.gradle"
 
     apply plugin: 'org.inferred.processors'

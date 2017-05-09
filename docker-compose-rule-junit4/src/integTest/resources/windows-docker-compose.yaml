@@ -1,0 +1,4 @@
+hello-world:
+  image: microsoft/windowsservercore
+  command: echo "Server started"
+

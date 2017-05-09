@@ -45,7 +45,7 @@ public class DockerComposeRuleIntegrationTest {
 
     @Rule
     public final DockerComposeRule docker = DockerComposeRule.builder()
-            .files(DockerComposeFiles.from("src/test/resources/docker-compose.yaml"))
+            .files(DockerComposeFiles.from("src/integTest/resources/docker-compose.yaml"))
             .waitingForService("db", toHaveAllPortsOpen())
             .waitingForService("db2", toHaveAllPortsOpen())
             .waitingForServices(ImmutableList.of("db3", "db4"), toAllHaveAllPortsOpen())
