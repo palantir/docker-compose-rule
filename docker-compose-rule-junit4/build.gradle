@@ -17,9 +17,3 @@ dependencies {
 
     testCompile project(":docker-compose-rule-core").sourceSets.test.output
 }
-
-// Instead of copying files out of `$buildDir/test-results/` on CircleCI, we can
-// just write them into the right place straight away.
-if (System.env.CIRCLE_TEST_REPORTS) {
-    test.reports.junitXml.destination = file(System.env.CIRCLE_TEST_REPORTS)
-}
