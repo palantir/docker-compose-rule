@@ -19,6 +19,7 @@ buildscript {
 
 plugins {
     id 'com.palantir.git-version' version '0.5.3'
+    id 'nebula.lint' version '7.3.5'
     id 'com.palantir.configuration-resolver' version '0.2.0'
 }
 
@@ -72,5 +73,10 @@ subprojects {
     // just write them into the right place straight away.
     if (System.env.CIRCLE_TEST_REPORTS) {
         test.reports.junitXml.destination = file(System.env.CIRCLE_TEST_REPORTS)
+    }
+
+    if (!System.env.CI) {
+        apply plugin: 'nebula.lint'
+        gradleLint.rules = ['unused-dependency', 'unused-exclude']
     }
 }
