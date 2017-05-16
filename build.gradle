@@ -32,7 +32,6 @@ allprojects {
 
     repositories {
         mavenCentral()
-        jcenter()
     }
 
     group 'com.palantir.docker.compose'
@@ -51,11 +50,6 @@ subprojects {
 
     sourceCompatibility = 1.8
     targetCompatibility = 1.8
-
-    repositories {
-        mavenCentral()
-        jcenter()
-    }
 
     dependencies {
         processor 'org.immutables:value:2.5.0'
