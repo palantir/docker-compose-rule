@@ -56,6 +56,10 @@ subprojects {
         jcenter()
     }
 
+    dependencies {
+        processor 'org.immutables:value:2.5.0'
+    }
+
     configurations.all {
         exclude module: 'slf4j-log4j12'
         resolutionStrategy.force(
