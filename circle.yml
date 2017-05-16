@@ -19,7 +19,7 @@ test:
     - ? >
         case $CIRCLE_NODE_INDEX in
         0) ./gradlew test --info ;;
-        1) ./gradlew findbugsMain findbugsTest checkstyleMain checkstyleTest javadoc --info ;;
+        1) ./gradlew checkstyleMain checkstyleTest javadoc --info ;;
         esac
       :
         parallel: true
