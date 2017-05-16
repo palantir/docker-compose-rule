@@ -17,19 +17,27 @@ buildscript {
 }
 
 plugins {
+    id 'com.palantir.git-version' version '0.5.3'
     id 'org.inferred.processors' version '1.2.12'
     id 'com.palantir.configuration-resolver' version '0.2.0'
-}
-
-repositories {
-    mavenCentral()
-    jcenter()
 }
 
 apply plugin: 'com.palantir.baseline-config'
 apply from: "${rootDir}/gradle/idea.gradle"
 
-apply plugin: 'com.palantir.configuration-resolver'
+allprojects {
+    apply plugin: 'com.palantir.configuration-resolver'
+    apply plugin: 'com.palantir.git-version'
+
+    repositories {
+        mavenCentral()
+        jcenter()
+    }
+
+    group 'com.palantir.docker.compose'
+
+    version gitVersion()
+}
 
 subprojects {
     apply from: "${rootDir}/gradle/idea.gradle"
@@ -51,9 +59,6 @@ subprojects {
         mavenCentral()
         jcenter()
     }
-
-    group = 'com.palantir.docker.compose'
-    version "git describe --tags --dirty".execute().text.trim()
 
     configurations.all {
         exclude module: 'slf4j-log4j12'
