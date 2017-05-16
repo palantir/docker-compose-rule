@@ -23,7 +23,7 @@ plugins {
 }
 
 apply plugin: 'com.palantir.baseline-config'
-apply from: "${rootDir}/gradle/idea.gradle"
+apply plugin: 'com.palantir.baseline-idea'
 
 allprojects {
     apply plugin: 'com.palantir.configuration-resolver'
@@ -40,16 +40,13 @@ allprojects {
 }
 
 subprojects {
-    apply from: "${rootDir}/gradle/idea.gradle"
     apply plugin: 'java'
-
     apply plugin: 'com.palantir.baseline-checkstyle'
     apply plugin: 'com.palantir.baseline-eclipse'
     apply plugin: 'com.palantir.baseline-idea'
-    apply from: "${rootDir}/gradle/publish.gradle"
-
     apply plugin: 'org.inferred.processors'
     apply plugin: 'com.palantir.configuration-resolver'
+    apply from: "${rootDir}/gradle/publish.gradle"
 
     sourceCompatibility = 1.8
     targetCompatibility = 1.8
