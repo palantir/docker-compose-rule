@@ -19,7 +19,11 @@ import static java.util.Optional.empty;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 
+import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.Collections;
+
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -28,22 +32,33 @@ import org.junit.rules.TemporaryFolder;
 public class DockerCommandLocationsShould {
     private static final String badLocation = "file/that/does/not/exist";
     private static final String otherBadLocation = "another/file/that/does/not/exist";
+    private static final String someLocationInPath = "/folder/not/containing/docker-cmd";
+    private static final String someOtherLocationInPath = "/folder/not/containing/docker-cmd";
+    private static final String FILENAME = "docker-compose.yml";
+
 
     @Rule public TemporaryFolder folder = new TemporaryFolder();
 
     private String goodLocation;
+    private String goodLocationParent;
 
     @Before
     public void setup() throws IOException {
-        goodLocation = folder.newFile("docker-compose.yml").getAbsolutePath();
+        File file = folder.newFile(FILENAME);
+        goodLocation = file.getAbsolutePath();
+        goodLocationParent = file.getParent();
     }
 
     @Test public void
     provide_the_first_docker_command_location_if_it_exists() {
-        DockerCommandLocations dockerCommandLocations = new DockerCommandLocations(
-                badLocation,
-                goodLocation,
-                otherBadLocation);
+        DockerCommandLocations dockerCommandLocations = DockerCommandLocations.builder()
+                .executableName(FILENAME)
+                .pathLocations(Collections.emptyList())
+                .additionalSearchLocations(DockerCommandLocations.optionals(
+                    badLocation,
+                    goodLocation,
+                    otherBadLocation
+                )).build();
 
         assertThat(dockerCommandLocations.preferredLocation().get(),
                 is(goodLocation));
@@ -51,9 +66,13 @@ public class DockerCommandLocationsShould {
 
     @Test public void
     skip_paths_from_environment_variables_that_are_unset() {
-        DockerCommandLocations dockerCommandLocations = new DockerCommandLocations(
-                System.getenv("AN_UNSET_DOCKER_COMPOSE_PATH"),
-                goodLocation);
+        DockerCommandLocations dockerCommandLocations = DockerCommandLocations.builder()
+                .executableName(FILENAME)
+                .pathLocations(Collections.emptyList())
+                .additionalSearchLocations(DockerCommandLocations.optionals(
+                    System.getenv("AN_UNSET_DOCKER_COMPOSE_PATH"),
+                    goodLocation
+                )).build();
 
         assertThat(dockerCommandLocations.preferredLocation().get(),
                 is(goodLocation));
@@ -61,8 +80,53 @@ public class DockerCommandLocationsShould {
 
     @Test public void
     have_no_preferred_path_when_all_possible_paths_are_all_invalid() {
-        DockerCommandLocations dockerCommandLocations = new DockerCommandLocations(
-                badLocation);
+        DockerCommandLocations dockerCommandLocations = DockerCommandLocations.builder()
+                .executableName(FILENAME)
+                .pathLocations(Collections.emptyList())
+                .additionalSearchLocations(DockerCommandLocations.optionals(
+                    badLocation
+                )).build();
+
+        assertThat(dockerCommandLocations.preferredLocation(),
+                is(empty()));
+    }
+
+    @Test public void
+    discover_docker_command_in_envpath() {
+        DockerCommandLocations dockerCommandLocations = DockerCommandLocations.builder()
+                .executableName(FILENAME)
+                //path will contain directories, not full path to docker cmd
+                .pathLocations(Arrays.asList(someLocationInPath, someOtherLocationInPath, goodLocationParent))
+                .additionalSearchLocations(DockerCommandLocations.optionals(
+                        badLocation,
+                        otherBadLocation
+                )).build();
+
+        assertThat(dockerCommandLocations.preferredLocation().get(),
+                is(goodLocation));  //but result will be the full path to docker cmd
+    }
+
+    @Test public void
+    have_no_preferred_path_when_all_possible_paths_are_all_invalid_with_envpath() {
+        DockerCommandLocations dockerCommandLocations = DockerCommandLocations.builder()
+                .executableName(FILENAME)
+                .pathLocations(Arrays.asList(someLocationInPath, someOtherLocationInPath))
+                .additionalSearchLocations(DockerCommandLocations.optionals(
+                        badLocation,
+                        otherBadLocation
+                )).build();
+
+        assertThat(dockerCommandLocations.preferredLocation(),
+                is(empty()));
+    }
+
+    @Test public void
+    dont_fail_for_empty_lists() {
+        DockerCommandLocations dockerCommandLocations = DockerCommandLocations.builder()
+                .executableName(FILENAME)
+                .pathLocations(Collections.emptyList())
+                .additionalSearchLocations(Collections.emptyList())
+                .build();
 
         assertThat(dockerCommandLocations.preferredLocation(),
                 is(empty()));

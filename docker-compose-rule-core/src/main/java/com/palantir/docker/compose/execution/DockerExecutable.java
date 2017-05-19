@@ -26,11 +26,13 @@ import org.slf4j.LoggerFactory;
 public abstract class DockerExecutable implements Executable {
     private static final Logger log = LoggerFactory.getLogger(DockerExecutable.class);
 
-    private static final DockerCommandLocations DOCKER_LOCATIONS = new DockerCommandLocations(
-            System.getenv("DOCKER_LOCATION"),
-            "/usr/local/bin/docker",
-            "/usr/bin/docker"
-    );
+    private static final DockerCommandLocations DOCKER_LOCATIONS = DockerCommandLocations.builder()
+            .executableName("docker")
+            .additionalSearchLocations(DockerCommandLocations.optionals(
+                System.getenv("DOCKER_LOCATION"),
+                "/usr/local/bin/docker",
+                "/usr/bin/docker"
+            )).build();
 
     @Value.Parameter protected abstract DockerConfiguration dockerConfiguration();
 
