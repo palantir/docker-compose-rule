@@ -308,3 +308,9 @@ Using a custom version of docker-compose
 ---------------
 
 docker-compose-rule tries to use the docker-compose binary located at `/usr/local/bin/docker-compose`. This can be overriden by setting `DOCKER_COMPOSE_LOCATION` to be the path to a valid file.
+
+Use cases
+---------------
+
+- [Docker Compose JUnit Rule Spark demo](https://github.com/SchulteMarkus/docker-compose-rule-spark-demo)
+This demo shows how to use Docker Compose JUnit Rule in a Microservice setup with Continuous Integration
