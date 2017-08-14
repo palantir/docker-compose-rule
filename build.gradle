@@ -11,7 +11,7 @@ buildscript {
     }
     dependencies {
         classpath 'com.palantir.baseline:gradle-baseline-java:0.16.0'
-        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.4'
+        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.7.3'
         classpath "org.jfrog.buildinfo:build-info-extractor-gradle:4.0.0"
         classpath 'gradle.plugin.org.inferred:gradle-processors:1.2.12'
     }
