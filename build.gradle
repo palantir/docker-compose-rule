@@ -10,7 +10,7 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'com.palantir.baseline:gradle-baseline-java:0.14.0'
+        classpath 'com.palantir.baseline:gradle-baseline-java:0.16.0'
         classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.4'
         classpath "org.jfrog.buildinfo:build-info-extractor-gradle:4.0.0"
         classpath 'gradle.plugin.org.inferred:gradle-processors:1.2.12'
@@ -19,7 +19,7 @@ buildscript {
 
 plugins {
     id 'com.palantir.git-version' version '0.5.3'
-    id 'nebula.lint' version '7.3.5'
+    id 'nebula.lint' version '7.9.5'
     id 'com.palantir.configuration-resolver' version '0.2.0'
 }
 

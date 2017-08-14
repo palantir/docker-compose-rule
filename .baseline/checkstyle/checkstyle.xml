@@ -43,7 +43,7 @@
         <property name="message" value="Whitespace at end-of-line"/>
     </module>
     <module name="SuppressionFilter"> <!-- baseline-gradle: README.md -->
-        <property name="file" value="${samedir}/checkstyle-suppressions.xml"/>
+        <property name="file" value="${config_loc}/checkstyle-suppressions.xml"/>
     </module>
     <module name="SuppressWarningsFilter"/> <!-- baseline-gradle: README.md -->
     <module name="SuppressionCommentFilter"/> <!-- baseline-gradle: README.md -->
