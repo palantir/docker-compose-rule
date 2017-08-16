@@ -1,0 +1,15 @@
+dependencies {
+    compile project(':docker-compose-rule-core')
+    compile "com.google.guava:guava:$guavaVersion"
+
+    testCompile "org.hamcrest:hamcrest-all:$hamcrestVersion"
+    testCompile "org.hamcrest:hamcrest-core:$hamcrestVersion"
+    testCompile "org.hamcrest:hamcrest-library:$hamcrestVersion"
+
+    // JDBC Drivers
+    testRuntime "org.postgresql:postgresql:$jdbcPostgresqlVersion"
+    testRuntime "mysql:mysql-connector-java:$jdbcMySqlVersion"
+
+    testCompile "junit:junit:$junitVersion"
+    testCompile project(":docker-compose-rule-junit4")
+}

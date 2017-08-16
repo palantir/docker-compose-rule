@@ -1,0 +1,11 @@
+version: "3.1"
+
+services:
+  postgresql:
+    image: postgres
+    ports:
+      - 5432
+    environment:
+      POSTGRES_DB: foobar
+      POSTGRES_USER: person
+      POSTGRES_PASSWORD: abc123

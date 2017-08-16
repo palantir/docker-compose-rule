@@ -1,0 +1,12 @@
+version: "3.1"
+
+services:
+  mysql:
+    image: mysql
+    ports:
+      - 3306
+    environment:
+      MYSQL_ROOT_PASSWORD: abc123
+      MYSQL_DATABASE: foobar
+      MYSQL_USER: person
+      MYSQL_PASSWORD: abc123

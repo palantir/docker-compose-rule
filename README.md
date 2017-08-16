@@ -101,6 +101,44 @@ We provide 2 default healthChecks in the HealthChecks class:
 1. `toHaveAllPortsOpen` - this waits till all ports can be connected to that are exposed on the container
 2. `toRespondOverHttp` - which waits till the specified URL responds to a HTTP request.
 
+Extra Health Checks
+-------------------
+
+There are extra health-checks availible in the `docker-compose-rule-health-checks` submodule.  Add them as a dependency to your project:
+```groovy
+    testCompile 'com.palantir.docker.compose:docker-compose-rule-health-checks:<latest-tag-from-bintray>'
+```
+
+The following sections outline usage of the provided `HealthCheck`s.
+
+#### `JdbcContainerHealthCheck`
+
+Initialize the `JdbcContainerHealthCheck` for your `DockerComposeRule` using a known [JDBC](https://www.jcp.org/aboutJava/communityprocess/mrel/jsr221/index2.html) sub-protocol (ie `postgresql`):
+```java
+public class DockerComposeRuleTest {
+    @ClassRule
+    public static DockerComposeRule docker = DockerComposeRule.builder()
+            .file("src/test/resources/docker-compose.yml")
+            .waitingForService("postgresql", JdbcContainerHealthCheck.of(
+                    JdbcContainerConfiguration.ofPostgresql("database-name", "username", "password")))
+            .build();
+}
+```
+
+or you can can use provide the sub-protocol and internal port directly:
+
+```java
+public class DockerComposeRuleTest {
+    @ClassRule
+    public static DockerComposeRule docker = DockerComposeRule.builder()
+            .file("src/test/resources/docker-compose.yml")
+            .waitingForService("postgresql", JdbcContainerHealthCheck.of(
+                    JdbcContainerConfiguration.of("mysql", 3306, "database-name", "username", "password")))
+            .build();
+}
+```
+
+
 Accessing services in containers from outside a container
 ---------------------------------------------------------
 

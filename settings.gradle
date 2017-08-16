@@ -1,5 +1,6 @@
 include 'docker-compose-rule-core'
 include 'docker-compose-rule-junit4'
+include 'docker-compose-rule-health-checks'
 
 rootProject.name='docker-compose-rule'
 rootProject.children.each { project ->
