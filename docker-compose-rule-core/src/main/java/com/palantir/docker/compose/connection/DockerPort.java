@@ -86,13 +86,13 @@ public class DockerPort {
             log.debug("Http connection acquired, assuming port active");
             return SuccessOrFailure.success();
         } catch (SocketException e) {
-            return SuccessOrFailure.failure("Failed to acquire http connection, assuming port inactive: " + e.getMessage());
+            return SuccessOrFailure.failureWithCondensedException("Failed to acquire http connection, assuming port inactive", e);
         } catch (FileNotFoundException e) {
-            return SuccessOrFailure.fromBoolean(!andCheckStatus, "Received 404, assuming port active: " + e.getMessage());
+            return SuccessOrFailure.fromBoolean(!andCheckStatus, "Received 404, assuming port inactive: " + e.getMessage());
         } catch (SSLHandshakeException e) {
-            return SuccessOrFailure.failure("Received bad SSL response, assuming port inactive: " + e.getMessage());
+            return SuccessOrFailure.failureWithCondensedException("Received bad SSL response, assuming port inactive", e);
         } catch (IOException e) {
-            return SuccessOrFailure.failure("Error acquiring http connection, assuming port open but inactive" + e.getMessage());
+            return SuccessOrFailure.failureWithCondensedException("Error acquiring http connection, assuming port open but inactive", e);
         }
     }
 

@@ -48,6 +48,10 @@ public abstract class SuccessOrFailure {
         return ImmutableSuccessOrFailure.of(Optional.of(message));
     }
 
+    public static SuccessOrFailure failureWithCondensedException(String message, Exception exception) {
+        return failure(message + ":\n" + Exceptions.condensedStacktraceFor(exception));
+    }
+
     public static SuccessOrFailure fromBoolean(boolean succeeded, String possibleFailureMessage) {
         if (succeeded) {
             return success();
