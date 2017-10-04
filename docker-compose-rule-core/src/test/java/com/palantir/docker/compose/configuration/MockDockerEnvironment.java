@@ -23,6 +23,7 @@ import static org.mockito.Mockito.when;
 
 import com.palantir.docker.compose.connection.DockerPort;
 import com.palantir.docker.compose.connection.Ports;
+import com.palantir.docker.compose.connection.waiting.SuccessOrFailure;
 import com.palantir.docker.compose.execution.DockerCompose;
 import java.io.IOException;
 import java.util.Arrays;
@@ -52,6 +53,7 @@ public class MockDockerEnvironment {
     public DockerPort availableHttpService(String service, String ip, int externalPortNumber, int internalPortNumber) throws Exception {
         DockerPort port = availableService(service, ip, externalPortNumber, internalPortNumber);
         doReturn(true).when(port).isHttpResponding(any(), eq(false));
+        doReturn(SuccessOrFailure.success()).when(port).isHttpRespondingSuccessfully(any(), eq(false));
         return port;
     }
 
