@@ -16,6 +16,7 @@
 package com.palantir.docker.compose.connection.waiting;
 
 import java.util.Optional;
+import java.util.function.Function;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.immutables.value.Value;
 
@@ -26,6 +27,14 @@ public abstract class SuccessOrFailure {
             return fromBoolean(attempt.attempt(), "Attempt to complete healthcheck failed");
         } catch (Exception e) {
             return fromException(e);
+        }
+    }
+
+    public SuccessOrFailure mapFailure(Function<String, String> mapper) {
+        if (this.succeeded()) {
+            return this;
+        } else {
+            return failure(mapper.apply(failureMessage()));
         }
     }
 

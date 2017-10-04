@@ -15,6 +15,7 @@
  */
 package com.palantir.docker.compose.connection;
 
+import com.palantir.docker.compose.connection.waiting.SuccessOrFailure;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -67,6 +68,10 @@ public class DockerPort {
     }
 
     public boolean isHttpResponding(Function<DockerPort, String> urlFunction, boolean andCheckStatus) {
+        return isHttpRespondingSuccessfully(urlFunction, andCheckStatus).succeeded();
+    }
+
+    public SuccessOrFailure isHttpRespondingSuccessfully(Function<DockerPort, String> urlFunction, boolean andCheckStatus) {
         URL url;
         try {
             String urlString = urlFunction.apply(this);
@@ -79,19 +84,15 @@ public class DockerPort {
             url.openConnection().connect();
             url.openStream().read();
             log.debug("Http connection acquired, assuming port active");
-            return true;
+            return SuccessOrFailure.success();
         } catch (SocketException e) {
-            log.trace("Failed to acquire http connection, assuming port inactive", e);
-            return false;
+            return SuccessOrFailure.failure("Failed to acquire http connection, assuming port inactive: " + e.getMessage());
         } catch (FileNotFoundException e) {
-            log.debug("Received 404, assuming port active");
-            return !andCheckStatus;
+            return SuccessOrFailure.fromBoolean(!andCheckStatus, "Received 404, assuming port active: " + e.getMessage());
         } catch (SSLHandshakeException e) {
-            log.debug("Received bad SSL response, assuming port inactive");
-            return false;
+            return SuccessOrFailure.failure("Received bad SSL response, assuming port inactive: " + e.getMessage());
         } catch (IOException e) {
-            log.trace("Error acquiring http connection, assuming port open but inactive", e);
-            return false;
+            return SuccessOrFailure.failure("Error acquiring http connection, assuming port open but inactive" + e.getMessage());
         }
     }
 

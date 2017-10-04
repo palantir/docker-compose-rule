@@ -59,10 +59,8 @@ public class Container {
             if (!port.isListeningNow()) {
                 return SuccessOrFailure.failure(internalPort + " is not listening");
             }
-            if (!port.isHttpResponding(urlFunction, andCheckStatus)) {
-                return SuccessOrFailure.failure(internalPort + " does not have a http response from " + urlFunction.apply(port));
-            }
-            return SuccessOrFailure.success();
+            return port.isHttpRespondingSuccessfully(urlFunction, andCheckStatus)
+                    .mapFailure(failureMessage -> internalPort + " does not have a http response from " + urlFunction.apply(port) + ":\n" + failureMessage);
         } catch (Exception e) {
             return SuccessOrFailure.fromException(e);
         }
