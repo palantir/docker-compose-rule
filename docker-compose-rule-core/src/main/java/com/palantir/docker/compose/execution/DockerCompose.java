@@ -42,6 +42,7 @@ public interface DockerCompose {
     String run(DockerComposeRunOption dockerComposeRunOption, String containerName, DockerComposeRunArgument dockerComposeRunArgument) throws IOException, InterruptedException;
     List<ContainerName> ps() throws IOException, InterruptedException;
     Optional<String> id(Container container) throws IOException, InterruptedException;
+    String config() throws IOException, InterruptedException;
     List<String> services() throws IOException, InterruptedException;
     boolean writeLogs(String container, OutputStream output) throws IOException;
     Ports ports(String service) throws IOException, InterruptedException;
