@@ -1,4 +1,9 @@
-rootProject.name='docker-compose-rule'
-
 include 'docker-compose-rule-core'
 include 'docker-compose-rule-junit4'
+
+rootProject.name='docker-compose-rule'
+rootProject.children.each { project ->
+    String buildFileName = project.name.replace("${rootProject.name}-", "");
+    project.buildFileName = "${buildFileName}.gradle"
+    assert project.buildFile.isFile()
+}
