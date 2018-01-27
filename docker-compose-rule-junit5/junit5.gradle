@@ -1,0 +1,15 @@
+dependencies {
+    compile "com.google.guava:guava:$guavaVersion"
+    compile "joda-time:joda-time:$jodaVersion"
+
+    compile "org.junit.jupiter:junit-jupiter-api:5.0.3"
+
+    compile "org.slf4j:slf4j-api:$slf4jVersion"
+    compile project(':docker-compose-rule-core')
+
+    testCompile "org.hamcrest:hamcrest-all:$hamcrestVersion"
+    testCompile "org.hamcrest:hamcrest-core:$hamcrestVersion"
+    testCompile "org.hamcrest:hamcrest-library:$hamcrestVersion"
+    testCompile "org.slf4j:slf4j-log4j12:$slf4jVersion"
+    testCompile project(":docker-compose-rule-core").sourceSets.test.output
+}
