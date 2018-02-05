@@ -224,7 +224,7 @@ public class DefaultDockerCompose implements DockerCompose {
                 while ((line = reader.readLine()) != null) {
                     output.append(line).append(System.lineSeparator());
                 }
-            } catch (IOException e){
+            } catch (IOException e) {
                 throw new RuntimeException(e);
             }
         });

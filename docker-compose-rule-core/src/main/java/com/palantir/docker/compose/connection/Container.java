@@ -164,11 +164,10 @@ public class Container {
     public SuccessOrFailure doesTextAppearInLogs(String text) {
         try {
             String logs = dockerCompose.readLogs(containerName);
-            String failureMessage=String.format("Text '%s' not found in logs of container %s", text, containerName);
+            String failureMessage = String.format("Text '%s' not found in logs of container %s", text, containerName);
             return SuccessOrFailure.fromBoolean(logs.contains(text), failureMessage);
         } catch (Exception e) {
             return SuccessOrFailure.fromException(e);
         }
-
     }
 }
