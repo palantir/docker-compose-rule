@@ -24,6 +24,8 @@ import static org.hamcrest.core.Is.is;
 import com.palantir.docker.compose.DockerComposeRule;
 import java.io.File;
 import java.io.IOException;
+
+import org.joda.time.Duration;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -42,6 +44,8 @@ public class LoggingIntegrationTest {
                 .file("src/test/resources/docker-compose.yaml")
                 .waitingForService("db", toHaveAllPortsOpen())
                 .waitingForService("db2", toHaveAllPortsOpen())
+                .waitingForTextAppearsInLogs("db", "server started", Duration.standardSeconds(30))
+                .waitingForTextAppearsInLogs("db2", "server started")
                 .saveLogsTo(logFolder.getRoot().getAbsolutePath())
                 .build();
     }

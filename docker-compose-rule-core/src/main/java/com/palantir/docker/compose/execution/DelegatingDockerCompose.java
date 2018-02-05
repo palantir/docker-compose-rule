@@ -118,6 +118,11 @@ abstract class DelegatingDockerCompose implements DockerCompose {
     }
 
     @Override
+    public String readLogs(String container) throws IOException, InterruptedException {
+        return dockerCompose.readLogs(container);
+    }
+
+    @Override
     public Ports ports(String service) throws IOException, InterruptedException {
         return dockerCompose.ports(service);
     }

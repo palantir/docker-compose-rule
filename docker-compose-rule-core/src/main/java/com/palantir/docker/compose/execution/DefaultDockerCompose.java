@@ -29,11 +29,17 @@ import com.palantir.docker.compose.connection.ContainerName;
 import com.palantir.docker.compose.connection.ContainerNames;
 import com.palantir.docker.compose.connection.DockerMachine;
 import com.palantir.docker.compose.connection.Ports;
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import org.apache.commons.io.IOUtils;
 import org.joda.time.Duration;
 import org.slf4j.Logger;
@@ -202,6 +208,37 @@ public class DefaultDockerCompose implements DockerCompose {
             return false;
         }
         return true;
+    }
+
+    @Override
+    public String readLogs(String container) throws IOException, InterruptedException {
+        Process process = followLogs(container);
+        StringBuilder output = new StringBuilder();
+        InputStream inputStream = process.getInputStream();
+
+        ScheduledExecutorService executor = Executors.newScheduledThreadPool(2);
+        executor.execute(() -> {
+            try {
+                BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    output.append(line).append(System.lineSeparator());
+                }
+            } catch (IOException e){
+                throw new RuntimeException(e);
+            }
+        });
+
+        executor.schedule(() -> {
+            try {
+                inputStream.close();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }, 1, TimeUnit.SECONDS);
+        executor.shutdown();
+        executor.awaitTermination(10, TimeUnit.SECONDS);
+        return output.toString();
     }
 
     private Process followLogs(String container) throws IOException, InterruptedException {

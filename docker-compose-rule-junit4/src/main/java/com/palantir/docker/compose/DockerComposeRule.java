@@ -237,6 +237,19 @@ public abstract class DockerComposeRule extends ExternalResource {
             return addClusterWait(new ClusterWait(clusterHealthCheck, timeout));
         }
 
+        public Builder waitingForTextAppearsInLogs(String serviceName, String regex) {
+            return waitingForTextAppearsInLogs(serviceName, regex, DEFAULT_TIMEOUT);
+        }
+
+        public Builder waitingForTextAppearsInLogs(String serviceName, String text, ReadableDuration timeout) {
+            ClusterHealthCheck logMatcher = cluster -> {
+                Container container = cluster.container(serviceName);
+                return container.doesTextAppearInLogs(text);
+            };
+            addClusterWait(new ClusterWait(logMatcher, timeout));
+            return this;
+        }
+
         public Builder clusterWaits(Iterable<? extends ClusterWait> elements) {
             return addAllClusterWaits(elements);
         }

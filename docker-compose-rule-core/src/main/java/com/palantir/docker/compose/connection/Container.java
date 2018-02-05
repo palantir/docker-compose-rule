@@ -149,14 +149,26 @@ public class Container {
     }
 
     public SuccessOrFailure areAllPortsOpen() {
-        List<Integer> unavaliablePorts = portMappings.get().stream()
+        List<Integer> unavailablePorts = portMappings.get().stream()
                 .filter(port -> !port.isListeningNow())
                 .map(DockerPort::getInternalPort)
                 .collect(Collectors.toList());
 
-        boolean allPortsOpen = unavaliablePorts.isEmpty();
-        String failureMessage = "The following ports failed to open: " + unavaliablePorts;
+        boolean allPortsOpen = unavailablePorts.isEmpty();
+        String failureMessage = "The following ports failed to open: " + unavailablePorts;
 
         return SuccessOrFailure.fromBoolean(allPortsOpen, failureMessage);
+    }
+
+
+    public SuccessOrFailure doesTextAppearInLogs(String text) {
+        try {
+            String logs = dockerCompose.readLogs(containerName);
+            String failureMessage=String.format("Text '%s' not found in logs of container %s", text, containerName);
+            return SuccessOrFailure.fromBoolean(logs.contains(text), failureMessage);
+        } catch (Exception e) {
+            return SuccessOrFailure.fromException(e);
+        }
+
     }
 }

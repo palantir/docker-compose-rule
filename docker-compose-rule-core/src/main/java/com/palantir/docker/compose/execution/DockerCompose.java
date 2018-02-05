@@ -45,5 +45,6 @@ public interface DockerCompose {
     String config() throws IOException, InterruptedException;
     List<String> services() throws IOException, InterruptedException;
     boolean writeLogs(String container, OutputStream output) throws IOException;
+    String readLogs(String container) throws IOException, InterruptedException;
     Ports ports(String service) throws IOException, InterruptedException;
 }
