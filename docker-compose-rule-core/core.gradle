@@ -1,10 +1,10 @@
 dependencies {
-    compile 'com.jayway.awaitility:awaitility:1.6.5'
     compile "com.github.zafarkhaja:java-semver:$javaSemverVersion"
     compile "com.google.guava:guava:$guavaVersion"
     compile "commons-io:commons-io:2.4"
     compile "joda-time:joda-time:$jodaVersion"
     compile "org.apache.commons:commons-lang3:3.0"
+    compile 'org.awaitility:awaitility:3.0.0'
     compile "org.hamcrest:hamcrest-all:$hamcrestVersion"
     compile "org.hamcrest:hamcrest-core:$hamcrestVersion"
     compile "org.slf4j:slf4j-api:$slf4jVersion"
