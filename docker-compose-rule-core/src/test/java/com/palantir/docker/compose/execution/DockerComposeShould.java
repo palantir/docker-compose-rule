@@ -98,9 +98,11 @@ public class DockerComposeShould {
     @Test
     public void call_docker_compose_with_no_colour_flag_on_logs() throws IOException {
         when(executedProcess.getInputStream()).thenReturn(
+                toInputStream("id"),
                 toInputStream("docker-compose version 1.5.6, build 1ad8866"),
                 toInputStream("logs"));
         ByteArrayOutputStream output = new ByteArrayOutputStream();
+
         compose.writeLogs("db", output);
         verify(executor).execute("logs", "--no-color", "db");
         assertThat(new String(output.toByteArray(), StandardCharsets.UTF_8), is("logs"));
@@ -110,6 +112,7 @@ public class DockerComposeShould {
     public void call_docker_compose_with_the_follow_flag_when_the_version_is_at_least_1_7_0_on_logs()
             throws IOException {
         when(executedProcess.getInputStream()).thenReturn(
+                toInputStream("id"),
                 toInputStream("docker-compose version 1.7.0, build 1ad8866"),
                 toInputStream("logs"));
         ByteArrayOutputStream output = new ByteArrayOutputStream();
