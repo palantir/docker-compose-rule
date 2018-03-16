@@ -28,7 +28,7 @@ import org.junit.Test;
 
 public class HostNetworkedPortsIntegrationTest {
     private static HealthCheck<DockerPort> toBeOpen() {
-        return port -> SuccessOrFailure.fromBoolean(port.isListeningNow(), "" + port + "was not listening");
+        return port -> SuccessOrFailure.fromBoolean(port.isListeningNow(), "Internal port " + port + " was not listening");
     }
 
     @Test public void
