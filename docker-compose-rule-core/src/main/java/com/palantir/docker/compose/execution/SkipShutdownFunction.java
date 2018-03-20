@@ -4,13 +4,13 @@
 
 package com.palantir.docker.compose.execution;
 
-import com.palantir.docker.compose.configuration.ShutdownStrategy;
+import com.palantir.docker.compose.configuration.ShutdownFunction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class SkipShutdownStrategy implements ShutdownStrategy {
+public class SkipShutdownFunction implements ShutdownFunction {
 
-    private static final Logger log = LoggerFactory.getLogger(SkipShutdownStrategy.class);
+    private static final Logger log = LoggerFactory.getLogger(SkipShutdownFunction.class);
 
     @Override
     public void shutdown(DockerCompose dockerCompose, Docker docker) {
@@ -22,6 +22,5 @@ public class SkipShutdownStrategy implements ShutdownStrategy {
                 + "* long running processes and leaking resources.                                          *\n"
                 + "******************************************************************************************");
     }
-
 
 }
