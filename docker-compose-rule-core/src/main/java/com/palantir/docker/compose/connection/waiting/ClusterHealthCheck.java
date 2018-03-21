@@ -25,9 +25,13 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Function;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @FunctionalInterface
 public interface ClusterHealthCheck {
+    Logger log = LoggerFactory.getLogger(ClusterHealthCheck.class);
+
     static ClusterHealthCheck serviceHealthCheck(List<String> containerNames, HealthCheck<List<Container>> delegate) {
         return transformingHealthCheck(cluster -> cluster.containers(containerNames), delegate);
     }
@@ -52,13 +56,18 @@ public interface ClusterHealthCheck {
         return cluster -> {
             Set<String> unhealthyContainers = new LinkedHashSet<>();
             try {
+                log.info("Checking health of containers {}",
+                        cluster.allContainers().stream().map(Container::toString).collect(joining(", ")));
                 for (Container container : cluster.allContainers()) {
+                    log.info("Checking health of container {}", container);
                     State state = container.state();
                     if (state == State.UNHEALTHY) {
+                        log.info("Container unhealthy {}", container);
                         unhealthyContainers.add(container.getContainerName());
                     }
                 }
                 if (!unhealthyContainers.isEmpty()) {
+                    log.warn("Unhealthy containers {}", unhealthyContainers.stream().collect(joining(", ")));
                     return SuccessOrFailure.failure(
                             "The following containers are not healthy: " + unhealthyContainers.stream().collect(joining(", ")));
                 }
