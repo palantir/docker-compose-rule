@@ -36,7 +36,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.palantir.docker.compose.configuration.DockerComposeFiles;
 import com.palantir.docker.compose.configuration.MockDockerEnvironment;
-import com.palantir.docker.compose.configuration.ShutdownStrategy;
+import com.palantir.docker.compose.configuration.ShutdownFunction;
 import com.palantir.docker.compose.connection.Container;
 import com.palantir.docker.compose.connection.DockerMachine;
 import com.palantir.docker.compose.connection.DockerPort;
@@ -110,7 +110,7 @@ public class DockerComposeRuleShould {
 
     @Test
     public void calls_shutdownStrategy_in_after_method() throws IOException, InterruptedException {
-        ShutdownStrategy shutdownStrategy = mock(ShutdownStrategy.class);
+        ShutdownFunction shutdownStrategy = mock(ShutdownFunction.class);
         rule = DockerComposeRule.builder()
                 .dockerCompose(dockerCompose)
                 .files(mockFiles)

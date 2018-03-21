@@ -4,7 +4,7 @@
 
 package com.palantir.docker.compose.execution;
 
-import com.palantir.docker.compose.configuration.ShutdownStrategy;
+import com.palantir.docker.compose.configuration.ShutdownFunction;
 import java.io.IOException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,9 +16,9 @@ import org.slf4j.LoggerFactory;
  * many Docker images simply ignore due to being run by bash as process 1. We don't need a graceful
  * shutdown period anyway since the tests are done and we're destroying the docker image.
  */
-public class KillDownShutdownStrategy implements ShutdownStrategy {
+public class KillDownShutdownFunction implements ShutdownFunction {
 
-    private static final Logger log = LoggerFactory.getLogger(KillDownShutdownStrategy.class);
+    private static final Logger log = LoggerFactory.getLogger(KillDownShutdownFunction.class);
 
     @Override
     public void shutdown(DockerCompose dockerCompose, Docker docker)

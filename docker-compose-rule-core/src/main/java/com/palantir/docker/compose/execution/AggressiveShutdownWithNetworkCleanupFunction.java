@@ -6,6 +6,7 @@ package com.palantir.docker.compose.execution;
 
 import static java.util.stream.Collectors.toList;
 
+import com.palantir.docker.compose.configuration.ShutdownFunction;
 import com.palantir.docker.compose.configuration.ShutdownStrategy;
 import com.palantir.docker.compose.connection.ContainerName;
 import java.io.IOException;
@@ -19,9 +20,9 @@ import org.slf4j.LoggerFactory;
  * @deprecated Use {@link ShutdownStrategy#KILL_DOWN}
  */
 @Deprecated
-public class AggressiveShutdownWithNetworkCleanupStrategy implements ShutdownStrategy {
+public class AggressiveShutdownWithNetworkCleanupFunction implements ShutdownFunction {
 
-    private static final Logger log = LoggerFactory.getLogger(AggressiveShutdownWithNetworkCleanupStrategy.class);
+    private static final Logger log = LoggerFactory.getLogger(AggressiveShutdownWithNetworkCleanupFunction.class);
 
     @Override
     public void shutdown(DockerCompose dockerCompose, Docker docker) throws IOException, InterruptedException {

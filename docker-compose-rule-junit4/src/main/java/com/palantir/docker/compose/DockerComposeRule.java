@@ -8,6 +8,7 @@ import static com.palantir.docker.compose.connection.waiting.ClusterHealthCheck.
 
 import com.palantir.docker.compose.configuration.DockerComposeFiles;
 import com.palantir.docker.compose.configuration.ProjectName;
+import com.palantir.docker.compose.configuration.ShutdownFunction;
 import com.palantir.docker.compose.configuration.ShutdownStrategy;
 import com.palantir.docker.compose.connection.Cluster;
 import com.palantir.docker.compose.connection.Container;
@@ -90,7 +91,7 @@ public abstract class DockerComposeRule extends ExternalResource {
     }
 
     @Value.Default
-    public ShutdownStrategy shutdownStrategy() {
+    public ShutdownFunction shutdownStrategy() {
         return ShutdownStrategy.KILL_DOWN;
     }
 
