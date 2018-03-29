@@ -57,7 +57,7 @@ public class Container {
         try {
             DockerPort port = port(internalPort);
             if (!port.isListeningNow()) {
-                return SuccessOrFailure.failure(internalPort + " is not listening");
+                return SuccessOrFailure.failure("Internal port " + internalPort + " is not listening in container " + containerName);
             }
             return port.isHttpRespondingSuccessfully(urlFunction, andCheckStatus)
                     .mapFailure(failureMessage -> internalPort + " does not have a http response from " + urlFunction.apply(port) + ":\n" + failureMessage);
