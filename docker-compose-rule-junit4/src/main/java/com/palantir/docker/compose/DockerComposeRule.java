@@ -237,8 +237,8 @@ public abstract class DockerComposeRule extends ExternalResource {
             return addClusterWait(new ClusterWait(clusterHealthCheck, timeout));
         }
 
-        public Builder waitingForTextAppearsInLogs(String serviceName, String regex) {
-            return waitingForTextAppearsInLogs(serviceName, regex, DEFAULT_TIMEOUT);
+        public Builder waitingForTextAppearsInLogs(String serviceName, String text) {
+            return waitingForTextAppearsInLogs(serviceName, text, DEFAULT_TIMEOUT);
         }
 
         public Builder waitingForTextAppearsInLogs(String serviceName, String text, ReadableDuration timeout) {
