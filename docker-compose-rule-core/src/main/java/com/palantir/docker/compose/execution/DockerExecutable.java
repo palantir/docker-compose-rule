@@ -66,4 +66,9 @@ public abstract class DockerExecutable implements Executable {
     public static ImmutableDockerExecutable.Builder builder() {
         return ImmutableDockerExecutable.builder();
     }
+
+    public static DockerExecutable of(DockerConfiguration configuration) {
+        return builder().dockerConfiguration(configuration).build();
+    }
+
 }

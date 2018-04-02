@@ -2,14 +2,15 @@ dependencies {
     compile "com.google.guava:guava:$guavaVersion"
     compile "joda-time:joda-time:$jodaVersion"
 
-    compile "org.junit.jupiter:junit-jupiter-api:5.0.3"
+    compile "org.junit.jupiter:junit-jupiter-api:$junitJupiterVersion"
 
     compile "org.slf4j:slf4j-api:$slf4jVersion"
     compile project(':docker-compose-rule-core')
 
-    testCompile "org.hamcrest:hamcrest-all:$hamcrestVersion"
-    testCompile "org.hamcrest:hamcrest-core:$hamcrestVersion"
-    testCompile "org.hamcrest:hamcrest-library:$hamcrestVersion"
+    testCompile "org.junit.platform:junit-platform-engine:$junitPlatformVersion"
+    testCompile "org.junit.platform:junit-platform-launcher:$junitPlatformVersion"
+    testCompile "org.junit.jupiter:junit-jupiter-params:$junitJupiterVersion"
+    testCompile "org.assertj:assertj-core:$assertJVersion"
     testCompile "org.slf4j:slf4j-log4j12:$slf4jVersion"
     testCompile project(":docker-compose-rule-core").sourceSets.test.output
 }
