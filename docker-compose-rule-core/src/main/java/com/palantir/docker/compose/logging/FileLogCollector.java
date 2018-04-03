@@ -86,6 +86,7 @@ public class FileLogCollector implements LogCollector {
             log.warn("docker containers were still running when log collection stopped");
             executor.shutdownNow();
         }
+        executor = null;
     }
 
 }

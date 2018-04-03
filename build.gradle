@@ -1,56 +1,59 @@
 buildscript {
     repositories {
         mavenCentral()
-        jcenter()
         maven {
             url "https://dl.bintray.com/palantir/releases"
         }
         maven {
             url 'https://plugins.gradle.org/m2/'
         }
+        jcenter()
     }
     dependencies {
-        classpath 'com.palantir:gradle-baseline-java:0.9.0'
-        classpath "com.jfrog.bintray.gradle:gradle-bintray-plugin:${bintrayPlugin}"
-        classpath "org.jfrog.buildinfo:build-info-extractor-gradle:4.0.0"
-        classpath 'gradle.plugin.com.palantir.configurationresolver:gradle-configuration-resolver-plugin:0.1.0'
-        classpath 'gradle.plugin.org.inferred:gradle-processors:1.2.2'
+        classpath 'com.palantir.baseline:gradle-baseline-java:0.16.0'
+        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.7.3'
+        classpath "org.jfrog.buildinfo:build-info-extractor-gradle:4.5.1"
+        classpath 'gradle.plugin.org.inferred:gradle-processors:1.2.15'
     }
 }
 
-repositories {
-    mavenCentral()
-    jcenter()
+plugins {
+    id 'com.palantir.git-version' version '0.8.0'
+    id 'nebula.lint' version '7.9.5'
+    id 'com.palantir.configuration-resolver' version '0.2.0'
 }
 
 apply plugin: 'com.palantir.baseline-config'
-apply from: "${rootDir}/gradle/idea.gradle"
+apply plugin: 'com.palantir.baseline-idea'
 
-apply plugin: 'com.palantir.configuration-resolver'
+allprojects {
+    apply plugin: 'com.palantir.configuration-resolver'
+    apply plugin: 'com.palantir.git-version'
+
+    repositories {
+        mavenCentral()
+    }
+
+    group 'com.palantir.docker.compose'
+
+    version gitVersion()
+}
 
 subprojects {
-    apply from: "${rootDir}/gradle/idea.gradle"
     apply plugin: 'java'
-
     apply plugin: 'com.palantir.baseline-checkstyle'
     apply plugin: 'com.palantir.baseline-eclipse'
-    apply plugin: 'com.palantir.baseline-findbugs'
     apply plugin: 'com.palantir.baseline-idea'
-    apply from: "${rootDir}/gradle/publish.gradle"
-
     apply plugin: 'org.inferred.processors'
     apply plugin: 'com.palantir.configuration-resolver'
+    apply from: "${rootDir}/gradle/publish.gradle"
 
     sourceCompatibility = 1.8
     targetCompatibility = 1.8
 
-    repositories {
-        mavenCentral()
-        jcenter()
+    dependencies {
+        processor 'org.immutables:value:2.5.0'
     }
-
-    group = 'com.palantir.docker.compose'
-    version "git describe --tags --dirty".execute().text.trim()
 
     configurations.all {
         exclude module: 'slf4j-log4j12'
@@ -58,5 +61,16 @@ subprojects {
                 "org.slf4j:slf4j-api:$slf4jVersion",
                 "org.slf4j:slf4j-log4j12:$slf4jVersion",
         )
+    }
+
+    // Instead of copying files out of `$buildDir/test-results/` on CircleCI, we can
+    // just write them into the right place straight away.
+    if (System.env.CIRCLE_TEST_REPORTS) {
+        test.reports.junitXml.destination = file(System.env.CIRCLE_TEST_REPORTS)
+    }
+
+    if (!System.env.CI) {
+        apply plugin: 'nebula.lint'
+        gradleLint.rules = ['unused-dependency', 'unused-exclude']
     }
 }
