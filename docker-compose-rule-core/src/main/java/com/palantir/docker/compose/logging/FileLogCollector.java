@@ -61,6 +61,13 @@ public class FileLogCollector implements LogCollector {
         if (serviceNames.size() == 0) {
             return;
         }
+
+        List<String> servicesToStart = dockerCompose.servicesToStart();
+        if (!servicesToStart.isEmpty()) {
+            // Services to start up are a subset of all services.
+            serviceNames = servicesToStart;
+        }
+
         executor = Executors.newFixedThreadPool(serviceNames.size());
         serviceNames.stream().forEachOrdered(service -> this.collectLogs(service, dockerCompose));
     }

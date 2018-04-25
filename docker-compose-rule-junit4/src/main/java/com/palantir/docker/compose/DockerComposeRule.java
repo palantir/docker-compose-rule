@@ -68,6 +68,15 @@ public abstract class DockerComposeRule extends ExternalResource {
         return ProjectName.random();
     }
 
+    /**
+     * The names of services to start, via {@code docker-compose up -d SERVICE...}.  If empty (the
+     * default), all services are started.  This can be a subset of the services defined in
+     * the Docker Compose files.
+     *
+     * @return the names of services to start
+     */
+    public abstract List<String> servicesToStart();
+
     @Value.Default
     public DockerComposeExecutable dockerComposeExecutable() {
         return DockerComposeExecutable.builder()
@@ -96,7 +105,7 @@ public abstract class DockerComposeRule extends ExternalResource {
 
     @Value.Default
     public DockerCompose dockerCompose() {
-        DockerCompose dockerCompose = new DefaultDockerCompose(dockerComposeExecutable(), machine());
+        DockerCompose dockerCompose = new DefaultDockerCompose(dockerComposeExecutable(), machine(), servicesToStart());
         return new RetryingDockerCompose(retryAttempts(), dockerCompose);
     }
 

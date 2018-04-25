@@ -44,6 +44,7 @@ public interface DockerCompose {
     Optional<String> id(Container container) throws IOException, InterruptedException;
     String config() throws IOException, InterruptedException;
     List<String> services() throws IOException, InterruptedException;
+    List<String> servicesToStart();
     boolean writeLogs(String container, OutputStream output) throws IOException;
     Ports ports(String service) throws IOException, InterruptedException;
 }

@@ -22,6 +22,7 @@ import static org.joda.time.Duration.standardMinutes;
 import com.github.zafarkhaja.semver.Version;
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
 import com.palantir.docker.compose.configuration.DockerComposeFiles;
 import com.palantir.docker.compose.configuration.ProjectName;
 import com.palantir.docker.compose.connection.Container;
@@ -32,6 +33,7 @@ import com.palantir.docker.compose.connection.Ports;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import org.apache.commons.io.IOUtils;
@@ -48,20 +50,33 @@ public class DefaultDockerCompose implements DockerCompose {
     private final Command command;
     private final DockerMachine dockerMachine;
     private final DockerComposeExecutable rawExecutable;
-
+    private final ImmutableList<String> servicesToStart;
 
     public DefaultDockerCompose(DockerComposeFiles dockerComposeFiles, DockerMachine dockerMachine, ProjectName projectName) {
         this(DockerComposeExecutable.builder()
             .dockerComposeFiles(dockerComposeFiles)
             .dockerConfiguration(dockerMachine)
             .projectName(projectName)
-            .build(), dockerMachine);
+            .build(), dockerMachine, Collections.emptyList());
+    }
+
+    public DefaultDockerCompose(DockerComposeFiles dockerComposeFiles, DockerMachine dockerMachine, ProjectName projectName, List<String> servicesToStart) {
+        this(DockerComposeExecutable.builder()
+            .dockerComposeFiles(dockerComposeFiles)
+            .dockerConfiguration(dockerMachine)
+            .projectName(projectName)
+            .build(), dockerMachine, servicesToStart);
     }
 
     public DefaultDockerCompose(DockerComposeExecutable rawExecutable, DockerMachine dockerMachine) {
+        this(rawExecutable, dockerMachine, Collections.emptyList());
+    }
+
+    public DefaultDockerCompose(DockerComposeExecutable rawExecutable, DockerMachine dockerMachine, List<String> servicesToStart) {
         this.rawExecutable = rawExecutable;
         this.command = new Command(rawExecutable, log::trace);
         this.dockerMachine = dockerMachine;
+        this.servicesToStart = ImmutableList.copyOf(servicesToStart);
     }
 
     @Override
@@ -76,7 +91,9 @@ public class DefaultDockerCompose implements DockerCompose {
 
     @Override
     public void up() throws IOException, InterruptedException {
-        command.execute(Command.throwingOnError(), "up", "-d");
+        List<String> commands = Lists.newArrayList("up", "-d");
+        commands.addAll(servicesToStart);
+        command.execute(Command.throwingOnError(), commands.toArray(new String[0]));
     }
 
     @Override
@@ -186,6 +203,18 @@ public class DefaultDockerCompose implements DockerCompose {
     public List<String> services() throws IOException, InterruptedException {
         String servicesOutput = command.execute(Command.throwingOnError(), "config", "--services");
         return Arrays.asList(servicesOutput.split("(\r|\n)+"));
+    }
+
+    /**
+     * The names of services to start, via {@code docker-compose up -d SERVICE...}.  If empty (the
+     * default), all services are started.  This can be a subset of the services defined in
+     * the Docker Compose files.
+     *
+     * @return the names of services to start
+     */
+    @Override
+    public List<String> servicesToStart() {
+        return servicesToStart;
     }
 
     /**

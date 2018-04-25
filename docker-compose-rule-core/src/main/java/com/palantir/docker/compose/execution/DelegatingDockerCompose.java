@@ -113,6 +113,11 @@ abstract class DelegatingDockerCompose implements DockerCompose {
     }
 
     @Override
+    public List<String> servicesToStart() {
+        return dockerCompose.servicesToStart();
+    }
+
+    @Override
     public boolean writeLogs(String container, OutputStream output) throws IOException {
         return dockerCompose.writeLogs(container, output);
     }
