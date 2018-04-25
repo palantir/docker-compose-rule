@@ -20,19 +20,23 @@ import static com.palantir.docker.compose.matchers.IOMatchers.fileWithName;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.arrayContaining;
 import static org.hamcrest.Matchers.arrayContainingInAnyOrder;
+import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.emptyArray;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
 import com.palantir.docker.compose.execution.DockerCompose;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import org.apache.commons.io.IOUtils;
@@ -196,6 +200,29 @@ public class FileLogCollectorShould {
         exception.expect(RuntimeException.class);
         exception.expectMessage("Cannot start collecting the same logs twice");
         logCollector.startCollecting(compose);
+    }
+
+    @Test
+    public void collect_logs_for_partial_services() throws IOException, InterruptedException {
+        when(compose.services()).thenReturn(ImmutableList.of("db", "db2"));
+        when(compose.servicesToStart()).thenReturn(ImmutableList.of("db"));
+
+        List<Exception> exceptions = Lists.newArrayList();
+        CountDownLatch latch = new CountDownLatch(1);
+        when(compose.writeLogs(anyString(), any(OutputStream.class))).thenAnswer((args) -> {
+            String container = (String) args.getArguments()[0];
+            if (!"db".equals(container)) {
+                exceptions.add(new IOException("Logs shouldn't be written for container: " + container));
+            } else {
+                latch.countDown();
+            }
+            return true;
+        });
+
+        logCollector.startCollecting(compose);
+        assertThat(latch.await(1, TimeUnit.SECONDS), is(true));
+        logCollector.stopCollecting();
+        assertThat(exceptions, is(empty()));
     }
 
     private static File cannotBeCreatedDirectory() {
