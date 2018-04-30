@@ -16,6 +16,7 @@
 package com.palantir.docker.compose.connection.waiting;
 
 import java.util.Optional;
+import java.util.function.Function;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.immutables.value.Value;
 
@@ -29,6 +30,14 @@ public abstract class SuccessOrFailure {
         }
     }
 
+    public SuccessOrFailure mapFailure(Function<String, String> mapper) {
+        if (this.succeeded()) {
+            return this;
+        } else {
+            return failure(mapper.apply(failureMessage()));
+        }
+    }
+
     @Value.Parameter protected abstract Optional<String> optionalFailureMessage();
 
     public static SuccessOrFailure success() {
@@ -37,6 +46,10 @@ public abstract class SuccessOrFailure {
 
     public static SuccessOrFailure failure(String message) {
         return ImmutableSuccessOrFailure.of(Optional.of(message));
+    }
+
+    public static SuccessOrFailure failureWithCondensedException(String message, Exception exception) {
+        return failure(message + ":\n" + Exceptions.condensedStacktraceFor(exception));
     }
 
     public static SuccessOrFailure fromBoolean(boolean succeeded, String possibleFailureMessage) {
