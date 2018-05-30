@@ -45,6 +45,7 @@ public class DefaultDockerCompose implements DockerCompose {
 
     public static final Version VERSION_1_7_0 = Version.valueOf("1.7.0");
     private static final Duration COMMAND_TIMEOUT = standardMinutes(2);
+    private static final Duration LOG_WAIT_TIMEOUT = standardMinutes(30);
     private static final Logger log = LoggerFactory.getLogger(DefaultDockerCompose.class);
 
     private final Command command;
@@ -195,7 +196,7 @@ public class DefaultDockerCompose implements DockerCompose {
         try {
             Awaitility.await()
                     .pollInterval(50, TimeUnit.MILLISECONDS)
-                    .forever()
+                    .atMost(LOG_WAIT_TIMEOUT.getMillis(), TimeUnit.MILLISECONDS)
                     .until(() -> exists(container));
             Process executedProcess = followLogs(container);
             IOUtils.copy(executedProcess.getInputStream(), output);
