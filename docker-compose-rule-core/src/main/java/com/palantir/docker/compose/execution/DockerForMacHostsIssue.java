@@ -9,6 +9,7 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 import com.google.common.io.Files;
 import java.io.File;
 import java.io.IOException;
+import java.util.regex.Pattern;
 
 /**
  * Check whether Mac OS X users have pointed localunixsocket to localhost.
@@ -20,6 +21,8 @@ import java.io.IOException;
 public class DockerForMacHostsIssue {
 
     private static final String REDIRECT_LINE = "127.0.0.1 localunixsocket\n";
+    private static final Pattern REDIRECT_LINE_PATTERN =
+            Pattern.compile("^127\\.0\\.0\\.1.*\\s+localunixsocket(\\s.*)?$", Pattern.MULTILINE);
     private static final String WARNING_MESSAGE = "\n\n **** WARNING: Your tests may be slow ****\n"
             + "Please add the following line to /etc/hosts:\n    "
             + REDIRECT_LINE
@@ -41,7 +44,9 @@ public class DockerForMacHostsIssue {
 
     private static boolean localunixsocketRedirectedInEtcHosts() {
         try {
-            return Files.toString(new File("/etc/hosts"), UTF_8).contains(REDIRECT_LINE);
+            return REDIRECT_LINE_PATTERN
+                    .matcher(Files.toString(new File("/etc/hosts"), UTF_8))
+                    .find();
         } catch (IOException e) {
             return true;  // Better to be silent than issue false warnings
         }
