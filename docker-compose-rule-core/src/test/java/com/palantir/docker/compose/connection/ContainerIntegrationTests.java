@@ -9,6 +9,7 @@ import static com.palantir.docker.compose.execution.DockerComposeExecArgument.ar
 import static com.palantir.docker.compose.execution.DockerComposeExecOption.noOptions;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assume.assumeThat;
 
 import com.github.zafarkhaja.semver.Version;
@@ -32,6 +33,39 @@ public class ContainerIntegrationTests {
     private final Docker docker = new Docker(DockerExecutable.builder()
             .dockerConfiguration(dockerMachine)
             .build());
+
+    @Test
+    public void testExitCode() throws IOException, InterruptedException {
+        // given
+        DockerCompose dockerCompose = new DefaultDockerCompose(
+            DockerComposeFiles.from("src/test/resources/no-healthcheck.yaml"),
+            dockerMachine,
+            ProjectName.random());
+
+        // when
+        Container container = new Container("noHealthcheck", docker, dockerCompose);
+
+        // then
+        assertFalse(container.exitCode().isPresent());
+
+        // when
+        container.up();
+
+        // then
+        assertEquals(0, container.exitCode().getAsInt());
+
+        // when
+        container.kill();
+
+        // then
+        assertEquals(137, container.exitCode().getAsInt());
+
+        // when
+        container.up();
+
+        // then
+        assertEquals(0, container.exitCode().getAsInt());
+    }
 
     @Test
     public void testStateChanges_withoutHealthCheck() throws IOException, InterruptedException {

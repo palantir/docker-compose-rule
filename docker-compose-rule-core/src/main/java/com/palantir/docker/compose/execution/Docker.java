@@ -45,6 +45,7 @@ public class Docker {
                     + "{{else}}UNHEALTHY{{end}}"
                     + "{{else}}HEALTHY{{end}}";
     private static final String HEALTH_STATUS_FORMAT_WINDOWS = HEALTH_STATUS_FORMAT.replaceAll("\"", "`\"");
+    private static final String EXIT_CODE_FORMAT = "--format='{{.State.ExitCode}}'";
 
     public static Version version() throws IOException, InterruptedException {
         return new Docker(DockerExecutable.builder().dockerConfiguration(DockerMachine.localMachine().build()).build())
@@ -70,6 +71,11 @@ public class Docker {
         String formatString = SystemUtils.IS_OS_WINDOWS ? HEALTH_STATUS_FORMAT_WINDOWS : HEALTH_STATUS_FORMAT;
         String stateString = command.execute(Command.throwingOnError(), "inspect", formatString, containerId);
         return State.valueOf(stateString);
+    }
+
+    public int exitCode(String containerId) throws IOException, InterruptedException {
+        String exitCodeSingleQuoted = command.execute(Command.throwingOnError(), "inspect", EXIT_CODE_FORMAT, containerId);
+        return Integer.parseInt(exitCodeSingleQuoted.replaceAll("'", ""));
     }
 
     public void rm(Collection<String> containerNames) throws IOException, InterruptedException {

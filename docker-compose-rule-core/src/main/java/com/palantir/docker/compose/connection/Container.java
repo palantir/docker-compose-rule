@@ -24,6 +24,7 @@ import com.palantir.docker.compose.execution.DockerCompose;
 import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
+import java.util.OptionalInt;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -34,6 +35,7 @@ public class Container {
     private final DockerCompose dockerCompose;
 
     private final Supplier<Ports> portMappings = Suppliers.memoize(this::getDockerPorts);
+    private String id;
 
     public Container(String containerName, Docker docker, DockerCompose dockerCompose) {
         this.containerName = containerName;
@@ -103,15 +105,25 @@ public class Container {
     }
 
     public State state() throws IOException, InterruptedException {
-        String id = dockerCompose.id(this).orElse(null);
-        if (id == null) {
+        String dockerComposeId = dockerCompose.id(this).orElse(null);
+        if (dockerComposeId == null) {
             return State.DOWN;
         }
-        return docker.state(id);
+        assert dockerComposeId.equals(id);
+        return docker.state(dockerComposeId);
+    }
+
+    public OptionalInt exitCode() throws IOException, InterruptedException {
+        if (this.id == null) {
+            return OptionalInt.empty();
+        }
+
+        return OptionalInt.of(docker.exitCode(this.id));
     }
 
     public void up() throws IOException, InterruptedException {
         dockerCompose.up(this);
+        id = dockerCompose.id(this).orElse(null);
     }
 
     public Ports ports() {
