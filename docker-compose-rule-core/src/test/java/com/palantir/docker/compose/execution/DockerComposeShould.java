@@ -23,6 +23,7 @@ import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.core.Is.is;
 import static org.mockito.Matchers.anyVararg;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -35,6 +36,7 @@ import com.palantir.docker.compose.connection.ImmutableContainerName;
 import com.palantir.docker.compose.connection.Ports;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import org.junit.Before;
@@ -98,10 +100,35 @@ public class DockerComposeShould {
     @Test
     public void call_docker_compose_with_no_colour_flag_on_logs() throws IOException {
         when(executedProcess.getInputStream()).thenReturn(
+                toInputStream("id"),
                 toInputStream("docker-compose version 1.5.6, build 1ad8866"),
                 toInputStream("logs"));
         ByteArrayOutputStream output = new ByteArrayOutputStream();
+
         compose.writeLogs("db", output);
+        verify(executor).execute("logs", "--no-color", "db");
+        assertThat(new String(output.toByteArray(), StandardCharsets.UTF_8), is("logs"));
+    }
+
+    @Test
+    public void call_docker_compose_with_no_container_on_logs() throws IOException {
+        reset(executor);
+        final Process mockIdProcess = mock(Process.class);
+        when(mockIdProcess.exitValue()).thenReturn(0);
+        final InputStream emptyStream = toInputStream("");
+        when(mockIdProcess.getInputStream()).thenReturn(emptyStream, emptyStream, emptyStream, toInputStream("id"));
+
+        final Process mockVersionProcess = mock(Process.class);
+        when(mockVersionProcess.exitValue()).thenReturn(0);
+        when(mockVersionProcess.getInputStream()).thenReturn(toInputStream("docker-compose version 1.5.6, build 1ad8866"));
+        when(executor.execute("ps", "-q", "db")).thenReturn(mockIdProcess);
+        when(executor.execute("-v")).thenReturn(mockVersionProcess);
+        when(executor.execute("logs", "--no-color", "db")).thenReturn(executedProcess);
+        when(executedProcess.getInputStream()).thenReturn(toInputStream("logs"));
+        ByteArrayOutputStream output = new ByteArrayOutputStream();
+
+        compose.writeLogs("db", output);
+        verify(executor, times(4)).execute("ps", "-q", "db");
         verify(executor).execute("logs", "--no-color", "db");
         assertThat(new String(output.toByteArray(), StandardCharsets.UTF_8), is("logs"));
     }
@@ -110,6 +137,7 @@ public class DockerComposeShould {
     public void call_docker_compose_with_the_follow_flag_when_the_version_is_at_least_1_7_0_on_logs()
             throws IOException {
         when(executedProcess.getInputStream()).thenReturn(
+                toInputStream("id"),
                 toInputStream("docker-compose version 1.7.0, build 1ad8866"),
                 toInputStream("logs"));
         ByteArrayOutputStream output = new ByteArrayOutputStream();
