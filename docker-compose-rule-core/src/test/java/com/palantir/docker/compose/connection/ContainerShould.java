@@ -20,6 +20,7 @@ import static com.palantir.docker.compose.connection.waiting.SuccessOrFailureMat
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.both;
 import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.not;
 import static org.hamcrest.core.Is.is;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -28,6 +29,7 @@ import static org.mockito.Mockito.verify;
 import com.palantir.docker.compose.configuration.MockDockerEnvironment;
 import com.palantir.docker.compose.execution.Docker;
 import com.palantir.docker.compose.execution.DockerCompose;
+import java.io.IOException;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -64,6 +66,24 @@ public class ContainerShould {
         container.port(8080);
         container.port(8081);
         verify(dockerCompose, times(1)).ports("service");
+    }
+
+    @Test
+    public void return_updated_external_port_on_restart() throws IOException, InterruptedException {
+        int internalPort = 5432;
+        env.ephemeralPort("service", IP, internalPort);
+
+        DockerPort port = container.port(internalPort);
+        int prePort = port.getExternalPort();
+
+        DockerPort samePort = container.port(internalPort);
+        assertThat(prePort, is(samePort.getExternalPort()));
+
+        container.stop();
+        container.start();
+
+        DockerPort updatedPort = container.port(internalPort);
+        assertThat(prePort, not(is(updatedPort.getExternalPort())));
     }
 
     @Test
