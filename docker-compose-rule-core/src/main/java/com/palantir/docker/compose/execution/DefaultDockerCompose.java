@@ -198,7 +198,7 @@ public class DefaultDockerCompose implements DockerCompose {
                     .pollInterval(50, TimeUnit.MILLISECONDS)
                     .atMost(LOG_WAIT_TIMEOUT.getMillis(), TimeUnit.MILLISECONDS)
                     .until(() -> exists(container));
-            Process executedProcess = followLogs(container);
+            Process executedProcess = logs(container);
             IOUtils.copy(executedProcess.getInputStream(), output);
             executedProcess.waitFor(COMMAND_TIMEOUT.getMillis(), MILLISECONDS);
         } catch (InterruptedException e) {
@@ -219,11 +219,7 @@ public class DefaultDockerCompose implements DockerCompose {
         return Optional.of(id);
     }
 
-    private Process followLogs(String container) throws IOException, InterruptedException {
-        if (version().greaterThanOrEqualTo(VERSION_1_7_0)) {
-            return rawExecutable.execute("logs", "--no-color", "--follow", container);
-        }
-
+    private Process logs(String container) throws IOException {
         return rawExecutable.execute("logs", "--no-color", container);
     }
 
