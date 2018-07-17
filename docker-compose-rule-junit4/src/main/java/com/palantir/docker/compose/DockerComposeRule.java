@@ -148,19 +148,20 @@ public abstract class DockerComposeRule extends ExternalResource {
         }
         upDockerCompose.up();
 
-        logCollector().startCollecting(dockerCompose());
         log.debug("Waiting for services");
         new ClusterWait(ClusterHealthCheck.nativeHealthChecks(), nativeServiceHealthCheckTimeout())
                 .waitUntilReady(containers());
         clusterWaits().forEach(clusterWait -> clusterWait.waitUntilReady(containers()));
         log.debug("docker-compose cluster started");
+
+        logCollector().startCollecting(dockerCompose());
     }
 
     @Override
     public void after() {
         try {
-            shutdownStrategy().shutdown(this.dockerCompose(), this.docker());
             logCollector().stopCollecting();
+            shutdownStrategy().shutdown(this.dockerCompose(), this.docker());
         } catch (IOException | InterruptedException e) {
             throw new RuntimeException("Error cleaning up docker compose cluster", e);
         }
