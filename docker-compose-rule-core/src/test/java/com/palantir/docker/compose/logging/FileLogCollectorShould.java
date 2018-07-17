@@ -22,7 +22,6 @@ import static org.hamcrest.Matchers.arrayContaining;
 import static org.hamcrest.Matchers.arrayContainingInAnyOrder;
 import static org.hamcrest.Matchers.emptyArray;
 import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
@@ -94,8 +93,7 @@ public class FileLogCollectorShould {
     @Test
     public void not_collect_any_logs_when_no_containers_are_running() throws IOException, InterruptedException {
         when(compose.services()).thenReturn(ImmutableList.of());
-        logCollector.startCollecting(compose);
-        logCollector.stopCollecting();
+        logCollector.collectLogs(compose);
         assertThat(logDirectory.list(), is(emptyArray()));
     }
 
@@ -108,55 +106,9 @@ public class FileLogCollectorShould {
             IOUtils.write("log", outputStream);
             return false;
         });
-        logCollector.startCollecting(compose);
-        logCollector.stopCollecting();
+        logCollector.collectLogs(compose);
         assertThat(logDirectory.listFiles(), arrayContaining(fileWithName("db.log")));
         assertThat(new File(logDirectory, "db.log"), is(fileContainingString("log")));
-    }
-
-    @Test
-    public void collect_logs_when_one_container_is_running_and_does_not_terminate_until_after_start_collecting_is_run()
-            throws Exception {
-        when(compose.services()).thenReturn(ImmutableList.of("db"));
-        CountDownLatch latch = new CountDownLatch(1);
-        when(compose.writeLogs(eq("db"), any(OutputStream.class))).thenAnswer((args) -> {
-            if (!latch.await(1, TimeUnit.SECONDS)) {
-                throw new RuntimeException("Latch was not triggered");
-            }
-            OutputStream outputStream = (OutputStream) args.getArguments()[1];
-            IOUtils.write("log", outputStream);
-            return false;
-        });
-        logCollector.startCollecting(compose);
-        latch.countDown();
-        logCollector.stopCollecting();
-        assertThat(logDirectory.listFiles(), arrayContaining(fileWithName("db.log")));
-        assertThat(new File(logDirectory, "db.log"), is(fileContainingString("log")));
-    }
-
-    @Test
-    public void collect_logs_when_one_container_is_running_and_does_not_terminate()
-            throws IOException, InterruptedException {
-        when(compose.services()).thenReturn(ImmutableList.of("db"));
-        CountDownLatch latch = new CountDownLatch(1);
-        when(compose.writeLogs(eq("db"), any(OutputStream.class))).thenAnswer((args) -> {
-            OutputStream outputStream = (OutputStream) args.getArguments()[1];
-            IOUtils.write("log", outputStream);
-            try {
-                latch.await(1, TimeUnit.SECONDS);
-                fail("Latch was not triggered");
-            } catch (InterruptedException e) {
-                // Success
-                return true;
-            }
-            fail("Latch was not triggered");
-            return false;
-        });
-        logCollector.startCollecting(compose);
-        logCollector.stopCollecting();
-        assertThat(logDirectory.listFiles(), arrayContaining(fileWithName("db.log")));
-        assertThat(new File(logDirectory, "db.log"), is(fileContainingString("log")));
-        latch.countDown();
     }
 
     @Test
@@ -177,25 +129,13 @@ public class FileLogCollectorShould {
             return true;
         });
 
-        logCollector.startCollecting(compose);
+        logCollector.collectLogs(compose);
         assertThat(dbLatch.await(1, TimeUnit.SECONDS), is(true));
         assertThat(db2Latch.await(1, TimeUnit.SECONDS), is(true));
 
         assertThat(logDirectory.listFiles(), arrayContainingInAnyOrder(fileWithName("db.log"), fileWithName("db2.log")));
         assertThat(new File(logDirectory, "db.log"), is(fileContainingString("log")));
         assertThat(new File(logDirectory, "db2.log"), is(fileContainingString("other")));
-
-        logCollector.stopCollecting();
-    }
-
-    @Test
-    public void throw_exception_when_trying_to_start_a_started_collector_a_second_time()
-            throws IOException, InterruptedException {
-        when(compose.services()).thenReturn(ImmutableList.of("db"));
-        logCollector.startCollecting(compose);
-        exception.expect(RuntimeException.class);
-        exception.expectMessage("Cannot start collecting the same logs twice");
-        logCollector.startCollecting(compose);
     }
 
     private static File cannotBeCreatedDirectory() {

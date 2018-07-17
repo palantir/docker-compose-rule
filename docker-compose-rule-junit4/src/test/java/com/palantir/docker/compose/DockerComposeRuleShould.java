@@ -250,7 +250,7 @@ public class DockerComposeRuleShould {
     }
 
     @Test
-    public void not_shut_down_when_skipShutdown_is_true() throws InterruptedException {
+    public void not_shut_down_when_skipShutdown_is_true() throws IOException, InterruptedException {
         DockerComposeRule.builder()
                 .dockerCompose(dockerCompose)
                 .files(mockFiles)
@@ -260,7 +260,7 @@ public class DockerComposeRuleShould {
                 .build()
                 .after();
         verifyNoMoreInteractions(dockerCompose);
-        verify(logCollector, times(1)).stopCollecting();
+        verify(logCollector, times(1)).collectLogs(dockerCompose);
     }
 
     @Test
