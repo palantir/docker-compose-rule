@@ -15,7 +15,6 @@
  */
 package com.palantir.docker.compose.execution;
 
-import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static org.apache.commons.lang3.Validate.validState;
 import static org.joda.time.Duration.standardMinutes;
 
@@ -44,7 +43,6 @@ import org.slf4j.LoggerFactory;
 public class DefaultDockerCompose implements DockerCompose {
 
     public static final Version VERSION_1_7_0 = Version.valueOf("1.7.0");
-    private static final Duration COMMAND_TIMEOUT = standardMinutes(2);
     private static final Duration LOG_WAIT_TIMEOUT = standardMinutes(30);
     private static final Logger log = LoggerFactory.getLogger(DefaultDockerCompose.class);
 
@@ -85,6 +83,12 @@ public class DefaultDockerCompose implements DockerCompose {
     @Override
     public void down() throws IOException, InterruptedException {
         command.execute(swallowingDownCommandDoesNotExist(), "down", "--volumes");
+    }
+
+    @Override
+    public void stop() throws IOException, InterruptedException {
+        command.execute(Command.throwingOnError(), "stop");
+
     }
 
     @Override
@@ -200,7 +204,7 @@ public class DefaultDockerCompose implements DockerCompose {
                     .until(() -> exists(container));
             Process executedProcess = followLogs(container);
             IOUtils.copy(executedProcess.getInputStream(), output);
-            executedProcess.waitFor(COMMAND_TIMEOUT.getMillis(), MILLISECONDS);
+            executedProcess.waitFor();
         } catch (InterruptedException e) {
             return false;
         }

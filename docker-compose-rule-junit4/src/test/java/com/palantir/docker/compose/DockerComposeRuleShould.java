@@ -64,7 +64,9 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
+import org.mockito.InOrder;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -118,7 +120,9 @@ public class DockerComposeRuleShould {
                 .build();
 
         rule.after();
-        verify(shutdownStrategy).shutdown(dockerCompose, rule.docker());
+        InOrder inOrder = Mockito.inOrder(shutdownStrategy);
+        inOrder.verify(shutdownStrategy).stop(dockerCompose);
+        inOrder.verify(shutdownStrategy).shutdown(dockerCompose);
     }
 
     @Test

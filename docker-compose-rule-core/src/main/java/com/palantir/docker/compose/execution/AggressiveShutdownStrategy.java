@@ -25,16 +25,22 @@ public class AggressiveShutdownStrategy implements ShutdownStrategy {
     private static final Logger log = LoggerFactory.getLogger(AggressiveShutdownStrategy.class);
 
     @Override
-    public void shutdown(DockerCompose dockerCompose, Docker docker) throws IOException, InterruptedException {
+    public void stop(DockerCompose dockerCompose) throws IOException, InterruptedException {
+        log.debug("Killing docker-compose cluster");
+        dockerCompose.kill();
+    }
+
+    @Override
+    public void shutdown(DockerCompose dockerCompose) throws IOException, InterruptedException {
         List<ContainerName> runningContainers = dockerCompose.ps();
 
         log.info("Shutting down {}", runningContainers.stream().map(ContainerName::semanticName).collect(toList()));
-        if (removeContainersCatchingErrors(docker, runningContainers)) {
+        if (removeContainersCatchingErrors(dockerCompose)) {
             return;
         }
 
         log.debug("First shutdown attempted failed due to btrfs volume error... retrying");
-        if (removeContainersCatchingErrors(docker, runningContainers)) {
+        if (removeContainersCatchingErrors(dockerCompose)) {
             return;
         }
 
@@ -42,21 +48,17 @@ public class AggressiveShutdownStrategy implements ShutdownStrategy {
                 + "see https://circleci.com/docs/docker-btrfs-error/ for more info.");
     }
 
-    private static boolean removeContainersCatchingErrors(Docker docker, List<ContainerName> runningContainers) throws IOException, InterruptedException {
+    private static boolean removeContainersCatchingErrors(DockerCompose dockerCompose) throws IOException, InterruptedException {
         try {
-            removeContainers(docker, runningContainers);
+            removeContainers(dockerCompose);
             return true;
         } catch (DockerExecutionException exception) {
             return false;
         }
     }
 
-    private static void removeContainers(Docker docker, List<ContainerName> running) throws IOException, InterruptedException {
-        List<String> rawContainerNames = running.stream()
-                .map(ContainerName::rawName)
-                .collect(toList());
-
-        docker.rm(rawContainerNames);
+    private static void removeContainers(DockerCompose dockerCompose) throws IOException, InterruptedException {
+        dockerCompose.rm();
         log.debug("Finished shutdown");
     }
 

@@ -21,12 +21,15 @@ public class KillDownShutdownStrategy implements ShutdownStrategy {
     private static final Logger log = LoggerFactory.getLogger(KillDownShutdownStrategy.class);
 
     @Override
-    public void shutdown(DockerCompose dockerCompose, Docker docker)
-            throws IOException, InterruptedException {
+    public void stop(DockerCompose dockerCompose) throws IOException, InterruptedException {
         log.debug("Killing docker-compose cluster");
         dockerCompose.kill();
+    }
+
+    @Override
+    public void shutdown(DockerCompose dockerCompose)
+            throws IOException, InterruptedException {
         log.debug("Downing docker-compose cluster");
         dockerCompose.down();
-        log.debug("docker-compose cluster killed");
     }
 }

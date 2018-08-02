@@ -6,7 +6,6 @@ package com.palantir.docker.compose.configuration;
 
 import com.palantir.docker.compose.execution.AggressiveShutdownStrategy;
 import com.palantir.docker.compose.execution.AggressiveShutdownWithNetworkCleanupStrategy;
-import com.palantir.docker.compose.execution.Docker;
 import com.palantir.docker.compose.execution.DockerCompose;
 import com.palantir.docker.compose.execution.GracefulShutdownStrategy;
 import com.palantir.docker.compose.execution.KillDownShutdownStrategy;
@@ -34,7 +33,7 @@ public interface ShutdownStrategy {
     @Deprecated
     ShutdownStrategy AGGRESSIVE_WITH_NETWORK_CLEANUP = new AggressiveShutdownWithNetworkCleanupStrategy();
     /**
-     * Call docker-compose down, kill, then rm. Allows containers up to 10 seconds to shut down
+     * Call docker-compose stop, kill, then down Allows containers up to 10 seconds to shut down
      * gracefully.
      *
      * <p>With this strategy, you will need to take care not to accidentally write images
@@ -55,6 +54,8 @@ public interface ShutdownStrategy {
      */
     ShutdownStrategy SKIP = new SkipShutdownStrategy();
 
-    void shutdown(DockerCompose dockerCompose, Docker docker) throws IOException, InterruptedException;
+    void stop(DockerCompose dockerCompose) throws IOException, InterruptedException;
+
+    void shutdown(DockerCompose dockerCompose) throws IOException, InterruptedException;
 
 }

@@ -24,32 +24,30 @@ public class AggressiveShutdownWithNetworkCleanupStrategy implements ShutdownStr
     private static final Logger log = LoggerFactory.getLogger(AggressiveShutdownWithNetworkCleanupStrategy.class);
 
     @Override
-    public void shutdown(DockerCompose dockerCompose, Docker docker) throws IOException, InterruptedException {
+    public void stop(DockerCompose dockerCompose) throws IOException, InterruptedException {
+        log.debug("Killing docker-compose cluster");
+        dockerCompose.kill();
+    }
+
+    @Override
+    public void shutdown(DockerCompose dockerCompose) throws IOException, InterruptedException {
         List<ContainerName> runningContainers = dockerCompose.ps();
 
         log.info("Shutting down {}", runningContainers.stream().map(ContainerName::semanticName).collect(toList()));
-        removeContainersCatchingErrors(docker, runningContainers);
+        removeContainersCatchingErrors(dockerCompose);
         removeNetworks(dockerCompose);
     }
 
-    private static void removeContainersCatchingErrors(Docker docker, List<ContainerName> runningContainers) throws IOException, InterruptedException {
+    private static void removeContainersCatchingErrors(DockerCompose dockerCompose) throws IOException, InterruptedException {
         try {
-            removeContainers(docker, runningContainers);
+            dockerCompose.rm();
         } catch (DockerExecutionException exception) {
             log.error("Error while trying to remove containers: {}", exception.getMessage());
         }
     }
 
-    private static void removeContainers(Docker docker, List<ContainerName> running) throws IOException, InterruptedException {
-        List<String> rawContainerNames = running.stream()
-                .map(ContainerName::rawName)
-                .collect(toList());
-
-        docker.rm(rawContainerNames);
-        log.debug("Finished shutdown");
-    }
-
     private static void removeNetworks(DockerCompose dockerCompose) throws IOException, InterruptedException {
         dockerCompose.down();
+        log.debug("Finished shutdown");
     }
 }

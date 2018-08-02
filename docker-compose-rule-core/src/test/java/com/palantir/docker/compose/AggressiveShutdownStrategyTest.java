@@ -4,14 +4,12 @@
 
 package com.palantir.docker.compose;
 
-import static org.mockito.Matchers.anyListOf;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import com.palantir.docker.compose.configuration.ShutdownStrategy;
-import com.palantir.docker.compose.execution.Docker;
 import com.palantir.docker.compose.execution.DockerCompose;
 import com.palantir.docker.compose.execution.DockerExecutionException;
 import org.junit.Rule;
@@ -24,7 +22,6 @@ public class AggressiveShutdownStrategyTest {
     public final ExpectedException exception = ExpectedException.none();
 
     private final DockerCompose mockDockerCompose = mock(DockerCompose.class);
-    private final Docker mockDocker = mock(Docker.class);
 
     private static final String btrfs_message = "'docker rm -f test-1.container.name test-2.container.name' "
             + "returned exit code 1\nThe output was:\nFailed to remove container (test-1.container.name): "
@@ -34,24 +31,24 @@ public class AggressiveShutdownStrategyTest {
     public void first_btrfs_error_should_be_caught_silently_and_retried() throws Exception {
         doThrow(new DockerExecutionException(btrfs_message))
                 .doNothing()
-                .when(mockDocker)
-                .rm(anyListOf(String.class));
+                .when(mockDockerCompose)
+                .rm();
 
-        ShutdownStrategy.AGGRESSIVE.shutdown(mockDockerCompose, mockDocker);
+        ShutdownStrategy.AGGRESSIVE.shutdown(mockDockerCompose);
 
-        verify(mockDocker, times(2)).rm(anyListOf(String.class));
+        verify(mockDockerCompose, times(2)).rm();
     }
 
     @Test
     public void after_two_btrfs_failures_we_should_just_log_and_continue() throws Exception {
         doThrow(new DockerExecutionException(btrfs_message))
                 .doThrow(new DockerExecutionException(btrfs_message))
-                .when(mockDocker)
-                .rm(anyListOf(String.class));
+                .when(mockDockerCompose)
+                .rm();
 
-        ShutdownStrategy.AGGRESSIVE.shutdown(mockDockerCompose, mockDocker);
+        ShutdownStrategy.AGGRESSIVE.shutdown(mockDockerCompose);
 
-        verify(mockDocker, times(2)).rm(anyListOf(String.class));
+        verify(mockDockerCompose, times(2)).rm();
     }
 
 }

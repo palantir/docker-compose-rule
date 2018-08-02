@@ -14,16 +14,25 @@ import org.mockito.InOrder;
 public class GracefulShutdownStrategyShould {
 
     @Test
-    public void call_down_then_kill_then_rm() throws Exception {
+    public void stop_call_stop_then_kill() throws Exception {
         DockerCompose dockerCompose = mock(DockerCompose.class);
-        Docker docker = mock(Docker.class);
 
-        ShutdownStrategy.GRACEFUL.shutdown(dockerCompose, docker);
+        ShutdownStrategy.GRACEFUL.stop(dockerCompose);
+
+        InOrder inOrder = inOrder(dockerCompose);
+        inOrder.verify(dockerCompose).stop();
+        inOrder.verify(dockerCompose).kill();
+        inOrder.verifyNoMoreInteractions();
+    }
+
+    @Test
+    public void shutdown_call_down() throws Exception {
+        DockerCompose dockerCompose = mock(DockerCompose.class);
+
+        ShutdownStrategy.GRACEFUL.shutdown(dockerCompose);
 
         InOrder inOrder = inOrder(dockerCompose);
         inOrder.verify(dockerCompose).down();
-        inOrder.verify(dockerCompose).kill();
-        inOrder.verify(dockerCompose).rm();
         inOrder.verifyNoMoreInteractions();
     }
 }
