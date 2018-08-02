@@ -15,8 +15,6 @@
  */
 package com.palantir.docker.compose;
 
-import static com.palantir.docker.compose.configuration.ShutdownStrategy.AGGRESSIVE;
-
 import com.palantir.docker.compose.execution.DockerExecutionException;
 import java.io.IOException;
 import org.junit.Rule;
@@ -57,7 +55,6 @@ public class RemoveConflictingContainersIntegrationTest {
         DockerComposeRule composition = DockerComposeRule.builder()
                 .file(DOCKER_COMPOSE_YAML_PATH)
                 .retryAttempts(0)
-                .shutdownStrategy(AGGRESSIVE)
                 .build();
         composition.before();
         composition.before();

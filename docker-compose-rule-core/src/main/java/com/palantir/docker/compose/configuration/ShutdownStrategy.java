@@ -4,8 +4,6 @@
 
 package com.palantir.docker.compose.configuration;
 
-import com.palantir.docker.compose.execution.AggressiveShutdownStrategy;
-import com.palantir.docker.compose.execution.AggressiveShutdownWithNetworkCleanupStrategy;
 import com.palantir.docker.compose.execution.DockerCompose;
 import com.palantir.docker.compose.execution.GracefulShutdownStrategy;
 import com.palantir.docker.compose.execution.KillDownShutdownStrategy;
@@ -18,20 +16,6 @@ import java.io.IOException;
  */
 public interface ShutdownStrategy {
 
-    /**
-     * Call rm on all containers, working around btrfs bug on CircleCI.
-     *
-     * @deprecated Use {@link #KILL_DOWN} (the default strategy)
-     */
-    @Deprecated
-    ShutdownStrategy AGGRESSIVE = new AggressiveShutdownStrategy();
-    /**
-     * Call rm on all containers, then call docker-compose down.
-     *
-     * @deprecated Use {@link #KILL_DOWN} (the default strategy)
-     */
-    @Deprecated
-    ShutdownStrategy AGGRESSIVE_WITH_NETWORK_CLEANUP = new AggressiveShutdownWithNetworkCleanupStrategy();
     /**
      * Call docker-compose stop, kill, then down Allows containers up to 10 seconds to shut down
      * gracefully.
