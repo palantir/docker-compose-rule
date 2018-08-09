@@ -36,7 +36,7 @@ public class ContainerCache {
     }
 
     public Container container(String containerName) {
-        containers.putIfAbsent(containerName, new Container(containerName, docker, dockerCompose));
+        containers.computeIfAbsent(containerName, name -> new Container(name, docker, dockerCompose));
         return containers.get(containerName);
     }
 
