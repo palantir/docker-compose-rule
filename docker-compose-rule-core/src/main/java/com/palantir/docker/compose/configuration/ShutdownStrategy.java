@@ -17,8 +17,7 @@ import java.io.IOException;
 public interface ShutdownStrategy {
 
     /**
-     * Call docker-compose stop, kill, then down Allows containers up to 10 seconds to shut down
-     * gracefully.
+     * Call docker-compose stop, kill, then down. Allows containers up to 10 seconds to shut down gracefully.
      *
      * <p>With this strategy, you will need to take care not to accidentally write images
      * that ignore their down signal, for instance by putting their run command in as a
@@ -30,7 +29,7 @@ public interface ShutdownStrategy {
      */
     ShutdownStrategy KILL_DOWN = new KillDownShutdownStrategy();
     /**
-     * Skip shutdown, leaving containers running after tests finish executing.
+     * Skip down, leaving containers running after tests finish executing.
      *
      * <p>You can use this option to speed up repeated test execution locally by leaving
      * images up between runs. Do <b>not</b> commit it! You will be potentially abandoning
@@ -40,6 +39,6 @@ public interface ShutdownStrategy {
 
     void stop(DockerCompose dockerCompose) throws IOException, InterruptedException;
 
-    void shutdown(DockerCompose dockerCompose) throws IOException, InterruptedException;
+    void down(DockerCompose dockerCompose) throws IOException, InterruptedException;
 
 }

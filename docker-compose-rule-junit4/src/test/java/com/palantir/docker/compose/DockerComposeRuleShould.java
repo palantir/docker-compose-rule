@@ -122,7 +122,7 @@ public class DockerComposeRuleShould {
         rule.after();
         InOrder inOrder = Mockito.inOrder(shutdownStrategy);
         inOrder.verify(shutdownStrategy).stop(dockerCompose);
-        inOrder.verify(shutdownStrategy).shutdown(dockerCompose);
+        inOrder.verify(shutdownStrategy).down(dockerCompose);
     }
 
     @Test

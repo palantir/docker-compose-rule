@@ -164,7 +164,7 @@ public abstract class DockerComposeRule extends ExternalResource {
 
             logCollector().stopCollecting();
 
-            shutdownStrategy().shutdown(this.dockerCompose());
+            shutdownStrategy().down(this.dockerCompose());
         } catch (IOException | InterruptedException e) {
             throw new RuntimeException("Error cleaning up docker compose cluster", e);
         }

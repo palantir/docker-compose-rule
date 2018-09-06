@@ -13,7 +13,7 @@ import org.junit.Test;
 public class SkipShutdownStrategyShould {
 
     @Test
-    public void stop_call_nothing() throws Exception {
+    public void call_nothing_on_stop() throws Exception {
         DockerCompose dockerCompose = mock(DockerCompose.class);
 
         ShutdownStrategy.SKIP.stop(dockerCompose);
@@ -22,10 +22,10 @@ public class SkipShutdownStrategyShould {
     }
 
     @Test
-    public void shutdown_call_nothing() throws Exception {
+    public void call_nothing_on_down() throws Exception {
         DockerCompose dockerCompose = mock(DockerCompose.class);
 
-        ShutdownStrategy.SKIP.shutdown(dockerCompose);
+        ShutdownStrategy.SKIP.down(dockerCompose);
 
         verifyZeroInteractions(dockerCompose);
     }

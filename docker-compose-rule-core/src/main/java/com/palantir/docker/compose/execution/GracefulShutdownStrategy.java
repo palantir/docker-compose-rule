@@ -10,8 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Send SIGTERM to containers first, allowing them up to 10 seconds to
- * terminate before killing and rm-ing them.
+ * Send SIGTERM to containers allowing them up to 10 seconds to terminate. Then send SIGILL to containers to kill them.
  */
 public class GracefulShutdownStrategy implements ShutdownStrategy {
 
@@ -25,7 +24,7 @@ public class GracefulShutdownStrategy implements ShutdownStrategy {
     }
 
     @Override
-    public void shutdown(DockerCompose dockerCompose) throws IOException, InterruptedException {
+    public void down(DockerCompose dockerCompose) throws IOException, InterruptedException {
         log.debug("Downing docker-compose cluster");
         dockerCompose.down();
     }

@@ -14,7 +14,7 @@ import org.mockito.InOrder;
 public class KillDownShutdownStrategyShould {
 
     @Test
-    public void stop_call_kill() throws Exception {
+    public void call_kill_on_stop() throws Exception {
         DockerCompose dockerCompose = mock(DockerCompose.class);
 
         ShutdownStrategy.KILL_DOWN.stop(dockerCompose);
@@ -25,10 +25,10 @@ public class KillDownShutdownStrategyShould {
     }
 
     @Test
-    public void shutdown_call_down() throws Exception {
+    public void call_down_on_down() throws Exception {
         DockerCompose dockerCompose = mock(DockerCompose.class);
 
-        ShutdownStrategy.KILL_DOWN.shutdown(dockerCompose);
+        ShutdownStrategy.KILL_DOWN.down(dockerCompose);
 
         InOrder inOrder = inOrder(dockerCompose);
         inOrder.verify(dockerCompose).down();

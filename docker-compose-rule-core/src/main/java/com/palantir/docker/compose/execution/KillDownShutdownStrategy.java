@@ -10,11 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Shuts down fast but cleanly by issuing a kill (fast shutdown) followed by a down (thorough cleanup)
- *
- * <p>"down" would be ideal as a single command if it didn't first execute an impotent SIGTERM, which
- * many Docker images simply ignore due to being run by bash as process 1. We don't need a graceful
- * shutdown period anyway since the tests are done and we're destroying the docker image.
+ * Send SIGKILL to containers to kill them quickly.
  */
 public class KillDownShutdownStrategy implements ShutdownStrategy {
 
@@ -27,7 +23,7 @@ public class KillDownShutdownStrategy implements ShutdownStrategy {
     }
 
     @Override
-    public void shutdown(DockerCompose dockerCompose)
+    public void down(DockerCompose dockerCompose)
             throws IOException, InterruptedException {
         log.debug("Downing docker-compose cluster");
         dockerCompose.down();
