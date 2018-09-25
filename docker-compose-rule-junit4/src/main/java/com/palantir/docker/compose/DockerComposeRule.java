@@ -153,8 +153,6 @@ public abstract class DockerComposeRule extends ExternalResource {
                 .waitUntilReady(containers());
         clusterWaits().forEach(clusterWait -> clusterWait.waitUntilReady(containers()));
         log.debug("docker-compose cluster started");
-
-        logCollector().startCollecting(dockerCompose());
     }
 
     @Override
@@ -162,7 +160,7 @@ public abstract class DockerComposeRule extends ExternalResource {
         try {
             shutdownStrategy().stop(this.dockerCompose());
 
-            logCollector().stopCollecting();
+            logCollector().collectLogs(this.dockerCompose());
 
             shutdownStrategy().down(this.dockerCompose());
         } catch (IOException | InterruptedException e) {

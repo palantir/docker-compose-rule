@@ -21,7 +21,6 @@ import static org.joda.time.Duration.standardMinutes;
 import com.github.zafarkhaja.semver.Version;
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
-import com.jayway.awaitility.Awaitility;
 import com.palantir.docker.compose.configuration.DockerComposeFiles;
 import com.palantir.docker.compose.configuration.ProjectName;
 import com.palantir.docker.compose.connection.Container;
@@ -34,7 +33,6 @@ import java.io.OutputStream;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.TimeUnit;
 import org.apache.commons.io.IOUtils;
 import org.joda.time.Duration;
 import org.slf4j.Logger;
@@ -191,24 +189,11 @@ public class DefaultDockerCompose implements DockerCompose {
         return Arrays.asList(servicesOutput.split("(\r|\n)+"));
     }
 
-    /**
-     * Blocks until all logs collected from the container.
-     * @return Whether the docker container terminated prior to log collection ending
-     */
     @Override
-    public boolean writeLogs(String container, OutputStream output) throws IOException {
-        try {
-            Awaitility.await()
-                    .pollInterval(50, TimeUnit.MILLISECONDS)
-                    .atMost(LOG_WAIT_TIMEOUT.getMillis(), TimeUnit.MILLISECONDS)
-                    .until(() -> exists(container));
-            Process executedProcess = followLogs(container);
-            IOUtils.copy(executedProcess.getInputStream(), output);
-            executedProcess.waitFor();
-        } catch (InterruptedException e) {
-            return false;
-        }
-        return true;
+    public void writeLogs(String container, OutputStream output) throws IOException, InterruptedException {
+        Process executedProcess = logs(container);
+        IOUtils.copy(executedProcess.getInputStream(), output);
+        executedProcess.waitFor();
     }
 
     private boolean exists(final String containerName) throws IOException, InterruptedException {
@@ -223,11 +208,9 @@ public class DefaultDockerCompose implements DockerCompose {
         return Optional.of(id);
     }
 
-    private Process followLogs(String container) throws IOException, InterruptedException {
-        if (version().greaterThanOrEqualTo(VERSION_1_7_0)) {
-            return rawExecutable.execute("logs", "--no-color", "--follow", container);
-        }
-
+    private Process logs(String container) throws IOException, InterruptedException {
+        verifyDockerComposeVersionAtLeast(VERSION_1_7_0,
+                "You need at least docker-compose 1.7 to run docker-compose logs");
         return rawExecutable.execute("logs", "--no-color", container);
     }
 

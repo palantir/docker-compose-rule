@@ -20,8 +20,6 @@ import java.io.IOException;
 
 public interface LogCollector {
 
-    void startCollecting(DockerCompose dockerCompose) throws IOException, InterruptedException;
-
-    void stopCollecting() throws InterruptedException;
+    void collectLogs(DockerCompose dockerCompose) throws IOException, InterruptedException;
 
 }
