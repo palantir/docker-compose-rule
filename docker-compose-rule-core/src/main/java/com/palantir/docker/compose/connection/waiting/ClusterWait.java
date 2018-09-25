@@ -15,13 +15,13 @@
  */
 package com.palantir.docker.compose.connection.waiting;
 
-import com.jayway.awaitility.Awaitility;
-import com.jayway.awaitility.core.ConditionTimeoutException;
 import com.palantir.docker.compose.connection.Cluster;
 import java.util.Optional;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
+import org.awaitility.Awaitility;
+import org.awaitility.core.ConditionTimeoutException;
 import org.joda.time.ReadableDuration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

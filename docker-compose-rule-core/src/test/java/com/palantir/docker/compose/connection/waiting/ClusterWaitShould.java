@@ -72,4 +72,32 @@ public class ClusterWaitShould {
 
         wait.waitUntilReady(cluster);
     }
+
+    @SuppressWarnings("unchecked")
+    @Test public void
+    should_propagate_throwable() throws InterruptedException {
+        class AThrowable extends Throwable {}
+
+        when(clusterHealthCheck.isClusterHealthy(cluster))
+                .thenThrow(AThrowable.class);
+
+        exception.expect(AThrowable.class);
+
+        ClusterWait wait = new ClusterWait(clusterHealthCheck, DURATION);
+        wait.waitUntilReady(cluster);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test public void
+    should_propagate_error() throws InterruptedException {
+        class AnError extends Error {}
+
+        when(clusterHealthCheck.isClusterHealthy(cluster))
+                .thenThrow(AnError.class);
+
+        exception.expect(AnError.class);
+
+        ClusterWait wait = new ClusterWait(clusterHealthCheck, DURATION);
+        wait.waitUntilReady(cluster);
+    }
 }
