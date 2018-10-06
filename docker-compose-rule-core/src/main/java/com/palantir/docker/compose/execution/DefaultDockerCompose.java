@@ -22,6 +22,7 @@ import static org.joda.time.Duration.standardMinutes;
 import com.github.zafarkhaja.semver.Version;
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
+import com.jayway.awaitility.Awaitility;
 import com.palantir.docker.compose.configuration.DockerComposeFiles;
 import com.palantir.docker.compose.configuration.ProjectName;
 import com.palantir.docker.compose.connection.Container;
@@ -34,6 +35,7 @@ import java.io.OutputStream;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 import org.apache.commons.io.IOUtils;
 import org.joda.time.Duration;
 import org.slf4j.Logger;
@@ -43,6 +45,7 @@ public class DefaultDockerCompose implements DockerCompose {
 
     public static final Version VERSION_1_7_0 = Version.valueOf("1.7.0");
     private static final Duration COMMAND_TIMEOUT = standardMinutes(2);
+    private static final Duration LOG_WAIT_TIMEOUT = standardMinutes(30);
     private static final Logger log = LoggerFactory.getLogger(DefaultDockerCompose.class);
 
     private final Command command;
@@ -170,11 +173,7 @@ public class DefaultDockerCompose implements DockerCompose {
 
     @Override
     public Optional<String> id(Container container) throws IOException, InterruptedException {
-        String id = command.execute(Command.throwingOnError(), "ps", "-q", container.getContainerName());
-        if (id.isEmpty()) {
-            return Optional.empty();
-        }
-        return Optional.of(id);
+        return id(container.getContainerName());
     }
 
     @Override
@@ -195,6 +194,10 @@ public class DefaultDockerCompose implements DockerCompose {
     @Override
     public boolean writeLogs(String container, OutputStream output) throws IOException {
         try {
+            Awaitility.await()
+                    .pollInterval(50, TimeUnit.MILLISECONDS)
+                    .atMost(LOG_WAIT_TIMEOUT.getMillis(), TimeUnit.MILLISECONDS)
+                    .until(() -> exists(container));
             Process executedProcess = followLogs(container);
             IOUtils.copy(executedProcess.getInputStream(), output);
             executedProcess.waitFor(COMMAND_TIMEOUT.getMillis(), MILLISECONDS);
@@ -202,6 +205,18 @@ public class DefaultDockerCompose implements DockerCompose {
             return false;
         }
         return true;
+    }
+
+    private boolean exists(final String containerName) throws IOException, InterruptedException {
+        return id(containerName).orElse(null) != null;
+    }
+
+    private Optional<String> id(String containerName) throws IOException, InterruptedException {
+        String id = command.execute(Command.throwingOnError(), "ps", "-q", containerName);
+        if (id.isEmpty()) {
+            return Optional.empty();
+        }
+        return Optional.of(id);
     }
 
     private Process followLogs(String container) throws IOException, InterruptedException {

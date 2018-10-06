@@ -21,6 +21,8 @@ import com.palantir.docker.compose.execution.DockerCompose;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.FileAlreadyExistsException;
+import java.nio.file.Files;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -68,6 +70,13 @@ public class FileLogCollector implements LogCollector {
     private void collectLogs(String container, DockerCompose dockerCompose)  {
         executor.submit(() -> {
             File outputFile = new File(logDirectory, container + ".log");
+            try {
+                Files.createFile(outputFile.toPath());
+            } catch (final FileAlreadyExistsException e) {
+                // ignore
+            } catch (final IOException e) {
+                throw new RuntimeException("Error creating log file", e);
+            }
             log.info("Writing logs for container '{}' to '{}'", container, outputFile.getAbsolutePath());
             try (FileOutputStream outputStream = new FileOutputStream(outputFile)) {
                 dockerCompose.writeLogs(container, outputStream);

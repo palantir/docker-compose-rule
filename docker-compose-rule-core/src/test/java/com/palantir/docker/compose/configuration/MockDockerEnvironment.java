@@ -28,6 +28,7 @@ import com.palantir.docker.compose.execution.DockerCompose;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 public class MockDockerEnvironment {
@@ -67,6 +68,14 @@ public class MockDockerEnvironment {
         DockerPort port = dockerPortSpy(ip, externalPortNumber, internalPortNumber);
         when(dockerComposeProcess.ports(service)).thenReturn(new Ports(port));
         return port;
+    }
+
+    public void ephemeralPort(String service, String ip, int internalPortNumber) throws IOException, InterruptedException {
+        AtomicInteger currentExternalPort = new AtomicInteger(33700);
+        when(dockerComposeProcess.ports(service)).then(a -> {
+            DockerPort port = dockerPortSpy(ip, currentExternalPort.incrementAndGet(), internalPortNumber);
+            return new Ports(port);
+        });
     }
 
     public void ports(String service, String ip, Integer... portNumbers) throws IOException, InterruptedException {
