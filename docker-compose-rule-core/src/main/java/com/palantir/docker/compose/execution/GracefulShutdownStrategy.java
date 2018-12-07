@@ -23,6 +23,7 @@ public class GracefulShutdownStrategy implements ShutdownStrategy {
         dockerCompose.down();
         dockerCompose.kill();
         dockerCompose.rm();
+        docker.pruneNetworks();
     }
 
 }

@@ -24,6 +24,7 @@ public class GracefulShutdownStrategyShould {
         inOrder.verify(dockerCompose).down();
         inOrder.verify(dockerCompose).kill();
         inOrder.verify(dockerCompose).rm();
+        inOrder.verify(docker).pruneNetworks();
         inOrder.verifyNoMoreInteractions();
     }
 }

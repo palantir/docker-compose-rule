@@ -61,6 +61,16 @@ public class DockerShould {
     }
 
     @Test
+    public void call_docker_network_prune() throws IOException, InterruptedException {
+        String lsOutput = "0.0.0.0:7000->7000/tcp";
+        when(executedProcess.getInputStream()).thenReturn(toInputStream(lsOutput));
+
+        assertThat(docker.pruneNetworks(), is(lsOutput));
+
+        verify(executor).execute("network", "prune", "--force");
+    }
+
+    @Test
     public void understand_old_version_format() throws IOException, InterruptedException {
         when(executedProcess.getInputStream()).thenReturn(toInputStream("Docker version 1.7.2"));
 
