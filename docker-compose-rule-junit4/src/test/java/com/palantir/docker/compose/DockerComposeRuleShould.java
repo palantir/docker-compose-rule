@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 Palantir Technologies, Inc. All rights reserved.
+ * (c) Copyright 2016 Palantir Technologies Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -135,7 +135,7 @@ public class DockerComposeRuleShould {
     public void pass_wait_for_service_when_check_is_true() throws IOException, InterruptedException {
         AtomicInteger timesCheckCalled = new AtomicInteger(0);
         withComposeExecutableReturningContainerFor("db");
-        HealthCheck<Container> checkCalledOnce = (container) -> SuccessOrFailure.fromBoolean(timesCheckCalled.incrementAndGet() == 1, "not called once yet");
+        HealthCheck<Container> checkCalledOnce = container -> SuccessOrFailure.fromBoolean(timesCheckCalled.incrementAndGet() == 1, "not called once yet");
         defaultBuilder().waitingForService("db", checkCalledOnce).build().before();
         assertThat(timesCheckCalled.get(), is(1));
     }
@@ -157,7 +157,7 @@ public class DockerComposeRuleShould {
     public void pass_wait_for_service_when_check_is_true_after_being_false() throws IOException, InterruptedException {
         AtomicInteger timesCheckCalled = new AtomicInteger(0);
         withComposeExecutableReturningContainerFor("db");
-        HealthCheck<Container> checkCalledTwice = (container) -> SuccessOrFailure.fromBoolean(timesCheckCalled.incrementAndGet() == 2, "not called twice yet");
+        HealthCheck<Container> checkCalledTwice = container -> SuccessOrFailure.fromBoolean(timesCheckCalled.incrementAndGet() == 2, "not called twice yet");
         defaultBuilder().waitingForService("db", checkCalledTwice).build().before();
         assertThat(timesCheckCalled.get(), is(2));
     }
@@ -171,7 +171,7 @@ public class DockerComposeRuleShould {
         exception.expectMessage("failed to pass a startup check");
         exception.expectMessage("oops");
 
-        defaultBuilder().waitingForService("db", (container) -> SuccessOrFailure.failure("oops"), millis(200)).build().before();
+        defaultBuilder().waitingForService("db", container -> SuccessOrFailure.failure("oops"), millis(200)).build().before();
     }
 
     @Test
@@ -236,7 +236,7 @@ public class DockerComposeRuleShould {
         when(dockerCompose.id(any())).thenReturn(Optional.of("abcde"));
         when(mockDocker.state("abcde")).thenReturn(State.HEALTHY);
         CountDownLatch latch = new CountDownLatch(1);
-        when(dockerCompose.writeLogs(eq("db"), any(OutputStream.class))).thenAnswer((args) -> {
+        when(dockerCompose.writeLogs(eq("db"), any(OutputStream.class))).thenAnswer(args -> {
             OutputStream outputStream = (OutputStream) args.getArguments()[1];
             IOUtils.write("db log", outputStream);
             latch.countDown();

@@ -9,7 +9,7 @@ buildscript {
         }
     }
     dependencies {
-        classpath 'com.palantir.baseline:gradle-baseline-java:0.16.0'
+        classpath 'com.palantir.baseline:gradle-baseline-java:0.47.0'
         classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.8.4'
         classpath 'com.netflix.nebula:nebula-publishing-plugin:7.0.12'
         classpath 'gradle.plugin.org.inferred:gradle-processors:2.1.0'
@@ -30,10 +30,12 @@ allprojects {
 
     repositories {
         mavenCentral()
+        maven {
+            url 'https://dl.bintray.com/palantir/releases/'
+        }
     }
 
     group 'com.palantir.docker.compose'
-
     version gitVersion()
 }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 Palantir Technologies, Inc. All rights reserved.
+ * (c) Copyright 2016 Palantir Technologies Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,7 +45,7 @@ public class CommandShould {
     private final Consumer<String> logConsumer = s -> consumedLogLines.add(s);
 
     @Before
-    public void setup() throws IOException {
+    public void before() throws IOException {
         when(dockerComposeExecutable.execute(anyVararg())).thenReturn(executedProcess);
         dockerComposeCommand = new Command(dockerComposeExecutable, logConsumer);
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 Palantir Technologies, Inc. All rights reserved.
+ * (c) Copyright 2016 Palantir Technologies Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,7 +34,7 @@ public class DockerCommandLocationsShould {
     private String goodLocation;
 
     @Before
-    public void setup() throws IOException {
+    public void before() throws IOException {
         goodLocation = folder.newFile("docker-compose.yml").getAbsolutePath();
     }
 

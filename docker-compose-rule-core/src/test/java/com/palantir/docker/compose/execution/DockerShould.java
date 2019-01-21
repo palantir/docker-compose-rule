@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 Palantir Technologies, Inc. All rights reserved.
+ * (c) Copyright 2016 Palantir Technologies Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,7 +36,7 @@ public class DockerShould {
     private final Process executedProcess = mock(Process.class);
 
     @Before
-    public void setup() throws IOException {
+    public void before() throws IOException {
         when(executor.execute(anyVararg())).thenReturn(executedProcess);
         when(executedProcess.exitValue()).thenReturn(0);
     }

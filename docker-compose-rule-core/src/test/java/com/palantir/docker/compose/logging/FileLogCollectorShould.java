@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 Palantir Technologies, Inc. All rights reserved.
+ * (c) Copyright 2016 Palantir Technologies Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -55,7 +55,7 @@ public class FileLogCollectorShould {
     private LogCollector logCollector;
 
     @Before
-    public void setup() throws IOException {
+    public void before() throws IOException {
         logDirectory = logDirectoryParent.newFolder();
         logCollector = new FileLogCollector(logDirectory);
     }
@@ -103,7 +103,7 @@ public class FileLogCollectorShould {
     public void collect_logs_when_one_container_is_running_and_terminates_before_start_collecting_is_run()
             throws Exception {
         when(compose.services()).thenReturn(ImmutableList.of("db"));
-        when(compose.writeLogs(eq("db"), any(OutputStream.class))).thenAnswer((args) -> {
+        when(compose.writeLogs(eq("db"), any(OutputStream.class))).thenAnswer(args -> {
             OutputStream outputStream = (OutputStream) args.getArguments()[1];
             IOUtils.write("log", outputStream);
             return false;
@@ -119,7 +119,7 @@ public class FileLogCollectorShould {
             throws Exception {
         when(compose.services()).thenReturn(ImmutableList.of("db"));
         CountDownLatch latch = new CountDownLatch(1);
-        when(compose.writeLogs(eq("db"), any(OutputStream.class))).thenAnswer((args) -> {
+        when(compose.writeLogs(eq("db"), any(OutputStream.class))).thenAnswer(args -> {
             if (!latch.await(1, TimeUnit.SECONDS)) {
                 throw new RuntimeException("Latch was not triggered");
             }
@@ -139,7 +139,7 @@ public class FileLogCollectorShould {
             throws IOException, InterruptedException {
         when(compose.services()).thenReturn(ImmutableList.of("db"));
         CountDownLatch latch = new CountDownLatch(1);
-        when(compose.writeLogs(eq("db"), any(OutputStream.class))).thenAnswer((args) -> {
+        when(compose.writeLogs(eq("db"), any(OutputStream.class))).thenAnswer(args -> {
             OutputStream outputStream = (OutputStream) args.getArguments()[1];
             IOUtils.write("log", outputStream);
             try {
@@ -163,14 +163,14 @@ public class FileLogCollectorShould {
     public void collect_logs_in_parallel_for_two_containers() throws IOException, InterruptedException {
         when(compose.services()).thenReturn(ImmutableList.of("db", "db2"));
         CountDownLatch dbLatch = new CountDownLatch(1);
-        when(compose.writeLogs(eq("db"), any(OutputStream.class))).thenAnswer((args) -> {
+        when(compose.writeLogs(eq("db"), any(OutputStream.class))).thenAnswer(args -> {
             OutputStream outputStream = (OutputStream) args.getArguments()[1];
             IOUtils.write("log", outputStream);
             dbLatch.countDown();
             return true;
         });
         CountDownLatch db2Latch = new CountDownLatch(1);
-        when(compose.writeLogs(eq("db2"), any(OutputStream.class))).thenAnswer((args) -> {
+        when(compose.writeLogs(eq("db2"), any(OutputStream.class))).thenAnswer(args -> {
             OutputStream outputStream = (OutputStream) args.getArguments()[1];
             IOUtils.write("other", outputStream);
             db2Latch.countDown();
