@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 Palantir Technologies, Inc. All rights reserved.
+ * (c) Copyright 2016 Palantir Technologies Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,7 +37,7 @@ public class LoggingIntegrationTest {
     private DockerComposeRule dockerComposeRule;
 
     @Before
-    public void setUp() {
+    public void before() {
         dockerComposeRule = DockerComposeRule.builder()
                 .file("src/test/resources/docker-compose.yaml")
                 .waitingForService("db", toHaveAllPortsOpen())

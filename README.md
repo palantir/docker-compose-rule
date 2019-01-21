@@ -80,7 +80,7 @@ public class MyEndToEndTest {
         .file("src/test/resources/docker-compose.yml")
         .waitingForService("db", HealthChecks.toHaveAllPortsOpen())
         .waitingForService("web", HealthChecks.toRespondOverHttp(8080, (port) -> port.inFormat("https://$HOST:$EXTERNAL_PORT")))
-        .waitingForService("other", (container) -> customServiceCheck(container), Duration.standardMinutes(2))
+        .waitingForService("other", container -> customServiceCheck(container), Duration.standardMinutes(2))
         .waitingForServices(ImmutableList.of("node1", "node2"), toBeHealthyAsACluster())
         .waitingForHostNetworkedPort(5432, toBeOpen())
         .build();

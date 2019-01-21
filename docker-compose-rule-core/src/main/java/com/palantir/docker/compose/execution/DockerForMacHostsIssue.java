@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 Palantir Technologies, Inc. All rights reserved.
+ * (c) Copyright 2016 Palantir Technologies Inc. All rights reserved.
  */
 
 package com.palantir.docker.compose.execution;
@@ -26,6 +26,7 @@ public class DockerForMacHostsIssue {
             + "\nFor more information, see https://github.com/docker/compose/issues/3419#issuecomment-221793401\n\n";
     private static volatile boolean checkPerformed = false;
 
+    @SuppressWarnings("checkstyle:BanSystemErr")
     public static void issueWarning() {
         if (!checkPerformed) {
             if (onMacOsX() && !localunixsocketRedirectedInEtcHosts()) {

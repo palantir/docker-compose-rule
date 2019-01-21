@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 Palantir Technologies, Inc. All rights reserved.
+ * (c) Copyright 2016 Palantir Technologies Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,6 @@
  */
 package com.palantir.docker.compose.connection;
 
-import com.google.common.base.Supplier;
 import com.google.common.base.Suppliers;
 import com.google.common.base.Throwables;
 import com.palantir.docker.compose.connection.waiting.SuccessOrFailure;
@@ -25,6 +24,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 public class Container {
@@ -33,7 +33,7 @@ public class Container {
     private final Docker docker;
     private final DockerCompose dockerCompose;
 
-    private Supplier<Ports> portMappings = Suppliers.memoize(this::getDockerPorts);
+    private Supplier<Ports> portMappings = Suppliers.memoize(this::getDockerPorts)::get;
 
     public Container(String containerName, Docker docker, DockerCompose dockerCompose) {
         this.containerName = containerName;
@@ -75,6 +75,7 @@ public class Container {
     }
 
     /**
+     * Deprecated.
      * @deprecated Please use `port(internalPort)` instead.
      */
     @Deprecated
@@ -92,7 +93,7 @@ public class Container {
 
     public void start() throws IOException, InterruptedException {
         dockerCompose.start(this);
-        portMappings = Suppliers.memoize(this::getDockerPorts);
+        portMappings = Suppliers.memoize(this::getDockerPorts)::get;
     }
 
     public void stop() throws IOException, InterruptedException {

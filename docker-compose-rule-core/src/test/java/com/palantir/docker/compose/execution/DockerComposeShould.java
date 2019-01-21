@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 Palantir Technologies, Inc. All rights reserved.
+ * (c) Copyright 2016 Palantir Technologies Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -57,7 +57,7 @@ public class DockerComposeShould {
     private final Container container = mock(Container.class);
 
     @Before
-    public void setup() throws IOException {
+    public void before() throws IOException {
         when(dockerMachine.getIp()).thenReturn("0.0.0.0");
         when(executor.execute(anyVararg())).thenReturn(executedProcess);
         when(executedProcess.getInputStream()).thenReturn(toInputStream("0.0.0.0:7000->7000/tcp"));

@@ -1,0 +1,50 @@
+policy:
+  approval:
+    - or:
+      - docker-compose-rule team approval
+      - docker-compose-rule team co-approval
+      - infrastructure team approval
+      - infrastructure team co-approval
+      - excavator only touched baseline, gradle files or versions.props
+  disapproval:
+    requires:
+      organizations: [ "palantir" ]
+
+approval_rules:
+  - name: docker-compose-rule team approval
+    requires:
+      count: 1
+      teams: [ "palantir/docker-compose-rule" ]
+
+  - name: docker-compose-rule team co-approval
+    options: { allow_contributor: true }
+    requires:
+      count: 2
+      teams: [ "palantir/docker-compose-rule" ]
+
+  - name: infrastructure team approval
+    requires:
+      count: 1
+      teams: [ "palantir/infrastructure" ]
+
+  - name: infrastructure team co-approval
+    options: { allow_contributor: true }
+    requires:
+      count: 2
+      teams: [ "palantir/infrastructure" ]
+
+  - name: excavator only touched baseline, gradle files or versions.props
+    requires:
+      count: 0
+    if:
+      has_author_in:
+        users: [ "svc-excavator-bot" ]
+      only_changed_files:
+        paths:
+          - "^\\.baseline/.*$"
+          - "^.*gradle$"
+          - "^gradle/wrapper/.*"
+          - "^gradlew$"
+          - "^gradlew.bat$"
+          - "^versions.props$"
+          - "^versions.lock$"

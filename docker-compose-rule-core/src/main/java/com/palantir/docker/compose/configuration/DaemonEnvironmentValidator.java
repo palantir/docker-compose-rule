@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 Palantir Technologies, Inc. All rights reserved.
+ * (c) Copyright 2016 Palantir Technologies Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,18 +21,18 @@ import static com.palantir.docker.compose.configuration.EnvironmentVariables.DOC
 import static com.palantir.docker.compose.configuration.EnvironmentVariables.DOCKER_TLS_VERIFY;
 import static java.util.stream.Collectors.joining;
 
-import com.google.common.base.Supplier;
 import com.google.common.base.Suppliers;
 import com.google.common.collect.ImmutableSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 public class DaemonEnvironmentValidator implements EnvironmentValidator {
 
     private static final Set<String> ILLEGAL_VARIABLES = ImmutableSet.of(DOCKER_TLS_VERIFY, DOCKER_HOST, DOCKER_CERT_PATH);
     private static final Supplier<DaemonEnvironmentValidator> SUPPLIER = Suppliers.memoize(
-            () -> new DaemonEnvironmentValidator());
+            () -> new DaemonEnvironmentValidator())::get;
 
     public static DaemonEnvironmentValidator instance() {
         return SUPPLIER.get();

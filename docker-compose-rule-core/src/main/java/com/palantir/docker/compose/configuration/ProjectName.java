@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 Palantir Technologies, Inc. All rights reserved.
+ * (c) Copyright 2016 Palantir Technologies Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -61,9 +61,7 @@ public abstract class ProjectName {
     }
 
     /**
-     * @param name A name consisting of lowercase letters and numbers only.
-     * @return The corresponding project name
-     * @see ProjectName
+     * A name consisting of lowercase letters and numbers only.
      */
     public static ProjectName fromString(String name) {
         return ImmutableProjectName.of(name);
