@@ -2,24 +2,22 @@ buildscript {
     repositories {
         mavenCentral()
         maven {
-            url "https://dl.bintray.com/palantir/releases"
+            url 'https://dl.bintray.com/palantir/releases/'
         }
         maven {
             url 'https://plugins.gradle.org/m2/'
         }
-        jcenter()
     }
     dependencies {
         classpath 'com.palantir.baseline:gradle-baseline-java:0.16.0'
-        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.7.3'
-        classpath "org.jfrog.buildinfo:build-info-extractor-gradle:4.5.1"
-        classpath 'gradle.plugin.org.inferred:gradle-processors:1.2.15'
+        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.8.4'
+        classpath 'com.netflix.nebula:nebula-publishing-plugin:7.0.12'
+        classpath 'gradle.plugin.org.inferred:gradle-processors:2.1.0'
     }
 }
 
 plugins {
     id 'com.palantir.git-version' version '0.8.0'
-    id 'nebula.lint' version '7.9.5'
     id 'com.palantir.configuration-resolver' version '0.2.0'
 }
 
@@ -46,7 +44,7 @@ subprojects {
     apply plugin: 'com.palantir.baseline-idea'
     apply plugin: 'org.inferred.processors'
     apply plugin: 'com.palantir.configuration-resolver'
-    apply from: "${rootDir}/gradle/publish.gradle"
+    apply from: "${rootDir}/gradle/publish-jar.gradle"
 
     sourceCompatibility = 1.8
     targetCompatibility = 1.8
@@ -67,10 +65,5 @@ subprojects {
     // just write them into the right place straight away.
     if (System.env.CIRCLE_TEST_REPORTS) {
         test.reports.junitXml.destination = file(System.env.CIRCLE_TEST_REPORTS)
-    }
-
-    if (!System.env.CI) {
-        apply plugin: 'nebula.lint'
-        gradleLint.rules = ['unused-dependency', 'unused-exclude']
     }
 }
