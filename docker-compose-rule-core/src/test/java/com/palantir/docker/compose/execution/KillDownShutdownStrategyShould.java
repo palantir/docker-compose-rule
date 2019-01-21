@@ -20,9 +20,10 @@ public class KillDownShutdownStrategyShould {
 
         ShutdownStrategy.KILL_DOWN.shutdown(dockerCompose, docker);
 
-        InOrder inOrder = inOrder(dockerCompose);
+        InOrder inOrder = inOrder(dockerCompose, docker);
         inOrder.verify(dockerCompose).kill();
         inOrder.verify(dockerCompose).down();
+        inOrder.verify(docker).pruneNetworks();
         inOrder.verifyNoMoreInteractions();
     }
 }

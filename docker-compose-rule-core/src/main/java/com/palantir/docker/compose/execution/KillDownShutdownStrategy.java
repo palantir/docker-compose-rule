@@ -28,5 +28,7 @@ public class KillDownShutdownStrategy implements ShutdownStrategy {
         log.debug("Downing docker-compose cluster");
         dockerCompose.down();
         log.debug("docker-compose cluster killed");
+        docker.pruneNetworks();
+        log.debug("Networks pruned");
     }
 }

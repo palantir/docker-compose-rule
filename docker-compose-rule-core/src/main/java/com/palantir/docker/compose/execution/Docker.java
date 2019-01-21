@@ -84,4 +84,8 @@ public class Docker {
     public String listNetworks() throws IOException, InterruptedException {
         return command.execute(Command.throwingOnError(), "network", "ls");
     }
+
+    public String pruneNetworks() throws IOException, InterruptedException {
+        return command.execute(Command.throwingOnError(), "network", "prune", "--force");
+    }
 }

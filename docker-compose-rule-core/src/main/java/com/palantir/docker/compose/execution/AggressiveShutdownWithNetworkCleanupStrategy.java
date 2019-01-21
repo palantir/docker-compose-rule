@@ -29,7 +29,8 @@ public class AggressiveShutdownWithNetworkCleanupStrategy implements ShutdownStr
 
         log.info("Shutting down {}", runningContainers.stream().map(ContainerName::semanticName).collect(toList()));
         removeContainersCatchingErrors(docker, runningContainers);
-        removeNetworks(dockerCompose);
+        removeNetworks(dockerCompose, docker);
+
     }
 
     private static void removeContainersCatchingErrors(Docker docker, List<ContainerName> runningContainers) throws IOException, InterruptedException {
@@ -49,7 +50,8 @@ public class AggressiveShutdownWithNetworkCleanupStrategy implements ShutdownStr
         log.debug("Finished shutdown");
     }
 
-    private static void removeNetworks(DockerCompose dockerCompose) throws IOException, InterruptedException {
+    private static void removeNetworks(DockerCompose dockerCompose, Docker docker) throws IOException, InterruptedException {
         dockerCompose.down();
+        docker.pruneNetworks();
     }
 }

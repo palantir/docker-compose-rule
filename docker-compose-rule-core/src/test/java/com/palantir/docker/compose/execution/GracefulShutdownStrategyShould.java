@@ -20,10 +20,11 @@ public class GracefulShutdownStrategyShould {
 
         ShutdownStrategy.GRACEFUL.shutdown(dockerCompose, docker);
 
-        InOrder inOrder = inOrder(dockerCompose);
+        InOrder inOrder = inOrder(dockerCompose, docker);
         inOrder.verify(dockerCompose).down();
         inOrder.verify(dockerCompose).kill();
         inOrder.verify(dockerCompose).rm();
+        inOrder.verify(docker).pruneNetworks();
         inOrder.verifyNoMoreInteractions();
     }
 }

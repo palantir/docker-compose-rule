@@ -40,6 +40,9 @@ public class AggressiveShutdownStrategy implements ShutdownStrategy {
 
         log.warn("Couldn't shut down containers due to btrfs volume error, "
                 + "see https://circleci.com/docs/docker-btrfs-error/ for more info.");
+
+        log.info("Pruning networks");
+        docker.pruneNetworks();
     }
 
     private static boolean removeContainersCatchingErrors(Docker docker, List<ContainerName> runningContainers) throws IOException, InterruptedException {
