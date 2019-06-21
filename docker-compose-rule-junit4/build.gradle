@@ -1,3 +1,9 @@
+apply plugin: 'org.unbroken-dome.test-sets'
+
+testSets {
+    integrationTest
+}
+
 dependencies {
     compile "com.google.guava:guava:$guavaVersion"
     compile "joda-time:joda-time:$jodaVersion"
