@@ -13,6 +13,7 @@ buildscript {
         classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.8.4'
         classpath 'com.netflix.nebula:nebula-publishing-plugin:7.0.12'
         classpath 'gradle.plugin.org.inferred:gradle-processors:2.1.0'
+        classpath 'org.unbroken-dome.gradle-plugins:gradle-testsets-plugin:2.1.1'
     }
 }
 

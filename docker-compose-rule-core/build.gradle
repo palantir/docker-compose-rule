@@ -1,3 +1,9 @@
+apply plugin: 'org.unbroken-dome.test-sets'
+
+testSets {
+    integrationTest
+}
+
 dependencies {
     compile 'com.jayway.awaitility:awaitility:1.6.5'
     compile "com.github.zafarkhaja:java-semver:$javaSemverVersion"
