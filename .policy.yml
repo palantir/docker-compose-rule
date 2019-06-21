@@ -1,37 +1,27 @@
 policy:
   approval:
     - or:
-      - docker-compose-rule team approval
-      - docker-compose-rule team co-approval
-      - infrastructure team approval
-      - infrastructure team co-approval
+      - repo owner approval
+      - repo owner co-approval
       - excavator only touched baseline, gradle files or versions.props
+      - excavator only touched package.json and lock files
   disapproval:
     requires:
       organizations: [ "palantir" ]
 
 approval_rules:
-  - name: docker-compose-rule team approval
+  - name: repo owner approval
     requires:
       count: 1
-      teams: [ "palantir/docker-compose-rule" ]
+      admins: true
 
-  - name: docker-compose-rule team co-approval
-    options: { allow_contributor: true }
+  # Require two *contributing* maintainers to approve changes
+  - name: repo owner co-approval
+    options:
+      allow_contributor: true
     requires:
       count: 2
-      teams: [ "palantir/docker-compose-rule" ]
-
-  - name: infrastructure team approval
-    requires:
-      count: 1
-      teams: [ "palantir/infrastructure" ]
-
-  - name: infrastructure team co-approval
-    options: { allow_contributor: true }
-    requires:
-      count: 2
-      teams: [ "palantir/infrastructure" ]
+      admins: true
 
   - name: excavator only touched baseline, gradle files or versions.props
     requires:
@@ -46,5 +36,18 @@ approval_rules:
           - "^gradle/wrapper/.*"
           - "^gradlew$"
           - "^gradlew.bat$"
+          - "^gradle.properties$"
+          - "^settings.gradle$"
           - "^versions.props$"
           - "^versions.lock$"
+
+  - name: excavator only touched package.json and lock files
+    requires:
+      count: 0
+    if:
+      has_author_in:
+        users: [ "svc-excavator-bot" ]
+      only_changed_files:
+        paths:
+          - "^.*yarn.lock$"
+          - "^.*package.json$"
