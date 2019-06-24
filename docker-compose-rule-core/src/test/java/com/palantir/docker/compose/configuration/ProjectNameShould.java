@@ -86,4 +86,3 @@ public class ProjectNameShould {
         assertThat(projectName, is("projectname"));
     }
 }
-

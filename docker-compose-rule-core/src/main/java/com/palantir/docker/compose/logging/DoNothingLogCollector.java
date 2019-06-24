@@ -21,12 +21,10 @@ public class DoNothingLogCollector implements LogCollector {
 
     @Override
     public void startCollecting(DockerCompose dockerCompose) {
-
     }
 
     @Override
     public void stopCollecting() {
-
     }
 
 }

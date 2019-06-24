@@ -63,7 +63,6 @@ public final class IOMatchers {
 
     public static Matcher<File> fileWithName(String filename) {
         return new ValueCachingMatcher<File>() {
-
             @Override
             public void describeTo(Description description) {
                 description.appendText("file with name " + filename);
@@ -108,7 +107,6 @@ public final class IOMatchers {
 
     public static Matcher<File> fileWithConents(Matcher<String> contentsMatcher) {
         return new FeatureMatcher<File, String>(contentsMatcher, "file contents", "file contents") {
-
             @Override
             protected String featureValueOf(File file) {
                 try {
