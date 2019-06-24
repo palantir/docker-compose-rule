@@ -29,7 +29,7 @@ public final class DockerComposeVersion {
         String version = splitOnSeparator.get(2);
         StringBuilder builder = new StringBuilder();
         for (int i = 0; i < version.length(); i++) {
-            if (version.charAt(i) >= '0' && (version.charAt(i) <= '9' || version.charAt(i) == '.')) {
+            if ((version.charAt(i) >= '0' && version.charAt(i) <= '9') || version.charAt(i) == '.') {
                 builder.append(version.charAt(i));
             } else {
                 return Version.valueOf(builder.toString());

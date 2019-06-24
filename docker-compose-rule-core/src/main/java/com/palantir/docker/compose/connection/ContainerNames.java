@@ -20,14 +20,17 @@ import static java.util.stream.Collectors.toList;
 
 import com.google.common.base.Splitter;
 import java.util.List;
+import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
 public class ContainerNames {
+    private static final Pattern HEAD_PATTERN = Pattern.compile("-+(\r|\n)+");
+    private static final Pattern BODY_PATTERN = Pattern.compile("(\r|\n)+");
 
     private ContainerNames() {}
 
     public static List<ContainerName> parseFromDockerComposePs(String psOutput) {
-        List<String> psHeadAndBody = Splitter.on("-+(\r|\n)+").splitToList(psOutput);
+        List<String> psHeadAndBody = Splitter.on(HEAD_PATTERN).splitToList(psOutput);
         if (psHeadAndBody.size() < 2) {
             return emptyList();
         }
@@ -39,7 +42,7 @@ public class ContainerNames {
     }
 
     private static Stream<String> psBodyLines(String psBody) {
-        List<String> lines = Splitter.on("(\r|\n)+").splitToList(psBody);
+        List<String> lines = Splitter.on(BODY_PATTERN).splitToList(psBody);
         return lines.stream()
                 .map(String::trim)
                 .filter(line -> !line.isEmpty());
