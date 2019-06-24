@@ -27,8 +27,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 public final class AdditionalEnvironmentValidator {
-
-    private static final Set<String> ILLEGAL_VARIABLES = ImmutableSet.of(DOCKER_TLS_VERIFY, DOCKER_HOST, DOCKER_CERT_PATH);
+    private static final ImmutableSet<String> ILLEGAL_VARIABLES = ImmutableSet.of(
+            DOCKER_TLS_VERIFY, DOCKER_HOST, DOCKER_CERT_PATH);
 
     private AdditionalEnvironmentValidator() {}
 

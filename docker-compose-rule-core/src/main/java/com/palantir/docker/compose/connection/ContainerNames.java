@@ -18,7 +18,7 @@ package com.palantir.docker.compose.connection;
 import static java.util.Collections.emptyList;
 import static java.util.stream.Collectors.toList;
 
-import java.util.Arrays;
+import com.google.common.base.Splitter;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -27,20 +27,20 @@ public class ContainerNames {
     private ContainerNames() {}
 
     public static List<ContainerName> parseFromDockerComposePs(String psOutput) {
-        String[] psHeadAndBody = psOutput.split("-+(\r|\n)+");
-        if (psHeadAndBody.length < 2) {
+        List<String> psHeadAndBody = Splitter.on("-+(\r|\n)+").splitToList(psOutput);
+        if (psHeadAndBody.size() < 2) {
             return emptyList();
         }
 
-        String psBody = psHeadAndBody[1];
+        String psBody = psHeadAndBody.get(1);
         return psBodyLines(psBody)
                 .map(ContainerName::fromPsLine)
                 .collect(toList());
     }
 
     private static Stream<String> psBodyLines(String psBody) {
-        String[] lines = psBody.split("(\r|\n)+");
-        return Arrays.stream(lines)
+        List<String> lines = Splitter.on("(\r|\n)+").splitToList(psBody);
+        return lines.stream()
                 .map(String::trim)
                 .filter(line -> !line.isEmpty());
     }
