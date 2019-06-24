@@ -47,7 +47,6 @@ public abstract class DockerComposeExecutable implements Executable {
 
     static Version version() throws IOException, InterruptedException {
         Command dockerCompose = new Command(new Executable() {
-
             @Override
             public String commandName() {
                 return "docker-compose";

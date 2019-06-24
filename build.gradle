@@ -1,3 +1,5 @@
+import net.ltgt.gradle.errorprone.CheckSeverity
+
 buildscript {
     repositories {
         mavenCentral()
@@ -9,9 +11,11 @@ buildscript {
         }
     }
     dependencies {
-        classpath 'com.palantir.baseline:gradle-baseline-java:0.47.0'
         classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.8.4'
         classpath 'com.netflix.nebula:nebula-publishing-plugin:12.0.0'
+        classpath 'com.palantir.baseline:gradle-baseline-java:0.62.1'
+        classpath 'com.palantir.gradle.consistentversions:gradle-consistent-versions:1.9.2'
+        classpath 'gradle.plugin.com.palantir.gradle.gitversion:gradle-git-version:0.11.0'
         classpath 'gradle.plugin.org.inferred:gradle-processors:2.2.0'
         classpath 'org.unbroken-dome.gradle-plugins:gradle-testsets-plugin:2.1.1'
     }
@@ -22,12 +26,15 @@ plugins {
     id 'com.palantir.configuration-resolver' version '0.2.0'
 }
 
-apply plugin: 'com.palantir.baseline-config'
-apply plugin: 'com.palantir.baseline-idea'
+apply plugin: 'com.palantir.baseline'
+apply plugin: 'com.palantir.git-version'
+apply plugin: 'com.palantir.consistent-versions'
+
+version gitVersion()
 
 allprojects {
-    apply plugin: 'com.palantir.configuration-resolver'
-    apply plugin: 'com.palantir.git-version'
+    version rootProject.version
+    group 'com.palantir.docker.compose'
 
     repositories {
         mavenCentral()
@@ -35,25 +42,19 @@ allprojects {
             url 'https://dl.bintray.com/palantir/releases/'
         }
     }
-
-    group 'com.palantir.docker.compose'
-    version gitVersion()
 }
 
 subprojects {
-    apply plugin: 'java'
-    apply plugin: 'com.palantir.baseline-checkstyle'
-    apply plugin: 'com.palantir.baseline-eclipse'
-    apply plugin: 'com.palantir.baseline-idea'
+    apply plugin: 'java-library'
     apply plugin: 'org.inferred.processors'
-    apply plugin: 'com.palantir.configuration-resolver'
     apply from: "${rootDir}/gradle/publish-jar.gradle"
 
     sourceCompatibility = 1.8
     targetCompatibility = 1.8
 
     dependencies {
-        processor 'org.immutables:value:2.5.0'
+        annotationProcessor 'org.immutables:value'
+        compileOnly 'org.immutables:value::annotations'
     }
 
     configurations.all {
@@ -62,6 +63,21 @@ subprojects {
                 "org.slf4j:slf4j-api:$slf4jVersion",
                 "org.slf4j:slf4j-log4j12:$slf4jVersion",
         )
+    }
+
+    tasks.withType(JavaCompile).configureEach {
+        options.errorprone {
+
+            check("CatchBlockLogException", CheckSeverity.OFF)
+            check("PreconditionsConstantMessage", CheckSeverity.OFF)
+            check("PreferSafeLoggableExceptions", CheckSeverity.OFF)
+            check("PreferSafeLoggingPreconditions", CheckSeverity.OFF)
+            check("Slf4jConstantLogMessage", CheckSeverity.OFF)
+            check("ValidateConstantMessage", CheckSeverity.OFF)
+            check("PreconditionsConstantMessage", CheckSeverity.OFF)
+            check('Slf4jLogsafeArgs', CheckSeverity.OFF)
+
+        }
     }
 
     // Instead of copying files out of `$buildDir/test-results/` on CircleCI, we can

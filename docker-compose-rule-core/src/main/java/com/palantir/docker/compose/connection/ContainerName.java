@@ -6,7 +6,9 @@ package com.palantir.docker.compose.connection;
 
 import static java.util.stream.Collectors.joining;
 
+import com.google.common.base.Splitter;
 import java.util.Arrays;
+import java.util.List;
 import org.immutables.value.Value;
 
 @Value.Immutable
@@ -22,8 +24,8 @@ public abstract class ContainerName {
     }
 
     public static ContainerName fromPsLine(String psLine) {
-        String[] lineComponents = psLine.split(" ");
-        String rawName = lineComponents[0];
+        List<String> lineComponents = Splitter.on(" ").splitToList(psLine);
+        String rawName = lineComponents.get(0);
 
         if (probablyCustomName(rawName)) {
             return ImmutableContainerName.builder()

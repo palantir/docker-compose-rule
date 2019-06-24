@@ -299,7 +299,6 @@ public class DockerComposeRuleShould {
 
     @Test
     public void union_cluster_waits_from_builder_instead_of_overwriting() {
-
         ClusterWait firstWait = mock(ClusterWait.class);
         ClusterWait secondWait = mock(ClusterWait.class);
 

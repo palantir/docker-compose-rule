@@ -18,29 +18,32 @@ package com.palantir.docker.compose.connection;
 import static java.util.Collections.emptyList;
 import static java.util.stream.Collectors.toList;
 
-import java.util.Arrays;
+import com.google.common.base.Splitter;
 import java.util.List;
+import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
 public class ContainerNames {
+    private static final Pattern HEAD_PATTERN = Pattern.compile("-+(\r|\n)+");
+    private static final Pattern BODY_PATTERN = Pattern.compile("(\r|\n)+");
 
     private ContainerNames() {}
 
     public static List<ContainerName> parseFromDockerComposePs(String psOutput) {
-        String[] psHeadAndBody = psOutput.split("-+(\r|\n)+");
-        if (psHeadAndBody.length < 2) {
+        List<String> psHeadAndBody = Splitter.on(HEAD_PATTERN).splitToList(psOutput);
+        if (psHeadAndBody.size() < 2) {
             return emptyList();
         }
 
-        String psBody = psHeadAndBody[1];
+        String psBody = psHeadAndBody.get(1);
         return psBodyLines(psBody)
                 .map(ContainerName::fromPsLine)
                 .collect(toList());
     }
 
     private static Stream<String> psBodyLines(String psBody) {
-        String[] lines = psBody.split("(\r|\n)+");
-        return Arrays.stream(lines)
+        List<String> lines = Splitter.on(BODY_PATTERN).splitToList(psBody);
+        return lines.stream()
                 .map(String::trim)
                 .filter(line -> !line.isEmpty());
     }

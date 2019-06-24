@@ -69,6 +69,7 @@ public class Ports {
     }
 
     @Override
+    @SuppressWarnings("EqualsGetClass")
     public boolean equals(Object obj) {
         if (this == obj) {
             return true;
