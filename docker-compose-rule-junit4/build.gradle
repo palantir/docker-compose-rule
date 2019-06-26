@@ -11,6 +11,7 @@ dependencies {
     compile 'junit:junit'
     compile 'org.slf4j:slf4j-api'
     implementation 'one.util:streamex'
+    implementation 'org.javassist:javassist'
 
 
     testCompile project(':docker-compose-rule-core').sourceSets.test.output

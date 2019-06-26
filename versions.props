@@ -11,4 +11,5 @@ org.mockito:mockito-core = 1.9.5
 org.slf4j:* = 1.7.12
 one.util:streamex = 0.6.8
 org.assertj:assertj-core = 3.12.2
+org.javassist:javassist = 3.25.0-GA
 

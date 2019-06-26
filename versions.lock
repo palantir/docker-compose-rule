@@ -12,6 +12,7 @@ org.hamcrest:hamcrest-all:1.3 (1 constraints: a8041d2c)
 org.hamcrest:hamcrest-core:1.3 (5 constraints: 0630345d)
 org.hamcrest:hamcrest-library:1.3 (2 constraints: d112ac11)
 org.immutables:value:2.7.5 (1 constraints: 10050f36)
+org.javassist:javassist:3.25.0-GA (1 constraints: f105524c)
 org.objenesis:objenesis:2.1 (2 constraints: d51811a4)
 org.slf4j:slf4j-api:1.7.12 (2 constraints: 3c0f889b)
 
