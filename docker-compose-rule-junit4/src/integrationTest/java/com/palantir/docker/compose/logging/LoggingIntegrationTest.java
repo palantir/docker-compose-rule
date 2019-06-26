@@ -21,6 +21,7 @@ import static com.palantir.docker.compose.matchers.IOMatchers.matchingPattern;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 
+import com.palantir.docker.compose.DefaultDockerComposeRule;
 import com.palantir.docker.compose.DockerComposeRule;
 import java.io.File;
 import java.io.IOException;
@@ -34,7 +35,7 @@ public class LoggingIntegrationTest {
     @Rule
     public TemporaryFolder logFolder = new TemporaryFolder();
 
-    private DockerComposeRule dockerComposeRule;
+    private DefaultDockerComposeRule dockerComposeRule;
 
     @Before
     public void before() {

@@ -86,7 +86,7 @@ public class DockerComposeRuleShould {
     private DockerComposeFiles mockFiles = mock(DockerComposeFiles.class);
     private DockerMachine machine = mock(DockerMachine.class);
     private LogCollector logCollector = mock(LogCollector.class);
-    private ImmutableDockerComposeRule rule;
+    private DockerComposeRule rule;
 
     @Before public void
     setup() {
@@ -94,7 +94,7 @@ public class DockerComposeRuleShould {
         rule = defaultBuilder().build();
     }
 
-    private DockerComposeRule.Builder defaultBuilder() {
+    private DefaultDockerComposeRule.Builder defaultBuilder() {
         return DockerComposeRule.builder().dockerCompose(dockerCompose)
                                           .files(mockFiles)
                                           .machine(machine)
@@ -225,7 +225,7 @@ public class DockerComposeRuleShould {
     public void be_able_to_save_logs_to_a_directory_while_containers_are_running()
             throws IOException, InterruptedException {
         File logLocation = logFolder.newFolder();
-        DockerComposeRule loggingComposition = DockerComposeRule.builder()
+        DefaultDockerComposeRule loggingComposition = DockerComposeRule.builder()
                 .docker(mockDocker)
                 .dockerCompose(dockerCompose)
                 .files(mockFiles)
@@ -302,7 +302,7 @@ public class DockerComposeRuleShould {
         ClusterWait firstWait = mock(ClusterWait.class);
         ClusterWait secondWait = mock(ClusterWait.class);
 
-        DockerComposeRule twoAssignments = defaultBuilder()
+        DefaultDockerComposeRule twoAssignments = defaultBuilder()
                 .clusterWaits(ImmutableList.of(firstWait))
                 .clusterWaits(ImmutableList.of(secondWait))
                 .build();

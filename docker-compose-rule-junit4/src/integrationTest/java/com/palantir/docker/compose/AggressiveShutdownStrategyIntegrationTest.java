@@ -29,7 +29,7 @@ public class AggressiveShutdownStrategyIntegrationTest {
 
     @Test
     public void shut_down_multiple_containers_immediately() throws Exception {
-        DockerComposeRule rule = DockerComposeRule.builder()
+        DefaultDockerComposeRule rule = DockerComposeRule.builder()
                 .file("src/test/resources/shutdown-strategy.yaml")
                 .logCollector(new DoNothingLogCollector())
                 .retryAttempts(0)

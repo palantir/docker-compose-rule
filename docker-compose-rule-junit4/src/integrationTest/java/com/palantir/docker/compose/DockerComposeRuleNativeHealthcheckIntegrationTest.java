@@ -43,7 +43,7 @@ import org.mockito.internal.matchers.GreaterOrEqual;
 public class DockerComposeRuleNativeHealthcheckIntegrationTest {
 
     private final ExecutorService pool = Executors.newFixedThreadPool(1);
-    private DockerComposeRule rule = null;
+    private DefaultDockerComposeRule rule = null;
 
     @After
     public void shutdownPool() {

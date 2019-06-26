@@ -45,7 +45,7 @@ public class DockerComposeRuleIntegrationTest {
     private static final List<String> CONTAINERS = ImmutableList.of("db", "db2", "db3", "db4");
 
     @Rule
-    public final DockerComposeRule docker = DockerComposeRule.builder()
+    public final DefaultDockerComposeRule docker = DockerComposeRule.builder()
             .files(DockerComposeFiles.from("src/test/resources/docker-compose.yaml"))
             .waitingForService("db", toHaveAllPortsOpen())
             .waitingForService("db2", toHaveAllPortsOpen())

@@ -39,7 +39,7 @@ public class HostNetworkedPortsIntegrationTest {
         // As such, this test will only run on linux.
         assumeTrue("Host ports are only accessible on linux", SystemUtils.IS_OS_LINUX);
 
-        DockerComposeRule docker = DockerComposeRule.builder()
+        DefaultDockerComposeRule docker = DockerComposeRule.builder()
                 .file("src/test/resources/host-networked-docker-compose.yaml")
                 .waitingForHostNetworkedPort(5432, toBeOpen())
                 .build();
