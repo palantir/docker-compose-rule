@@ -6,6 +6,7 @@ package com.palantir.docker.compose;
 import static com.palantir.docker.compose.connection.waiting.ClusterHealthCheck.serviceHealthCheck;
 import static com.palantir.docker.compose.connection.waiting.ClusterHealthCheck.transformingHealthCheck;
 
+import com.google.common.base.Stopwatch;
 import com.palantir.docker.compose.configuration.DockerComposeFiles;
 import com.palantir.docker.compose.configuration.ProjectName;
 import com.palantir.docker.compose.configuration.ShutdownStrategy;
@@ -33,12 +34,18 @@ import com.palantir.docker.compose.logging.DoNothingLogCollector;
 import com.palantir.docker.compose.logging.FileLogCollector;
 import com.palantir.docker.compose.logging.LogCollector;
 import com.palantir.docker.compose.logging.LogDirectory;
+import com.palantir.docker.compose.stats.Stats;
+import com.palantir.docker.compose.stats.StatsConsumer;
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 import org.immutables.value.Value;
 import org.joda.time.Duration;
 import org.joda.time.ReadableDuration;
 import org.junit.rules.ExternalResource;
+import org.junit.runner.Description;
+import org.junit.runners.model.Statement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -57,6 +64,24 @@ public abstract class DockerComposeRule extends ExternalResource {
     public abstract DockerComposeFiles files();
 
     protected abstract List<ClusterWait> clusterWaits();
+
+    protected abstract List<StatsConsumer> statsConsumers();
+
+    @Override
+    public Statement apply(
+            Statement base, Description description) {
+        return new Statement() {
+            @Override
+            public void evaluate() throws Throwable {
+                beforeInternal();
+                try {
+                    base.evaluate();
+                } finally {
+                    after();
+                }
+            }
+        };
+    }
 
     @Value.Default
     public DockerMachine machine() {
@@ -133,11 +158,21 @@ public abstract class DockerComposeRule extends ExternalResource {
         return new DoNothingLogCollector();
     }
 
-    @Override
+    @Deprecated
     public void before() throws IOException, InterruptedException {
+        beforeInternal();
+    }
+
+    private Stats.Builder beforeInternal() throws IOException, InterruptedException {
         log.debug("Starting docker-compose cluster");
+
+        Stats.Builder stats = Stats.builder();
+
+        Stopwatch pullTimer = Stopwatch.createUnstarted();
         if (pullOnStartup()) {
+            pullTimer.start();
             dockerCompose().pull();
+            pullTimer.stop();
         }
 
         dockerCompose().build();
@@ -146,21 +181,42 @@ public abstract class DockerComposeRule extends ExternalResource {
         if (removeConflictingContainersOnStartup()) {
             upDockerCompose = new ConflictingContainerRemovingDockerCompose(upDockerCompose, docker());
         }
+
+        pullTimer.start();
         upDockerCompose.up();
+        pullTimer.stop();
 
         logCollector().startCollecting(dockerCompose());
+
         log.debug("Waiting for services");
         new ClusterWait(ClusterHealthCheck.nativeHealthChecks(), nativeServiceHealthCheckTimeout())
                 .waitUntilReady(containers());
         clusterWaits().forEach(clusterWait -> clusterWait.waitUntilReady(containers()));
         log.debug("docker-compose cluster started");
+
+        return stats;
     }
 
-    @Override
+    @Deprecated
     public void after() {
+        afterInternal(Optional.empty());
+    }
+
+    private void afterInternal(Optional<Stats.Builder> stats) {
         try {
+            Stopwatch shutdownTimer = Stopwatch.createStarted();
             shutdownStrategy().shutdown(this.dockerCompose(), this.docker());
+            shutdownTimer.stop();
+
             logCollector().stopCollecting();
+
+            stats.ifPresent(statsBuilder -> {
+                Stats finalStats = statsBuilder
+                        .containerShutdown(java.time.Duration.ofMillis(shutdownTimer.elapsed(TimeUnit.MILLISECONDS)))
+                        .build();
+
+                statsConsumers().forEach(statsConsumer -> statsConsumer.consumeStats(finalStats));
+            });
         } catch (IOException | InterruptedException e) {
             throw new RuntimeException("Error cleaning up docker compose cluster", e);
         }
