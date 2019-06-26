@@ -21,9 +21,9 @@ import org.immutables.value.Value;
 
 @Value.Immutable
 public interface Stats {
-    Duration pullAndStartContainers();
-    Duration timeUntilContainersHealthy();
-    Duration containerShutdown();
+    Duration pullBuildAndStartContainers();
+    Duration forContainersToBecomeHealthy();
+    Duration shutdown();
 
     class Builder extends ImmutableStats.Builder { }
 

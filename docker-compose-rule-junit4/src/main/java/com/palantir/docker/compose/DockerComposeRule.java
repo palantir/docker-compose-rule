@@ -44,8 +44,6 @@ import org.immutables.value.Value;
 import org.joda.time.Duration;
 import org.joda.time.ReadableDuration;
 import org.junit.rules.ExternalResource;
-import org.junit.runner.Description;
-import org.junit.runners.model.Statement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -61,27 +59,13 @@ public abstract class DockerComposeRule extends ExternalResource {
         return new DockerPort(machine().getIp(), port, port);
     }
 
+    private Optional<Stats.Builder> statsAfterStart = Optional.empty();
+
     public abstract DockerComposeFiles files();
 
     protected abstract List<ClusterWait> clusterWaits();
 
     protected abstract List<StatsConsumer> statsConsumers();
-
-    @Override
-    public Statement apply(
-            Statement base, Description description) {
-        return new Statement() {
-            @Override
-            public void evaluate() throws Throwable {
-                beforeInternal();
-                try {
-                    base.evaluate();
-                } finally {
-                    after();
-                }
-            }
-        };
-    }
 
     @Value.Default
     public DockerMachine machine() {
@@ -158,21 +142,20 @@ public abstract class DockerComposeRule extends ExternalResource {
         return new DoNothingLogCollector();
     }
 
-    @Deprecated
     public void before() throws IOException, InterruptedException {
-        beforeInternal();
-    }
-
-    private Stats.Builder beforeInternal() throws IOException, InterruptedException {
         log.debug("Starting docker-compose cluster");
 
         Stats.Builder stats = Stats.builder();
+        stats.pullBuildAndStartContainers(time(this::pullBuildAndUp));
 
-        Stopwatch pullTimer = Stopwatch.createUnstarted();
+        logCollector().startCollecting(dockerCompose());
+
+        stats.forContainersToBecomeHealthy(time(this::waitForServices));
+    }
+
+    private void pullBuildAndUp() throws IOException, InterruptedException {
         if (pullOnStartup()) {
-            pullTimer.start();
             dockerCompose().pull();
-            pullTimer.stop();
         }
 
         dockerCompose().build();
@@ -182,40 +165,50 @@ public abstract class DockerComposeRule extends ExternalResource {
             upDockerCompose = new ConflictingContainerRemovingDockerCompose(upDockerCompose, docker());
         }
 
-        pullTimer.start();
         upDockerCompose.up();
-        pullTimer.stop();
+    }
 
-        logCollector().startCollecting(dockerCompose());
-
+    private void waitForServices() {
         log.debug("Waiting for services");
         new ClusterWait(ClusterHealthCheck.nativeHealthChecks(), nativeServiceHealthCheckTimeout())
                 .waitUntilReady(containers());
         clusterWaits().forEach(clusterWait -> clusterWait.waitUntilReady(containers()));
         log.debug("docker-compose cluster started");
-
-        return stats;
     }
 
-    @Deprecated
-    public void after() {
-        afterInternal(Optional.empty());
+    interface CheckedRunnable<E extends Throwable, E2 extends Throwable> {
+        void run() throws E, E2;
     }
 
-    private void afterInternal(Optional<Stats.Builder> stats) {
+    private java.time.Duration time(CheckedRunnable<InterruptedException, IOException> runnable) throws InterruptedException, IOException {
+        Stopwatch stopwatch = Stopwatch.createStarted();
         try {
-            Stopwatch shutdownTimer = Stopwatch.createStarted();
-            shutdownStrategy().shutdown(this.dockerCompose(), this.docker());
-            shutdownTimer.stop();
+            runnable.run();
+        } finally {
+            stopwatch.stop();
+        }
+        return java.time.Duration.ofMillis(stopwatch.elapsed(TimeUnit.MILLISECONDS));
+    }
+
+    public void after() {
+        try {
+            java.time.Duration shutdownTime = time(() ->
+                    shutdownStrategy().shutdown(this.dockerCompose(), this.docker()));
 
             logCollector().stopCollecting();
 
-            stats.ifPresent(statsBuilder -> {
+            statsAfterStart.ifPresent(statsBuilder -> {
                 Stats finalStats = statsBuilder
-                        .containerShutdown(java.time.Duration.ofMillis(shutdownTimer.elapsed(TimeUnit.MILLISECONDS)))
+                        .shutdown(shutdownTime)
                         .build();
 
-                statsConsumers().forEach(statsConsumer -> statsConsumer.consumeStats(finalStats));
+                statsConsumers().forEach(statsConsumer -> {
+                    try {
+                        statsConsumer.consumeStats(finalStats);
+                    } catch (Exception e) {
+                        log.error("Failed to consume stats", e);
+                    }
+                });
             });
         } catch (IOException | InterruptedException e) {
             throw new RuntimeException("Error cleaning up docker compose cluster", e);
