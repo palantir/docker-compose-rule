@@ -151,6 +151,8 @@ public abstract class DockerComposeRule extends ExternalResource {
         logCollector().startCollecting(dockerCompose());
 
         stats.forContainersToBecomeHealthy(time(this::waitForServices));
+
+        statsAfterStart = Optional.of(stats);
     }
 
     private void pullBuildAndUp() throws IOException, InterruptedException {
