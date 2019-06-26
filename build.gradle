@@ -57,13 +57,13 @@ subprojects {
         compileOnly 'org.immutables:value::annotations'
     }
 
-    configurations.all {
-        exclude module: 'slf4j-log4j12'
-        resolutionStrategy.force(
-                "org.slf4j:slf4j-api:$slf4jVersion",
-                "org.slf4j:slf4j-log4j12:$slf4jVersion",
-        )
-    }
+//    configurations.all {
+//        exclude module: 'slf4j-log4j12'
+//        resolutionStrategy.force(
+//                "org.slf4j:slf4j-api",
+//                "org.slf4j:slf4j-log4j12",
+//        )
+//    }
 
     tasks.withType(JavaCompile).configureEach {
         options.errorprone {
@@ -78,11 +78,5 @@ subprojects {
             check('Slf4jLogsafeArgs', CheckSeverity.OFF)
 
         }
-    }
-
-    // Instead of copying files out of `$buildDir/test-results/` on CircleCI, we can
-    // just write them into the right place straight away.
-    if (System.env.CIRCLE_TEST_REPORTS) {
-        test.reports.junitXml.destination = file(System.env.CIRCLE_TEST_REPORTS)
     }
 }
