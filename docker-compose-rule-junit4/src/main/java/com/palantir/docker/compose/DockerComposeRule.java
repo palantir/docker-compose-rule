@@ -6,7 +6,6 @@ package com.palantir.docker.compose;
 import static com.palantir.docker.compose.connection.waiting.ClusterHealthCheck.serviceHealthCheck;
 import static com.palantir.docker.compose.connection.waiting.ClusterHealthCheck.transformingHealthCheck;
 
-import com.google.common.base.Stopwatch;
 import com.palantir.docker.compose.configuration.DockerComposeFiles;
 import com.palantir.docker.compose.configuration.ProjectName;
 import com.palantir.docker.compose.configuration.ShutdownStrategy;
@@ -39,7 +38,6 @@ import com.palantir.docker.compose.stats.StatsConsumer;
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.TimeUnit;
 import org.immutables.value.Value;
 import org.joda.time.Duration;
 import org.joda.time.ReadableDuration;
@@ -146,11 +144,11 @@ public abstract class DockerComposeRule extends ExternalResource {
         log.debug("Starting docker-compose cluster");
 
         Stats.Builder stats = Stats.builder();
-        stats.pullBuildAndStartContainers(time(this::pullBuildAndUp));
+        stats.pullBuildAndStartContainers(StopwatchUtils.time(this::pullBuildAndUp));
 
         logCollector().startCollecting(dockerCompose());
 
-        stats.forContainersToBecomeHealthy(time(this::waitForServices));
+        stats.forContainersToBecomeHealthy(StopwatchUtils.time(this::waitForServices));
 
         statsAfterStart = Optional.of(stats);
     }
@@ -178,23 +176,9 @@ public abstract class DockerComposeRule extends ExternalResource {
         log.debug("docker-compose cluster started");
     }
 
-    interface CheckedRunnable<E extends Throwable, E2 extends Throwable> {
-        void run() throws E, E2;
-    }
-
-    private java.time.Duration time(CheckedRunnable<InterruptedException, IOException> runnable) throws InterruptedException, IOException {
-        Stopwatch stopwatch = Stopwatch.createStarted();
-        try {
-            runnable.run();
-        } finally {
-            stopwatch.stop();
-        }
-        return java.time.Duration.ofMillis(stopwatch.elapsed(TimeUnit.MILLISECONDS));
-    }
-
     public void after() {
         try {
-            java.time.Duration shutdownTime = time(() ->
+            java.time.Duration shutdownTime = StopwatchUtils.time(() ->
                     shutdownStrategy().shutdown(this.dockerCompose(), this.docker()));
 
             logCollector().stopCollecting();
