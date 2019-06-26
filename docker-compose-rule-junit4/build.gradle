@@ -14,7 +14,7 @@ dependencies {
     testCompile project(':docker-compose-rule-core').sourceSets.test.output
     testCompile 'com.github.zafarkhaja:java-semver'
     testCompile 'com.jayway.awaitility:awaitility'
-    testCompile 'commons-io:commons-io:2.4'
+    testCompile 'commons-io:commons-io'
     testCompile 'org.hamcrest:hamcrest-all'
     testCompile 'org.hamcrest:hamcrest-core'
     testCompile 'org.hamcrest:hamcrest-library'
