@@ -6,20 +6,20 @@ testSets {
 
 dependencies {
     compile 'com.jayway.awaitility:awaitility'
-    compile "com.github.zafarkhaja:java-semver"
-    compile "com.google.guava:guava"
-    compile "commons-io:commons-io"
-    compile "joda-time:joda-time"
-    compile "org.apache.commons:commons-lang3:3.0"
-    compile "org.hamcrest:hamcrest-all:$hamcrestVersion"
-    compile "org.hamcrest:hamcrest-core:$hamcrestVersion"
-    compile "org.slf4j:slf4j-api:$slf4jVersion"
+    compile 'com.github.zafarkhaja:java-semver'
+    compile 'com.google.guava:guava'
+    compile 'commons-io:commons-io'
+    compile 'joda-time:joda-time'
+    compile 'org.apache.commons:commons-lang3:3.0'
+    compile 'org.hamcrest:hamcrest-all'
+    compile 'org.hamcrest:hamcrest-core'
+    compile 'org.slf4j:slf4j-api'
 
-    testCompile "com.github.stefanbirkner:system-rules:1.16.1"
-    testCompile "junit:junit"
-    testCompile "org.hamcrest:hamcrest-all:$hamcrestVersion"
-    testCompile "org.hamcrest:hamcrest-core:$hamcrestVersion"
-    testCompile "org.hamcrest:hamcrest-library:$hamcrestVersion"
-    testCompile "org.mockito:mockito-core:$mockitoVersion"
-    testCompile "org.slf4j:slf4j-log4j12:$slf4jVersion"
+    testCompile 'com.github.stefanbirkner:system-rules'
+    testCompile 'junit:junit'
+    testCompile 'org.hamcrest:hamcrest-all'
+    testCompile 'org.hamcrest:hamcrest-core'
+    testCompile 'org.hamcrest:hamcrest-library'
+    testCompile 'org.mockito:mockito-core'
+    testCompile 'org.slf4j:slf4j-log4j12'
 }
