@@ -94,7 +94,7 @@ public class DockerComposeRuleShould {
         rule = defaultBuilder().build();
     }
 
-    private DefaultDockerComposeRule.Builder defaultBuilder() {
+    private DockerComposeRule.Builder defaultBuilder() {
         return DockerComposeRule.builder().dockerCompose(dockerCompose)
                                           .files(mockFiles)
                                           .machine(machine)
@@ -302,7 +302,7 @@ public class DockerComposeRuleShould {
         ClusterWait firstWait = mock(ClusterWait.class);
         ClusterWait secondWait = mock(ClusterWait.class);
 
-        DefaultDockerComposeRule twoAssignments = defaultBuilder()
+        DockerComposeRule twoAssignments = defaultBuilder()
                 .clusterWaits(ImmutableList.of(firstWait))
                 .clusterWaits(ImmutableList.of(secondWait))
                 .build();
