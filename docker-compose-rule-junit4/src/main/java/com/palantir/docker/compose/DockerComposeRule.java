@@ -188,17 +188,21 @@ public abstract class DockerComposeRule extends ExternalResource {
                         .shutdown(shutdownTime)
                         .build();
 
-                statsConsumers().forEach(statsConsumer -> {
-                    try {
-                        statsConsumer.consumeStats(finalStats);
-                    } catch (Exception e) {
-                        log.error("Failed to consume stats", e);
-                    }
-                });
+                sendStatsToConsumers(finalStats);
             });
         } catch (IOException | InterruptedException e) {
             throw new RuntimeException("Error cleaning up docker compose cluster", e);
         }
+    }
+
+    private void sendStatsToConsumers(Stats finalStats) {
+        statsConsumers().forEach(statsConsumer -> {
+            try {
+                statsConsumer.consumeStats(finalStats);
+            } catch (Exception e) {
+                log.error("Failed to consume stats", e);
+            }
+        });
     }
 
     public String exec(DockerComposeExecOption options, String containerName,
