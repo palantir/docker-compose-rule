@@ -26,7 +26,11 @@ public interface Stats {
     Optional<Duration> pullBuildAndStartContainers();
     Optional<Duration> becomeHealthyOrTimeout();
     Optional<Duration> shutdown();
-    List<ServiceStats> containersWithHealthchecksStats();
+    List<ServiceStats> servicesWithHealthchecksStats();
+
+    default boolean startedSuccessfully() {
+        return becomeHealthyOrTimeout().isPresent();
+    }
 
     class Builder extends ImmutableStats.Builder { }
 

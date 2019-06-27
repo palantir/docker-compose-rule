@@ -71,7 +71,7 @@ class StatsRecorder {
     }
 
     public Stats stats() {
-        statsBuilder.addAllContainersWithHealthchecksStats(getResults());
+        statsBuilder.addAllServicesWithHealthchecksStats(getResults());
         return statsBuilder.build();
     }
 
