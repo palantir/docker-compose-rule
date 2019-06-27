@@ -52,7 +52,7 @@ public class StatsIntegrationTest {
 
         assertThat(stats.containersWithHealthchecksStats()).hasOnlyOneElementSatisfying(containerStats -> {
             assertThatOptionalDurationIsGreaterThanZero(containerStats.timeTakenToBecomeHealthy());
-            assertThat(containerStats.containerName()).isEqualTo("one");
+            assertThat(containerStats.serviceName()).isEqualTo("one");
             assertThat(containerStats.startedSuccessfully()).isTrue();
         });
 
@@ -80,7 +80,7 @@ public class StatsIntegrationTest {
         assertThatOptionalDurationIsGreaterThanZero(stats.pullBuildAndStartContainers());
 
         assertThat(stats.containersWithHealthchecksStats()).hasOnlyOneElementSatisfying(containerStats -> {
-            assertThat(containerStats.containerName()).isEqualTo("one");
+            assertThat(containerStats.serviceName()).isEqualTo("one");
             assertThat(containerStats.timeTakenToBecomeHealthy()).isEmpty();
             assertThat(containerStats.startedSuccessfully()).isFalse();
         });

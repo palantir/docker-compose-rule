@@ -26,7 +26,7 @@ public interface Stats {
     Optional<Duration> pullBuildAndStartContainers();
     Optional<Duration> becomeHealthyOrTimeout();
     Optional<Duration> shutdown();
-    List<ContainerStats> containersWithHealthchecksStats();
+    List<ServiceStats> containersWithHealthchecksStats();
 
     class Builder extends ImmutableStats.Builder { }
 

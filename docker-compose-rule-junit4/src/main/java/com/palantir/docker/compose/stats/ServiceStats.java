@@ -21,15 +21,15 @@ import java.util.Optional;
 import org.immutables.value.Value;
 
 @Value.Immutable
-public interface ContainerStats {
-    String containerName();
+public interface ServiceStats {
+    String serviceName();
     Optional<Duration> timeTakenToBecomeHealthy();
 
     default boolean startedSuccessfully() {
         return timeTakenToBecomeHealthy().isPresent();
     }
 
-    class Builder extends ImmutableContainerStats.Builder { }
+    class Builder extends ImmutableServiceStats.Builder { }
 
     static Builder builder() {
         return new Builder();

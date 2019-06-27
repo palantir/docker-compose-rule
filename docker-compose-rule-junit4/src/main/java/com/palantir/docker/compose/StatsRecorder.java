@@ -18,7 +18,7 @@ package com.palantir.docker.compose;
 
 import com.google.common.base.Stopwatch;
 import com.palantir.docker.compose.connection.waiting.ClusterWait;
-import com.palantir.docker.compose.stats.ContainerStats;
+import com.palantir.docker.compose.stats.ServiceStats;
 import com.palantir.docker.compose.stats.Stats;
 import java.io.IOException;
 import java.time.Duration;
@@ -31,8 +31,8 @@ import one.util.streamex.EntryStream;
 
 class StatsRecorder {
     private final Stats.Builder statsBuilder = Stats.builder();
-    private final Stopwatch containerHealthyStopwatch = Stopwatch.createUnstarted();
-    private final ConcurrentMap<String, Optional<Duration>> containerRunTimes = new ConcurrentHashMap<>();
+    private final Stopwatch serviceHealthyStopwatch = Stopwatch.createUnstarted();
+    private final ConcurrentMap<String, Optional<Duration>> serviceTimesToBecomeHealthy = new ConcurrentHashMap<>();
 
     public void pullBuildAndStartContainers(StopwatchUtils.CheckedRunnable runnable) throws IOException,
             InterruptedException {
@@ -41,7 +41,7 @@ class StatsRecorder {
 
     public void forContainersToBecomeHealthy(StopwatchUtils.CheckedRunnable runnable) throws IOException,
             InterruptedException {
-        containerHealthyStopwatch.start();
+        serviceHealthyStopwatch.start();
         statsBuilder.becomeHealthyOrTimeout(StopwatchUtils.time(runnable));
     }
 
@@ -50,19 +50,19 @@ class StatsRecorder {
         statsBuilder.shutdown(StopwatchUtils.time(runnable));
     }
 
-    public void serviceIsHealthy(String serviceName) {
-        containerRunTimes.put(serviceName,
-                Optional.of(StopwatchUtils.toDuration(containerHealthyStopwatch)));
+    private void serviceIsHealthy(String serviceName) {
+        serviceTimesToBecomeHealthy.put(serviceName,
+                Optional.of(StopwatchUtils.toDuration(serviceHealthyStopwatch)));
     }
 
-    public void serviceTimedOut(String serviceName) {
-        containerRunTimes.put(serviceName, Optional.empty());
+    private void serviceTimedOut(String serviceName) {
+        serviceTimesToBecomeHealthy.put(serviceName, Optional.empty());
     }
 
-    private List<ContainerStats> getResults() {
-        return EntryStream.of(containerRunTimes)
+    private List<ServiceStats> getResults() {
+        return EntryStream.of(serviceTimesToBecomeHealthy)
                 .mapKeyValue((serviceName, timeTakenToBeHealthy) -> {
-                    return ContainerStats.builder()
+                    return ServiceStats.builder()
                             .containerName(serviceName)
                             .timeTakenToBecomeHealthy(timeTakenToBeHealthy)
                             .build();
