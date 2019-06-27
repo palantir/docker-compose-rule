@@ -209,7 +209,10 @@ public abstract class DockerComposeRule implements TestRule {
 
             listListenableFuture.get();
         } catch (ExecutionException e) {
-            throw new RuntimeException(e);
+            if (e.getCause() instanceof RuntimeException) {
+                throw (RuntimeException) e.getCause();
+            }
+            throw new IllegalStateException("A healthcheck errored out: ", e);
         } finally {
             MoreExecutors.shutdownAndAwaitTermination(executorService, 1, TimeUnit.SECONDS);
         }
