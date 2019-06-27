@@ -22,4 +22,5 @@ dependencies {
     testCompile 'org.hamcrest:hamcrest-library'
     testCompile 'org.mockito:mockito-core'
     testCompile 'org.slf4j:slf4j-simple'
+    testCompile 'org.assertj:assertj-core'
 }
