@@ -21,5 +21,5 @@ dependencies {
     testCompile 'org.hamcrest:hamcrest-core'
     testCompile 'org.hamcrest:hamcrest-library'
     testCompile 'org.mockito:mockito-core'
-    testCompile 'org.slf4j:slf4j-simple'
+    testCompile 'org.slf4j:slf4j-log4j12'
 }
