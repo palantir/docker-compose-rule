@@ -281,8 +281,7 @@ public abstract class DockerComposeRule extends ExternalResource {
         }
 
         public Builder waitingForService(String serviceName, HealthCheck<Container> healthCheck, ReadableDuration timeout) {
-            ClusterHealthCheck clusterHealthCheck =
-                    serviceHealthCheck(serviceName, healthCheck);
+            ClusterHealthCheck clusterHealthCheck = serviceHealthCheck(serviceName, healthCheck);
             return addClusterWait(new ClusterWait(clusterHealthCheck, timeout, statsRecorder.clusterWaitListener(serviceName)));
         }
 
@@ -292,8 +291,7 @@ public abstract class DockerComposeRule extends ExternalResource {
 
         public Builder waitingForServices(List<String> services, HealthCheck<List<Container>> healthCheck, ReadableDuration timeout) {
             ClusterHealthCheck clusterHealthCheck = serviceHealthCheck(services, healthCheck);
-            return addClusterWait(new ClusterWait(clusterHealthCheck, timeout,
-                    statsRecorder.clusterWaitListener(services)));
+            return addClusterWait(new ClusterWait(clusterHealthCheck, timeout, statsRecorder.clusterWaitListener(services)));
         }
 
         public Builder waitingForHostNetworkedPort(int port, HealthCheck<DockerPort> healthCheck) {
