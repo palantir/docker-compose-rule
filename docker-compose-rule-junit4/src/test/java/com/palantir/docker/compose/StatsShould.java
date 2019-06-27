@@ -14,24 +14,14 @@
  * limitations under the License.
  */
 
-package com.palantir.docker.compose.stats;
+package com.palantir.docker.compose;
 
-import java.time.Duration;
-import java.util.Optional;
-import org.immutables.value.Value;
+import com.palantir.docker.compose.stats.Stats;
+import org.junit.Test;
 
-@Value.Immutable
-public interface ContainerStats {
-    String containerName();
-    Optional<Duration> timeTakenToBecomeHealthy();
-
-    default boolean startedSuccessfully() {
-        return timeTakenToBecomeHealthy().isPresent();
-    }
-
-    class Builder extends ImmutableContainerStats.Builder { }
-
-    static Builder builder() {
-        return new Builder();
+public class StatsShould {
+    @Test
+    public void be_constructable_even_without_setting_any_stats() {
+        Stats.builder().build();
     }
 }
