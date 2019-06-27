@@ -42,7 +42,7 @@ class StatsRecorder {
     public void forContainersToBecomeHealthy(StopwatchUtils.CheckedRunnable runnable) throws IOException,
             InterruptedException {
         containerHealthyStopwatch.start();
-        statsBuilder.forContainersToBecomeHealthy(StopwatchUtils.time(runnable));
+        statsBuilder.becomeHealthyOrTimeout(StopwatchUtils.time(runnable));
     }
 
     public void shutdown(StopwatchUtils.CheckedRunnable runnable) throws IOException,

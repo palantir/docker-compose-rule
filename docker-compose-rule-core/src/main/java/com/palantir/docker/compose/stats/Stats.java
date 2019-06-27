@@ -18,13 +18,14 @@ package com.palantir.docker.compose.stats;
 
 import java.time.Duration;
 import java.util.List;
+import java.util.Optional;
 import org.immutables.value.Value;
 
 @Value.Immutable
 public interface Stats {
-    Duration pullBuildAndStartContainers();
-    Duration forContainersToBecomeHealthy();
-    Duration shutdown();
+    Optional<Duration> pullBuildAndStartContainers();
+    Optional<Duration> becomeHealthyOrTimeout();
+    Optional<Duration> shutdown();
     List<ContainerStats> containersWithHealthchecksStats();
 
     class Builder extends ImmutableStats.Builder { }

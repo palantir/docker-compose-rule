@@ -25,6 +25,7 @@ import com.palantir.docker.compose.connection.waiting.SuccessOrFailure;
 import com.palantir.docker.compose.stats.Stats;
 import com.palantir.docker.compose.stats.StatsConsumer;
 import java.time.Duration;
+import java.util.Optional;
 import org.junit.Test;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
@@ -44,17 +45,13 @@ public class StatsIntegrationTest {
 
         runDockerComposeRule(dockerComposeRule);
 
-        ArgumentCaptor<Stats> argumentCaptor = ArgumentCaptor.forClass(Stats.class);
-        verify(statsConsumer).consumeStats(argumentCaptor.capture());
+        Stats stats = getStats();
 
-        Stats stats = argumentCaptor.getValue();
-        System.out.println("stats = " + stats);
-        assertThat(stats.pullBuildAndStartContainers()).isGreaterThan(Duration.ZERO);
-        assertThat(stats.forContainersToBecomeHealthy()).isGreaterThan(Duration.ZERO);
+        assertThatOptionalDurationIsGreaterThanZero(stats.pullBuildAndStartContainers());
+        assertThatOptionalDurationIsGreaterThanZero(stats.becomeHealthyOrTimeout());
+
         assertThat(stats.containersWithHealthchecksStats()).hasOnlyOneElementSatisfying(containerStats -> {
-            assertThat(containerStats.timeTakenToBecomeHealthy()).hasValueSatisfying(duration -> {
-                assertThat(duration).isGreaterThan(Duration.ZERO);
-            });
+            assertThatOptionalDurationIsGreaterThanZero(containerStats.timeTakenToBecomeHealthy());
             assertThat(containerStats.containerName()).isEqualTo("one");
             assertThat(containerStats.startedSuccessfully()).isTrue();
         });
@@ -69,7 +66,7 @@ public class StatsIntegrationTest {
                 .waitingForService(
                         "one",
                         container -> SuccessOrFailure.failure("failed"),
-                        org.joda.time.Duration.standardSeconds(1))
+                        org.joda.time.Duration.millis(1))
                 .addStatsConsumer(statsConsumer)
                 .build();
 
@@ -79,19 +76,32 @@ public class StatsIntegrationTest {
             // ignore the failure
         }
 
-        ArgumentCaptor<Stats> argumentCaptor = ArgumentCaptor.forClass(Stats.class);
-        verify(statsConsumer).consumeStats(argumentCaptor.capture());
+        Stats stats = getStats();
 
-        Stats stats = argumentCaptor.getValue();
-        System.out.println("stats = " + stats);
-        assertThat(stats.pullBuildAndStartContainers()).isGreaterThan(Duration.ZERO);
-        assertThat(stats.forContainersToBecomeHealthy()).isGreaterThan(Duration.ZERO);
+        Optional<Duration> durationValue = stats.pullBuildAndStartContainers();
+
+        assertThatOptionalDurationIsGreaterThanZero(durationValue);
+        assertThatOptionalDurationIsGreaterThanZero(stats.becomeHealthyOrTimeout());
+
         assertThat(stats.containersWithHealthchecksStats()).hasOnlyOneElementSatisfying(containerStats -> {
             assertThat(containerStats.containerName()).isEqualTo("one");
             assertThat(containerStats.timeTakenToBecomeHealthy()).isEmpty();
             assertThat(containerStats.startedSuccessfully()).isFalse();
         });
 
+    }
+
+    private Stats getStats() {
+        ArgumentCaptor<Stats> argumentCaptor = ArgumentCaptor.forClass(Stats.class);
+        verify(statsConsumer).consumeStats(argumentCaptor.capture());
+        Stats stats = argumentCaptor.getValue();
+        System.out.println("stats = " + stats);
+        return stats;
+    }
+
+    private void assertThatOptionalDurationIsGreaterThanZero(Optional<Duration> durationValue) {
+        assertThat(durationValue).hasValueSatisfying(duration ->
+                assertThat(duration).isGreaterThan(Duration.ZERO));
     }
 
     private void runDockerComposeRule(DockerComposeRule dockerComposeRule) throws Throwable {
