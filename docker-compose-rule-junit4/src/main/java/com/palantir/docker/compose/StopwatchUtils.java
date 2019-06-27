@@ -31,6 +31,10 @@ class StopwatchUtils {
         } finally {
             stopwatch.stop();
         }
+        return toDuration(stopwatch);
+    }
+
+    static Duration toDuration(Stopwatch stopwatch) {
         return Duration.ofMillis(stopwatch.elapsed(TimeUnit.MILLISECONDS));
     }
 

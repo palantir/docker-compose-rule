@@ -6,6 +6,7 @@ package com.palantir.docker.compose;
 import static com.palantir.docker.compose.connection.waiting.ClusterHealthCheck.serviceHealthCheck;
 import static com.palantir.docker.compose.connection.waiting.ClusterHealthCheck.transformingHealthCheck;
 
+import com.google.common.base.Stopwatch;
 import com.palantir.docker.compose.configuration.DockerComposeFiles;
 import com.palantir.docker.compose.configuration.ProjectName;
 import com.palantir.docker.compose.configuration.ShutdownStrategy;
@@ -18,6 +19,7 @@ import com.palantir.docker.compose.connection.ImmutableCluster;
 import com.palantir.docker.compose.connection.waiting.ClusterHealthCheck;
 import com.palantir.docker.compose.connection.waiting.ClusterWait;
 import com.palantir.docker.compose.connection.waiting.HealthCheck;
+import com.palantir.docker.compose.connection.waiting.SuccessOrFailure;
 import com.palantir.docker.compose.execution.ConflictingContainerRemovingDockerCompose;
 import com.palantir.docker.compose.execution.DefaultDockerCompose;
 import com.palantir.docker.compose.execution.Docker;
@@ -37,7 +39,12 @@ import com.palantir.docker.compose.stats.Stats;
 import com.palantir.docker.compose.stats.StatsConsumer;
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+import java.util.stream.Collectors;
+import one.util.streamex.EntryStream;
 import org.immutables.value.Value;
 import org.joda.time.Duration;
 import org.joda.time.ReadableDuration;
@@ -58,6 +65,8 @@ public abstract class DockerComposeRule extends ExternalResource {
     }
 
     private Optional<Stats.Builder> statsAfterStart = Optional.empty();
+
+    protected abstract StatsRecorder statsRecorder();
 
     public abstract DockerComposeFiles files();
 
@@ -170,10 +179,31 @@ public abstract class DockerComposeRule extends ExternalResource {
 
     private void waitForServices() {
         log.debug("Waiting for services");
+        // ListeningExecutorService executorService =
+        //         MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(clusterWaits().size()));
+
+        // try {
+        //     clusterWaits().stream()
+        //             .map(clusterWait -> executorService.submit(() -> clusterWait.waitUntilReady(containers())))
+        //             .collect(Collectors.toList());
+        //
+        //     List<Future<Void>> futures = executorService.(clusterWaits().stream()
+        //             .map(clusterWait -> (Callable<Void>) () -> {
+        //                 clusterWait.waitUntilReady(containers());
+        //                 return null;
+        //             })
+        //             .collect(Collectors.toList()));
+        //
+        // } catch (InterruptedException e) {
+        //     e.printStackTrace();
+        // }
+
         new ClusterWait(ClusterHealthCheck.nativeHealthChecks(), nativeServiceHealthCheckTimeout())
                 .waitUntilReady(containers());
         clusterWaits().forEach(clusterWait -> clusterWait.waitUntilReady(containers()));
         log.debug("docker-compose cluster started");
+
+        log.info("stats: {}", statsRecorder().getResults());
     }
 
     public void after() {
@@ -219,7 +249,29 @@ public abstract class DockerComposeRule extends ExternalResource {
         return new Builder();
     }
 
+    static class StatsRecorder {
+        private final ConcurrentMap<String, Stopwatch> stats = new ConcurrentHashMap<>();
+
+        public Stopwatch forService(String serviceName) {
+            return stats.computeIfAbsent(serviceName, ignored -> Stopwatch.createStarted());
+        }
+
+        public Map<String, Optional<java.time.Duration>> getResults() {
+            return EntryStream.of(stats)
+                    .mapValues(stopwatch -> {
+                        if (stopwatch.isRunning()) {
+                            return Optional.<java.time.Duration>empty();
+                        }
+
+                        return Optional.of(StopwatchUtils.toDuration(stopwatch));
+                    })
+                    .toImmutableMap();
+        }
+    }
+
     public static class Builder extends ImmutableDockerComposeRule.Builder {
+
+        private final StatsRecorder statsRecorder = new StatsRecorder();
 
         public Builder file(String dockerComposeYmlFile) {
             return files(DockerComposeFiles.from(dockerComposeYmlFile));
@@ -250,12 +302,42 @@ public abstract class DockerComposeRule extends ExternalResource {
             return this;
         }
 
+        private HealthCheck<Container> timeHealthCheck(String serviceName, HealthCheck<Container> healthCheck) {
+            return target -> {
+                Stopwatch stopwatch = statsRecorder.forService(serviceName);
+                SuccessOrFailure result = healthCheck.isHealthy(target);
+                if (result.succeeded()) {
+                    stopwatch.stop();
+                }
+                return result;
+            };
+        }
+
+        private HealthCheck<List<Container>> timeServices(
+                List<String> services,
+                HealthCheck<List<Container>> healthCheck) {
+            return target -> {
+                List<Stopwatch> stopwatches = services.stream()
+                        .map(statsRecorder::forService)
+                        .collect(Collectors.toList());
+
+                SuccessOrFailure result = healthCheck.isHealthy(target);
+
+                if (result.succeeded()) {
+                    stopwatches.forEach(Stopwatch::stop);
+                }
+
+                return result;
+            };
+        }
+
         public Builder waitingForService(String serviceName, HealthCheck<Container> healthCheck) {
             return waitingForService(serviceName, healthCheck, DEFAULT_TIMEOUT);
         }
 
         public Builder waitingForService(String serviceName, HealthCheck<Container> healthCheck, ReadableDuration timeout) {
-            ClusterHealthCheck clusterHealthCheck = serviceHealthCheck(serviceName, healthCheck);
+            ClusterHealthCheck clusterHealthCheck =
+                    serviceHealthCheck(serviceName, timeHealthCheck(serviceName, healthCheck));
             return addClusterWait(new ClusterWait(clusterHealthCheck, timeout));
         }
 
@@ -264,7 +346,7 @@ public abstract class DockerComposeRule extends ExternalResource {
         }
 
         public Builder waitingForServices(List<String> services, HealthCheck<List<Container>> healthCheck, ReadableDuration timeout) {
-            ClusterHealthCheck clusterHealthCheck = serviceHealthCheck(services, healthCheck);
+            ClusterHealthCheck clusterHealthCheck = serviceHealthCheck(services, timeServices(services, healthCheck));
             return addClusterWait(new ClusterWait(clusterHealthCheck, timeout));
         }
 
@@ -279,6 +361,12 @@ public abstract class DockerComposeRule extends ExternalResource {
 
         public Builder clusterWaits(Iterable<? extends ClusterWait> elements) {
             return addAllClusterWaits(elements);
+        }
+
+        @Override
+        public DockerComposeRule build() {
+            statsRecorder(statsRecorder);
+            return super.build();
         }
     }
 

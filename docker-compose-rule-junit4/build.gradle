@@ -10,6 +10,8 @@ dependencies {
     compile 'joda-time:joda-time'
     compile 'junit:junit'
     compile 'org.slf4j:slf4j-api'
+    implementation 'one.util:streamex'
+
 
     testCompile project(':docker-compose-rule-core').sourceSets.test.output
     testCompile 'com.github.zafarkhaja:java-semver'
