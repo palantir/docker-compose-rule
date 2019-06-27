@@ -31,9 +31,8 @@ import one.util.streamex.EntryStream;
 
 class StatsRecorder {
     private final Stats.Builder statsBuilder = Stats.builder();
-    private Stopwatch containerHealthyStopwatch = Stopwatch.createUnstarted();
-    private final ConcurrentMap<String, Optional<Duration>> containerHealthyEndNanos =
-            new ConcurrentHashMap<>();
+    private final Stopwatch containerHealthyStopwatch = Stopwatch.createUnstarted();
+    private final ConcurrentMap<String, Optional<Duration>> containerRunTimes = new ConcurrentHashMap<>();
 
     public void pullBuildAndStartContainers(StopwatchUtils.CheckedRunnable runnable) throws IOException,
             InterruptedException {
@@ -52,16 +51,16 @@ class StatsRecorder {
     }
 
     public void serviceIsHealthy(String serviceName) {
-        containerHealthyEndNanos.put(serviceName,
+        containerRunTimes.put(serviceName,
                 Optional.of(StopwatchUtils.toDuration(containerHealthyStopwatch)));
     }
 
     public void serviceTimedOut(String serviceName) {
-        containerHealthyEndNanos.put(serviceName, Optional.empty());
+        containerRunTimes.put(serviceName, Optional.empty());
     }
 
     private List<ContainerStats> getResults() {
-        return EntryStream.of(containerHealthyEndNanos)
+        return EntryStream.of(containerRunTimes)
                 .mapKeyValue((serviceName, timeTakenToBeHealthy) -> {
                     return ContainerStats.builder()
                             .containerName(serviceName)
