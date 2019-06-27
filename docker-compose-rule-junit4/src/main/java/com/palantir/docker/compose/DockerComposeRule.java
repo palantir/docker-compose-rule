@@ -67,11 +67,11 @@ public abstract class DockerComposeRule extends ExternalResource {
 
     private static final Logger log = LoggerFactory.getLogger(DockerComposeRule.class);
 
+    private boolean fullyStarted = false;
+
     public DockerPort hostNetworkedPort(int port) {
         return new DockerPort(machine().getIp(), port, port);
     }
-
-    private Optional<Stats.Builder> statsAfterStart = Optional.empty();
 
     protected abstract StatsRecorder statsRecorder();
 
@@ -159,15 +159,11 @@ public abstract class DockerComposeRule extends ExternalResource {
     public void before() throws IOException, InterruptedException {
         log.debug("Starting docker-compose cluster");
 
-        Stats.Builder stats = Stats.builder();
-        stats.pullBuildAndStartContainers(StopwatchUtils.time(this::pullBuildAndUp));
-
+        statsRecorder().pullBuildAndStartContainers(this::pullBuildAndUp);
         logCollector().startCollecting(dockerCompose());
+        statsRecorder().forContainersToBecomeHealthy(this::waitForServices);
 
-        stats.forContainersToBecomeHealthy(StopwatchUtils.time(this::waitForServices));
-        stats.containersWithHealthchecksStats(statsRecorder().getResults());
-
-        statsAfterStart = Optional.of(stats);
+        fullyStarted = true;
     }
 
     private void pullBuildAndUp() throws IOException, InterruptedException {
@@ -217,18 +213,14 @@ public abstract class DockerComposeRule extends ExternalResource {
 
     public void after() {
         try {
-            java.time.Duration shutdownTime = StopwatchUtils.time(() ->
+            statsRecorder().shutdown(() ->
                     shutdownStrategy().shutdown(this.dockerCompose(), this.docker()));
 
             logCollector().stopCollecting();
 
-            statsAfterStart.ifPresent(statsBuilder -> {
-                Stats finalStats = statsBuilder
-                        .shutdown(shutdownTime)
-                        .build();
-
-                sendStatsToConsumers(finalStats);
-            });
+            if (fullyStarted) {
+                sendStatsToConsumers(statsRecorder().stats());
+            }
         } catch (IOException | InterruptedException e) {
             throw new RuntimeException("Error cleaning up docker compose cluster", e);
         }
@@ -259,14 +251,30 @@ public abstract class DockerComposeRule extends ExternalResource {
     }
 
     static class StatsRecorder {
-        private final ConcurrentMap<String, Stopwatch> stats = new ConcurrentHashMap<>();
+        private final Stats.Builder statsBuilder = Stats.builder();
+        private final ConcurrentMap<String, Stopwatch> containerTimings = new ConcurrentHashMap<>();
 
-        public Stopwatch forService(String serviceName) {
-            return stats.computeIfAbsent(serviceName, ignored -> Stopwatch.createStarted());
+        private void pullBuildAndStartContainers(StopwatchUtils.CheckedRunnable runnable) throws IOException,
+                InterruptedException {
+            statsBuilder.pullBuildAndStartContainers(StopwatchUtils.time(runnable));
         }
 
-        public List<ContainerStats> getResults() {
-            return EntryStream.of(stats)
+        private void forContainersToBecomeHealthy(StopwatchUtils.CheckedRunnable runnable) throws IOException,
+                InterruptedException {
+            statsBuilder.forContainersToBecomeHealthy(StopwatchUtils.time(runnable));
+        }
+
+        private void shutdown(StopwatchUtils.CheckedRunnable runnable) throws IOException,
+                InterruptedException {
+            statsBuilder.shutdown(StopwatchUtils.time(runnable));
+        }
+
+        public Stopwatch forService(String serviceName) {
+            return containerTimings.computeIfAbsent(serviceName, ignored -> Stopwatch.createStarted());
+        }
+
+        private List<ContainerStats> getResults() {
+            return EntryStream.of(containerTimings)
                     .mapValues(stopwatch -> {
                         if (stopwatch.isRunning()) {
                             return Optional.<java.time.Duration>empty();
@@ -281,6 +289,11 @@ public abstract class DockerComposeRule extends ExternalResource {
                                 .build();
                     })
                     .collect(Collectors.toList());
+        }
+
+        public Stats stats() {
+            statsBuilder.addAllContainersWithHealthchecksStats(getResults());
+            return statsBuilder.build();
         }
     }
 
