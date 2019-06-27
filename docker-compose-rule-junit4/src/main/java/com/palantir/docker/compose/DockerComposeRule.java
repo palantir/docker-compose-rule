@@ -49,19 +49,34 @@ import java.util.stream.Stream;
 import org.immutables.value.Value;
 import org.joda.time.Duration;
 import org.joda.time.ReadableDuration;
-import org.junit.rules.ExternalResource;
+import org.junit.rules.TestRule;
+import org.junit.runner.Description;
+import org.junit.runners.model.Statement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @Value.Immutable
 @CustomImmutablesStyle
-public abstract class DockerComposeRule extends ExternalResource {
+public abstract class DockerComposeRule implements TestRule {
+    private static final Logger log = LoggerFactory.getLogger(DockerComposeRule.class);
+
     public static final Duration DEFAULT_TIMEOUT = Duration.standardMinutes(2);
     public static final int DEFAULT_RETRY_ATTEMPTS = 2;
 
-    private static final Logger log = LoggerFactory.getLogger(DockerComposeRule.class);
-
-    private boolean fullyStarted = false;
+    @Override
+    public Statement apply(Statement base, Description description) {
+        return new Statement() {
+            @Override
+            public void evaluate() throws Throwable {
+                try {
+                    before();
+                    base.evaluate();
+                } finally {
+                    after();
+                }
+            }
+        };
+    }
 
     public DockerPort hostNetworkedPort(int port) {
         return new DockerPort(machine().getIp(), port, port);
@@ -156,8 +171,6 @@ public abstract class DockerComposeRule extends ExternalResource {
         statsRecorder().pullBuildAndStartContainers(this::pullBuildAndUp);
         logCollector().startCollecting(dockerCompose());
         statsRecorder().forContainersToBecomeHealthy(this::waitForServices);
-
-        fullyStarted = true;
     }
 
     private void pullBuildAndUp() throws IOException, InterruptedException {
@@ -211,18 +224,18 @@ public abstract class DockerComposeRule extends ExternalResource {
 
             logCollector().stopCollecting();
 
-            if (fullyStarted) {
-                sendStatsToConsumers(statsRecorder().stats());
-            }
         } catch (IOException | InterruptedException e) {
             throw new RuntimeException("Error cleaning up docker compose cluster", e);
+        } finally {
+            sendStatsToConsumers();
         }
     }
 
-    private void sendStatsToConsumers(Stats finalStats) {
+    private void sendStatsToConsumers() {
+        Stats stats = statsRecorder().stats();
         statsConsumers().forEach(statsConsumer -> {
             try {
-                statsConsumer.consumeStats(finalStats);
+                statsConsumer.consumeStats(stats);
             } catch (Exception e) {
                 log.error("Failed to consume stats", e);
             }

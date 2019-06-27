@@ -31,10 +31,10 @@ import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 import org.mockito.ArgumentCaptor;
 
+@SuppressWarnings("IllegalThrows")
 public class StatsIntegrationTest {
     private final StatsConsumer statsConsumer = mock(StatsConsumer.class);
 
-    @SuppressWarnings("IllegalThrows")
     @Test
     public void produce_stats_on_a_successful_run() throws Throwable {
         DockerComposeRule dockerComposeRule = DockerComposeRule.builder()
@@ -60,13 +60,13 @@ public class StatsIntegrationTest {
 
     @SuppressWarnings("IllegalThrows")
     @Test
-    public void produces_stats_when_a_container_healthcheck_exceeds_its_timeout() throws Throwable {
+    public void produces_stats_when_a_container_healthcheck_exceeds_its_timeout() {
         DockerComposeRule dockerComposeRule = DockerComposeRule.builder()
                 .file("src/test/resources/stats/all-good-docker-compose.yaml")
                 .waitingForService(
                         "one",
                         container -> SuccessOrFailure.failure("failed"),
-                        org.joda.time.Duration.millis(1))
+                        org.joda.time.Duration.standardSeconds(1))
                 .addStatsConsumer(statsConsumer)
                 .build();
 
@@ -78,10 +78,7 @@ public class StatsIntegrationTest {
 
         Stats stats = getStats();
 
-        Optional<Duration> durationValue = stats.pullBuildAndStartContainers();
-
-        assertThatOptionalDurationIsGreaterThanZero(durationValue);
-        assertThatOptionalDurationIsGreaterThanZero(stats.becomeHealthyOrTimeout());
+        assertThatOptionalDurationIsGreaterThanZero(stats.pullBuildAndStartContainers());
 
         assertThat(stats.containersWithHealthchecksStats()).hasOnlyOneElementSatisfying(containerStats -> {
             assertThat(containerStats.containerName()).isEqualTo("one");
