@@ -58,7 +58,6 @@ public class StatsIntegrationTest {
 
     }
 
-    @SuppressWarnings("IllegalThrows")
     @Test
     public void produces_stats_when_a_container_healthcheck_exceeds_its_timeout() {
         DockerComposeRule dockerComposeRule = DockerComposeRule.builder()
@@ -85,7 +84,6 @@ public class StatsIntegrationTest {
             assertThat(containerStats.timeTakenToBecomeHealthy()).isEmpty();
             assertThat(containerStats.startedSuccessfully()).isFalse();
         });
-
     }
 
     private Stats getStats() {

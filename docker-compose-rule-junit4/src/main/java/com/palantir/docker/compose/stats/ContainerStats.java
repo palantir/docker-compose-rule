@@ -16,7 +16,6 @@
 
 package com.palantir.docker.compose.stats;
 
-import com.palantir.docker.compose.stats.ImmutableContainerStats;
 import java.time.Duration;
 import java.util.Optional;
 import org.immutables.value.Value;
