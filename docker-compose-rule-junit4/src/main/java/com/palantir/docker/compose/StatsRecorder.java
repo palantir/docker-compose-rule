@@ -63,7 +63,7 @@ class StatsRecorder {
         return EntryStream.of(serviceTimesToBecomeHealthy)
                 .mapKeyValue((serviceName, timeTakenToBeHealthy) -> {
                     return ServiceStats.builder()
-                            .containerName(serviceName)
+                            .serviceName(serviceName)
                             .timeTakenToBecomeHealthy(timeTakenToBeHealthy)
                             .build();
                 })
