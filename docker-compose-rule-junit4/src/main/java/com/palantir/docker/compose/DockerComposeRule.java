@@ -7,6 +7,10 @@ import static com.palantir.docker.compose.connection.waiting.ClusterHealthCheck.
 import static com.palantir.docker.compose.connection.waiting.ClusterHealthCheck.transformingHealthCheck;
 
 import com.google.common.base.Stopwatch;
+import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.ListeningExecutorService;
+import com.google.common.util.concurrent.MoreExecutors;
 import com.palantir.docker.compose.configuration.DockerComposeFiles;
 import com.palantir.docker.compose.configuration.ProjectName;
 import com.palantir.docker.compose.configuration.ShutdownStrategy;
@@ -43,7 +47,10 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import one.util.streamex.EntryStream;
 import org.immutables.value.Value;
 import org.joda.time.Duration;
@@ -178,30 +185,33 @@ public abstract class DockerComposeRule extends ExternalResource {
         upDockerCompose.up();
     }
 
-    private void waitForServices() {
+    private void waitForServices() throws InterruptedException {
         log.debug("Waiting for services");
-        // ListeningExecutorService executorService =
-        //         MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(clusterWaits().size()));
+        ClusterWait nativeHealthCheckClusterWait =
+                new ClusterWait(ClusterHealthCheck.nativeHealthChecks(), nativeServiceHealthCheckTimeout());
 
-        // try {
-        //     clusterWaits().stream()
-        //             .map(clusterWait -> executorService.submit(() -> clusterWait.waitUntilReady(containers())))
-        //             .collect(Collectors.toList());
-        //
-        //     List<Future<Void>> futures = executorService.(clusterWaits().stream()
-        //             .map(clusterWait -> (Callable<Void>) () -> {
-        //                 clusterWait.waitUntilReady(containers());
-        //                 return null;
-        //             })
-        //             .collect(Collectors.toList()));
-        //
-        // } catch (InterruptedException e) {
-        //     e.printStackTrace();
-        // }
+        List<ClusterWait> allClusterWaits = Stream.concat(
+                Stream.of(nativeHealthCheckClusterWait),
+                clusterWaits().stream())
+                .collect(Collectors.toList());
 
-        new ClusterWait(ClusterHealthCheck.nativeHealthChecks(), nativeServiceHealthCheckTimeout())
-                .waitUntilReady(containers());
-        clusterWaits().forEach(clusterWait -> clusterWait.waitUntilReady(containers()));
+        ListeningExecutorService executorService =
+                MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(allClusterWaits.size()));
+
+        try {
+
+            ListenableFuture<List<Object>> listListenableFuture =
+                    Futures.allAsList(allClusterWaits.stream()
+                    .map(clusterWait -> executorService.submit(() -> clusterWait.waitUntilReady(containers())))
+                    .collect(Collectors.toList()));
+
+            listListenableFuture.get();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        } finally {
+            MoreExecutors.shutdownAndAwaitTermination(executorService, 1, TimeUnit.SECONDS);
+        }
+
         log.debug("docker-compose cluster started");
     }
 

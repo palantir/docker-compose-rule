@@ -20,13 +20,13 @@ import static java.util.stream.Collectors.toSet;
 import com.palantir.docker.compose.execution.Docker;
 import com.palantir.docker.compose.execution.DockerCompose;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 public class ContainerCache {
 
-    private final Map<String, Container> containers = new HashMap<>();
+    private final ConcurrentMap<String, Container> containers = new ConcurrentHashMap<>();
     private final Docker docker;
     private final DockerCompose dockerCompose;
 
@@ -36,8 +36,8 @@ public class ContainerCache {
     }
 
     public Container container(String containerName) {
-        containers.putIfAbsent(containerName, new Container(containerName, docker, dockerCompose));
-        return containers.get(containerName);
+        return containers.computeIfAbsent(containerName,
+                ignored -> new Container(containerName, docker, dockerCompose));
     }
 
     public Set<Container> containers() throws IOException, InterruptedException {
