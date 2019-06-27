@@ -17,16 +17,21 @@
 package com.palantir.docker.compose.stats;
 
 import java.time.Duration;
+import java.util.Optional;
 import org.immutables.value.Value;
 
 @Value.Immutable
 public interface ContainerStats {
+    String containerName();
+    Optional<Duration> timeTakenToBecomeHealthy();
+
+    default boolean startedSuccessfully() {
+        return timeTakenToBecomeHealthy().isPresent();
+    }
+
+    class Builder extends ImmutableContainerStats.Builder { }
+
     static Builder builder() {
         return new Builder();
     }
-    String containerName();
-    Duration timeTakenToBecomeHealthy();
-    boolean startedSuccessfully();
-
-    class Builder extends ImmutableContainerStats.Builder { }
 }

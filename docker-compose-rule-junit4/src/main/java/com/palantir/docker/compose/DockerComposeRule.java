@@ -35,11 +35,11 @@ import com.palantir.docker.compose.logging.DoNothingLogCollector;
 import com.palantir.docker.compose.logging.FileLogCollector;
 import com.palantir.docker.compose.logging.LogCollector;
 import com.palantir.docker.compose.logging.LogDirectory;
+import com.palantir.docker.compose.stats.ContainerStats;
 import com.palantir.docker.compose.stats.Stats;
 import com.palantir.docker.compose.stats.StatsConsumer;
 import java.io.IOException;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -158,6 +158,7 @@ public abstract class DockerComposeRule extends ExternalResource {
         logCollector().startCollecting(dockerCompose());
 
         stats.forContainersToBecomeHealthy(StopwatchUtils.time(this::waitForServices));
+        stats.containersWithHealthchecksStats(statsRecorder().getResults());
 
         statsAfterStart = Optional.of(stats);
     }
@@ -202,8 +203,6 @@ public abstract class DockerComposeRule extends ExternalResource {
                 .waitUntilReady(containers());
         clusterWaits().forEach(clusterWait -> clusterWait.waitUntilReady(containers()));
         log.debug("docker-compose cluster started");
-
-        log.info("stats: {}", statsRecorder().getResults());
     }
 
     public void after() {
@@ -256,7 +255,7 @@ public abstract class DockerComposeRule extends ExternalResource {
             return stats.computeIfAbsent(serviceName, ignored -> Stopwatch.createStarted());
         }
 
-        public Map<String, Optional<java.time.Duration>> getResults() {
+        public List<ContainerStats> getResults() {
             return EntryStream.of(stats)
                     .mapValues(stopwatch -> {
                         if (stopwatch.isRunning()) {
@@ -265,7 +264,13 @@ public abstract class DockerComposeRule extends ExternalResource {
 
                         return Optional.of(StopwatchUtils.toDuration(stopwatch));
                     })
-                    .toImmutableMap();
+                    .mapKeyValue((serviceName, timeTakenToBeHealthy) -> {
+                        return ContainerStats.builder()
+                                .containerName(serviceName)
+                                .timeTakenToBecomeHealthy(timeTakenToBeHealthy)
+                                .build();
+                    })
+                    .collect(Collectors.toList());
         }
     }
 
