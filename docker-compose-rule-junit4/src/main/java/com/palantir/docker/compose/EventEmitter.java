@@ -32,7 +32,6 @@ import com.palantir.docker.compose.events.UpEvent;
 import com.palantir.docker.compose.events.WaitForServicesEvent;
 import java.io.IOException;
 import java.util.List;
-import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -69,7 +68,7 @@ class EventEmitter {
     }
 
     public ClusterWaitInterface userClusterWait(ClusterWaitInterface clusterWait)  {
-        return clusterWait(Optional.empty(), ClusterWaitType.USER, clusterWait);
+        return clusterWait(ImmutableList.of(), ClusterWaitType.USER, clusterWait);
     }
 
     public ClusterWaitInterface userClusterWait(String serviceName, ClusterWaitInterface clusterWait) {
@@ -77,15 +76,15 @@ class EventEmitter {
     }
 
     public ClusterWaitInterface userClusterWait(List<String> serviceNames, ClusterWaitInterface clusterWait) {
-        return clusterWait(Optional.of(serviceNames), ClusterWaitType.USER, clusterWait);
+        return clusterWait(serviceNames, ClusterWaitType.USER, clusterWait);
     }
 
     public ClusterWaitInterface nativeClusterWait(List<String> serviceNames, ClusterWaitInterface clusterWait) {
-        return clusterWait(Optional.of(serviceNames), ClusterWaitType.NATIVE, clusterWait);
+        return clusterWait(serviceNames, ClusterWaitType.NATIVE, clusterWait);
     }
 
     private ClusterWaitInterface clusterWait(
-            Optional<List<String>> serviceNames,
+            List<String> serviceNames,
             ClusterWaitType clusterWaitType,
             ClusterWaitInterface clusterWait) {
         return cluster -> emitNotThrowing(

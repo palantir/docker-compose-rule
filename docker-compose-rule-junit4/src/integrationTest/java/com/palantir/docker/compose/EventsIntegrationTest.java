@@ -108,9 +108,7 @@ public class EventsIntegrationTest {
             assertThat(event).isInstanceOf(ClusterTimedOut.class);
 
             ClusterTimedOut clusterTimedOut = (ClusterTimedOut) event;
-            assertThat(clusterTimedOut.serviceNames()).hasValueSatisfying(serviceNames -> {
-                assertThat(serviceNames).containsOnly("one");
-            });
+            assertThat(clusterTimedOut.serviceNames()).containsOnly("one");
             assertThat(clusterTimedOut.exception()).hasStackTraceContaining(failureMessage);
         });
     }

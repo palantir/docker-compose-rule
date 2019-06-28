@@ -20,11 +20,10 @@ import com.palantir.docker.compose.events.LifeCycleEvent.Failed;
 import com.palantir.docker.compose.events.LifeCycleEvent.Started;
 import com.palantir.docker.compose.events.LifeCycleEvent.Succeeded;
 import java.util.List;
-import java.util.Optional;
 import org.immutables.value.Value;
 
 public interface ClusterWaitEvent extends DockerComposeRuleEvent {
-    Optional<List<String>> serviceNames();
+    List<String> serviceNames();
     ClusterWaitType clusterWaitType();
 
     enum ClusterWaitType {
@@ -41,7 +40,7 @@ public interface ClusterWaitEvent extends DockerComposeRuleEvent {
     @Value.Immutable
     interface ClusterTimedOut extends ClusterWaitEvent, Failed { }
 
-    static LifeCycleEvent.Factory2 factory(Optional<List<String>> serviceNames, ClusterWaitType clusterWaitType) {
+    static LifeCycleEvent.Factory2 factory(List<String> serviceNames, ClusterWaitType clusterWaitType) {
         return new LifeCycleEvent.Factory2() {
             @Override
             public Started started() {
