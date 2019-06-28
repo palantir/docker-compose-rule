@@ -23,10 +23,12 @@ import static org.mockito.Mockito.verify;
 
 import com.google.common.collect.ImmutableList;
 import com.palantir.docker.compose.connection.waiting.HealthChecks;
+import com.palantir.docker.compose.connection.waiting.SuccessOrFailure;
 import com.palantir.docker.compose.events.BuildEvent.BuildStarted;
 import com.palantir.docker.compose.events.BuildEvent.BuildSucceeded;
 import com.palantir.docker.compose.events.ClusterWaitEvent.ClusterBecameHealthy;
 import com.palantir.docker.compose.events.ClusterWaitEvent.ClusterStarted;
+import com.palantir.docker.compose.events.ClusterWaitEvent.ClusterTimedOut;
 import com.palantir.docker.compose.events.DockerComposeRuleEvent;
 import com.palantir.docker.compose.events.EventConsumer;
 import com.palantir.docker.compose.events.ShutdownEvent.ShutdownStarted;
@@ -35,9 +37,7 @@ import com.palantir.docker.compose.events.UpEvent.UpStarted;
 import com.palantir.docker.compose.events.UpEvent.UpSucceeded;
 import com.palantir.docker.compose.events.WaitForServicesEvent.WaitForServicesStarted;
 import com.palantir.docker.compose.events.WaitForServicesEvent.WaitForServicesSucceeded;
-import java.time.Duration;
 import java.util.List;
-import java.util.Optional;
 import one.util.streamex.StreamEx;
 import org.junit.Test;
 import org.junit.runner.Description;
@@ -49,7 +49,7 @@ public class EventsIntegrationTest {
     private final EventConsumer eventConsumer = mock(EventConsumer.class);
 
     @Test
-    public void produce_stats_on_a_successful_run() throws Throwable {
+    public void produce_events_on_a_successful_run() throws Throwable {
         DockerComposeRule dockerComposeRule = DockerComposeRule.builder()
                 .file("src/test/resources/stats/all-good-docker-compose.yaml")
                 .waitingForService("one", HealthChecks.toHaveAllPortsOpen())
@@ -57,9 +57,6 @@ public class EventsIntegrationTest {
                 .build();
 
         runDockerComposeRule(dockerComposeRule);
-
-        // InOrder inOrder = inOrder(eventConsumer);
-        // inOrder.verify(eventConsumer).receiveEvent();
 
         List<DockerComposeRuleEvent> events = getEvents();
 
@@ -85,31 +82,33 @@ public class EventsIntegrationTest {
     }
 
     @Test
-    public void produces_stats_when_a_container_healthcheck_exceeds_its_timeout() {
-        // DockerComposeRule dockerComposeRule = DockerComposeRule.builder()
-        //         .file("src/test/resources/stats/all-good-docker-compose.yaml")
-        //         .waitingForService(
-        //                 "one",
-        //                 container -> SuccessOrFailure.failure("failed"),
-        //                 org.joda.time.Duration.standardSeconds(1))
-        //         .addStatsConsumer(eventConsumer)
-        //         .build();
-        //
-        // try {
-        //     runDockerComposeRule(dockerComposeRule);
-        // } catch (Throwable t) {
-        //     // ignore the failure
-        // }
-        //
-        // Stats stats = getEvents();
-        //
-        // assertThatOptionalDurationIsGreaterThanZero(stats.pullBuildAndStartContainers());
-        //
-        // assertThat(stats.servicesWithHealthchecksStats()).hasOnlyOneElementSatisfying(containerStats -> {
-        //     assertThat(containerStats.serviceName()).isEqualTo("one");
-        //     assertThat(containerStats.timeTakenToBecomeHealthy()).isEmpty();
-        //     assertThat(containerStats.startedSuccessfully()).isFalse();
-        // });
+    public void produces_events_when_a_container_healthcheck_exceeds_its_timeout() {
+        String failureMessage = "it went wrong oh no";
+
+        DockerComposeRule dockerComposeRule = DockerComposeRule.builder()
+                .file("src/test/resources/stats/all-good-docker-compose.yaml")
+                .waitingForService(
+                        "one",
+                        container -> SuccessOrFailure.failure(failureMessage),
+                        org.joda.time.Duration.standardSeconds(1))
+                .addEventConsumer(eventConsumer)
+                .build();
+
+        try {
+            runDockerComposeRule(dockerComposeRule);
+        } catch (Throwable t) {
+            // ignore the failure
+        }
+
+        List<DockerComposeRuleEvent> events = getEvents();
+
+        assertThat(events).anySatisfy(event -> {
+            assertThat(event).isInstanceOf(ClusterTimedOut.class);
+
+            ClusterTimedOut clusterTimedOut = (ClusterTimedOut) event;
+            assertThat(clusterTimedOut.serviceNames()).containsOnly("one");
+            assertThat(clusterTimedOut.exception()).hasStackTraceContaining(failureMessage);
+        });
     }
 
     private List<DockerComposeRuleEvent> getEvents() {
@@ -118,11 +117,6 @@ public class EventsIntegrationTest {
         List<DockerComposeRuleEvent> events = argumentCaptor.getAllValues();
         System.out.println("events = " + events);
         return events;
-    }
-
-    private void assertThatOptionalDurationIsGreaterThanZero(Optional<Duration> durationValue) {
-        assertThat(durationValue).hasValueSatisfying(duration ->
-                assertThat(duration).isGreaterThan(Duration.ZERO));
     }
 
     private void runDockerComposeRule(DockerComposeRule dockerComposeRule) throws Throwable {
