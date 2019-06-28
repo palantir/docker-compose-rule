@@ -43,21 +43,9 @@ class EventEmitter {
         this.eventConsumers = ImmutableList.copyOf(eventConsumers);
     }
 
-    private void emitEvent(DockerComposeRuleEvent event) {
-        Preconditions.checkNotNull(eventConsumers, "event consumers must be set before events are emitted!");
-        eventConsumers.forEach(eventConsumer -> {
-            try {
-                eventConsumer.receiveEvent(event);
-            } catch (Exception e) {
-                log.error("Error sending event {}", event, e);
-            }
-        });
-    }
-
     interface CheckedRunnable {
         void run() throws InterruptedException, IOException;
     }
-
     public void pull(CheckedRunnable runnable) throws IOException, InterruptedException {
         emitThrowing(runnable, PullImagesEvent.FACTORY);
     }
@@ -105,5 +93,16 @@ class EventEmitter {
             emitEvent(factory.failed(e));
             throw e;
         }
+    }
+
+    private void emitEvent(DockerComposeRuleEvent event) {
+        Preconditions.checkNotNull(eventConsumers, "event consumers must be set before events are emitted!");
+        eventConsumers.forEach(eventConsumer -> {
+            try {
+                eventConsumer.receiveEvent(event);
+            } catch (Exception e) {
+                log.error("Error sending event {}", event, e);
+            }
+        });
     }
 }
