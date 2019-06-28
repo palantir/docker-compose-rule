@@ -39,8 +39,6 @@ import com.palantir.docker.compose.logging.DoNothingLogCollector;
 import com.palantir.docker.compose.logging.FileLogCollector;
 import com.palantir.docker.compose.logging.LogCollector;
 import com.palantir.docker.compose.logging.LogDirectory;
-import com.palantir.docker.compose.stats.Stats;
-import com.palantir.docker.compose.stats.StatsConsumer;
 import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -88,15 +86,11 @@ public abstract class DockerComposeRule implements TestRule {
         return new DockerPort(machine().getIp(), port, port);
     }
 
-    protected abstract StatsRecorder statsRecorder();
-
     protected abstract EventEmitter emitEventsFor();
 
     public abstract DockerComposeFiles files();
 
     protected abstract List<ClusterWaitInterface> clusterWaits();
-
-    protected abstract List<StatsConsumer> statsConsumers();
 
     protected abstract List<EventConsumer> eventConsumers();
 
@@ -241,20 +235,7 @@ public abstract class DockerComposeRule implements TestRule {
 
         } catch (IOException | InterruptedException e) {
             throw new RuntimeException("Error cleaning up docker compose cluster", e);
-        } finally {
-            sendStatsToConsumers();
         }
-    }
-
-    private void sendStatsToConsumers() {
-        Stats stats = statsRecorder().stats();
-        statsConsumers().forEach(statsConsumer -> {
-            try {
-                statsConsumer.consumeStats(stats);
-            } catch (Exception e) {
-                log.error("Failed to consume stats", e);
-            }
-        });
     }
 
     public String exec(DockerComposeExecOption options, String containerName,
@@ -273,7 +254,6 @@ public abstract class DockerComposeRule implements TestRule {
 
     public static class Builder extends ImmutableDockerComposeRule.Builder {
 
-        private final StatsRecorder statsRecorder = new StatsRecorder();
         private final EventEmitter emitEventsFor = new EventEmitter();
 
         public Builder file(String dockerComposeYmlFile) {
