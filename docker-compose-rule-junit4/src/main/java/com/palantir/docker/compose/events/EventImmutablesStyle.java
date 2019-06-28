@@ -14,16 +14,13 @@
  * limitations under the License.
  */
 
-package com.palantir.docker.compose.events.pull;
+package com.palantir.docker.compose.events;
 
 import org.immutables.value.Value;
 
-@Value.Immutable
-public interface ExplicitPullImagesStarted extends ExplicitPullImagesEvent {
-
-    class Builder extends ImmutableExplicitPullImagesStarted.Builder {}
-
-    static Builder builder() {
-        return new Builder();
-    }
+@Value.Style(
+        visibility = Value.Style.ImplementationVisibility.PACKAGE,
+        builderVisibility = Value.Style.BuilderVisibility.PACKAGE
+)
+public @interface EventImmutablesStyle {
 }

@@ -17,7 +17,35 @@
 package com.palantir.docker.compose.events.pull;
 
 import com.palantir.docker.compose.events.DockerComposeRuleEvent;
+import com.palantir.docker.compose.events.EventImmutablesStyle;
+import org.immutables.value.Value;
 
 public interface ExplicitPullImagesEvent extends DockerComposeRuleEvent {
 
+    @Value.Immutable
+    @EventImmutablesStyle
+    interface Started extends ExplicitPullImagesEvent {
+        static Started create() {
+            return ImmutableStarted.builder().build();
+        }
+    }
+
+    @Value.Immutable
+    @EventImmutablesStyle
+    interface Succeeded extends ExplicitPullImagesEvent {
+        static Succeeded create() {
+            return ImmutableSucceeded.builder().build();
+        }
+    }
+
+    @Value.Immutable
+    @EventImmutablesStyle
+    interface Failed extends ExplicitPullImagesEvent {
+        @Value.Parameter
+        Exception exception();
+
+        static Failed create(Exception exception) {
+            return ImmutableFailed.of(exception);
+        }
+    }
 }
