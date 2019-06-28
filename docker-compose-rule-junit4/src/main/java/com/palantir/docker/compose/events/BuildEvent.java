@@ -45,7 +45,7 @@ public interface BuildEvent extends DockerComposeRuleEvent {
 
         @Override
         public Failed failed(Exception exception) {
-            return ImmutableBuildFailed.of(exception);
+            return ImmutableBuildFailed.builder().exception(exception).build();
         }
     };
 }

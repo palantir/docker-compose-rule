@@ -45,7 +45,7 @@ public interface UpEvent extends DockerComposeRuleEvent {
 
         @Override
         public Failed failed(Exception exception) {
-            return ImmutableUpFailed.of(exception);
+            return ImmutableUpFailed.builder().exception(exception).build();
         }
     };
 }

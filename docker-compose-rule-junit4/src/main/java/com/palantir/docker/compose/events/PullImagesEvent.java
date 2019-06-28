@@ -45,7 +45,7 @@ public interface PullImagesEvent extends DockerComposeRuleEvent {
 
         @Override
         public Failed failed(Exception exception) {
-            return ImmutablePullFailed.of(exception);
+            return ImmutablePullFailed.builder().exception(exception).build();
         }
     };
 }

@@ -26,7 +26,6 @@ public interface LifeCycleEvent extends DockerComposeRuleEvent {
     interface Succeeded extends LifeCycleEvent {}
 
     interface Failed extends LifeCycleEvent {
-        @Value.Parameter
         Exception exception();
     }
 

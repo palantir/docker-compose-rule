@@ -22,6 +22,7 @@ import com.google.common.collect.ImmutableList;
 import com.palantir.docker.compose.connection.waiting.ClusterWaitInterface;
 import com.palantir.docker.compose.events.BuildEvent;
 import com.palantir.docker.compose.events.ClusterWaitEvent;
+import com.palantir.docker.compose.events.ClusterWaitEvent.ClusterWaitType;
 import com.palantir.docker.compose.events.DockerComposeRuleEvent;
 import com.palantir.docker.compose.events.EventConsumer;
 import com.palantir.docker.compose.events.LifeCycleEvent;
@@ -31,6 +32,7 @@ import com.palantir.docker.compose.events.UpEvent;
 import com.palantir.docker.compose.events.WaitForServicesEvent;
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -66,13 +68,29 @@ class EventEmitter {
         emitThrowing(runnable, ShutdownEvent.FACTORY);
     }
 
-    public ClusterWaitInterface clusterWait(String serviceName, ClusterWaitInterface clusterWait) {
-        return clusterWait(ImmutableList.of(serviceName), clusterWait);
+    public ClusterWaitInterface userClusterWait(ClusterWaitInterface clusterWait)  {
+        return clusterWait(Optional.empty(), ClusterWaitType.USER, clusterWait);
     }
 
-    public ClusterWaitInterface clusterWait(Iterable<String> serviceNames, ClusterWaitInterface clusterWait) {
+    public ClusterWaitInterface userClusterWait(String serviceName, ClusterWaitInterface clusterWait) {
+        return userClusterWait(ImmutableList.of(serviceName), clusterWait);
+    }
+
+    public ClusterWaitInterface userClusterWait(List<String> serviceNames, ClusterWaitInterface clusterWait) {
+        return clusterWait(Optional.of(serviceNames), ClusterWaitType.USER, clusterWait);
+    }
+
+    public ClusterWaitInterface nativeClusterWait(List<String> serviceNames, ClusterWaitInterface clusterWait) {
+        return clusterWait(Optional.of(serviceNames), ClusterWaitType.NATIVE, clusterWait);
+    }
+
+    private ClusterWaitInterface clusterWait(
+            Optional<List<String>> serviceNames,
+            ClusterWaitType clusterWaitType,
+            ClusterWaitInterface clusterWait) {
         return cluster -> emitNotThrowing(
-                () -> clusterWait.waitUntilReady(cluster), ClusterWaitEvent.factory(serviceNames));
+                () -> clusterWait.waitUntilReady(cluster),
+                ClusterWaitEvent.factory(serviceNames, clusterWaitType));
     }
 
     private void emitNotThrowing(CheckedRunnable runnable, LifeCycleEvent.Factory2 factory) {

@@ -16,6 +16,7 @@ import com.palantir.docker.compose.configuration.ShutdownStrategy;
 import com.palantir.docker.compose.connection.Cluster;
 import com.palantir.docker.compose.connection.Container;
 import com.palantir.docker.compose.connection.ContainerCache;
+import com.palantir.docker.compose.connection.ContainerName;
 import com.palantir.docker.compose.connection.DockerMachine;
 import com.palantir.docker.compose.connection.DockerPort;
 import com.palantir.docker.compose.connection.ImmutableCluster;
@@ -178,10 +179,16 @@ public abstract class DockerComposeRule extends ExternalResource {
         emitEventsFor().up(upDockerCompose::up);
     }
 
-    private void waitForServices() throws InterruptedException {
+    private void waitForServices() throws InterruptedException, IOException {
         log.debug("Waiting for services");
+        List<String> serviceNames = dockerCompose().ps().stream()
+                .map(ContainerName::semanticName)
+                .collect(Collectors.toList());
+
         ClusterWaitInterface nativeHealthCheckClusterWait =
-                new ClusterWait(ClusterHealthCheck.nativeHealthChecks(), nativeServiceHealthCheckTimeout());
+                emitEventsFor().nativeClusterWait(
+                        serviceNames,
+                        new ClusterWait(ClusterHealthCheck.nativeHealthChecks(), nativeServiceHealthCheckTimeout()));
 
         List<ClusterWaitInterface> allClusterWaits = Stream.concat(
                 Stream.of(nativeHealthCheckClusterWait),
@@ -275,7 +282,7 @@ public abstract class DockerComposeRule extends ExternalResource {
 
         public Builder waitingForService(String serviceName, HealthCheck<Container> healthCheck, ReadableDuration timeout) {
             ClusterHealthCheck clusterHealthCheck = serviceHealthCheck(serviceName, healthCheck);
-            return addClusterWait(emitEventsFor.clusterWait(serviceName, new ClusterWait(clusterHealthCheck, timeout)));
+            return addClusterWait(emitEventsFor.userClusterWait(serviceName, new ClusterWait(clusterHealthCheck, timeout)));
         }
 
         public Builder waitingForServices(List<String> services, HealthCheck<List<Container>> healthCheck) {
@@ -284,7 +291,7 @@ public abstract class DockerComposeRule extends ExternalResource {
 
         public Builder waitingForServices(List<String> services, HealthCheck<List<Container>> healthCheck, ReadableDuration timeout) {
             ClusterHealthCheck clusterHealthCheck = serviceHealthCheck(services, healthCheck);
-            return addClusterWait(emitEventsFor.clusterWait(services, new ClusterWait(clusterHealthCheck, timeout)));
+            return addClusterWait(emitEventsFor.userClusterWait(services, new ClusterWait(clusterHealthCheck, timeout)));
         }
 
         public Builder waitingForHostNetworkedPort(int port, HealthCheck<DockerPort> healthCheck) {

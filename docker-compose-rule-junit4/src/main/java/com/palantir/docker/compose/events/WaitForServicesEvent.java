@@ -45,7 +45,7 @@ public interface WaitForServicesEvent extends DockerComposeRuleEvent {
 
         @Override
         public Failed failed(Exception exception) {
-            return ImmutableWaitForServicesFailed.of(exception);
+            return ImmutableWaitForServicesFailed.builder().exception(exception).build();
         }
     };
 }

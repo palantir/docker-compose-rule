@@ -20,10 +20,17 @@ import com.palantir.docker.compose.events.LifeCycleEvent.Failed;
 import com.palantir.docker.compose.events.LifeCycleEvent.Started;
 import com.palantir.docker.compose.events.LifeCycleEvent.Succeeded;
 import java.util.List;
+import java.util.Optional;
 import org.immutables.value.Value;
 
 public interface ClusterWaitEvent extends DockerComposeRuleEvent {
-    List<String> serviceNames();
+    Optional<List<String>> serviceNames();
+    ClusterWaitType clusterWaitType();
+
+    enum ClusterWaitType {
+        NATIVE,
+        USER,
+    }
 
     @Value.Immutable
     interface ClusterStarted extends ClusterWaitEvent, Started { }
@@ -34,12 +41,13 @@ public interface ClusterWaitEvent extends DockerComposeRuleEvent {
     @Value.Immutable
     interface ClusterTimedOut extends ClusterWaitEvent, Failed { }
 
-    static LifeCycleEvent.Factory2 factory(Iterable<String> serviceNames) {
+    static LifeCycleEvent.Factory2 factory(Optional<List<String>> serviceNames, ClusterWaitType clusterWaitType) {
         return new LifeCycleEvent.Factory2() {
             @Override
             public Started started() {
                 return ImmutableClusterStarted.builder()
                         .serviceNames(serviceNames)
+                        .clusterWaitType(clusterWaitType)
                         .build();
             }
 
@@ -47,6 +55,7 @@ public interface ClusterWaitEvent extends DockerComposeRuleEvent {
             public Succeeded succeeded() {
                 return ImmutableClusterBecameHealthy.builder()
                         .serviceNames(serviceNames)
+                        .clusterWaitType(clusterWaitType)
                         .build();
             }
 
@@ -54,6 +63,7 @@ public interface ClusterWaitEvent extends DockerComposeRuleEvent {
             public Failed failed(Exception exception) {
                 return ImmutableClusterTimedOut.builder()
                         .serviceNames(serviceNames)
+                        .clusterWaitType(clusterWaitType)
                         .exception(exception)
                         .build();
             }

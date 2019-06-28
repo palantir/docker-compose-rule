@@ -45,7 +45,7 @@ public interface ShutdownEvent extends DockerComposeRuleEvent {
 
         @Override
         public Failed failed(Exception exception) {
-            return ImmutableShutdownFailed.of(exception);
+            return ImmutableShutdownFailed.builder().exception(exception).build();
         }
     };
 }

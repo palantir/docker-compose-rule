@@ -67,6 +67,8 @@ public class EventsIntegrationTest {
                 UpSucceeded.class,
                 WaitForServicesStarted.class,
                 ClusterStarted.class,
+                ClusterStarted.class,
+                ClusterBecameHealthy.class,
                 ClusterBecameHealthy.class,
                 WaitForServicesSucceeded.class,
                 ShutdownStarted.class,
@@ -106,7 +108,9 @@ public class EventsIntegrationTest {
             assertThat(event).isInstanceOf(ClusterTimedOut.class);
 
             ClusterTimedOut clusterTimedOut = (ClusterTimedOut) event;
-            assertThat(clusterTimedOut.serviceNames()).containsOnly("one");
+            assertThat(clusterTimedOut.serviceNames()).hasValueSatisfying(serviceNames -> {
+                assertThat(serviceNames).containsOnly("one");
+            });
             assertThat(clusterTimedOut.exception()).hasStackTraceContaining(failureMessage);
         });
     }
