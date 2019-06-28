@@ -16,7 +16,7 @@
 
 package com.palantir.docker.compose;
 
-import com.palantir.docker.compose.stats.StatsConsumer;
+import com.palantir.docker.compose.events.EventConsumer;
 import java.lang.reflect.Method;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.UnaryOperator;
@@ -33,29 +33,29 @@ public class InstrumentedDockerComposeRule {
     }
 
     static class Builder extends DockerComposeRule.Builder {
-        private final StatsConsumer statsConsumer;
+        private final EventConsumer eventConsumer;
         private final UnaryOperator<DockerComposeRule> wrapper;
 
         Builder(
                 UnaryOperator<DockerComposeRule> wrapper,
-                StatsConsumer statsConsumer) {
+                EventConsumer eventConsumer) {
             super();
             this.wrapper = wrapper;
-            this.statsConsumer = statsConsumer;
+            this.eventConsumer = eventConsumer;
         }
 
         @Override
         public DockerComposeRule build() {
-            addStatsConsumer(statsConsumer);
+            addEventConsumer(eventConsumer);
             return wrapper.apply(super.build());
         }
     }
 
     public static Builder builder() {
         AtomicReference<Description> description = new AtomicReference<>();
-        return new Builder(dockerComposeRule -> wrapDockerCompose(description, dockerComposeRule), stats -> {
+        return new Builder(dockerComposeRule -> wrapDockerCompose(description, dockerComposeRule), events -> {
             System.out.println("description = " + description);
-            System.out.println("stats = " + stats);
+            System.out.println("events = " + events);
         });
     }
 
@@ -66,7 +66,7 @@ public class InstrumentedDockerComposeRule {
         factory.setSuperclass(DockerComposeRule.class);
         factory.setFilter(method -> true);
 
-        Class c = factory.createClass();
+        Class clazz = factory.createClass();
         MethodHandler methodHandler = new MethodHandler() {
             @Override
             public Object invoke(
@@ -85,7 +85,7 @@ public class InstrumentedDockerComposeRule {
         };
 
         try {
-            DockerComposeRule instrumentedDockerComposeRule = (DockerComposeRule) c.newInstance();
+            DockerComposeRule instrumentedDockerComposeRule = (DockerComposeRule) clazz.newInstance();
             ((Proxy) instrumentedDockerComposeRule).setHandler(methodHandler);
             return instrumentedDockerComposeRule;
         } catch (InstantiationException | IllegalAccessException e) {
