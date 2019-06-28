@@ -16,5 +16,6 @@
 
 package com.palantir.docker.compose.events;
 
+@EventImmutablesStyle
 public interface DockerComposeRuleEvent {
 }

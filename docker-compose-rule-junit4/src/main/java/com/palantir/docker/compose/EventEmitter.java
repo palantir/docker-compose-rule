@@ -16,8 +16,10 @@
 
 package com.palantir.docker.compose;
 
+import com.palantir.docker.compose.events.BuildEvent;
 import com.palantir.docker.compose.events.DockerComposeRuleEvent;
 import com.palantir.docker.compose.events.EventConsumer;
+import com.palantir.docker.compose.events.LifeCycleEvent;
 import com.palantir.docker.compose.events.pull.ExplicitPullImagesEvent;
 import java.util.List;
 import org.slf4j.Logger;
@@ -43,16 +45,25 @@ class EventEmitter {
     }
 
     interface CheckedRunnable {
+
         void run() throws Exception;
     }
 
     public void pull(CheckedRunnable runnable) {
+        emit(runnable, ExplicitPullImagesEvent.FACTORY);
+    }
+
+    public void build(CheckedRunnable runnable) {
+        emit(runnable, BuildEvent.FACTORY);
+    }
+
+    private void emit(CheckedRunnable runnable, LifeCycleEvent.Factory2 factory) {
         try {
-            emitEvent(ExplicitPullImagesEvent.Started.create());
+            emitEvent(factory.started());
             runnable.run();
-            emitEvent(ExplicitPullImagesEvent.Succeeded.create());
+            emitEvent(factory.succeeded());
         } catch (Exception e) {
-            emitEvent(ExplicitPullImagesEvent.Failed.create(e));
+            emitEvent(factory.failed(e));
         }
     }
 }

@@ -86,7 +86,7 @@ public abstract class DockerComposeRule implements TestRule {
     protected abstract StatsRecorder statsRecorder();
 
     @Value.Derived
-    protected EventEmitter eventEmitter() {
+    protected EventEmitter emitEventsFor() {
         return new EventEmitter(eventConsumers());
     }
 
@@ -183,10 +183,10 @@ public abstract class DockerComposeRule implements TestRule {
 
     private void pullBuildAndUp() throws IOException, InterruptedException {
         if (pullOnStartup()) {
-            eventEmitter().pull(dockerCompose()::pull);
+            emitEventsFor().pull(dockerCompose()::pull);
         }
 
-        dockerCompose().build();
+        emitEventsFor().build(dockerCompose()::build);
 
         DockerCompose upDockerCompose = dockerCompose();
         if (removeConflictingContainersOnStartup()) {
