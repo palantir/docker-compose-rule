@@ -17,7 +17,6 @@
 package com.palantir.docker.compose;
 
 import com.google.common.base.Stopwatch;
-import com.palantir.docker.compose.connection.waiting.ClusterWait;
 import com.palantir.docker.compose.stats.ServiceStats;
 import com.palantir.docker.compose.stats.Stats;
 import java.io.IOException;
@@ -75,31 +74,4 @@ class StatsRecorder {
         return statsBuilder.build();
     }
 
-    public ClusterWait.Listener clusterWaitListener(String serviceName) {
-        return new ClusterWait.Listener() {
-            @Override
-            public void becameHealthy() {
-                serviceIsHealthy(serviceName);
-            }
-
-            @Override
-            public void timedOut() {
-                serviceTimedOut(serviceName);
-            }
-        };
-    }
-
-    public ClusterWait.Listener clusterWaitListener(Iterable<String> serviceNames) {
-        return new ClusterWait.Listener() {
-            @Override
-            public void becameHealthy() {
-                serviceNames.forEach(StatsRecorder.this::serviceIsHealthy);
-            }
-
-            @Override
-            public void timedOut() {
-                serviceNames.forEach(StatsRecorder.this::serviceTimedOut);
-            }
-        };
-    }
 }
