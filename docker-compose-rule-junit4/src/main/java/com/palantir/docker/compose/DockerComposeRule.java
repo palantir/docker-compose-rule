@@ -6,6 +6,7 @@ package com.palantir.docker.compose;
 import static com.palantir.docker.compose.connection.waiting.ClusterHealthCheck.serviceHealthCheck;
 import static com.palantir.docker.compose.connection.waiting.ClusterHealthCheck.transformingHealthCheck;
 
+import com.google.common.collect.Iterables;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
@@ -304,7 +305,7 @@ public abstract class DockerComposeRule extends ExternalResource {
         }
 
         public Builder clusterWaits(Iterable<? extends ClusterWaitInterface> elements) {
-            return addAllClusterWaits(elements);
+            return addAllClusterWaits(Iterables.transform(elements, emitEventsFor::userClusterWait));
         }
 
         @Override
