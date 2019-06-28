@@ -14,16 +14,20 @@
  * limitations under the License.
  */
 
-package com.palantir.docker.compose.events.cluster;
+package com.palantir.docker.compose.events;
 
+import java.util.List;
 import org.immutables.value.Value;
 
-@Value.Immutable
-public interface ClusterWaitBecameHealthy extends ClusterWaitEvent {
+public interface ClusterWaitEvent extends DockerComposeRuleEvent {
+    List<String> serviceNames();
 
-    class Builder extends ImmutableClusterWaitBecameHealthy.Builder {}
+    @Value.Immutable
+    interface Started extends ClusterWaitEvent, LifeCycleEvent.Started { }
 
-    static Builder builder() {
-        return new Builder();
-    }
+    @Value.Immutable
+    interface BecameHealthy extends ClusterWaitEvent, LifeCycleEvent.Succeeded { }
+
+    @Value.Immutable
+    interface TimedOut extends ClusterWaitEvent, LifeCycleEvent.Failed { }
 }
