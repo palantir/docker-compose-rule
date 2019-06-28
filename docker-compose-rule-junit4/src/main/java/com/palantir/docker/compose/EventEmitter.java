@@ -16,7 +16,11 @@
 
 package com.palantir.docker.compose;
 
+import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableList;
+import com.palantir.docker.compose.connection.waiting.ClusterWaitInterface;
 import com.palantir.docker.compose.events.BuildEvent;
+import com.palantir.docker.compose.events.ClusterWaitEvent;
 import com.palantir.docker.compose.events.DockerComposeRuleEvent;
 import com.palantir.docker.compose.events.EventConsumer;
 import com.palantir.docker.compose.events.LifeCycleEvent;
@@ -28,14 +32,15 @@ import org.slf4j.LoggerFactory;
 class EventEmitter {
     private static final Logger log = LoggerFactory.getLogger(EventEmitter.class);
 
-    private final List<EventConsumer> statsConsumers;
+    private List<EventConsumer> eventConsumers;
 
-    public EventEmitter(List<EventConsumer> statsConsumers) {
-        this.statsConsumers = statsConsumers;
+    public void setEventConsumers(List<EventConsumer> eventConsumers) {
+        this.eventConsumers = ImmutableList.copyOf(eventConsumers);
     }
 
     private void emitEvent(DockerComposeRuleEvent event) {
-        statsConsumers.forEach(eventConsumer -> {
+        Preconditions.checkNotNull(eventConsumers, "event consumers must be set before events are emitted!");
+        eventConsumers.forEach(eventConsumer -> {
             try {
                 eventConsumer.receiveEvent(event);
             } catch (Exception e) {
@@ -54,6 +59,14 @@ class EventEmitter {
 
     public void build(CheckedRunnable runnable) {
         emit(runnable, BuildEvent.FACTORY);
+    }
+
+    public ClusterWaitInterface clusterWait(String serviceName, ClusterWaitInterface clusterWait) {
+        return clusterWait(ImmutableList.of(serviceName), clusterWait);
+    }
+
+    public ClusterWaitInterface clusterWait(Iterable<String> serviceNames, ClusterWaitInterface clusterWait) {
+        return cluster -> emit(() -> clusterWait.waitUntilReady(cluster), ClusterWaitEvent.factory(serviceNames));
     }
 
     private void emit(CheckedRunnable runnable, LifeCycleEvent.Factory2 factory) {

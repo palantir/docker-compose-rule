@@ -86,10 +86,7 @@ public abstract class DockerComposeRule implements TestRule {
 
     protected abstract StatsRecorder statsRecorder();
 
-    @Value.Derived
-    protected EventEmitter emitEventsFor() {
-        return new EventEmitter(eventConsumers());
-    }
+    protected abstract EventEmitter emitEventsFor();
 
     public abstract DockerComposeFiles files();
 
@@ -271,6 +268,7 @@ public abstract class DockerComposeRule implements TestRule {
     public static class Builder extends ImmutableDockerComposeRule.Builder {
 
         private final StatsRecorder statsRecorder = new StatsRecorder();
+        private final EventEmitter emitEventsFor = new EventEmitter();
 
         public Builder file(String dockerComposeYmlFile) {
             return files(DockerComposeFiles.from(dockerComposeYmlFile));
@@ -307,7 +305,7 @@ public abstract class DockerComposeRule implements TestRule {
 
         public Builder waitingForService(String serviceName, HealthCheck<Container> healthCheck, ReadableDuration timeout) {
             ClusterHealthCheck clusterHealthCheck = serviceHealthCheck(serviceName, healthCheck);
-            return addClusterWait(new ClusterWait(clusterHealthCheck, timeout));
+            return addClusterWait(emitEventsFor.clusterWait(serviceName, new ClusterWait(clusterHealthCheck, timeout)));
         }
 
         public Builder waitingForServices(List<String> services, HealthCheck<List<Container>> healthCheck) {
@@ -316,7 +314,7 @@ public abstract class DockerComposeRule implements TestRule {
 
         public Builder waitingForServices(List<String> services, HealthCheck<List<Container>> healthCheck, ReadableDuration timeout) {
             ClusterHealthCheck clusterHealthCheck = serviceHealthCheck(services, healthCheck);
-            return addClusterWait(new ClusterWait(clusterHealthCheck, timeout));
+            return addClusterWait(emitEventsFor.clusterWait(services, new ClusterWait(clusterHealthCheck, timeout)));
         }
 
         public Builder waitingForHostNetworkedPort(int port, HealthCheck<DockerPort> healthCheck) {
@@ -335,6 +333,7 @@ public abstract class DockerComposeRule implements TestRule {
         @Override
         public DockerComposeRule build() {
             statsRecorder(statsRecorder);
+            emitEventsFor(emitEventsFor);
             return super.build();
         }
     }

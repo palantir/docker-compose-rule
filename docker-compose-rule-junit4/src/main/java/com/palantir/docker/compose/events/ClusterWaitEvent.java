@@ -16,6 +16,9 @@
 
 package com.palantir.docker.compose.events;
 
+import com.palantir.docker.compose.events.LifeCycleEvent.Failed;
+import com.palantir.docker.compose.events.LifeCycleEvent.Started;
+import com.palantir.docker.compose.events.LifeCycleEvent.Succeeded;
 import java.util.List;
 import org.immutables.value.Value;
 
@@ -23,11 +26,37 @@ public interface ClusterWaitEvent extends DockerComposeRuleEvent {
     List<String> serviceNames();
 
     @Value.Immutable
-    interface Started extends ClusterWaitEvent, LifeCycleEvent.Started { }
+    interface ClusterStarted extends ClusterWaitEvent, Started { }
 
     @Value.Immutable
-    interface BecameHealthy extends ClusterWaitEvent, LifeCycleEvent.Succeeded { }
+    interface ClusterBecameHealthy extends ClusterWaitEvent, Succeeded { }
 
     @Value.Immutable
-    interface TimedOut extends ClusterWaitEvent, LifeCycleEvent.Failed { }
+    interface ClusterTimedOut extends ClusterWaitEvent, Failed { }
+
+    static LifeCycleEvent.Factory2 factory(Iterable<String> serviceNames) {
+        return new LifeCycleEvent.Factory2() {
+            @Override
+            public Started started() {
+                return ImmutableClusterStarted.builder()
+                        .serviceNames(serviceNames)
+                        .build();
+            }
+
+            @Override
+            public Succeeded succeeded() {
+                return ImmutableClusterBecameHealthy.builder()
+                        .serviceNames(serviceNames)
+                        .build();
+            }
+
+            @Override
+            public Failed failed(Exception exception) {
+                return ImmutableClusterTimedOut.builder()
+                        .serviceNames(serviceNames)
+                        .exception(exception)
+                        .build();
+            }
+        };
+    }
 }
