@@ -14,10 +14,8 @@
  * limitations under the License.
  */
 
-package com.palantir.docker.compose.events.pull;
+package com.palantir.docker.compose.events;
 
-import com.palantir.docker.compose.events.DockerComposeRuleEvent;
-import com.palantir.docker.compose.events.LifeCycleEvent;
 import org.immutables.value.Value;
 
 public interface ExplicitPullImagesEvent extends DockerComposeRuleEvent {
@@ -44,7 +42,7 @@ public interface ExplicitPullImagesEvent extends DockerComposeRuleEvent {
 
         @Override
         public LifeCycleEvent.Failed failed(Exception exception) {
-            return ImmutableFailed.builder().build();
+            return ImmutableFailed.of(exception);
         }
     };
 }
