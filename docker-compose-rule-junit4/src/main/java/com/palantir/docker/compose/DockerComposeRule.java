@@ -307,7 +307,7 @@ public abstract class DockerComposeRule implements TestRule {
 
         public Builder waitingForService(String serviceName, HealthCheck<Container> healthCheck, ReadableDuration timeout) {
             ClusterHealthCheck clusterHealthCheck = serviceHealthCheck(serviceName, healthCheck);
-            return addClusterWait(new ClusterWait(clusterHealthCheck, timeout, statsRecorder.clusterWaitListener(serviceName)));
+            return addClusterWait(new ClusterWait(clusterHealthCheck, timeout));
         }
 
         public Builder waitingForServices(List<String> services, HealthCheck<List<Container>> healthCheck) {
@@ -316,7 +316,7 @@ public abstract class DockerComposeRule implements TestRule {
 
         public Builder waitingForServices(List<String> services, HealthCheck<List<Container>> healthCheck, ReadableDuration timeout) {
             ClusterHealthCheck clusterHealthCheck = serviceHealthCheck(services, healthCheck);
-            return addClusterWait(new ClusterWait(clusterHealthCheck, timeout, statsRecorder.clusterWaitListener(services)));
+            return addClusterWait(new ClusterWait(clusterHealthCheck, timeout));
         }
 
         public Builder waitingForHostNetworkedPort(int port, HealthCheck<DockerPort> healthCheck) {

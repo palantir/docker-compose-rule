@@ -45,7 +45,6 @@ class EventEmitter {
     }
 
     interface CheckedRunnable {
-
         void run() throws Exception;
     }
 
