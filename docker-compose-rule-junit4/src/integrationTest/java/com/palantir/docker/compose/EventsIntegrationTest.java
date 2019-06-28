@@ -23,13 +23,18 @@ import static org.mockito.Mockito.verify;
 
 import com.google.common.collect.ImmutableList;
 import com.palantir.docker.compose.connection.waiting.HealthChecks;
-import com.palantir.docker.compose.events.BuildEvent;
-import com.palantir.docker.compose.events.ClusterWaitEvent;
+import com.palantir.docker.compose.events.BuildEvent.BuildStarted;
+import com.palantir.docker.compose.events.BuildEvent.BuildSucceeded;
+import com.palantir.docker.compose.events.ClusterWaitEvent.ClusterBecameHealthy;
+import com.palantir.docker.compose.events.ClusterWaitEvent.ClusterStarted;
 import com.palantir.docker.compose.events.DockerComposeRuleEvent;
 import com.palantir.docker.compose.events.EventConsumer;
-import com.palantir.docker.compose.events.ShutdownEvent;
-import com.palantir.docker.compose.events.UpEvent;
-import com.palantir.docker.compose.events.WaitForServicesEvent;
+import com.palantir.docker.compose.events.ShutdownEvent.ShutdownStarted;
+import com.palantir.docker.compose.events.ShutdownEvent.ShutdownSucceeded;
+import com.palantir.docker.compose.events.UpEvent.UpStarted;
+import com.palantir.docker.compose.events.UpEvent.UpSucceeded;
+import com.palantir.docker.compose.events.WaitForServicesEvent.WaitForServicesStarted;
+import com.palantir.docker.compose.events.WaitForServicesEvent.WaitForServicesSucceeded;
 import java.time.Duration;
 import java.util.List;
 import java.util.Optional;
@@ -59,16 +64,16 @@ public class EventsIntegrationTest {
         List<DockerComposeRuleEvent> events = getEvents();
 
         List<Class<?>> expected = ImmutableList.of(
-                BuildEvent.BuildStarted.class,
-                BuildEvent.BuildSucceeded.class,
-                UpEvent.UpStarted.class,
-                UpEvent.UpSucceeded.class,
-                WaitForServicesEvent.WaitForServicesStarted.class,
-                ClusterWaitEvent.ClusterStarted.class,
-                ClusterWaitEvent.ClusterBecameHealthy.class,
-                WaitForServicesEvent.WaitForServicesSucceeded.class,
-                ShutdownEvent.ShutdownStarted.class,
-                ShutdownEvent.ShutdownSucceeded.class
+                BuildStarted.class,
+                BuildSucceeded.class,
+                UpStarted.class,
+                UpSucceeded.class,
+                WaitForServicesStarted.class,
+                ClusterStarted.class,
+                ClusterBecameHealthy.class,
+                WaitForServicesSucceeded.class,
+                ShutdownStarted.class,
+                ShutdownSucceeded.class
         );
 
         assertThat(events).hasSameSizeAs(expected);
