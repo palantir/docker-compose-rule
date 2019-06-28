@@ -17,6 +17,7 @@
 package com.palantir.docker.compose;
 
 import com.google.common.base.Preconditions;
+import com.google.common.base.Throwables;
 import com.google.common.collect.ImmutableList;
 import com.palantir.docker.compose.connection.waiting.ClusterWaitInterface;
 import com.palantir.docker.compose.events.BuildEvent;
@@ -25,6 +26,8 @@ import com.palantir.docker.compose.events.DockerComposeRuleEvent;
 import com.palantir.docker.compose.events.EventConsumer;
 import com.palantir.docker.compose.events.LifeCycleEvent;
 import com.palantir.docker.compose.events.PullImagesEvent;
+import com.palantir.docker.compose.events.ShutdownEvent;
+import java.io.IOException;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,15 +53,19 @@ class EventEmitter {
     }
 
     interface CheckedRunnable {
-        void run() throws Exception;
+        void run() throws InterruptedException, IOException;
     }
 
-    public void pull(CheckedRunnable runnable) {
-        emit(runnable, PullImagesEvent.FACTORY);
+    public void pull(CheckedRunnable runnable) throws IOException, InterruptedException {
+        emitThrowing(runnable, PullImagesEvent.FACTORY);
     }
 
-    public void build(CheckedRunnable runnable) {
-        emit(runnable, BuildEvent.FACTORY);
+    public void build(CheckedRunnable runnable) throws IOException, InterruptedException {
+        emitThrowing(runnable, BuildEvent.FACTORY);
+    }
+
+    public void shutdown(CheckedRunnable runnable) throws IOException, InterruptedException {
+        emitThrowing(runnable, ShutdownEvent.FACTORY);
     }
 
     public ClusterWaitInterface clusterWait(String serviceName, ClusterWaitInterface clusterWait) {
@@ -66,16 +73,27 @@ class EventEmitter {
     }
 
     public ClusterWaitInterface clusterWait(Iterable<String> serviceNames, ClusterWaitInterface clusterWait) {
-        return cluster -> emit(() -> clusterWait.waitUntilReady(cluster), ClusterWaitEvent.factory(serviceNames));
+        return cluster -> emitNotThrowing(
+                () -> clusterWait.waitUntilReady(cluster), ClusterWaitEvent.factory(serviceNames));
     }
 
-    private void emit(CheckedRunnable runnable, LifeCycleEvent.Factory2 factory) {
+    private void emitNotThrowing(CheckedRunnable runnable, LifeCycleEvent.Factory2 factory) {
+        try {
+            emitThrowing(runnable, factory);
+        } catch (InterruptedException | IOException e) {
+            Throwables.propagate(e);
+        }
+    }
+
+    private void emitThrowing(CheckedRunnable runnable, LifeCycleEvent.Factory2 factory)
+            throws IOException, InterruptedException {
         try {
             emitEvent(factory.started());
             runnable.run();
             emitEvent(factory.succeeded());
-        } catch (Exception e) {
+        } catch (RuntimeException | IOException | InterruptedException e) {
             emitEvent(factory.failed(e));
+            throw e;
         }
     }
 }

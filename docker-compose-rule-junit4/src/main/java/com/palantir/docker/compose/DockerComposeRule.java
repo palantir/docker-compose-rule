@@ -80,6 +80,10 @@ public abstract class DockerComposeRule implements TestRule {
         };
     }
 
+    DockerComposeRule() {
+        emitEventsFor().setEventConsumers(eventConsumers());
+    }
+
     public DockerPort hostNetworkedPort(int port) {
         return new DockerPort(machine().getIp(), port, port);
     }
@@ -228,7 +232,7 @@ public abstract class DockerComposeRule implements TestRule {
 
     public void after() {
         try {
-            statsRecorder().shutdown(() ->
+            emitEventsFor().shutdown(() ->
                     shutdownStrategy().shutdown(this.dockerCompose(), this.docker()));
 
             logCollector().stopCollecting();
@@ -332,7 +336,6 @@ public abstract class DockerComposeRule implements TestRule {
 
         @Override
         public DockerComposeRule build() {
-            statsRecorder(statsRecorder);
             emitEventsFor(emitEventsFor);
             return super.build();
         }
