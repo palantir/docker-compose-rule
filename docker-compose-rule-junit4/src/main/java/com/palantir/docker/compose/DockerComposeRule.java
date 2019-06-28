@@ -178,9 +178,11 @@ public abstract class DockerComposeRule implements TestRule {
     public void before() throws IOException, InterruptedException {
         log.debug("Starting docker-compose cluster");
 
-        statsRecorder().pullBuildAndStartContainers(this::pullBuildAndUp);
+        pullBuildAndUp();
+
         logCollector().startCollecting(dockerCompose());
-        statsRecorder().forContainersToBecomeHealthy(this::waitForServices);
+
+        emitEventsFor().waitingForServices(this::waitForServices);
     }
 
     private void pullBuildAndUp() throws IOException, InterruptedException {
