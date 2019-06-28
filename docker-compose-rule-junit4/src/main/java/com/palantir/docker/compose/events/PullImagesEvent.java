@@ -16,33 +16,36 @@
 
 package com.palantir.docker.compose.events;
 
+import com.palantir.docker.compose.events.LifeCycleEvent.Failed;
+import com.palantir.docker.compose.events.LifeCycleEvent.Started;
+import com.palantir.docker.compose.events.LifeCycleEvent.Succeeded;
 import org.immutables.value.Value;
 
-public interface ExplicitPullImagesEvent extends DockerComposeRuleEvent {
+public interface PullImagesEvent extends DockerComposeRuleEvent {
 
     @Value.Immutable
-    interface Started extends ExplicitPullImagesEvent, LifeCycleEvent.Started { }
+    interface PullStarted extends PullImagesEvent, Started { }
 
     @Value.Immutable
-    interface Succeeded extends ExplicitPullImagesEvent, LifeCycleEvent.Succeeded { }
+    interface PullSucceeded extends PullImagesEvent, Succeeded { }
 
     @Value.Immutable
-    interface Failed extends ExplicitPullImagesEvent, LifeCycleEvent.Failed { }
+    interface PullFailed extends PullImagesEvent, Failed { }
 
     LifeCycleEvent.Factory2 FACTORY = new LifeCycleEvent.Factory2() {
         @Override
-        public LifeCycleEvent.Started started() {
-            return ImmutableStarted.builder().build();
+        public Started started() {
+            return ImmutablePullStarted.builder().build();
         }
 
         @Override
-        public LifeCycleEvent.Succeeded succeeded() {
-            return ImmutableSucceeded.builder().build();
+        public Succeeded succeeded() {
+            return ImmutableBuildSucceeded.builder().build();
         }
 
         @Override
-        public LifeCycleEvent.Failed failed(Exception exception) {
-            return ImmutableFailed.of(exception);
+        public Failed failed(Exception exception) {
+            return ImmutablePullFailed.of(exception);
         }
     };
 }

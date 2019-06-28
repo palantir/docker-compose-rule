@@ -16,33 +16,36 @@
 
 package com.palantir.docker.compose.events;
 
+import com.palantir.docker.compose.events.LifeCycleEvent.Failed;
+import com.palantir.docker.compose.events.LifeCycleEvent.Started;
+import com.palantir.docker.compose.events.LifeCycleEvent.Succeeded;
 import org.immutables.value.Value;
 
 public interface BuildEvent extends DockerComposeRuleEvent {
 
     @Value.Immutable
-    interface Started extends BuildEvent, LifeCycleEvent.Started { }
+    interface BuildStarted extends BuildEvent, Started { }
 
     @Value.Immutable
-    interface Succeeded extends BuildEvent, LifeCycleEvent.Succeeded { }
+    interface BuildSucceeded extends BuildEvent, Succeeded { }
 
     @Value.Immutable
-    interface Failed extends BuildEvent, LifeCycleEvent.Failed { }
+    interface BuildFailed extends BuildEvent, Failed { }
 
     LifeCycleEvent.Factory2 FACTORY = new LifeCycleEvent.Factory2() {
         @Override
-        public LifeCycleEvent.Started started() {
-            return ImmutableStarted.builder().build();
+        public Started started() {
+            return ImmutableBuildStarted.builder().build();
         }
 
         @Override
-        public LifeCycleEvent.Succeeded succeeded() {
-            return ImmutableSucceeded.builder().build();
+        public Succeeded succeeded() {
+            return ImmutableBuildSucceeded.builder().build();
         }
 
         @Override
-        public LifeCycleEvent.Failed failed(Exception exception) {
-            return ImmutableFailed.of(exception);
+        public Failed failed(Exception exception) {
+            return ImmutableBuildFailed.of(exception);
         }
     };
 }
