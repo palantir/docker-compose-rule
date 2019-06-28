@@ -195,7 +195,7 @@ public abstract class DockerComposeRule implements TestRule {
             upDockerCompose = new ConflictingContainerRemovingDockerCompose(upDockerCompose, docker());
         }
 
-        upDockerCompose.up();
+        emitEventsFor().up(upDockerCompose::up);
     }
 
     private void waitForServices() throws InterruptedException {

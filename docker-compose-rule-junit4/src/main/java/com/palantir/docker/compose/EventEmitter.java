@@ -27,6 +27,7 @@ import com.palantir.docker.compose.events.EventConsumer;
 import com.palantir.docker.compose.events.LifeCycleEvent;
 import com.palantir.docker.compose.events.PullImagesEvent;
 import com.palantir.docker.compose.events.ShutdownEvent;
+import com.palantir.docker.compose.events.UpEvent;
 import java.io.IOException;
 import java.util.List;
 import org.slf4j.Logger;
@@ -62,6 +63,10 @@ class EventEmitter {
 
     public void build(CheckedRunnable runnable) throws IOException, InterruptedException {
         emitThrowing(runnable, BuildEvent.FACTORY);
+    }
+
+    public void up(CheckedRunnable runnable) throws IOException, InterruptedException {
+        emitThrowing(runnable, UpEvent.FACTORY);
     }
 
     public void shutdown(CheckedRunnable runnable) throws IOException, InterruptedException {
