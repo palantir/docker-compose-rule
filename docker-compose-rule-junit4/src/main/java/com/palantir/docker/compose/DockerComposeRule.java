@@ -22,6 +22,7 @@ import com.palantir.docker.compose.connection.ImmutableCluster;
 import com.palantir.docker.compose.connection.waiting.ClusterHealthCheck;
 import com.palantir.docker.compose.connection.waiting.ClusterWait;
 import com.palantir.docker.compose.connection.waiting.HealthCheck;
+import com.palantir.docker.compose.events.EventConsumer;
 import com.palantir.docker.compose.execution.ConflictingContainerRemovingDockerCompose;
 import com.palantir.docker.compose.execution.DefaultDockerCompose;
 import com.palantir.docker.compose.execution.Docker;
@@ -84,11 +85,18 @@ public abstract class DockerComposeRule implements TestRule {
 
     protected abstract StatsRecorder statsRecorder();
 
+    @Value.Derived
+    protected EventEmitter eventEmitter() {
+        return new EventEmitter(eventConsumers());
+    }
+
     public abstract DockerComposeFiles files();
 
     protected abstract List<ClusterWait> clusterWaits();
 
     protected abstract List<StatsConsumer> statsConsumers();
+
+    protected abstract List<EventConsumer> eventConsumers();
 
     @Value.Default
     public DockerMachine machine() {
@@ -175,7 +183,7 @@ public abstract class DockerComposeRule implements TestRule {
 
     private void pullBuildAndUp() throws IOException, InterruptedException {
         if (pullOnStartup()) {
-            dockerCompose().pull();
+            eventEmitter().pull(dockerCompose()::pull);
         }
 
         dockerCompose().build();
