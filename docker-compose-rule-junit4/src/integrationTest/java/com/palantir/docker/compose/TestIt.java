@@ -17,6 +17,7 @@
 package com.palantir.docker.compose;
 
 import com.palantir.docker.compose.configuration.ShutdownStrategy;
+import com.palantir.docker.compose.instrumented.InstrumentedDockerComposeRule;
 import com.palantir.docker.compose.logging.DoNothingLogCollector;
 import org.junit.Rule;
 import org.junit.Test;

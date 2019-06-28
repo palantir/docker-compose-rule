@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-package com.palantir.docker.compose;
+package com.palantir.docker.compose.instrumented;
 
+import com.palantir.docker.compose.DockerComposeRule;
 import com.palantir.docker.compose.events.EventConsumer;
 import java.lang.reflect.Method;
 import java.util.concurrent.atomic.AtomicReference;
@@ -32,7 +33,7 @@ public class InstrumentedDockerComposeRule {
         this.delegate = delegate;
     }
 
-    static class Builder extends DockerComposeRule.Builder {
+    public static class Builder extends DockerComposeRule.Builder {
         private final EventConsumer eventConsumer;
         private final UnaryOperator<DockerComposeRule> wrapper;
 
