@@ -40,7 +40,7 @@ public interface PullImagesEvent extends DockerComposeRuleEvent {
 
         @Override
         public Succeeded succeeded() {
-            return ImmutableBuildSucceeded.builder().build();
+            return ImmutablePullSucceeded.builder().build();
         }
 
         @Override
