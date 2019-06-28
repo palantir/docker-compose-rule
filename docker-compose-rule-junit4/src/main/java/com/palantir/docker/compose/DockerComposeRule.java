@@ -49,34 +49,17 @@ import java.util.stream.Stream;
 import org.immutables.value.Value;
 import org.joda.time.Duration;
 import org.joda.time.ReadableDuration;
-import org.junit.rules.TestRule;
-import org.junit.runner.Description;
-import org.junit.runners.model.Statement;
+import org.junit.rules.ExternalResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @Value.Immutable
 @CustomImmutablesStyle
-public abstract class DockerComposeRule implements TestRule {
+public abstract class DockerComposeRule extends ExternalResource {
     private static final Logger log = LoggerFactory.getLogger(DockerComposeRule.class);
 
     public static final Duration DEFAULT_TIMEOUT = Duration.standardMinutes(2);
     public static final int DEFAULT_RETRY_ATTEMPTS = 2;
-
-    @Override
-    public Statement apply(Statement base, Description description) {
-        return new Statement() {
-            @Override
-            public void evaluate() throws Throwable {
-                try {
-                    before();
-                    base.evaluate();
-                } finally {
-                    after();
-                }
-            }
-        };
-    }
 
     @Value.Check
     protected void init() {
