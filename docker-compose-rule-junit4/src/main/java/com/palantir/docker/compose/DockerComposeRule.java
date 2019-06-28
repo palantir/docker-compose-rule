@@ -21,6 +21,7 @@ import com.palantir.docker.compose.connection.DockerPort;
 import com.palantir.docker.compose.connection.ImmutableCluster;
 import com.palantir.docker.compose.connection.waiting.ClusterHealthCheck;
 import com.palantir.docker.compose.connection.waiting.ClusterWait;
+import com.palantir.docker.compose.connection.waiting.ClusterWaitInterface;
 import com.palantir.docker.compose.connection.waiting.HealthCheck;
 import com.palantir.docker.compose.events.EventConsumer;
 import com.palantir.docker.compose.execution.ConflictingContainerRemovingDockerCompose;
@@ -92,7 +93,7 @@ public abstract class DockerComposeRule implements TestRule {
 
     public abstract DockerComposeFiles files();
 
-    protected abstract List<ClusterWait> clusterWaits();
+    protected abstract List<ClusterWaitInterface> clusterWaits();
 
     protected abstract List<StatsConsumer> statsConsumers();
 
@@ -198,10 +199,10 @@ public abstract class DockerComposeRule implements TestRule {
 
     private void waitForServices() throws InterruptedException {
         log.debug("Waiting for services");
-        ClusterWait nativeHealthCheckClusterWait =
+        ClusterWaitInterface nativeHealthCheckClusterWait =
                 new ClusterWait(ClusterHealthCheck.nativeHealthChecks(), nativeServiceHealthCheckTimeout());
 
-        List<ClusterWait> allClusterWaits = Stream.concat(
+        List<ClusterWaitInterface> allClusterWaits = Stream.concat(
                 Stream.of(nativeHealthCheckClusterWait),
                 clusterWaits().stream())
                 .collect(Collectors.toList());
@@ -327,7 +328,7 @@ public abstract class DockerComposeRule implements TestRule {
             return addClusterWait(new ClusterWait(clusterHealthCheck, timeout));
         }
 
-        public Builder clusterWaits(Iterable<? extends ClusterWait> elements) {
+        public Builder clusterWaits(Iterable<? extends ClusterWaitInterface> elements) {
             return addAllClusterWaits(elements);
         }
 
