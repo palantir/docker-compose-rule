@@ -1,3 +1,7 @@
+<p align="right">
+<a href="https://autorelease.general.dmz.palantir.tech/palantir/docker-compose-rule"><img src="https://img.shields.io/badge/Perform%20an-Autorelease-success.svg" alt="Autorelease"></a>
+</p>
+
 [![build status](https://circleci.com/gh/palantir/docker-compose-rule.svg?style=shield&circle-token=ed5bbc06f483e3f7324d1b3440125827c8d355d7)](https://circleci.com/gh/palantir/docker-compose-rule) [ ![Download](https://api.bintray.com/packages/palantir/releases/docker-compose-rule/images/download.svg) ](https://bintray.com/palantir/releases/docker-compose-rule/_latestVersion)
 
 Docker Compose JUnit Rule
