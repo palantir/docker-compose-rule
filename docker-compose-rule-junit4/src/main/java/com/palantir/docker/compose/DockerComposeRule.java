@@ -78,7 +78,8 @@ public abstract class DockerComposeRule implements TestRule {
         };
     }
 
-    DockerComposeRule() {
+    @Value.Check
+    protected void init() {
         emitEventsFor().setEventConsumers(eventConsumers());
     }
 
