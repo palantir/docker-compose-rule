@@ -17,7 +17,6 @@
 package com.palantir.docker.compose;
 
 import com.google.common.base.Throwables;
-import com.palantir.docker.compose.connection.RecordingCluster;
 import com.palantir.docker.compose.connection.waiting.ClusterWaitInterface;
 import com.palantir.docker.compose.events.BuildEvent;
 import com.palantir.docker.compose.events.ClusterWaitEvent;
