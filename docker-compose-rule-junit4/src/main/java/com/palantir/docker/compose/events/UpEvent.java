@@ -32,7 +32,7 @@ public interface UpEvent extends DockerComposeRuleEvent {
     @Value.Immutable
     interface UpFailed extends UpEvent, Failed { }
 
-    LifeCycleEvent.Factory2 FACTORY = new LifeCycleEvent.Factory2() {
+    LifeCycleEvent.Factory FACTORY = new LifeCycleEvent.Factory() {
         @Override
         public Started started() {
             return ImmutableUpStarted.builder().build();

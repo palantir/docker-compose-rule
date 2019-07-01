@@ -101,7 +101,7 @@ class EventEmitter {
                         clusterWaitType));
     }
 
-    private void emitNotThrowing(CheckedRunnable runnable, LifeCycleEvent.Factory2 factory) {
+    private void emitNotThrowing(CheckedRunnable runnable, LifeCycleEvent.Factory factory) {
         try {
             emitThrowing(runnable, factory);
         } catch (InterruptedException | IOException e) {
@@ -109,7 +109,7 @@ class EventEmitter {
         }
     }
 
-    private void emitThrowing(CheckedRunnable runnable, LifeCycleEvent.Factory2 factory)
+    private void emitThrowing(CheckedRunnable runnable, LifeCycleEvent.Factory factory)
             throws IOException, InterruptedException {
         try {
             emitEvent(factory.started());

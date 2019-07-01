@@ -62,10 +62,10 @@ public interface ClusterWaitEvent extends DockerComposeRuleEvent {
         Set<String> serviceNames();
     }
 
-    static LifeCycleEvent.Factory2 factory(Supplier<Set<String>> serviceNames, ClusterWaitType clusterWaitType) {
+    static LifeCycleEvent.Factory factory(Supplier<Set<String>> serviceNames, ClusterWaitType clusterWaitType) {
         ClusterWaitEventId eventId = ClusterWaitEventId.random();
 
-        return new LifeCycleEvent.Factory2() {
+        return new LifeCycleEvent.Factory() {
             @Override
             public Started started() {
                 return ImmutableClusterStarted.builder()

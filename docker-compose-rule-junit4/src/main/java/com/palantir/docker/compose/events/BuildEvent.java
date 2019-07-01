@@ -32,7 +32,7 @@ public interface BuildEvent extends DockerComposeRuleEvent {
     @Value.Immutable
     interface BuildFailed extends BuildEvent, Failed { }
 
-    LifeCycleEvent.Factory2 FACTORY = new LifeCycleEvent.Factory2() {
+    LifeCycleEvent.Factory FACTORY = new LifeCycleEvent.Factory() {
         @Override
         public Started started() {
             return ImmutableBuildStarted.builder().build();

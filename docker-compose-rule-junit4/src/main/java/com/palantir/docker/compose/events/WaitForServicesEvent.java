@@ -32,7 +32,7 @@ public interface WaitForServicesEvent extends DockerComposeRuleEvent {
     @Value.Immutable
     interface WaitForServicesFailed extends WaitForServicesEvent, Failed { }
 
-    LifeCycleEvent.Factory2 FACTORY = new LifeCycleEvent.Factory2() {
+    LifeCycleEvent.Factory FACTORY = new LifeCycleEvent.Factory() {
         @Override
         public Started started() {
             return ImmutableWaitForServicesStarted.builder().build();

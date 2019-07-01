@@ -32,7 +32,7 @@ public interface PullImagesEvent extends DockerComposeRuleEvent {
     @Value.Immutable
     interface PullFailed extends PullImagesEvent, Failed { }
 
-    LifeCycleEvent.Factory2 FACTORY = new LifeCycleEvent.Factory2() {
+    LifeCycleEvent.Factory FACTORY = new LifeCycleEvent.Factory() {
         @Override
         public Started started() {
             return ImmutablePullStarted.builder().build();

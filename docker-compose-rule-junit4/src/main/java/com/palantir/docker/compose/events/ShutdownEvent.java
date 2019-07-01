@@ -32,7 +32,7 @@ public interface ShutdownEvent extends DockerComposeRuleEvent {
     @Value.Immutable
     interface ShutdownFailed extends ShutdownEvent, Failed { }
 
-    LifeCycleEvent.Factory2 FACTORY = new LifeCycleEvent.Factory2() {
+    LifeCycleEvent.Factory FACTORY = new LifeCycleEvent.Factory() {
         @Override
         public Started started() {
             return ImmutableShutdownStarted.builder().build();

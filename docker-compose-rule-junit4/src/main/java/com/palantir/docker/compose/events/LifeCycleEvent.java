@@ -16,10 +16,6 @@
 
 package com.palantir.docker.compose.events;
 
-import java.util.function.Function;
-import java.util.function.Supplier;
-import org.immutables.value.Value;
-
 public interface LifeCycleEvent extends DockerComposeRuleEvent {
     interface Started extends LifeCycleEvent {}
 
@@ -29,22 +25,9 @@ public interface LifeCycleEvent extends DockerComposeRuleEvent {
         Exception exception();
     }
 
-    interface Factory2 {
+    interface Factory {
         Started started();
         Succeeded succeeded();
         Failed failed(Exception exception);
-    }
-
-    @Value.Immutable
-    interface Factory {
-        Supplier<Started> started();
-        Supplier<Succeeded> succeeded();
-        Function<Exception, Failed> failed();
-
-        class Builder extends ImmutableFactory.Builder { }
-
-        static Builder builder() {
-            return new Builder();
-        }
     }
 }
