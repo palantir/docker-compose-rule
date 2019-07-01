@@ -89,7 +89,7 @@ class EventEmitter {
             ClusterWaitInterface clusterWait) {
         return cluster -> emitNotThrowing(
                 () -> clusterWait.waitUntilReady(cluster),
-                ClusterWaitEvent.factory(serviceNames, clusterWaitType));
+                ClusterWaitEvent.factory(() -> serviceNames, clusterWaitType));
     }
 
     private void emitNotThrowing(CheckedRunnable runnable, LifeCycleEvent.Factory2 factory) {

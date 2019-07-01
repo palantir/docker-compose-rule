@@ -20,32 +20,56 @@ import com.palantir.docker.compose.events.LifeCycleEvent.Failed;
 import com.palantir.docker.compose.events.LifeCycleEvent.Started;
 import com.palantir.docker.compose.events.LifeCycleEvent.Succeeded;
 import java.util.List;
+import java.util.function.Supplier;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.immutables.value.Value;
 
 public interface ClusterWaitEvent extends DockerComposeRuleEvent {
-    List<String> serviceNames();
+
+    ClusterWaitEventId eventId();
     ClusterWaitType clusterWaitType();
 
     enum ClusterWaitType {
         NATIVE,
-        USER,
+        USER
+    }
+
+    @Value.Immutable
+    interface ClusterWaitEventId {
+        String eventId();
+
+        static ClusterWaitEventId of(String eventId) {
+            return ImmutableClusterWaitEventId.builder()
+                    .eventId(eventId)
+                    .build();
+        }
+
+        static ClusterWaitEventId random() {
+            return of(RandomStringUtils.randomAlphabetic(8));
+        }
     }
 
     @Value.Immutable
     interface ClusterStarted extends ClusterWaitEvent, Started { }
 
     @Value.Immutable
-    interface ClusterBecameHealthy extends ClusterWaitEvent, Succeeded { }
+    interface ClusterBecameHealthy extends ClusterWaitFinishedEvent, Succeeded { }
 
     @Value.Immutable
-    interface ClusterTimedOut extends ClusterWaitEvent, Failed { }
+    interface ClusterTimedOut extends ClusterWaitFinishedEvent, Failed { }
 
-    static LifeCycleEvent.Factory2 factory(List<String> serviceNames, ClusterWaitType clusterWaitType) {
+    interface ClusterWaitFinishedEvent extends ClusterWaitEvent {
+        List<String> serviceNames();
+    }
+
+    static LifeCycleEvent.Factory2 factory(Supplier<List<String>> serviceNames, ClusterWaitType clusterWaitType) {
+        ClusterWaitEventId eventId = ClusterWaitEventId.random();
+
         return new LifeCycleEvent.Factory2() {
             @Override
             public Started started() {
                 return ImmutableClusterStarted.builder()
-                        .serviceNames(serviceNames)
+                        .eventId(eventId)
                         .clusterWaitType(clusterWaitType)
                         .build();
             }
@@ -53,7 +77,8 @@ public interface ClusterWaitEvent extends DockerComposeRuleEvent {
             @Override
             public Succeeded succeeded() {
                 return ImmutableClusterBecameHealthy.builder()
-                        .serviceNames(serviceNames)
+                        .eventId(eventId)
+                        .serviceNames(serviceNames.get())
                         .clusterWaitType(clusterWaitType)
                         .build();
             }
@@ -61,7 +86,8 @@ public interface ClusterWaitEvent extends DockerComposeRuleEvent {
             @Override
             public Failed failed(Exception exception) {
                 return ImmutableClusterTimedOut.builder()
-                        .serviceNames(serviceNames)
+                        .eventId(eventId)
+                        .serviceNames(serviceNames.get())
                         .clusterWaitType(clusterWaitType)
                         .exception(exception)
                         .build();
