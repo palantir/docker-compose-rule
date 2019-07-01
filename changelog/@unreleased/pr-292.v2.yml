@@ -1,0 +1,5 @@
+type: feature
+feature:
+  description: Events are emitted for pull, build, up, waiting for services and shutdown.
+  links:
+  - https://github.com/palantir/docker-compose-rule/pull/292
