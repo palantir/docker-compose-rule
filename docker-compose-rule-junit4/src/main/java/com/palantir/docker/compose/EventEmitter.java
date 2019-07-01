@@ -18,7 +18,7 @@ package com.palantir.docker.compose;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Throwables;
-import com.google.common.collect.ImmutableList;
+import com.palantir.docker.compose.connection.RecordingCluster;
 import com.palantir.docker.compose.connection.waiting.ClusterWaitInterface;
 import com.palantir.docker.compose.events.BuildEvent;
 import com.palantir.docker.compose.events.ClusterWaitEvent;
@@ -32,6 +32,9 @@ import com.palantir.docker.compose.events.UpEvent;
 import com.palantir.docker.compose.events.WaitForServicesEvent;
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,8 +43,8 @@ class EventEmitter {
 
     private List<EventConsumer> eventConsumers;
 
-    public void setEventConsumers(List<EventConsumer> eventConsumers) {
-        this.eventConsumers = ImmutableList.copyOf(eventConsumers);
+    EventEmitter(List<EventConsumer> eventConsumers) {
+        this.eventConsumers = eventConsumers;
     }
 
     interface CheckedRunnable {
@@ -61,35 +64,42 @@ class EventEmitter {
 
     public void waitingForServices(CheckedRunnable runnable) throws IOException, InterruptedException {
         emitThrowing(runnable, WaitForServicesEvent.FACTORY);
-    };
+    }
 
     public void shutdown(CheckedRunnable runnable) throws IOException, InterruptedException {
         emitThrowing(runnable, ShutdownEvent.FACTORY);
     }
 
     public ClusterWaitInterface userClusterWait(ClusterWaitInterface clusterWait)  {
-        return clusterWait(ImmutableList.of(), ClusterWaitType.USER, clusterWait);
+        return clusterWait(ClusterWaitType.USER, clusterWait);
     }
 
-    public ClusterWaitInterface userClusterWait(String serviceName, ClusterWaitInterface clusterWait) {
-        return userClusterWait(ImmutableList.of(serviceName), clusterWait);
-    }
-
-    public ClusterWaitInterface userClusterWait(List<String> serviceNames, ClusterWaitInterface clusterWait) {
-        return clusterWait(serviceNames, ClusterWaitType.USER, clusterWait);
-    }
-
-    public ClusterWaitInterface nativeClusterWait(List<String> serviceNames, ClusterWaitInterface clusterWait) {
-        return clusterWait(serviceNames, ClusterWaitType.NATIVE, clusterWait);
+    public ClusterWaitInterface nativeClusterWait(ClusterWaitInterface clusterWait) {
+        return clusterWait(ClusterWaitType.NATIVE, clusterWait);
     }
 
     private ClusterWaitInterface clusterWait(
-            List<String> serviceNames,
             ClusterWaitType clusterWaitType,
             ClusterWaitInterface clusterWait) {
+
+        AtomicReference<Optional<Set<String>>> recordedServiceNames = new AtomicReference<>(Optional.empty());
+
+        ClusterWaitInterface recordingClusterWait = cluster -> {
+            RecordingCluster recordingCluster = new RecordingCluster(cluster);
+            try {
+                clusterWait.waitUntilReady(recordingCluster);
+            } finally {
+                recordedServiceNames.set(Optional.of(recordingCluster.recordedContainerNames()));
+            }
+        };
+
+
         return cluster -> emitNotThrowing(
-                () -> clusterWait.waitUntilReady(cluster),
-                ClusterWaitEvent.factory(() -> serviceNames, clusterWaitType));
+                () -> recordingClusterWait.waitUntilReady(cluster),
+                ClusterWaitEvent.factory(
+                        () -> recordedServiceNames.get().orElseThrow(
+                                () -> new IllegalStateException("Recorded service names have not yet been computed")),
+                        clusterWaitType));
     }
 
     private void emitNotThrowing(CheckedRunnable runnable, LifeCycleEvent.Factory2 factory) {

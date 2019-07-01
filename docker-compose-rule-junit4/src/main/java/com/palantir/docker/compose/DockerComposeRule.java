@@ -6,7 +6,6 @@ package com.palantir.docker.compose;
 import static com.palantir.docker.compose.connection.waiting.ClusterHealthCheck.serviceHealthCheck;
 import static com.palantir.docker.compose.connection.waiting.ClusterHealthCheck.transformingHealthCheck;
 
-import com.google.common.collect.Iterables;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
@@ -17,7 +16,6 @@ import com.palantir.docker.compose.configuration.ShutdownStrategy;
 import com.palantir.docker.compose.connection.Cluster;
 import com.palantir.docker.compose.connection.Container;
 import com.palantir.docker.compose.connection.ContainerCache;
-import com.palantir.docker.compose.connection.ContainerName;
 import com.palantir.docker.compose.connection.DockerMachine;
 import com.palantir.docker.compose.connection.DockerPort;
 import com.palantir.docker.compose.connection.ImmutableCluster;
@@ -63,16 +61,14 @@ public abstract class DockerComposeRule extends ExternalResource {
     public static final Duration DEFAULT_TIMEOUT = Duration.standardMinutes(2);
     public static final int DEFAULT_RETRY_ATTEMPTS = 2;
 
-    @Value.Check
-    protected void init() {
-        emitEventsFor().setEventConsumers(eventConsumers());
-    }
-
     public DockerPort hostNetworkedPort(int port) {
         return new DockerPort(machine().getIp(), port, port);
     }
 
-    protected abstract EventEmitter emitEventsFor();
+    @Value.Derived
+    protected EventEmitter emitEventsFor() {
+        return new EventEmitter(eventConsumers());
+    }
 
     public abstract DockerComposeFiles files();
 
@@ -180,20 +176,15 @@ public abstract class DockerComposeRule extends ExternalResource {
         emitEventsFor().up(upDockerCompose::up);
     }
 
-    private void waitForServices() throws InterruptedException, IOException {
+    private void waitForServices() throws InterruptedException {
         log.debug("Waiting for services");
-        List<String> serviceNames = dockerCompose().ps().stream()
-                .map(ContainerName::semanticName)
-                .collect(Collectors.toList());
-
         ClusterWaitInterface nativeHealthCheckClusterWait =
                 emitEventsFor().nativeClusterWait(
-                        serviceNames,
                         new ClusterWait(ClusterHealthCheck.nativeHealthChecks(), nativeServiceHealthCheckTimeout()));
 
         List<ClusterWaitInterface> allClusterWaits = Stream.concat(
-                Stream.of(nativeHealthCheckClusterWait),
-                clusterWaits().stream())
+                Stream.of(nativeHealthCheckClusterWait).map(emitEventsFor()::nativeClusterWait),
+                clusterWaits().stream().map(emitEventsFor()::userClusterWait))
                 .collect(Collectors.toList());
 
         ListeningExecutorService executorService =
@@ -245,9 +236,6 @@ public abstract class DockerComposeRule extends ExternalResource {
     }
 
     public static class Builder extends ImmutableDockerComposeRule.Builder {
-
-        private final EventEmitter emitEventsFor = new EventEmitter();
-
         public Builder file(String dockerComposeYmlFile) {
             return files(DockerComposeFiles.from(dockerComposeYmlFile));
         }
@@ -283,7 +271,7 @@ public abstract class DockerComposeRule extends ExternalResource {
 
         public Builder waitingForService(String serviceName, HealthCheck<Container> healthCheck, ReadableDuration timeout) {
             ClusterHealthCheck clusterHealthCheck = serviceHealthCheck(serviceName, healthCheck);
-            return addClusterWait(emitEventsFor.userClusterWait(serviceName, new ClusterWait(clusterHealthCheck, timeout)));
+            return addClusterWait(new ClusterWait(clusterHealthCheck, timeout));
         }
 
         public Builder waitingForServices(List<String> services, HealthCheck<List<Container>> healthCheck) {
@@ -292,7 +280,7 @@ public abstract class DockerComposeRule extends ExternalResource {
 
         public Builder waitingForServices(List<String> services, HealthCheck<List<Container>> healthCheck, ReadableDuration timeout) {
             ClusterHealthCheck clusterHealthCheck = serviceHealthCheck(services, healthCheck);
-            return addClusterWait(emitEventsFor.userClusterWait(services, new ClusterWait(clusterHealthCheck, timeout)));
+            return addClusterWait(new ClusterWait(clusterHealthCheck, timeout));
         }
 
         public Builder waitingForHostNetworkedPort(int port, HealthCheck<DockerPort> healthCheck) {
@@ -305,12 +293,11 @@ public abstract class DockerComposeRule extends ExternalResource {
         }
 
         public Builder clusterWaits(Iterable<? extends ClusterWaitInterface> elements) {
-            return addAllClusterWaits(Iterables.transform(elements, emitEventsFor::userClusterWait));
+            return addAllClusterWaits(elements);
         }
 
         @Override
         public DockerComposeRule build() {
-            emitEventsFor(emitEventsFor);
             return super.build();
         }
     }

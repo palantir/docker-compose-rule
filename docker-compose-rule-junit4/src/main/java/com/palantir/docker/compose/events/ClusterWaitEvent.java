@@ -19,7 +19,7 @@ package com.palantir.docker.compose.events;
 import com.palantir.docker.compose.events.LifeCycleEvent.Failed;
 import com.palantir.docker.compose.events.LifeCycleEvent.Started;
 import com.palantir.docker.compose.events.LifeCycleEvent.Succeeded;
-import java.util.List;
+import java.util.Set;
 import java.util.function.Supplier;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.immutables.value.Value;
@@ -59,10 +59,10 @@ public interface ClusterWaitEvent extends DockerComposeRuleEvent {
     interface ClusterTimedOut extends ClusterWaitFinishedEvent, Failed { }
 
     interface ClusterWaitFinishedEvent extends ClusterWaitEvent {
-        List<String> serviceNames();
+        Set<String> serviceNames();
     }
 
-    static LifeCycleEvent.Factory2 factory(Supplier<List<String>> serviceNames, ClusterWaitType clusterWaitType) {
+    static LifeCycleEvent.Factory2 factory(Supplier<Set<String>> serviceNames, ClusterWaitType clusterWaitType) {
         ClusterWaitEventId eventId = ClusterWaitEventId.random();
 
         return new LifeCycleEvent.Factory2() {

@@ -68,6 +68,8 @@ public class EventsIntegrationTest {
                 WaitForServicesStarted.class,
                 ClusterStarted.class,
                 ClusterStarted.class,
+                ClusterStarted.class,
+                ClusterBecameHealthy.class,
                 ClusterBecameHealthy.class,
                 ClusterBecameHealthy.class,
                 WaitForServicesSucceeded.class,
