@@ -299,11 +299,6 @@ public abstract class DockerComposeRule extends ExternalResource {
         public Builder clusterWaits(Iterable<? extends ClusterWaitInterface> elements) {
             return addAllClusterWaits(elements);
         }
-
-        @Override
-        public ImmutableDockerComposeRule build() {
-            return super.build();
-        }
     }
 
 }
