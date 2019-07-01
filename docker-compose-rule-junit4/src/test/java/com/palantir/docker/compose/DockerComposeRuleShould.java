@@ -86,7 +86,7 @@ public class DockerComposeRuleShould {
     private DockerComposeFiles mockFiles = mock(DockerComposeFiles.class);
     private DockerMachine machine = mock(DockerMachine.class);
     private LogCollector logCollector = mock(LogCollector.class);
-    private DockerComposeRule rule;
+    private ImmutableDockerComposeRule rule;
 
     @Before public void
     setup() {
