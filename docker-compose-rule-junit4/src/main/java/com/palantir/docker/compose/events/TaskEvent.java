@@ -16,12 +16,12 @@
 
 package com.palantir.docker.compose.events;
 
-public interface LifeCycleEvent extends DockerComposeRuleEvent {
-    interface Started extends LifeCycleEvent {}
+public interface TaskEvent extends DockerComposeRuleEvent {
+    interface Started extends TaskEvent {}
 
-    interface Succeeded extends LifeCycleEvent {}
+    interface Succeeded extends TaskEvent {}
 
-    interface Failed extends LifeCycleEvent {
+    interface Failed extends TaskEvent {
         Exception exception();
     }
 

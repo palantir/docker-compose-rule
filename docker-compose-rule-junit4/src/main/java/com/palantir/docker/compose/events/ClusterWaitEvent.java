@@ -16,9 +16,9 @@
 
 package com.palantir.docker.compose.events;
 
-import com.palantir.docker.compose.events.LifeCycleEvent.Failed;
-import com.palantir.docker.compose.events.LifeCycleEvent.Started;
-import com.palantir.docker.compose.events.LifeCycleEvent.Succeeded;
+import com.palantir.docker.compose.events.TaskEvent.Failed;
+import com.palantir.docker.compose.events.TaskEvent.Started;
+import com.palantir.docker.compose.events.TaskEvent.Succeeded;
 import java.util.Set;
 import java.util.function.Supplier;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -62,10 +62,10 @@ public interface ClusterWaitEvent extends DockerComposeRuleEvent {
         Set<String> serviceNames();
     }
 
-    static LifeCycleEvent.Factory factory(Supplier<Set<String>> serviceNames, ClusterWaitType clusterWaitType) {
+    static TaskEvent.Factory factory(Supplier<Set<String>> serviceNames, ClusterWaitType clusterWaitType) {
         ClusterWaitEventId eventId = ClusterWaitEventId.random();
 
-        return new LifeCycleEvent.Factory() {
+        return new TaskEvent.Factory() {
             @Override
             public Started started() {
                 return ImmutableClusterStarted.builder()

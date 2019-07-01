@@ -24,7 +24,7 @@ import com.palantir.docker.compose.events.ClusterWaitEvent;
 import com.palantir.docker.compose.events.ClusterWaitEvent.ClusterWaitType;
 import com.palantir.docker.compose.events.DockerComposeRuleEvent;
 import com.palantir.docker.compose.events.EventConsumer;
-import com.palantir.docker.compose.events.LifeCycleEvent;
+import com.palantir.docker.compose.events.TaskEvent;
 import com.palantir.docker.compose.events.PullImagesEvent;
 import com.palantir.docker.compose.events.ShutdownEvent;
 import com.palantir.docker.compose.events.UpEvent;
@@ -101,7 +101,7 @@ class EventEmitter {
                         clusterWaitType));
     }
 
-    private void emitNotThrowing(CheckedRunnable runnable, LifeCycleEvent.Factory factory) {
+    private void emitNotThrowing(CheckedRunnable runnable, TaskEvent.Factory factory) {
         try {
             emitThrowing(runnable, factory);
         } catch (InterruptedException | IOException e) {
@@ -109,7 +109,7 @@ class EventEmitter {
         }
     }
 
-    private void emitThrowing(CheckedRunnable runnable, LifeCycleEvent.Factory factory)
+    private void emitThrowing(CheckedRunnable runnable, TaskEvent.Factory factory)
             throws IOException, InterruptedException {
         try {
             emitEvent(factory.started());

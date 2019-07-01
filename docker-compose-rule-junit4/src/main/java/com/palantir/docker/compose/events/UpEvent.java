@@ -16,9 +16,9 @@
 
 package com.palantir.docker.compose.events;
 
-import com.palantir.docker.compose.events.LifeCycleEvent.Failed;
-import com.palantir.docker.compose.events.LifeCycleEvent.Started;
-import com.palantir.docker.compose.events.LifeCycleEvent.Succeeded;
+import com.palantir.docker.compose.events.TaskEvent.Failed;
+import com.palantir.docker.compose.events.TaskEvent.Started;
+import com.palantir.docker.compose.events.TaskEvent.Succeeded;
 import org.immutables.value.Value;
 
 public interface UpEvent extends DockerComposeRuleEvent {
@@ -32,7 +32,7 @@ public interface UpEvent extends DockerComposeRuleEvent {
     @Value.Immutable
     interface UpFailed extends UpEvent, Failed { }
 
-    LifeCycleEvent.Factory FACTORY = new LifeCycleEvent.Factory() {
+    TaskEvent.Factory FACTORY = new TaskEvent.Factory() {
         @Override
         public Started started() {
             return ImmutableUpStarted.builder().build();
