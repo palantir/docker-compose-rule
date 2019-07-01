@@ -297,7 +297,7 @@ public abstract class DockerComposeRule extends ExternalResource {
         }
 
         @Override
-        public DockerComposeRule build() {
+        public ImmutableDockerComposeRule build() {
             return super.build();
         }
     }
