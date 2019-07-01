@@ -42,7 +42,6 @@ import com.palantir.docker.compose.connection.DockerMachine;
 import com.palantir.docker.compose.connection.DockerPort;
 import com.palantir.docker.compose.connection.State;
 import com.palantir.docker.compose.connection.waiting.ClusterWait;
-import com.palantir.docker.compose.connection.waiting.ClusterWaitInterface;
 import com.palantir.docker.compose.connection.waiting.HealthCheck;
 import com.palantir.docker.compose.connection.waiting.SuccessOrFailure;
 import com.palantir.docker.compose.execution.Docker;
@@ -300,8 +299,8 @@ public class DockerComposeRuleShould {
 
     @Test
     public void union_cluster_waits_from_builder_instead_of_overwriting() {
-        ClusterWaitInterface firstWait = mock(ClusterWait.class);
-        ClusterWaitInterface secondWait = mock(ClusterWait.class);
+        ClusterWait firstWait = mock(ClusterWait.class);
+        ClusterWait secondWait = mock(ClusterWait.class);
 
         DockerComposeRule twoAssignments = defaultBuilder()
                 .clusterWaits(ImmutableList.of(firstWait))

@@ -73,7 +73,7 @@ public abstract class DockerComposeRule extends ExternalResource {
 
     public abstract DockerComposeFiles files();
 
-    protected abstract List<ClusterWaitInterface> clusterWaits();
+    protected abstract List<ClusterWait> clusterWaits();
 
     protected abstract List<EventConsumer> eventConsumers();
 
@@ -300,7 +300,7 @@ public abstract class DockerComposeRule extends ExternalResource {
             return addClusterWait(new ClusterWait(clusterHealthCheck, timeout));
         }
 
-        public Builder clusterWaits(Iterable<? extends ClusterWaitInterface> elements) {
+        public Builder clusterWaits(Iterable<? extends ClusterWait> elements) {
             return addAllClusterWaits(elements);
         }
     }
