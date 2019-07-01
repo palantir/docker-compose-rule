@@ -50,6 +50,7 @@ class EventEmitter {
     interface CheckedRunnable {
         void run() throws InterruptedException, IOException;
     }
+
     public void pull(CheckedRunnable runnable) throws IOException, InterruptedException {
         emitThrowing(runnable, PullImagesEvent.FACTORY);
     }
@@ -81,7 +82,6 @@ class EventEmitter {
     private ClusterWaitInterface clusterWait(
             ClusterWaitType clusterWaitType,
             ClusterWaitInterface clusterWait) {
-
         AtomicReference<Optional<Set<String>>> recordedServiceNames = new AtomicReference<>(Optional.empty());
 
         ClusterWaitInterface recordingClusterWait = cluster -> {
