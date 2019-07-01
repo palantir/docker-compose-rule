@@ -188,6 +188,12 @@ public abstract class DockerComposeRule extends ExternalResource {
                 clusterWaits().stream().map(emitEventsFor()::userClusterWait))
                 .collect(Collectors.toList());
 
+        waitForAllClusterWaits(allClusterWaits);
+
+        log.debug("docker-compose cluster started");
+    }
+
+    private void waitForAllClusterWaits(List<ClusterWaitInterface> allClusterWaits) throws InterruptedException {
         ListeningExecutorService executorService = MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(
                 allClusterWaits.size(),
                 new ThreadFactoryBuilder()
@@ -205,12 +211,10 @@ public abstract class DockerComposeRule extends ExternalResource {
             if (e.getCause() instanceof RuntimeException) {
                 throw (RuntimeException) e.getCause();
             }
-            throw new IllegalStateException("A healthcheck errored out: ", e);
+            throw new IllegalStateException("A cluster wait errored out: ", e);
         } finally {
             MoreExecutors.shutdownAndAwaitTermination(executorService, 1, TimeUnit.SECONDS);
         }
-
-        log.debug("docker-compose cluster started");
     }
 
     public void after() {
