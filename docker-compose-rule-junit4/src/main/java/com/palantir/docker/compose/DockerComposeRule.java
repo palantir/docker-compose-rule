@@ -10,6 +10,7 @@ import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.palantir.docker.compose.configuration.DockerComposeFiles;
 import com.palantir.docker.compose.configuration.ProjectName;
 import com.palantir.docker.compose.configuration.ShutdownStrategy;
@@ -187,8 +188,11 @@ public abstract class DockerComposeRule extends ExternalResource {
                 clusterWaits().stream().map(emitEventsFor()::userClusterWait))
                 .collect(Collectors.toList());
 
-        ListeningExecutorService executorService =
-                MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(allClusterWaits.size()));
+        ListeningExecutorService executorService = MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(
+                allClusterWaits.size(),
+                new ThreadFactoryBuilder()
+                        .setNameFormat("dcr-wait-%d")
+                        .build()));
 
         try {
             ListenableFuture<List<Object>> listListenableFuture =
