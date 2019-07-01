@@ -66,10 +66,9 @@ public class EventsIntegrationTest {
                 UpStarted.class,
                 UpSucceeded.class,
                 WaitForServicesStarted.class,
+                // 2 cluster waits, one native, one user
                 ClusterStarted.class,
                 ClusterStarted.class,
-                ClusterStarted.class,
-                ClusterBecameHealthy.class,
                 ClusterBecameHealthy.class,
                 ClusterBecameHealthy.class,
                 WaitForServicesSucceeded.class,

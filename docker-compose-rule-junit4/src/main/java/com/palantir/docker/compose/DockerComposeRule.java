@@ -183,7 +183,7 @@ public abstract class DockerComposeRule extends ExternalResource {
                         new ClusterWait(ClusterHealthCheck.nativeHealthChecks(), nativeServiceHealthCheckTimeout()));
 
         List<ClusterWaitInterface> allClusterWaits = Stream.concat(
-                Stream.of(nativeHealthCheckClusterWait).map(emitEventsFor()::nativeClusterWait),
+                Stream.of(nativeHealthCheckClusterWait),
                 clusterWaits().stream().map(emitEventsFor()::userClusterWait))
                 .collect(Collectors.toList());
 
