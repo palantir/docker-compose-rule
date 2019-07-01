@@ -16,5 +16,10 @@
 
 package com.palantir.docker.compose.events;
 
-@EventImmutablesStyle
+import org.immutables.value.Value;
+
+@Value.Style(
+        visibility = Value.Style.ImplementationVisibility.PACKAGE,
+        builderVisibility = Value.Style.BuilderVisibility.PACKAGE
+)
 public interface DockerComposeRuleEvent { }
