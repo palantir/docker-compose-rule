@@ -16,7 +16,6 @@
 
 package com.palantir.docker.compose;
 
-import com.google.common.base.Preconditions;
 import com.google.common.base.Throwables;
 import com.palantir.docker.compose.connection.RecordingCluster;
 import com.palantir.docker.compose.connection.waiting.ClusterWaitInterface;
@@ -123,7 +122,6 @@ class EventEmitter {
     }
 
     private void emitEvent(DockerComposeRuleEvent event) {
-        Preconditions.checkNotNull(eventConsumers, "event consumers must be set before events are emitted!");
         eventConsumers.forEach(eventConsumer -> {
             try {
                 eventConsumer.receiveEvent(event);
