@@ -98,10 +98,10 @@ public class DockerComposeShould {
     }
 
     @Test
-    public void call_docker_compose_with_no_colour_flag_on_logs() throws IOException {
+    public void call_docker_compose_with_no_colour_flag_on_logs() throws IOException, InterruptedException {
         when(executedProcess.getInputStream()).thenReturn(
-                toInputStream("id"),
-                toInputStream("docker-compose version 1.5.6, build 1ad8866"),
+//                toInputStream("id"),
+                toInputStream("docker-compose version 1.7.0, build 1ad8866"),
                 toInputStream("logs"));
         ByteArrayOutputStream output = new ByteArrayOutputStream();
 
@@ -111,7 +111,7 @@ public class DockerComposeShould {
     }
 
     @Test
-    public void call_docker_compose_with_no_container_on_logs() throws IOException {
+    public void call_docker_compose_with_no_container_on_logs() throws IOException, InterruptedException {
         reset(executor);
         final Process mockIdProcess = mock(Process.class);
         when(mockIdProcess.exitValue()).thenReturn(0);
@@ -120,7 +120,7 @@ public class DockerComposeShould {
 
         final Process mockVersionProcess = mock(Process.class);
         when(mockVersionProcess.exitValue()).thenReturn(0);
-        when(mockVersionProcess.getInputStream()).thenReturn(toInputStream("docker-compose version 1.5.6, build 1ad8866"));
+        when(mockVersionProcess.getInputStream()).thenReturn(toInputStream("docker-compose version 1.7.0, build 1ad8866"));
         when(executor.execute("ps", "-q", "db")).thenReturn(mockIdProcess);
         when(executor.execute("-v")).thenReturn(mockVersionProcess);
         when(executor.execute("logs", "--no-color", "db")).thenReturn(executedProcess);
@@ -128,22 +128,17 @@ public class DockerComposeShould {
         ByteArrayOutputStream output = new ByteArrayOutputStream();
 
         compose.writeLogs("db", output);
-        verify(executor, times(4)).execute("ps", "-q", "db");
         verify(executor).execute("logs", "--no-color", "db");
         assertThat(new String(output.toByteArray(), StandardCharsets.UTF_8), is("logs"));
     }
 
     @Test
-    public void call_docker_compose_with_the_follow_flag_when_the_version_is_at_least_1_7_0_on_logs()
-            throws IOException {
-        when(executedProcess.getInputStream()).thenReturn(
-                toInputStream("id"),
-                toInputStream("docker-compose version 1.7.0, build 1ad8866"),
-                toInputStream("logs"));
-        ByteArrayOutputStream output = new ByteArrayOutputStream();
-        compose.writeLogs("db", output);
-        verify(executor).execute("logs", "--no-color", "--follow", "db");
-        assertThat(new String(output.toByteArray(), StandardCharsets.UTF_8), is("logs"));
+    public void fail_if_docker_compose_version_is_prior_1_7_on_logs()
+            throws IOException, InterruptedException {
+        when(executedProcess.getInputStream()).thenReturn(toInputStream("docker-compose version 1.5.6, build 1ad8866"));
+        exception.expect(IllegalStateException.class);
+        exception.expectMessage("You need at least docker-compose 1.7 to run docker-compose exec");
+        compose.exec(options("-d"), "container_1", arguments("ls"));
     }
 
     @Test

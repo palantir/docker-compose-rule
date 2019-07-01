@@ -51,6 +51,11 @@ abstract class DelegatingDockerCompose implements DockerCompose {
     }
 
     @Override
+    public void stop() throws IOException, InterruptedException {
+        dockerCompose.stop();
+    }
+
+    @Override
     public void kill() throws IOException, InterruptedException {
         dockerCompose.kill();
     }
@@ -113,8 +118,8 @@ abstract class DelegatingDockerCompose implements DockerCompose {
     }
 
     @Override
-    public boolean writeLogs(String container, OutputStream output) throws IOException {
-        return dockerCompose.writeLogs(container, output);
+    public void writeLogs(String container, OutputStream output) throws IOException, InterruptedException {
+        dockerCompose.writeLogs(container, output);
     }
 
     @Override

@@ -22,32 +22,31 @@ import static org.junit.Assert.fail;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 import com.palantir.docker.compose.configuration.ShutdownStrategy;
-import java.io.IOException;
 import org.junit.Test;
 import org.mockito.InOrder;
 
 public class CallbackThenDelegateShutdownStrategyShould {
 
     @Test
-    public void call_callback_then_call_delegate() throws Exception {
+    public void call_callback_then_call_delegate_on_stop() throws Exception {
         ShutdownStrategy delegate = mock(ShutdownStrategy.class);
         Runnable callback = mock(Runnable.class);
 
         DockerCompose dockerCompose = mock(DockerCompose.class);
-        Docker docker = mock(Docker.class);
 
-        ShutdownStrategy.callbackAndThen(callback, delegate).shutdown(dockerCompose, docker);
+        ShutdownStrategy.callbackAndThen(callback, delegate).stop(dockerCompose);
 
         InOrder inOrder = inOrder(callback, delegate);
         inOrder.verify(callback).run();
-        inOrder.verify(delegate).shutdown(dockerCompose, docker);
-        inOrder.verifyNoMoreInteractions();
+        inOrder.verify(delegate).stop(dockerCompose);
+        verifyNoMoreInteractions(callback, delegate);
     }
 
     @Test
-    public void call_delegate_even_when_callback_throws() throws IOException, InterruptedException {
+    public void call_delegate_even_when_callback_throws_on_stop() throws Exception {
         ShutdownStrategy delegate = mock(ShutdownStrategy.class);
         Runnable callback = mock(Runnable.class);
 
@@ -55,10 +54,9 @@ public class CallbackThenDelegateShutdownStrategyShould {
         doThrow(callbackException).when(callback).run();
 
         DockerCompose dockerCompose = mock(DockerCompose.class);
-        Docker docker = mock(Docker.class);
 
         try {
-            ShutdownStrategy.callbackAndThen(callback, delegate).shutdown(dockerCompose, docker);
+            ShutdownStrategy.callbackAndThen(callback, delegate).stop(dockerCompose);
             fail("expected exception");
         } catch (RuntimeException e) {
             assertThat(e, is(callbackException));
@@ -66,8 +64,21 @@ public class CallbackThenDelegateShutdownStrategyShould {
 
         InOrder inOrder = inOrder(callback, delegate);
         inOrder.verify(callback).run();
-        inOrder.verify(delegate).shutdown(dockerCompose, docker);
-        inOrder.verifyNoMoreInteractions();
+        inOrder.verify(delegate).stop(dockerCompose);
+        verifyNoMoreInteractions(callback, delegate);
     }
 
+    @Test
+    public void call_down_on_down() throws Exception {
+        ShutdownStrategy delegate = mock(ShutdownStrategy.class);
+        Runnable callback = mock(Runnable.class);
+
+        DockerCompose dockerCompose = mock(DockerCompose.class);
+
+        ShutdownStrategy.callbackAndThen(callback, delegate).down(dockerCompose);
+
+        InOrder inOrder = inOrder(delegate);
+        inOrder.verify(delegate).down(dockerCompose);
+        verifyNoMoreInteractions(callback, delegate);
+    }
 }

@@ -18,12 +18,15 @@ public class GracefulShutdownStrategy implements ShutdownStrategy {
     private static final Logger log = LoggerFactory.getLogger(GracefulShutdownStrategy.class);
 
     @Override
-    public void shutdown(DockerCompose dockerCompose, Docker docker) throws IOException, InterruptedException {
-        log.debug("Killing docker-compose cluster");
-        dockerCompose.down();
+    public void stop(DockerCompose dockerCompose) throws IOException, InterruptedException {
+        log.debug("Stopping docker-compose cluster");
+        dockerCompose.stop();
         dockerCompose.kill();
-        dockerCompose.rm();
-        docker.pruneNetworks();
     }
 
+    @Override
+    public void down(DockerCompose dockerCompose) throws IOException, InterruptedException {
+        log.debug("Downing docker-compose cluster");
+        dockerCompose.down();
+    }
 }

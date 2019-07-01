@@ -25,6 +25,7 @@ import static org.hamcrest.core.Is.is;
 import static org.joda.time.Duration.millis;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -64,7 +65,9 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
+import org.mockito.InOrder;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -118,7 +121,9 @@ public class DockerComposeRuleShould {
                 .build();
 
         rule.after();
-        verify(shutdownStrategy).shutdown(dockerCompose, rule.docker());
+        InOrder inOrder = Mockito.inOrder(shutdownStrategy);
+        inOrder.verify(shutdownStrategy).stop(dockerCompose);
+        inOrder.verify(shutdownStrategy).down(dockerCompose);
     }
 
     @Test
@@ -236,21 +241,21 @@ public class DockerComposeRuleShould {
         when(dockerCompose.id(any())).thenReturn(Optional.of("abcde"));
         when(mockDocker.state("abcde")).thenReturn(State.HEALTHY);
         CountDownLatch latch = new CountDownLatch(1);
-        when(dockerCompose.writeLogs(eq("db"), any(OutputStream.class))).thenAnswer(args -> {
+        doAnswer(args -> {
             OutputStream outputStream = (OutputStream) args.getArguments()[1];
             IOUtils.write("db log", outputStream);
             latch.countDown();
-            return true;
-        });
+            return null;
+        }).when(dockerCompose).writeLogs(eq("db"), any(OutputStream.class));
         loggingComposition.before();
-        assertThat(latch.await(1, TimeUnit.SECONDS), is(true));
         loggingComposition.after();
+        assertThat(latch.await(1, TimeUnit.SECONDS), is(true));
         assertThat(logLocation.listFiles(), arrayContaining(fileWithName("db.log")));
         assertThat(new File(logLocation, "db.log"), is(fileContainingString("db log")));
     }
 
     @Test
-    public void not_shut_down_when_skipShutdown_is_true() throws InterruptedException {
+    public void not_shut_down_when_skipShutdown_is_true() throws IOException, InterruptedException {
         DockerComposeRule.builder()
                 .dockerCompose(dockerCompose)
                 .files(mockFiles)
@@ -260,7 +265,7 @@ public class DockerComposeRuleShould {
                 .build()
                 .after();
         verifyNoMoreInteractions(dockerCompose);
-        verify(logCollector, times(1)).stopCollecting();
+        verify(logCollector, times(1)).collectLogs(dockerCompose);
     }
 
     @Test

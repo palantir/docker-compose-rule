@@ -32,6 +32,7 @@ public interface DockerCompose {
     void build() throws IOException, InterruptedException;
     void up() throws IOException, InterruptedException;
     void down() throws IOException, InterruptedException;
+    void stop() throws IOException, InterruptedException;
     void kill() throws IOException, InterruptedException;
     void rm() throws IOException, InterruptedException;
     void up(Container container) throws IOException, InterruptedException;
@@ -44,6 +45,6 @@ public interface DockerCompose {
     Optional<String> id(Container container) throws IOException, InterruptedException;
     String config() throws IOException, InterruptedException;
     List<String> services() throws IOException, InterruptedException;
-    boolean writeLogs(String container, OutputStream output) throws IOException;
+    void writeLogs(String container, OutputStream output) throws IOException, InterruptedException;
     Ports ports(String service) throws IOException, InterruptedException;
 }
