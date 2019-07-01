@@ -49,9 +49,11 @@ public class EventEmitterShould {
     public void produce_started_then_succeeded_for_successful_build_run() throws IOException, InterruptedException {
         eventEmitter.build(() -> {
             inOrder.verify(eventConsumer1).receiveEvent(BuildEvent.FACTORY.started());
+            inOrder.verify(eventConsumer2).receiveEvent(BuildEvent.FACTORY.started());
         });
 
         inOrder.verify(eventConsumer1).receiveEvent(BuildEvent.FACTORY.succeeded());
+        inOrder.verify(eventConsumer2).receiveEvent(BuildEvent.FACTORY.succeeded());
     }
 
     @Test
@@ -61,11 +63,13 @@ public class EventEmitterShould {
         assertThatExceptionOfType(IllegalStateException.class).isThrownBy(() ->
                 eventEmitter.build(() -> {
                     inOrder.verify(eventConsumer1).receiveEvent(BuildEvent.FACTORY.started());
+                    inOrder.verify(eventConsumer2).receiveEvent(BuildEvent.FACTORY.started());
                     throw exception;
                 })
         );
 
         inOrder.verify(eventConsumer1).receiveEvent(BuildEvent.FACTORY.failed(exception));
+        inOrder.verify(eventConsumer2).receiveEvent(BuildEvent.FACTORY.failed(exception));
     }
 
     @Test
