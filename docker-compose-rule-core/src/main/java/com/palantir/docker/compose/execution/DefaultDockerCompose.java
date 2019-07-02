@@ -190,10 +190,15 @@ public class DefaultDockerCompose implements DockerCompose {
     }
 
     @Override
-    public void writeLogs(String container, OutputStream output) throws IOException, InterruptedException {
-        Process executedProcess = logs(container);
-        IOUtils.copy(executedProcess.getInputStream(), output);
-        executedProcess.waitFor();
+    public boolean writeLogs(String container, OutputStream output) throws IOException {
+        try {
+            Process executedProcess = logs(container);
+            IOUtils.copy(executedProcess.getInputStream(), output);
+            executedProcess.waitFor();
+            return true;
+        } catch (InterruptedException e) {
+            return false;
+        }
     }
 
     private boolean exists(final String containerName) throws IOException, InterruptedException {

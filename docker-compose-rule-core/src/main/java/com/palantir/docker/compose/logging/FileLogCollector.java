@@ -88,7 +88,7 @@ public class FileLogCollector implements LogCollector {
             log.info("Writing logs for container '{}' to '{}'", container, outputFile.getAbsolutePath());
             try (FileOutputStream outputStream = new FileOutputStream(outputFile)) {
                 dockerCompose.writeLogs(container, outputStream);
-            } catch (IOException | InterruptedException e) {
+            } catch (IOException e) {
                 throw new RuntimeException("Error reading log", e);
             }
         });

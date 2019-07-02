@@ -24,7 +24,6 @@ import static org.hamcrest.Matchers.emptyArray;
 import static org.hamcrest.core.Is.is;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -102,11 +101,11 @@ public class FileLogCollectorShould {
     public void collect_logs_when_one_container_is_running()
             throws Exception {
         when(compose.services()).thenReturn(ImmutableList.of("db"));
-        doAnswer(args -> {
+        when(compose.writeLogs(eq("db"), any(OutputStream.class))).thenAnswer(args -> {
             OutputStream outputStream = (OutputStream) args.getArguments()[1];
             IOUtils.write("log", outputStream);
-            return null;
-        }).when(compose).writeLogs(eq("db"), any(OutputStream.class));
+            return true;
+        });
         logCollector.collectLogs(compose);
         assertThat(logDirectory.listFiles(), arrayContaining(fileWithName("db.log")));
         assertThat(new File(logDirectory, "db.log"), is(fileContainingString("log")));
@@ -116,19 +115,19 @@ public class FileLogCollectorShould {
     public void collect_logs_in_parallel_for_two_containers() throws IOException, InterruptedException {
         when(compose.services()).thenReturn(ImmutableList.of("db", "db2"));
         CountDownLatch dbLatch = new CountDownLatch(1);
-        doAnswer(args -> {
+        when(compose.writeLogs(eq("db"), any(OutputStream.class))).thenAnswer(args -> {
             OutputStream outputStream = (OutputStream) args.getArguments()[1];
             IOUtils.write("log", outputStream);
             dbLatch.countDown();
-            return null;
-        }).when(compose).writeLogs(eq("db"), any(OutputStream.class));
+            return true;
+        });
         CountDownLatch db2Latch = new CountDownLatch(1);
-        doAnswer(args -> {
+        when(compose.writeLogs(eq("db2"), any(OutputStream.class))).thenAnswer(args -> {
             OutputStream outputStream = (OutputStream) args.getArguments()[1];
             IOUtils.write("other", outputStream);
             db2Latch.countDown();
-            return null;
-        }).when(compose).writeLogs(eq("db2"), any(OutputStream.class));
+            return true;
+        });
 
         logCollector.collectLogs(compose);
         assertThat(dbLatch.await(1, TimeUnit.SECONDS), is(true));

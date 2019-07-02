@@ -25,7 +25,6 @@ import static org.hamcrest.core.Is.is;
 import static org.joda.time.Duration.millis;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -241,12 +240,12 @@ public class DockerComposeRuleShould {
         when(dockerCompose.id(any())).thenReturn(Optional.of("abcde"));
         when(mockDocker.state("abcde")).thenReturn(State.HEALTHY);
         CountDownLatch latch = new CountDownLatch(1);
-        doAnswer(args -> {
+        when(dockerCompose.writeLogs(eq("db"), any(OutputStream.class))).thenAnswer(args -> {
             OutputStream outputStream = (OutputStream) args.getArguments()[1];
             IOUtils.write("db log", outputStream);
             latch.countDown();
             return null;
-        }).when(dockerCompose).writeLogs(eq("db"), any(OutputStream.class));
+        });
         loggingComposition.before();
         loggingComposition.after();
         assertThat(latch.await(1, TimeUnit.SECONDS), is(true));

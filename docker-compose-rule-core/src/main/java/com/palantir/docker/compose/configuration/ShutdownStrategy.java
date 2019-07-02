@@ -7,6 +7,7 @@ package com.palantir.docker.compose.configuration;
 import com.palantir.docker.compose.execution.AggressiveShutdownStrategy;
 import com.palantir.docker.compose.execution.AggressiveShutdownWithNetworkCleanupStrategy;
 import com.palantir.docker.compose.execution.CallbackThenDelegateShutdownStrategy;
+import com.palantir.docker.compose.execution.Docker;
 import com.palantir.docker.compose.execution.DockerCompose;
 import com.palantir.docker.compose.execution.GracefulShutdownStrategy;
 import com.palantir.docker.compose.execution.KillDownShutdownStrategy;
@@ -57,6 +58,17 @@ public interface ShutdownStrategy {
 
     static ShutdownStrategy callbackAndThen(Runnable callback, ShutdownStrategy shutdownStrategy) {
         return new CallbackThenDelegateShutdownStrategy(shutdownStrategy, callback);
+    }
+
+    /**
+     * Deprecated.
+     *
+     * @deprecated Use {@link #stop(DockerCompose)} and {@link #down(DockerCompose)}.
+     */
+    @Deprecated
+    default void shutdown(DockerCompose dockerCompose, Docker docker) throws IOException, InterruptedException {
+        stop(dockerCompose);
+        down(dockerCompose);
     }
 
     void stop(DockerCompose dockerCompose) throws IOException, InterruptedException;
