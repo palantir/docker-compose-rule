@@ -18,14 +18,16 @@ package com.palantir.docker.compose;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 import com.google.common.collect.ImmutableList;
 import com.palantir.docker.compose.connection.Cluster;
-import com.palantir.docker.compose.connection.waiting.ClusterWaitInterface;
+import com.palantir.docker.compose.connection.waiting.ClusterWait;
 import com.palantir.docker.compose.events.BuildEvent;
 import com.palantir.docker.compose.events.ClusterWaitEvent.ClusterBecameHealthy;
 import com.palantir.docker.compose.events.ClusterWaitEvent.ClusterStarted;
@@ -33,6 +35,7 @@ import com.palantir.docker.compose.events.DockerComposeRuleEvent;
 import com.palantir.docker.compose.events.EventConsumer;
 import java.io.IOException;
 import java.util.List;
+import java.util.function.Consumer;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InOrder;
@@ -74,15 +77,18 @@ public class EventEmitterShould {
 
     @Test
     public void user_cluster_wait_give_the_service_names_that_were_used_by_the_cluser_wait_in_an_event() {
-        ClusterWaitInterface clusterWait = cluster -> {
+        ClusterWait clusterWait = mock(ClusterWait.class);
+        doAnswer(invocation -> {
+            Cluster cluster = (Cluster) invocation.getArguments()[0];
             cluster.container("one");
             cluster.containers(ImmutableList.of("two", "three"));
-        };
+            return null;
+        }).when(clusterWait).waitUntilReady(any());
 
-        ClusterWaitInterface eventedClusterWait = eventEmitter.userClusterWait(clusterWait);
+        Consumer<Cluster> eventedClusterWait = eventEmitter.userClusterWait(clusterWait);
 
         Cluster cluster = mock(Cluster.class, RETURNS_DEEP_STUBS);
-        eventedClusterWait.waitUntilReady(cluster);
+        eventedClusterWait.accept(cluster);
 
         List<DockerComposeRuleEvent> events = getEvents();
 

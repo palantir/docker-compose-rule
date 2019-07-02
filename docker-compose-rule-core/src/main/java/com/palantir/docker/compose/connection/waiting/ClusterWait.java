@@ -26,7 +26,7 @@ import org.joda.time.ReadableDuration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ClusterWait implements ClusterWaitInterface {
+public class ClusterWait {
     private static final Logger log = LoggerFactory.getLogger(ClusterWait.class);
     private final ClusterHealthCheck clusterHealthCheck;
     private final ReadableDuration timeout;
@@ -36,7 +36,6 @@ public class ClusterWait implements ClusterWaitInterface {
         this.timeout = timeout;
     }
 
-    @Override
     public void waitUntilReady(Cluster cluster) {
         final AtomicReference<Optional<SuccessOrFailure>> lastSuccessOrFailure = new AtomicReference<>(
                 Optional.empty());

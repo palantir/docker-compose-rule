@@ -17,7 +17,8 @@
 package com.palantir.docker.compose;
 
 import com.google.common.base.Throwables;
-import com.palantir.docker.compose.connection.waiting.ClusterWaitInterface;
+import com.palantir.docker.compose.connection.Cluster;
+import com.palantir.docker.compose.connection.waiting.ClusterWait;
 import com.palantir.docker.compose.events.BuildEvent;
 import com.palantir.docker.compose.events.ClusterWaitEvent;
 import com.palantir.docker.compose.events.ClusterWaitEvent.ClusterWaitType;
@@ -33,6 +34,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Consumer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -69,20 +71,20 @@ class EventEmitter {
         emitThrowing(runnable, ShutdownEvent.FACTORY);
     }
 
-    public ClusterWaitInterface userClusterWait(ClusterWaitInterface clusterWait)  {
+    public Consumer<Cluster> userClusterWait(ClusterWait clusterWait)  {
         return clusterWait(ClusterWaitType.USER, clusterWait);
     }
 
-    public ClusterWaitInterface nativeClusterWait(ClusterWaitInterface clusterWait) {
+    public Consumer<Cluster> nativeClusterWait(ClusterWait clusterWait) {
         return clusterWait(ClusterWaitType.NATIVE, clusterWait);
     }
 
-    private ClusterWaitInterface clusterWait(
+    private Consumer<Cluster> clusterWait(
             ClusterWaitType clusterWaitType,
-            ClusterWaitInterface clusterWait) {
+            ClusterWait clusterWait) {
         AtomicReference<Optional<Set<String>>> recordedServiceNames = new AtomicReference<>(Optional.empty());
 
-        ClusterWaitInterface recordingClusterWait = cluster -> {
+        Consumer<Cluster> recordingClusterWait = cluster -> {
             RecordingCluster recordingCluster = new RecordingCluster(cluster);
             try {
                 clusterWait.waitUntilReady(recordingCluster);
@@ -93,7 +95,7 @@ class EventEmitter {
 
 
         return cluster -> emitNotThrowing(
-                () -> recordingClusterWait.waitUntilReady(cluster),
+                () -> recordingClusterWait.accept(cluster),
                 ClusterWaitEvent.factory(
                         () -> recordedServiceNames.get().orElseThrow(
                                 () -> new IllegalStateException("Recorded service names have not yet been computed")),

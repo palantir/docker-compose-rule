@@ -22,7 +22,6 @@ import com.palantir.docker.compose.connection.DockerPort;
 import com.palantir.docker.compose.connection.ImmutableCluster;
 import com.palantir.docker.compose.connection.waiting.ClusterHealthCheck;
 import com.palantir.docker.compose.connection.waiting.ClusterWait;
-import com.palantir.docker.compose.connection.waiting.ClusterWaitInterface;
 import com.palantir.docker.compose.connection.waiting.HealthCheck;
 import com.palantir.docker.compose.events.EventConsumer;
 import com.palantir.docker.compose.execution.ConflictingContainerRemovingDockerCompose;
@@ -45,6 +44,7 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.immutables.value.Value;
@@ -179,11 +179,11 @@ public abstract class DockerComposeRule extends ExternalResource {
 
     private void waitForServices() throws InterruptedException {
         log.debug("Waiting for services");
-        ClusterWaitInterface nativeHealthCheckClusterWait =
+        Consumer<Cluster> nativeHealthCheckClusterWait =
                 emitEventsFor().nativeClusterWait(
                         new ClusterWait(ClusterHealthCheck.nativeHealthChecks(), nativeServiceHealthCheckTimeout()));
 
-        List<ClusterWaitInterface> allClusterWaits = Stream.concat(
+        List<Consumer<Cluster>> allClusterWaits = Stream.concat(
                 Stream.of(nativeHealthCheckClusterWait),
                 clusterWaits().stream().map(emitEventsFor()::userClusterWait))
                 .collect(Collectors.toList());
@@ -193,7 +193,7 @@ public abstract class DockerComposeRule extends ExternalResource {
         log.debug("docker-compose cluster started");
     }
 
-    private void waitForAllClusterWaits(List<ClusterWaitInterface> allClusterWaits) throws InterruptedException {
+    private void waitForAllClusterWaits(List<Consumer<Cluster>> allClusterWaits) throws InterruptedException {
         ListeningExecutorService executorService = MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(
                 allClusterWaits.size(),
                 new ThreadFactoryBuilder()
@@ -203,7 +203,7 @@ public abstract class DockerComposeRule extends ExternalResource {
         try {
             ListenableFuture<List<Object>> listListenableFuture =
                     Futures.allAsList(allClusterWaits.stream()
-                    .map(clusterWait -> executorService.submit(() -> clusterWait.waitUntilReady(containers())))
+                    .map(clusterWait -> executorService.submit(() -> clusterWait.accept(containers())))
                     .collect(Collectors.toList()));
 
             listListenableFuture.get();
