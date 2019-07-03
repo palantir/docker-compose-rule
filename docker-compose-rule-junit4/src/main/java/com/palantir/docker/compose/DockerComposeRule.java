@@ -201,7 +201,7 @@ public abstract class DockerComposeRule extends ExternalResource {
                         .build()));
 
         try {
-            ListenableFuture<List<Object>> listListenableFuture =
+            ListenableFuture<?> listListenableFuture =
                     Futures.allAsList(allClusterWaits.stream()
                     .map(clusterWait -> executorService.submit(() -> clusterWait.accept(containers())))
                     .collect(Collectors.toList()));
