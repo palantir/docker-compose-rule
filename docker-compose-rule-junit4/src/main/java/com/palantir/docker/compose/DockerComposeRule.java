@@ -303,6 +303,11 @@ public abstract class DockerComposeRule extends ExternalResource {
         public Builder clusterWaits(Iterable<? extends ClusterWait> elements) {
             return addAllClusterWaits(elements);
         }
+
+        @Override
+        public DockerComposeRule build() {
+            return super.build();
+        }
     }
 
 }
