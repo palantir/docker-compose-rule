@@ -7,6 +7,7 @@ package com.palantir.docker.compose.execution;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.verifyZeroInteractions;
 
 import com.palantir.docker.compose.configuration.ShutdownStrategy;
 import org.junit.Test;
@@ -34,5 +35,15 @@ public class KillDownShutdownStrategyShould {
         InOrder inOrder = inOrder(dockerCompose);
         inOrder.verify(dockerCompose).down();
         verifyNoMoreInteractions(dockerCompose);
+    }
+
+    @Test
+    public void do_nothing_on_shutdown() throws Exception {
+        DockerCompose dockerCompose = mock(DockerCompose.class);
+        Docker docker = mock(Docker.class);
+
+        ShutdownStrategy.KILL_DOWN.shutdown(dockerCompose, docker);
+
+        verifyZeroInteractions(dockerCompose, docker);
     }
 }

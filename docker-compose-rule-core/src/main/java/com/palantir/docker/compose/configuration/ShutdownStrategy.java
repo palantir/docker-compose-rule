@@ -66,13 +66,10 @@ public interface ShutdownStrategy {
      * @deprecated Use {@link #stop(DockerCompose)} and {@link #down(DockerCompose)}.
      */
     @Deprecated
-    default void shutdown(DockerCompose dockerCompose, Docker docker) throws IOException, InterruptedException {
-        stop(dockerCompose);
-        down(dockerCompose);
-    }
+    default void shutdown(DockerCompose dockerCompose, Docker docker) throws IOException, InterruptedException {}
 
-    void stop(DockerCompose dockerCompose) throws IOException, InterruptedException;
+    default void stop(DockerCompose dockerCompose) throws IOException, InterruptedException {}
 
-    void down(DockerCompose dockerCompose) throws IOException, InterruptedException;
+    default void down(DockerCompose dockerCompose) throws IOException, InterruptedException {}
 
 }

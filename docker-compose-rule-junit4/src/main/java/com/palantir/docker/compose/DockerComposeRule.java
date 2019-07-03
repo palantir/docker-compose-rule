@@ -38,13 +38,15 @@ import java.util.List;
 import org.immutables.value.Value;
 import org.joda.time.Duration;
 import org.joda.time.ReadableDuration;
-import org.junit.rules.ExternalResource;
+import org.junit.rules.TestRule;
+import org.junit.runner.Description;
+import org.junit.runners.model.Statement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @Value.Immutable
 @CustomImmutablesStyle
-public abstract class DockerComposeRule extends ExternalResource {
+public abstract class DockerComposeRule implements TestRule {
     public static final Duration DEFAULT_TIMEOUT = Duration.standardMinutes(2);
     public static final int DEFAULT_RETRY_ATTEMPTS = 2;
 
@@ -134,6 +136,20 @@ public abstract class DockerComposeRule extends ExternalResource {
     }
 
     @Override
+    public Statement apply(Statement base, Description description) {
+        return new Statement() {
+            @Override
+            public void evaluate() throws Throwable {
+                try {
+                    before();
+                    base.evaluate();
+                } finally {
+                    after();
+                }
+            }
+        };
+    }
+
     public void before() throws IOException, InterruptedException {
         log.debug("Starting docker-compose cluster");
         if (pullOnStartup()) {
@@ -155,7 +171,6 @@ public abstract class DockerComposeRule extends ExternalResource {
         log.debug("docker-compose cluster started");
     }
 
-    @Override
     public void after() {
         try {
             shutdownStrategy().stop(this.dockerCompose());
@@ -163,6 +178,9 @@ public abstract class DockerComposeRule extends ExternalResource {
             logCollector().collectLogs(this.dockerCompose());
 
             shutdownStrategy().down(this.dockerCompose());
+
+            // Still call shutdown to avoid behavior breaks for custom shutdown strategies
+            shutdownStrategy().shutdown(this.dockerCompose(), this.docker());
         } catch (IOException | InterruptedException e) {
             throw new RuntimeException("Error cleaning up docker compose cluster", e);
         }

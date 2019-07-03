@@ -19,6 +19,7 @@ package com.palantir.docker.compose.execution;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.verifyZeroInteractions;
 
 import com.palantir.docker.compose.configuration.ShutdownStrategy;
 import org.junit.Test;
@@ -30,7 +31,7 @@ public class AggressiveShutdownWithNetworkCleanupStrategyShould {
     public void call_kill_on_stop() throws Exception {
         DockerCompose dockerCompose = mock(DockerCompose.class);
 
-        ShutdownStrategy.KILL_DOWN.stop(dockerCompose);
+        ShutdownStrategy.AGGRESSIVE_WITH_NETWORK_CLEANUP.stop(dockerCompose);
 
         InOrder inOrder = inOrder(dockerCompose);
         inOrder.verify(dockerCompose).kill();
@@ -41,10 +42,20 @@ public class AggressiveShutdownWithNetworkCleanupStrategyShould {
     public void call_down_on_down() throws Exception {
         DockerCompose dockerCompose = mock(DockerCompose.class);
 
-        ShutdownStrategy.KILL_DOWN.down(dockerCompose);
+        ShutdownStrategy.AGGRESSIVE_WITH_NETWORK_CLEANUP.down(dockerCompose);
 
         InOrder inOrder = inOrder(dockerCompose);
         inOrder.verify(dockerCompose).down();
         verifyNoMoreInteractions(dockerCompose);
+    }
+
+    @Test
+    public void do_nothing_on_shutdown() throws Exception {
+        DockerCompose dockerCompose = mock(DockerCompose.class);
+        Docker docker = mock(Docker.class);
+
+        ShutdownStrategy.AGGRESSIVE_WITH_NETWORK_CLEANUP.shutdown(dockerCompose, docker);
+
+        verifyZeroInteractions(dockerCompose, docker);
     }
 }
