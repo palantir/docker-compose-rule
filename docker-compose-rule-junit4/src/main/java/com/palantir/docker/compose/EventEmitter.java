@@ -82,6 +82,11 @@ class EventEmitter {
     private Consumer<Cluster> clusterWait(
             ClusterWaitType clusterWaitType,
             ClusterWait clusterWait) {
+
+        // This weird bit of complexity is because we can't tell what services a ClusterWait is using until it
+        // actually runs. So we have to record the services it accesses then use this to generate the events. The
+        // Optional exists solely as a check again logic errors - in the case when events are generated before the
+        // cluster wait has begun.
         AtomicReference<Optional<Set<String>>> recordedServiceNames = new AtomicReference<>(Optional.empty());
 
         Consumer<Cluster> recordingClusterWait = cluster -> {
@@ -92,7 +97,6 @@ class EventEmitter {
                 recordedServiceNames.set(Optional.of(recordingCluster.recordedContainerNames()));
             }
         };
-
 
         return cluster -> emitNotThrowing(
                 () -> recordingClusterWait.accept(cluster),
