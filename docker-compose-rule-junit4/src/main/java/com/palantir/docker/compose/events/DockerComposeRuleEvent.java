@@ -18,6 +18,10 @@ package com.palantir.docker.compose.events;
 
 import org.immutables.value.Value;
 
+/**
+ * This is a marker interface for events that are produced by docker compose rule in order to allow instrumentation
+ * by external consumers.
+ */
 @Value.Style(
         visibility = Value.Style.ImplementationVisibility.PACKAGE,
         builderVisibility = Value.Style.BuilderVisibility.PACKAGE

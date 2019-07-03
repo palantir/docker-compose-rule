@@ -16,6 +16,9 @@
 
 package com.palantir.docker.compose.events;
 
+/**
+ * A set of marker interfaces for events that represent tasks - ie those that start then eventually succeeded or fail.
+ */
 public interface TaskEvent extends DockerComposeRuleEvent {
     interface Started extends TaskEvent {}
 
