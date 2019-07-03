@@ -220,4 +220,4 @@ workflows:
 
       - publish:
           requires: [ unit-test, unit-test-11, check, build, build-11 ]
-          filters: { tags: { only: /.*/ } }
+          filters: { tags: { only: /.*/ }, branches: { only: master } }
