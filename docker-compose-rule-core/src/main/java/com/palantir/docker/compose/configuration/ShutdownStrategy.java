@@ -60,16 +60,8 @@ public interface ShutdownStrategy {
         return new CallbackThenDelegateShutdownStrategy(shutdownStrategy, callback);
     }
 
-    /**
-     * Deprecated.
-     *
-     * @deprecated Use {@link #stop(DockerCompose)} and {@link #down(DockerCompose)}.
-     */
-    @Deprecated
-    default void shutdown(DockerCompose dockerCompose, Docker docker) throws IOException, InterruptedException {}
-
     default void stop(DockerCompose dockerCompose) throws IOException, InterruptedException {}
 
-    default void down(DockerCompose dockerCompose) throws IOException, InterruptedException {}
+    void shutdown(DockerCompose dockerCompose, Docker docker) throws IOException, InterruptedException;
 
 }

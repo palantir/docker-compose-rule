@@ -4,8 +4,12 @@
 
 package com.palantir.docker.compose.execution;
 
+import static java.util.stream.Collectors.toList;
+
 import com.palantir.docker.compose.configuration.ShutdownStrategy;
+import com.palantir.docker.compose.connection.ContainerName;
 import java.io.IOException;
+import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,14 +24,34 @@ public class AggressiveShutdownWithNetworkCleanupStrategy implements ShutdownStr
     private static final Logger log = LoggerFactory.getLogger(AggressiveShutdownWithNetworkCleanupStrategy.class);
 
     @Override
-    public void stop(DockerCompose dockerCompose) throws IOException, InterruptedException {
-        log.debug("Killing docker-compose cluster");
-        dockerCompose.kill();
+    public void shutdown(DockerCompose dockerCompose, Docker docker) throws IOException, InterruptedException {
+        List<ContainerName> runningContainers = dockerCompose.ps();
+
+        log.info("Shutting down {}", runningContainers.stream().map(ContainerName::semanticName).collect(toList()));
+        removeContainersCatchingErrors(docker, runningContainers);
+        removeNetworks(dockerCompose, docker);
+
     }
 
-    @Override
-    public void down(DockerCompose dockerCompose) throws IOException, InterruptedException {
-        log.debug("Downing docker-compose cluster");
+    private static void removeContainersCatchingErrors(Docker docker, List<ContainerName> runningContainers) throws IOException, InterruptedException {
+        try {
+            removeContainers(docker, runningContainers);
+        } catch (DockerExecutionException exception) {
+            log.error("Error while trying to remove containers: {}", exception.getMessage());
+        }
+    }
+
+    private static void removeContainers(Docker docker, List<ContainerName> running) throws IOException, InterruptedException {
+        List<String> rawContainerNames = running.stream()
+                .map(ContainerName::rawName)
+                .collect(toList());
+
+        docker.rm(rawContainerNames);
+        log.debug("Finished shutdown");
+    }
+
+    private static void removeNetworks(DockerCompose dockerCompose, Docker docker) throws IOException, InterruptedException {
         dockerCompose.down();
+        docker.pruneNetworks();
     }
 }

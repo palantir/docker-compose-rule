@@ -16,7 +16,6 @@
 package com.palantir.docker.compose.logging;
 
 import static com.google.common.base.Preconditions.checkArgument;
-import static org.joda.time.Duration.standardMinutes;
 
 import com.palantir.docker.compose.execution.DockerCompose;
 import java.io.File;
@@ -29,7 +28,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import org.apache.commons.lang3.Validate;
-import org.joda.time.Duration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,7 +35,7 @@ public class FileLogCollector implements LogCollector {
 
     private static final Logger log = LoggerFactory.getLogger(FileLogCollector.class);
 
-    private static final Duration STOP_TIMEOUT = standardMinutes(1);
+    private static final long STOP_TIMEOUT_IN_MILLIS = 50;
 
     private final File logDirectory;
 
@@ -69,7 +67,7 @@ public class FileLogCollector implements LogCollector {
         serviceNames.stream().forEachOrdered(service -> this.collectLogs(service, dockerCompose));
 
         executor.shutdown();
-        if (!executor.awaitTermination(STOP_TIMEOUT.getMillis(), TimeUnit.MILLISECONDS)) {
+        if (!executor.awaitTermination(STOP_TIMEOUT_IN_MILLIS, TimeUnit.MILLISECONDS)) {
             log.warn("docker containers were still running when log collection stopped");
             executor.shutdownNow();
         }

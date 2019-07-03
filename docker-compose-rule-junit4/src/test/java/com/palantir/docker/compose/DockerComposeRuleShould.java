@@ -114,6 +114,7 @@ public class DockerComposeRuleShould {
     public void calls_shutdownStrategy_in_after_method() throws IOException, InterruptedException {
         ShutdownStrategy shutdownStrategy = mock(ShutdownStrategy.class);
         rule = DockerComposeRule.builder()
+                .docker(mockDocker)
                 .dockerCompose(dockerCompose)
                 .files(mockFiles)
                 .shutdownStrategy(shutdownStrategy)
@@ -122,7 +123,7 @@ public class DockerComposeRuleShould {
         rule.after();
         InOrder inOrder = Mockito.inOrder(shutdownStrategy);
         inOrder.verify(shutdownStrategy).stop(dockerCompose);
-        inOrder.verify(shutdownStrategy).down(dockerCompose);
+        inOrder.verify(shutdownStrategy).shutdown(dockerCompose, mockDocker);
     }
 
     @Test

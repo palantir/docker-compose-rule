@@ -177,9 +177,6 @@ public abstract class DockerComposeRule implements TestRule {
 
             logCollector().collectLogs(this.dockerCompose());
 
-            shutdownStrategy().down(this.dockerCompose());
-
-            // Still call shutdown to avoid behavior breaks for custom shutdown strategies
             shutdownStrategy().shutdown(this.dockerCompose(), this.docker());
         } catch (IOException | InterruptedException e) {
             throw new RuntimeException("Error cleaning up docker compose cluster", e);

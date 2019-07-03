@@ -69,16 +69,17 @@ public class CallbackThenDelegateShutdownStrategyShould {
     }
 
     @Test
-    public void call_down_on_down() throws Exception {
+    public void call_down_on_shutdown() throws Exception {
         ShutdownStrategy delegate = mock(ShutdownStrategy.class);
         Runnable callback = mock(Runnable.class);
 
         DockerCompose dockerCompose = mock(DockerCompose.class);
+        Docker docker = mock(Docker.class);
 
-        ShutdownStrategy.callbackAndThen(callback, delegate).down(dockerCompose);
+        ShutdownStrategy.callbackAndThen(callback, delegate).shutdown(dockerCompose, docker);
 
         InOrder inOrder = inOrder(delegate);
-        inOrder.verify(delegate).down(dockerCompose);
+        inOrder.verify(delegate).shutdown(dockerCompose, docker);
         verifyNoMoreInteractions(callback, delegate);
     }
 }

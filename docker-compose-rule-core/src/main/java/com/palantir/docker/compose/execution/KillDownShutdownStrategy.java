@@ -27,7 +27,7 @@ public class KillDownShutdownStrategy implements ShutdownStrategy {
     }
 
     @Override
-    public void down(DockerCompose dockerCompose) throws IOException, InterruptedException {
+    public void shutdown(DockerCompose dockerCompose, Docker docker) throws IOException, InterruptedException {
         log.debug("Downing docker-compose cluster");
         dockerCompose.down();
     }
