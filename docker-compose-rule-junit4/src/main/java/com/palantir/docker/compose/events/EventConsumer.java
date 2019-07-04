@@ -17,5 +17,5 @@
 package com.palantir.docker.compose.events;
 
 public interface EventConsumer {
-    void receiveEvent(DockerComposeRuleEvent event);
+    void receiveEvent(Event event);
 }

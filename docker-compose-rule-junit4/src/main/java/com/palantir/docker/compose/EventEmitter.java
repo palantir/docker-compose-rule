@@ -19,28 +19,34 @@ package com.palantir.docker.compose;
 import com.google.common.base.Throwables;
 import com.palantir.docker.compose.connection.Cluster;
 import com.palantir.docker.compose.connection.waiting.ClusterWait;
+import com.palantir.docker.compose.connection.waiting.Exceptions;
 import com.palantir.docker.compose.events.BuildEvent;
 import com.palantir.docker.compose.events.ClusterWaitEvent;
-import com.palantir.docker.compose.events.ClusterWaitEvent.ClusterWaitType;
-import com.palantir.docker.compose.events.DockerComposeRuleEvent;
+import com.palantir.docker.compose.events.ClusterWaitType;
+import com.palantir.docker.compose.events.Event;
 import com.palantir.docker.compose.events.EventConsumer;
-import com.palantir.docker.compose.events.PullImagesEvent;
+import com.palantir.docker.compose.events.PullEvent;
 import com.palantir.docker.compose.events.ShutdownEvent;
-import com.palantir.docker.compose.events.TaskEvent;
+import com.palantir.docker.compose.events.Task;
 import com.palantir.docker.compose.events.UpEvent;
 import com.palantir.docker.compose.events.WaitForServicesEvent;
 import java.io.IOException;
+import java.time.Clock;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 class EventEmitter {
     private static final Logger log = LoggerFactory.getLogger(EventEmitter.class);
 
+    private final Clock clock = Clock.systemUTC();
     private List<EventConsumer> eventConsumers;
 
     EventEmitter(List<EventConsumer> eventConsumers) {
@@ -52,23 +58,25 @@ class EventEmitter {
     }
 
     public void pull(CheckedRunnable runnable) throws IOException, InterruptedException {
-        emitThrowing(runnable, PullImagesEvent.FACTORY);
+        emitTask(runnable, task -> Event.pull(PullEvent.builder()
+                .task(task)
+                .build()));
     }
 
     public void build(CheckedRunnable runnable) throws IOException, InterruptedException {
-        emitThrowing(runnable, BuildEvent.FACTORY);
+        emitTask(runnable, task -> Event.build(BuildEvent.builder().task(task).build()));
     }
 
     public void up(CheckedRunnable runnable) throws IOException, InterruptedException {
-        emitThrowing(runnable, UpEvent.FACTORY);
+        emitTask(runnable, task -> Event.up(UpEvent.builder().task(task).build()));
     }
 
     public void waitingForServices(CheckedRunnable runnable) throws IOException, InterruptedException {
-        emitThrowing(runnable, WaitForServicesEvent.FACTORY);
+        emitTask(runnable, task -> Event.waitForServices(WaitForServicesEvent.builder().task(task).build()));
     }
 
     public void shutdown(CheckedRunnable runnable) throws IOException, InterruptedException {
-        emitThrowing(runnable, ShutdownEvent.FACTORY);
+        emitTask(runnable, task -> Event.shutdown(ShutdownEvent.builder().task(task).build()));
     }
 
     public Consumer<Cluster> userClusterWait(ClusterWait clusterWait)  {
@@ -99,33 +107,45 @@ class EventEmitter {
 
         return cluster -> emitNotThrowing(
                 () -> recordingClusterWait.accept(cluster),
-                ClusterWaitEvent.factory(
-                        () -> recordedServiceNames.get().orElseThrow(
-                                () -> new IllegalStateException("Recorded service names have not yet been computed")),
-                        clusterWaitType));
+                task -> Event.clusterWait(ClusterWaitEvent.builder()
+                        .task(task)
+                        .serviceNames(recordedServiceNames.get().orElseThrow(
+                                () -> new IllegalStateException("Recorded service names have not yet been computed")))
+                        .type(clusterWaitType)
+                        .build()));
     }
 
-    private void emitNotThrowing(CheckedRunnable runnable, TaskEvent.Factory factory) {
+    private void emitNotThrowing(CheckedRunnable runnable, Function<Task, Event> eventFunction) {
         try {
-            emitThrowing(runnable, factory);
+            emitTask(runnable, eventFunction);
         } catch (InterruptedException | IOException e) {
             Throwables.propagate(e);
         }
     }
 
-    private void emitThrowing(CheckedRunnable runnable, TaskEvent.Factory factory)
+    private void emitTask(CheckedRunnable runnable, Function<Task, Event> eventFunction)
             throws IOException, InterruptedException {
+        Optional<String> failure = Optional.empty();
+        OffsetDateTime startTime = clock.instant().atOffset(ZoneOffset.UTC);
         try {
-            emitEvent(factory.started());
             runnable.run();
-            emitEvent(factory.succeeded());
         } catch (RuntimeException | IOException | InterruptedException e) {
-            emitEvent(factory.failed(e));
+            failure = Optional.of(Exceptions.condensedStacktraceFor(e));
             throw e;
+        } finally {
+            OffsetDateTime endTime = clock.instant().atOffset(ZoneOffset.UTC);
+            Task task = Task.builder()
+                    .startTime(startTime)
+                    .endTime(endTime)
+                    .failure(failure)
+                    .build();
+
+            Event event = eventFunction.apply(task);
+            emitEvent(event);
         }
     }
 
-    private void emitEvent(DockerComposeRuleEvent event) {
+    private void emitEvent(Event event) {
         eventConsumers.forEach(eventConsumer -> {
             try {
                 eventConsumer.receiveEvent(event);

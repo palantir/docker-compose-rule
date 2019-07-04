@@ -2,14 +2,12 @@ types:
   definitions:
     default-package: com.palantir.docker.compose.events
     objects:
-      EventWrapper:
-        fields:
-          time: datetime
-          event: Event
-
       Event:
         union:
+          build: BuildEvent
           pull: PullEvent
+          up: UpEvent
+          waitForServices: WaitForServicesEvent
           clusterWait: ClusterWaitEvent
           shutdown: ShutdownEvent
 

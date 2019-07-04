@@ -6,6 +6,7 @@ testSets {
 
 dependencies {
     compile project(':docker-compose-rule-core')
+    api project(':docker-compose-rule-events-api:docker-compose-rule-events-api-objects')
     compile 'com.google.guava:guava'
     compile 'joda-time:joda-time'
     compile 'junit:junit'
