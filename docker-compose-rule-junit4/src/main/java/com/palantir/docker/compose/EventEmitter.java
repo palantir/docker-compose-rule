@@ -46,10 +46,15 @@ import org.slf4j.LoggerFactory;
 class EventEmitter {
     private static final Logger log = LoggerFactory.getLogger(EventEmitter.class);
 
-    private final Clock clock = Clock.systemUTC();
-    private List<EventConsumer> eventConsumers;
+    private final Clock clock;
+    private final List<EventConsumer> eventConsumers;
 
     EventEmitter(List<EventConsumer> eventConsumers) {
+        this(Clock.systemUTC(), eventConsumers);
+    }
+
+    EventEmitter(Clock clock, List<EventConsumer> eventConsumers) {
+        this.clock = clock;
         this.eventConsumers = eventConsumers;
     }
 

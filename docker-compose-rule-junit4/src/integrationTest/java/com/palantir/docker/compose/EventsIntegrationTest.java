@@ -24,19 +24,14 @@ import static org.mockito.Mockito.verify;
 import com.google.common.collect.ImmutableList;
 import com.palantir.docker.compose.connection.waiting.HealthChecks;
 import com.palantir.docker.compose.connection.waiting.SuccessOrFailure;
-import com.palantir.docker.compose.events.BuildEvent.BuildStarted;
-import com.palantir.docker.compose.events.BuildEvent.BuildSucceeded;
-import com.palantir.docker.compose.events.ClusterWaitEvent.ClusterBecameHealthy;
-import com.palantir.docker.compose.events.ClusterWaitEvent.ClusterStarted;
-import com.palantir.docker.compose.events.ClusterWaitEvent.ClusterTimedOut;
-import com.palantir.docker.compose.events.DockerComposeRuleEvent;
+import com.palantir.docker.compose.events.BuildEvent;
+import com.palantir.docker.compose.events.ClusterWaitEvent;
+import com.palantir.docker.compose.events.Event;
 import com.palantir.docker.compose.events.EventConsumer;
-import com.palantir.docker.compose.events.ShutdownEvent.ShutdownStarted;
-import com.palantir.docker.compose.events.ShutdownEvent.ShutdownSucceeded;
-import com.palantir.docker.compose.events.UpEvent.UpStarted;
-import com.palantir.docker.compose.events.UpEvent.UpSucceeded;
-import com.palantir.docker.compose.events.WaitForServicesEvent.WaitForServicesStarted;
-import com.palantir.docker.compose.events.WaitForServicesEvent.WaitForServicesSucceeded;
+import com.palantir.docker.compose.events.PullEvent;
+import com.palantir.docker.compose.events.ShutdownEvent;
+import com.palantir.docker.compose.events.UpEvent;
+import com.palantir.docker.compose.events.WaitForServicesEvent;
 import java.util.List;
 import one.util.streamex.StreamEx;
 import org.junit.Test;
@@ -46,41 +41,36 @@ import org.mockito.ArgumentCaptor;
 
 @SuppressWarnings("IllegalThrows")
 public class EventsIntegrationTest {
+    public static final String ALL_GOOD_DOCKER_COMPOSE_YAML = "src/test/resources/events/all-good-docker-compose.yaml";
     private final EventConsumer eventConsumer = mock(EventConsumer.class);
 
     @Test
     public void produce_events_on_a_successful_run() throws Throwable {
         DockerComposeRule dockerComposeRule = DockerComposeRule.builder()
-                .file("src/test/resources/stats/all-good-docker-compose.yaml")
+                .file(ALL_GOOD_DOCKER_COMPOSE_YAML)
                 .waitingForService("one", HealthChecks.toHaveAllPortsOpen())
                 .addEventConsumer(eventConsumer)
                 .build();
 
         runDockerComposeRule(dockerComposeRule);
 
-        List<DockerComposeRuleEvent> events = getEvents();
+        List<Event> events = getEvents();
 
         List<Class<?>> expected = ImmutableList.of(
-                BuildStarted.class,
-                BuildSucceeded.class,
-                UpStarted.class,
-                UpSucceeded.class,
-                WaitForServicesStarted.class,
+                BuildEvent.class,
+                UpEvent.class,
                 // 2 cluster waits, one native, one user
-                ClusterStarted.class,
-                ClusterStarted.class,
-                ClusterBecameHealthy.class,
-                ClusterBecameHealthy.class,
-                WaitForServicesSucceeded.class,
-                ShutdownStarted.class,
-                ShutdownSucceeded.class
+                ClusterWaitEvent.class,
+                ClusterWaitEvent.class,
+                WaitForServicesEvent.class,
+                ShutdownEvent.class
         );
 
         assertThat(events).hasSameSizeAs(expected);
 
         StreamEx.of(events).zipWith(expected.stream())
                 .forKeyValue((event, expectedClass) -> {
-                    assertThat(event).isInstanceOf(expectedClass);
+                    assertThat(event.toString()).contains(expectedClass.getSimpleName());
                 });
     }
 
@@ -89,7 +79,7 @@ public class EventsIntegrationTest {
         String failureMessage = "it went wrong oh no";
 
         DockerComposeRule dockerComposeRule = DockerComposeRule.builder()
-                .file("src/test/resources/stats/all-good-docker-compose.yaml")
+                .file(ALL_GOOD_DOCKER_COMPOSE_YAML)
                 .waitingForService(
                         "one",
                         container -> SuccessOrFailure.failure(failureMessage),
@@ -103,21 +93,54 @@ public class EventsIntegrationTest {
             // ignore the failure
         }
 
-        List<DockerComposeRuleEvent> events = getEvents();
+        List<Event> events = getEvents();
 
         assertThat(events).anySatisfy(event -> {
-            assertThat(event).isInstanceOf(ClusterTimedOut.class);
+            event.accept(new Event.Visitor<Void>() {
+                @Override
+                public Void visitBuild(BuildEvent value) {
+                    throw new IllegalArgumentException();
+                }
 
-            ClusterTimedOut clusterTimedOut = (ClusterTimedOut) event;
-            assertThat(clusterTimedOut.serviceNames()).containsOnly("one");
-            assertThat(clusterTimedOut.exception()).hasStackTraceContaining(failureMessage);
+                @Override
+                public Void visitPull(PullEvent value) {
+                    throw new IllegalArgumentException();
+                }
+
+                @Override
+                public Void visitUp(UpEvent value) {
+                    throw new IllegalArgumentException();
+                }
+
+                @Override
+                public Void visitWaitForServices(WaitForServicesEvent value) {
+                    throw new IllegalArgumentException();
+                }
+
+                @Override
+                public Void visitClusterWait(ClusterWaitEvent value) {
+                    assertThat(value.getServiceNames()).containsOnly("one");
+                    assertThat(value.getTask().getFailure()).contains(failureMessage);
+                    return null;
+                }
+
+                @Override
+                public Void visitShutdown(ShutdownEvent value) {
+                    throw new IllegalArgumentException();
+                }
+
+                @Override
+                public Void visitUnknown(String unknownType) {
+                    throw new IllegalArgumentException();
+                }
+            });
         });
     }
 
-    private List<DockerComposeRuleEvent> getEvents() {
-        ArgumentCaptor<DockerComposeRuleEvent> argumentCaptor = ArgumentCaptor.forClass(DockerComposeRuleEvent.class);
+    private List<Event> getEvents() {
+        ArgumentCaptor<Event> argumentCaptor = ArgumentCaptor.forClass(Event.class);
         verify(eventConsumer, atLeastOnce()).receiveEvent(argumentCaptor.capture());
-        List<DockerComposeRuleEvent> events = argumentCaptor.getAllValues();
+        List<Event> events = argumentCaptor.getAllValues();
         System.out.println("events = " + events);
         return events;
     }
