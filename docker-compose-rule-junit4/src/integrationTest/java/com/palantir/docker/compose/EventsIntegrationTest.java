@@ -40,7 +40,6 @@ import org.junit.Test;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 import org.mockito.ArgumentCaptor;
-import sun.jvm.hotspot.utilities.AssertionFailure;
 
 @SuppressWarnings("IllegalThrows")
 public class EventsIntegrationTest {
@@ -101,7 +100,7 @@ public class EventsIntegrationTest {
         ClusterWaitEvent clusterWait = events.stream()
                 .flatMap(event -> Streams.stream(isClusterWait(event)))
                 .findFirst()
-                .orElseThrow(() -> new AssertionFailure("no clusterwaits in events"));
+                .orElseThrow(() -> new IllegalStateException("no clusterwaits in events"));
 
 
         assertThat(clusterWait.getServiceNames()).containsOnly("one");
