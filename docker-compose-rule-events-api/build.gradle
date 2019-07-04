@@ -1,0 +1,12 @@
+apply plugin: 'com.palantir.conjure'
+
+conjure {
+    java {
+        useImmutableBytes = true
+        undertowServicePrefixes = true
+    }
+}
+
+configure(subprojects) {
+    apply from: "${rootDir}/gradle/publish-jar.gradle"
+}

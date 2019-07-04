@@ -1,0 +1,39 @@
+types:
+  definitions:
+    default-package: com.palantir.docker.compose.events
+    objects:
+      EventWrapper:
+        fields:
+          time: datetime
+          event: Event
+
+      Event:
+        union:
+          pull: PullEvent
+          clusterWait: ClusterWaitEvent
+          shutdown: ShutdownEvent
+
+      Task:
+        fields:
+          startTime: datetime
+          endTime: datetime
+          failure: optional<string>
+
+      PullEvent:
+        fields:
+          task: Task
+
+      ClusterWaitEvent:
+        fields:
+          task: Task
+          serviceNames: list<string>
+          type: ClusterWaitType
+
+      ClusterWaitType:
+        values:
+            - NATIVE
+            - USER
+
+      ShutdownEvent:
+        fields:
+          task: Task
