@@ -13,13 +13,19 @@ types:
           clusterWait: ClusterWaitEvent
           shutdown: ShutdownEvent
 
-      Task:
+      BuildEvent:
         fields:
-          startTime: datetime
-          endTime: datetime
-          failure: optional<string>
+          task: Task
 
       PullEvent:
+        fields:
+          task: Task
+
+      UpEvent:
+        fields:
+          task: Task
+
+      WaitForServicesEvent:
         fields:
           task: Task
 
@@ -37,3 +43,9 @@ types:
       ShutdownEvent:
         fields:
           task: Task
+
+      Task:
+        fields:
+          startTime: datetime
+          endTime: datetime
+          failure: optional<string>
