@@ -22,7 +22,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Streams;
 import com.palantir.docker.compose.connection.waiting.HealthChecks;
 import com.palantir.docker.compose.connection.waiting.SuccessOrFailure;
 import com.palantir.docker.compose.events.BuildEvent;
@@ -98,7 +97,9 @@ public class EventsIntegrationTest {
         List<Event> events = getEvents();
 
         ClusterWaitEvent clusterWait = events.stream()
-                .flatMap(event -> Streams.stream(isClusterWait(event)))
+                .map(this::isClusterWait)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
                 .findFirst()
                 .orElseThrow(() -> new IllegalStateException("no clusterwaits in events"));
 
