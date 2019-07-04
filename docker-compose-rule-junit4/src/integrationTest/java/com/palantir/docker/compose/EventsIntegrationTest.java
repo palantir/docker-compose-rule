@@ -22,6 +22,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Streams;
 import com.palantir.docker.compose.connection.waiting.HealthChecks;
 import com.palantir.docker.compose.connection.waiting.SuccessOrFailure;
 import com.palantir.docker.compose.events.BuildEvent;
@@ -33,11 +34,13 @@ import com.palantir.docker.compose.events.ShutdownEvent;
 import com.palantir.docker.compose.events.UpEvent;
 import com.palantir.docker.compose.events.WaitForServicesEvent;
 import java.util.List;
+import java.util.Optional;
 import one.util.streamex.StreamEx;
 import org.junit.Test;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 import org.mockito.ArgumentCaptor;
+import sun.jvm.hotspot.utilities.AssertionFailure;
 
 @SuppressWarnings("IllegalThrows")
 public class EventsIntegrationTest {
@@ -95,45 +98,15 @@ public class EventsIntegrationTest {
 
         List<Event> events = getEvents();
 
-        assertThat(events).anySatisfy(event -> {
-            event.accept(new Event.Visitor<Void>() {
-                @Override
-                public Void visitBuild(BuildEvent value) {
-                    throw new IllegalArgumentException();
-                }
+        ClusterWaitEvent clusterWait = events.stream()
+                .flatMap(event -> Streams.stream(isClusterWait(event)))
+                .findFirst()
+                .orElseThrow(() -> new AssertionFailure("no clusterwaits in events"));
 
-                @Override
-                public Void visitPull(PullEvent value) {
-                    throw new IllegalArgumentException();
-                }
 
-                @Override
-                public Void visitUp(UpEvent value) {
-                    throw new IllegalArgumentException();
-                }
-
-                @Override
-                public Void visitWaitForServices(WaitForServicesEvent value) {
-                    throw new IllegalArgumentException();
-                }
-
-                @Override
-                public Void visitClusterWait(ClusterWaitEvent value) {
-                    assertThat(value.getServiceNames()).containsOnly("one");
-                    assertThat(value.getTask().getFailure()).contains(failureMessage);
-                    return null;
-                }
-
-                @Override
-                public Void visitShutdown(ShutdownEvent value) {
-                    throw new IllegalArgumentException();
-                }
-
-                @Override
-                public Void visitUnknown(String unknownType) {
-                    throw new IllegalArgumentException();
-                }
-            });
+        assertThat(clusterWait.getServiceNames()).containsOnly("one");
+        assertThat(clusterWait.getTask().getFailure()).hasValueSatisfying(failure -> {
+            assertThat(failure).contains(failureMessage);
         });
     }
 
@@ -153,5 +126,44 @@ public class EventsIntegrationTest {
             }
         }, Description.createTestDescription(EventsIntegrationTest.class, "blah"))
                 .evaluate();
+    }
+
+    private Optional<ClusterWaitEvent> isClusterWait(Event event) {
+        return event.accept(new Event.Visitor<Optional<ClusterWaitEvent>>() {
+            @Override
+            public Optional<ClusterWaitEvent> visitBuild(BuildEvent value) {
+                return Optional.empty();
+            }
+
+            @Override
+            public Optional<ClusterWaitEvent> visitPull(PullEvent value) {
+                return Optional.empty();
+            }
+
+            @Override
+            public Optional<ClusterWaitEvent> visitUp(UpEvent value) {
+                return Optional.empty();
+            }
+
+            @Override
+            public Optional<ClusterWaitEvent> visitWaitForServices(WaitForServicesEvent value) {
+                return Optional.empty();
+            }
+
+            @Override
+            public Optional<ClusterWaitEvent> visitClusterWait(ClusterWaitEvent value) {
+                return Optional.of(value);
+            }
+
+            @Override
+            public Optional<ClusterWaitEvent> visitShutdown(ShutdownEvent value) {
+                return Optional.empty();
+            }
+
+            @Override
+            public Optional<ClusterWaitEvent> visitUnknown(String unknownType) {
+                return Optional.empty();
+            }
+        });
     }
 }
