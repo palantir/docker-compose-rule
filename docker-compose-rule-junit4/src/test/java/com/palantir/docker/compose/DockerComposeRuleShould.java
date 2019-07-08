@@ -63,7 +63,9 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
+import org.junit.runner.Description;
 import org.junit.runner.RunWith;
+import org.junit.runners.model.Statement;
 import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -252,6 +254,23 @@ public class DockerComposeRuleShould {
         assertThat(latch.await(1, TimeUnit.SECONDS), is(true));
         assertThat(logLocation.listFiles(), arrayContaining(fileWithName("db.log")));
         assertThat(new File(logLocation, "db.log"), is(fileContainingString("db log")));
+    }
+
+    @Test
+    @SuppressWarnings("IllegalThrows")
+    public void collects_log_when_startup_fails() throws Throwable {
+        Statement statement = mock(Statement.class);
+        Description description = mock(Description.class);
+
+        doThrow(new DockerExecutionException("")).when(dockerCompose).up();
+        rule = defaultBuilder().build();
+
+        try {
+            exception.expect(DockerExecutionException.class);
+            rule.apply(statement, description).evaluate();
+        } finally {
+            verify(logCollector, times(1)).collectLogs(dockerCompose);
+        }
     }
 
     @Test
