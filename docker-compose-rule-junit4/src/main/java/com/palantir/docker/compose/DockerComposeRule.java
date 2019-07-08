@@ -38,7 +38,7 @@ import java.util.List;
 import org.immutables.value.Value;
 import org.joda.time.Duration;
 import org.joda.time.ReadableDuration;
-import org.junit.rules.TestRule;
+import org.junit.rules.ExternalResource;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 import org.slf4j.Logger;
@@ -46,7 +46,7 @@ import org.slf4j.LoggerFactory;
 
 @Value.Immutable
 @CustomImmutablesStyle
-public abstract class DockerComposeRule implements TestRule {
+public abstract class DockerComposeRule extends ExternalResource {
     public static final Duration DEFAULT_TIMEOUT = Duration.standardMinutes(2);
     public static final int DEFAULT_RETRY_ATTEMPTS = 2;
 
@@ -150,6 +150,7 @@ public abstract class DockerComposeRule implements TestRule {
         };
     }
 
+    @Override
     public void before() throws IOException, InterruptedException {
         log.debug("Starting docker-compose cluster");
         if (pullOnStartup()) {
@@ -171,6 +172,7 @@ public abstract class DockerComposeRule implements TestRule {
         log.debug("docker-compose cluster started");
     }
 
+    @Override
     public void after() {
         try {
             shutdownStrategy().stop(this.dockerCompose());
