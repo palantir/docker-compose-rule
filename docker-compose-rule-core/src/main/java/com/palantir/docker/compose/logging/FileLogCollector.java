@@ -23,10 +23,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
-import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 import org.apache.commons.lang3.Validate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,11 +31,7 @@ public class FileLogCollector implements LogCollector {
 
     private static final Logger log = LoggerFactory.getLogger(FileLogCollector.class);
 
-    private static final long STOP_TIMEOUT_IN_MILLIS = 50;
-
     private final File logDirectory;
-
-    private ExecutorService executor = null;
 
     public FileLogCollector(File logDirectory) {
         checkArgument(!logDirectory.isFile(), "Log directory cannot be a file");
@@ -55,40 +47,31 @@ public class FileLogCollector implements LogCollector {
 
     @Override
     public void collectLogs(DockerCompose dockerCompose) throws IOException, InterruptedException {
-        if (executor != null) {
-            throw new RuntimeException("Cannot start collecting the same logs twice");
-        }
-
-        List<String> serviceNames = dockerCompose.services();
-        if (serviceNames.size() == 0) {
-            return;
-        }
-        executor = Executors.newFixedThreadPool(serviceNames.size());
-        serviceNames.stream().forEachOrdered(service -> this.collectLogs(service, dockerCompose));
-
-        executor.shutdown();
-        if (!executor.awaitTermination(STOP_TIMEOUT_IN_MILLIS, TimeUnit.MILLISECONDS)) {
-            log.warn("docker containers were still running when log collection stopped");
-            executor.shutdownNow();
+        for (String service : dockerCompose.services()) {
+            try {
+                collectLogs(service, dockerCompose);
+            } catch (RuntimeException e) {
+                log.error("Failed to collect logs for '{}'", service);
+            }
         }
     }
 
     private void collectLogs(String container, DockerCompose dockerCompose) {
-        executor.submit(() -> {
-            File outputFile = new File(logDirectory, container + ".log");
-            try {
-                Files.createFile(outputFile.toPath());
-            } catch (final FileAlreadyExistsException e) {
-                // ignore
-            } catch (final IOException e) {
-                throw new RuntimeException("Error creating log file", e);
+        File outputFile = new File(logDirectory, container + ".log");
+        try {
+            Files.createFile(outputFile.toPath());
+        } catch (final FileAlreadyExistsException e) {
+            // ignore
+        } catch (final IOException e) {
+            throw new RuntimeException("Error creating log file", e);
+        }
+        log.info("Writing logs for container '{}' to '{}'", container, outputFile.getAbsolutePath());
+        try (FileOutputStream outputStream = new FileOutputStream(outputFile)) {
+            if (!dockerCompose.writeLogs(container, outputStream)) {
+                log.error("Timed out while collecting logs for '{}'", container);
             }
-            log.info("Writing logs for container '{}' to '{}'", container, outputFile.getAbsolutePath());
-            try (FileOutputStream outputStream = new FileOutputStream(outputFile)) {
-                dockerCompose.writeLogs(container, outputStream);
-            } catch (IOException e) {
-                throw new RuntimeException("Error reading log", e);
-            }
-        });
+        } catch (IOException e) {
+            throw new RuntimeException("Error reading log", e);
+        }
     }
 }

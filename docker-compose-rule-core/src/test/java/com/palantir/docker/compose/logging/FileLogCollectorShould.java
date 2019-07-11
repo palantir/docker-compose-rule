@@ -138,16 +138,6 @@ public class FileLogCollectorShould {
         assertThat(new File(logDirectory, "db2.log"), is(fileContainingString("other")));
     }
 
-    @Test
-    public void throw_exception_when_trying_to_start_a_started_collector_a_second_time()
-            throws IOException, InterruptedException {
-        when(compose.services()).thenReturn(ImmutableList.of("db"));
-        logCollector.collectLogs(compose);
-        exception.expect(RuntimeException.class);
-        exception.expectMessage("Cannot start collecting the same logs twice");
-        logCollector.collectLogs(compose);
-    }
-
     private static File cannotBeCreatedDirectory() {
         File cannotBeCreatedDirectory = mock(File.class);
         when(cannotBeCreatedDirectory.isFile()).thenReturn(false);
