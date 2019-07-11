@@ -111,9 +111,10 @@ class EventEmitter {
                         clusterWaitType.toString().toLowerCase());
             } catch (Exception e) {
                 log.error(
-                        "Cluster wait for services {} (type: {}) timed out",
+                        "Cluster wait for services {} (type: {}) timed out with exception:\n\t{}",
                         recordingCluster.recordedContainerNames(),
-                        clusterWaitType.toString().toLowerCase());
+                        clusterWaitType.toString().toLowerCase(),
+                        e.getMessage());
                 throw e;
             } finally {
                 recordedServiceNames.set(Optional.of(recordingCluster.recordedContainerNames()));
