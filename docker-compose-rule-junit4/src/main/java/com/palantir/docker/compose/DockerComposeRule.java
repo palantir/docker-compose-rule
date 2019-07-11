@@ -6,11 +6,13 @@ package com.palantir.docker.compose;
 import static com.palantir.docker.compose.connection.waiting.ClusterHealthCheck.serviceHealthCheck;
 import static com.palantir.docker.compose.connection.waiting.ClusterHealthCheck.transformingHealthCheck;
 
+import com.google.common.base.Throwables;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
+import com.palantir.docker.compose.EventEmitter.InterruptableClusterWait;
 import com.palantir.docker.compose.configuration.DockerComposeFiles;
 import com.palantir.docker.compose.configuration.ProjectName;
 import com.palantir.docker.compose.configuration.ShutdownStrategy;
@@ -44,7 +46,6 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.immutables.value.Value;
@@ -195,11 +196,11 @@ public abstract class DockerComposeRule extends ExternalResource {
 
     private void waitForServices() throws InterruptedException {
         log.debug("Waiting for services");
-        Consumer<Cluster> nativeHealthCheckClusterWait =
+        InterruptableClusterWait nativeHealthCheckClusterWait =
                 emitEventsFor().nativeClusterWait(
                         new ClusterWait(ClusterHealthCheck.nativeHealthChecks(), nativeServiceHealthCheckTimeout()));
 
-        List<Consumer<Cluster>> allClusterWaits = Stream.concat(
+        List<InterruptableClusterWait> allClusterWaits = Stream.concat(
                 Stream.of(nativeHealthCheckClusterWait),
                 clusterWaits().stream().map(emitEventsFor()::userClusterWait))
                 .collect(Collectors.toList());
@@ -209,7 +210,7 @@ public abstract class DockerComposeRule extends ExternalResource {
         log.debug("docker-compose cluster started");
     }
 
-    private void waitForAllClusterWaits(List<Consumer<Cluster>> allClusterWaits) throws InterruptedException {
+    private void waitForAllClusterWaits(List<InterruptableClusterWait> allClusterWaits) throws InterruptedException {
         ListeningExecutorService executorService = MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(
                 allClusterWaits.size(),
                 new ThreadFactoryBuilder()
@@ -219,7 +220,19 @@ public abstract class DockerComposeRule extends ExternalResource {
         try {
             ListenableFuture<?> listListenableFuture =
                     Futures.allAsList(allClusterWaits.stream()
-                    .map(clusterWait -> executorService.submit(() -> clusterWait.accept(containers())))
+                    .map(clusterWait -> executorService.submit(() -> {
+                        try {
+                            clusterWait.waitForCluster(containers());
+                        } catch (InterruptedException e) {
+                            // if (executorService.isShutdown()) {
+                            //     // ignore if this InterruptedException has occurred because we shut down and
+                            //     // terminated the executor
+                            //     return;
+                            // }
+
+                            Throwables.propagate(e);
+                        }
+                    }))
                     .collect(Collectors.toList()));
 
             listListenableFuture.get();
@@ -229,7 +242,7 @@ public abstract class DockerComposeRule extends ExternalResource {
             }
             throw new IllegalStateException("A cluster wait errored out: ", e);
         } finally {
-            MoreExecutors.shutdownAndAwaitTermination(executorService, 1, TimeUnit.SECONDS);
+            MoreExecutors.shutdownAndAwaitTermination(executorService, 0, TimeUnit.SECONDS);
         }
     }
 

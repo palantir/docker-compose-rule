@@ -84,15 +84,19 @@ class EventEmitter {
         emitTask(runnable, task -> Event.shutdown(ShutdownEvent.builder().task(task).build()));
     }
 
-    public Consumer<Cluster> userClusterWait(ClusterWait clusterWait)  {
+    interface InterruptableClusterWait {
+        void waitForCluster(Cluster cluster) throws InterruptedException;
+    }
+
+    public InterruptableClusterWait userClusterWait(ClusterWait clusterWait)  {
         return clusterWait(ClusterWaitType.USER, clusterWait);
     }
 
-    public Consumer<Cluster> nativeClusterWait(ClusterWait clusterWait) {
+    public InterruptableClusterWait nativeClusterWait(ClusterWait clusterWait) {
         return clusterWait(ClusterWaitType.NATIVE, clusterWait);
     }
 
-    private Consumer<Cluster> clusterWait(
+    private InterruptableClusterWait clusterWait(
             ClusterWaitType clusterWaitType,
             ClusterWait clusterWait) {
         // This weird bit of complexity is because we can't tell what services a ClusterWait is using until it
@@ -110,11 +114,14 @@ class EventEmitter {
                         recordingCluster.recordedContainerNames(),
                         clusterWaitType.toString().toLowerCase());
             } catch (Exception e) {
-                log.error(
-                        "Cluster wait for services {} (type: {}) timed out with exception:\n\t{}",
-                        recordingCluster.recordedContainerNames(),
-                        clusterWaitType.toString().toLowerCase(),
-                        e.getMessage());
+                // Message is sometimes null eg in the case where an InterruptedException is raised
+                if (e.getMessage() != null) {
+                    log.error(
+                            "Cluster wait for services {} (type: {}) timed out with exception:\n\t{}",
+                            recordingCluster.recordedContainerNames(),
+                            clusterWaitType.toString().toLowerCase(),
+                            e.getMessage());
+                }
                 throw e;
             } finally {
                 recordedServiceNames.set(Optional.of(recordingCluster.recordedContainerNames()));
@@ -131,10 +138,11 @@ class EventEmitter {
                         .build()));
     }
 
-    private void emitNotThrowing(CheckedRunnable runnable, Function<Task, Event> eventFunction) {
+    private void emitNotThrowing(CheckedRunnable runnable, Function<Task, Event> eventFunction)
+            throws InterruptedException {
         try {
             emitTask(runnable, eventFunction);
-        } catch (InterruptedException | IOException e) {
+        } catch (IOException e) {
             Throwables.propagate(e);
         }
     }

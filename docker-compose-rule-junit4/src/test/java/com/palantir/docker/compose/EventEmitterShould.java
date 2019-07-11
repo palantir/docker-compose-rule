@@ -24,6 +24,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import com.google.common.collect.ImmutableList;
+import com.palantir.docker.compose.EventEmitter.InterruptableClusterWait;
 import com.palantir.docker.compose.connection.Cluster;
 import com.palantir.docker.compose.connection.waiting.ClusterWait;
 import com.palantir.docker.compose.connection.waiting.Exceptions;
@@ -39,7 +40,6 @@ import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.Consumer;
 import org.junit.Test;
 import org.mockito.InOrder;
 import org.mockito.Mockito;
@@ -99,7 +99,8 @@ public class EventEmitterShould {
     }
 
     @Test
-    public void user_cluster_wait_give_the_service_names_that_were_used_by_the_cluser_wait_in_an_event() {
+    public void user_cluster_wait_give_the_service_names_that_were_used_by_the_cluser_wait_in_an_event()
+            throws InterruptedException {
         OffsetDateTime startedTime = timeIs(5);
         AtomicReference<OffsetDateTime> endTime = new AtomicReference<>();
 
@@ -112,10 +113,10 @@ public class EventEmitterShould {
             return null;
         }).when(clusterWait).waitUntilReady(any());
 
-        Consumer<Cluster> eventedClusterWait = eventEmitter.userClusterWait(clusterWait);
+        InterruptableClusterWait eventedClusterWait = eventEmitter.userClusterWait(clusterWait);
 
         Cluster cluster = mock(Cluster.class, RETURNS_DEEP_STUBS);
-        eventedClusterWait.accept(cluster);
+        eventedClusterWait.waitForCluster(cluster);
 
         Event clusterWaitEvent = Event.clusterWait(ClusterWaitEvent.builder()
                 .task(Task.builder()
