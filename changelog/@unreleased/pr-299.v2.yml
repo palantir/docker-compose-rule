@@ -1,0 +1,6 @@
+type: fix
+fix:
+  description: Log collection timeout has been increased to ensure that logs are successfully
+    collected.
+  links:
+  - https://github.com/palantir/docker-compose-rule/pull/299
