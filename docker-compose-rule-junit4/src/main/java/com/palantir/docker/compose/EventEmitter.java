@@ -105,6 +105,16 @@ class EventEmitter {
             RecordingCluster recordingCluster = new RecordingCluster(cluster);
             try {
                 clusterWait.waitUntilReady(recordingCluster);
+                log.info(
+                        "Cluster wait for services {} (type: {}) successfully finished",
+                        recordingCluster.recordedContainerNames(),
+                        clusterWaitType.toString().toLowerCase());
+            } catch (Exception e) {
+                log.error(
+                        "Cluster wait for services {} (type: {}) timed out",
+                        recordingCluster.recordedContainerNames(),
+                        clusterWaitType.toString().toLowerCase());
+                throw e;
             } finally {
                 recordedServiceNames.set(Optional.of(recordingCluster.recordedContainerNames()));
             }
