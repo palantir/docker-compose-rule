@@ -224,11 +224,11 @@ public abstract class DockerComposeRule extends ExternalResource {
                         try {
                             clusterWait.waitForCluster(containers());
                         } catch (InterruptedException e) {
-                            // if (executorService.isShutdown()) {
-                            //     // ignore if this InterruptedException has occurred because we shut down and
-                            //     // terminated the executor
-                            //     return;
-                            // }
+                            if (executorService.isShutdown()) {
+                                // ignore if this InterruptedException has occurred because we shut down and
+                                // terminated the executor
+                                return;
+                            }
 
                             Throwables.propagate(e);
                         }
