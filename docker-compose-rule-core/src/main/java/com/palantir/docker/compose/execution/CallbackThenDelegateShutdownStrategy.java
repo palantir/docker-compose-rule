@@ -34,11 +34,16 @@ public class CallbackThenDelegateShutdownStrategy implements ShutdownStrategy {
     }
 
     @Override
-    public void shutdown(DockerCompose dockerCompose, Docker docker) throws IOException, InterruptedException {
+    public void stop(DockerCompose dockerCompose) throws IOException, InterruptedException {
         try {
             callback.run();
         } finally {
-            delegate.shutdown(dockerCompose, docker);
+            delegate.stop(dockerCompose);
         }
+    }
+
+    @Override
+    public void shutdown(DockerCompose dockerCompose, Docker docker) throws IOException, InterruptedException {
+        delegate.shutdown(dockerCompose, docker);
     }
 }

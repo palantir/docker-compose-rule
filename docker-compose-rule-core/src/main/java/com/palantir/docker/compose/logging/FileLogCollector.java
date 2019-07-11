@@ -54,7 +54,7 @@ public class FileLogCollector implements LogCollector {
     }
 
     @Override
-    public synchronized void startCollecting(DockerCompose dockerCompose) throws IOException, InterruptedException {
+    public void collectLogs(DockerCompose dockerCompose) throws IOException, InterruptedException {
         if (executor != null) {
             throw new RuntimeException("Cannot start collecting the same logs twice");
         }
@@ -65,9 +65,15 @@ public class FileLogCollector implements LogCollector {
         }
         executor = Executors.newFixedThreadPool(serviceNames.size());
         serviceNames.stream().forEachOrdered(service -> this.collectLogs(service, dockerCompose));
+
+        executor.shutdown();
+        if (!executor.awaitTermination(STOP_TIMEOUT_IN_MILLIS, TimeUnit.MILLISECONDS)) {
+            log.warn("docker containers were still running when log collection stopped");
+            executor.shutdownNow();
+        }
     }
 
-    private void collectLogs(String container, DockerCompose dockerCompose)  {
+    private void collectLogs(String container, DockerCompose dockerCompose) {
         executor.submit(() -> {
             File outputFile = new File(logDirectory, container + ".log");
             try {
@@ -85,17 +91,4 @@ public class FileLogCollector implements LogCollector {
             }
         });
     }
-
-    @Override
-    public synchronized void stopCollecting() throws InterruptedException {
-        if (executor == null) {
-            return;
-        }
-        if (!executor.awaitTermination(STOP_TIMEOUT_IN_MILLIS, TimeUnit.MILLISECONDS)) {
-            log.warn("docker containers were still running when log collection stopped");
-            executor.shutdownNow();
-        }
-        executor = null;
-    }
-
 }
