@@ -63,8 +63,12 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
+import org.junit.runner.Description;
 import org.junit.runner.RunWith;
+import org.junit.runners.model.Statement;
+import org.mockito.InOrder;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -112,13 +116,16 @@ public class DockerComposeRuleShould {
     public void calls_shutdownStrategy_in_after_method() throws IOException, InterruptedException {
         ShutdownStrategy shutdownStrategy = mock(ShutdownStrategy.class);
         rule = DockerComposeRule.builder()
+                .docker(mockDocker)
                 .dockerCompose(dockerCompose)
                 .files(mockFiles)
                 .shutdownStrategy(shutdownStrategy)
                 .build();
 
         rule.after();
-        verify(shutdownStrategy).shutdown(dockerCompose, rule.docker());
+        InOrder inOrder = Mockito.inOrder(shutdownStrategy);
+        inOrder.verify(shutdownStrategy).stop(dockerCompose);
+        inOrder.verify(shutdownStrategy).shutdown(dockerCompose, mockDocker);
     }
 
     @Test
@@ -240,17 +247,34 @@ public class DockerComposeRuleShould {
             OutputStream outputStream = (OutputStream) args.getArguments()[1];
             IOUtils.write("db log", outputStream);
             latch.countDown();
-            return true;
+            return null;
         });
         loggingComposition.before();
-        assertThat(latch.await(1, TimeUnit.SECONDS), is(true));
         loggingComposition.after();
+        assertThat(latch.await(1, TimeUnit.SECONDS), is(true));
         assertThat(logLocation.listFiles(), arrayContaining(fileWithName("db.log")));
         assertThat(new File(logLocation, "db.log"), is(fileContainingString("db log")));
     }
 
     @Test
-    public void not_shut_down_when_skipShutdown_is_true() throws InterruptedException {
+    @SuppressWarnings("IllegalThrows")
+    public void collects_log_when_startup_fails() throws Throwable {
+        Statement statement = mock(Statement.class);
+        Description description = mock(Description.class);
+
+        doThrow(new DockerExecutionException("")).when(dockerCompose).up();
+        rule = defaultBuilder().build();
+
+        try {
+            exception.expect(DockerExecutionException.class);
+            rule.apply(statement, description).evaluate();
+        } finally {
+            verify(logCollector, times(1)).collectLogs(dockerCompose);
+        }
+    }
+
+    @Test
+    public void not_shut_down_when_skipShutdown_is_true() throws IOException, InterruptedException {
         DockerComposeRule.builder()
                 .dockerCompose(dockerCompose)
                 .files(mockFiles)
@@ -260,7 +284,7 @@ public class DockerComposeRuleShould {
                 .build()
                 .after();
         verifyNoMoreInteractions(dockerCompose);
-        verify(logCollector, times(1)).stopCollecting();
+        verify(logCollector, times(1)).collectLogs(dockerCompose);
     }
 
     @Test

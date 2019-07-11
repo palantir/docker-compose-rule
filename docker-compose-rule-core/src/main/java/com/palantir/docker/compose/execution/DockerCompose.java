@@ -32,6 +32,7 @@ public interface DockerCompose {
     void build() throws IOException, InterruptedException;
     void up() throws IOException, InterruptedException;
     void down() throws IOException, InterruptedException;
+    void stop() throws IOException, InterruptedException;
     void kill() throws IOException, InterruptedException;
     void rm() throws IOException, InterruptedException;
     void up(Container container) throws IOException, InterruptedException;

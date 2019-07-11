@@ -1,0 +1,5 @@
+type: improvement
+improvement:
+  description: Logs are collected after running tests instead of being streamed while tests are running. This enables logs of restarted containers to be collected.
+  links:
+  - https://github.com/palantir/docker-compose-rule/pull/293

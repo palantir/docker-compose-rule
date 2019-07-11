@@ -51,6 +51,8 @@ import org.immutables.value.Value;
 import org.joda.time.Duration;
 import org.joda.time.ReadableDuration;
 import org.junit.rules.ExternalResource;
+import org.junit.runner.Description;
+import org.junit.runners.model.Statement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -152,12 +154,26 @@ public abstract class DockerComposeRule extends ExternalResource {
         return new DoNothingLogCollector();
     }
 
+    @Override
+    public Statement apply(Statement base, Description description) {
+        return new Statement() {
+            @Override
+            public void evaluate() throws Throwable {
+                try {
+                    before();
+                    base.evaluate();
+                } finally {
+                    after();
+                }
+            }
+        };
+    }
+
+    @Override
     public void before() throws IOException, InterruptedException {
         log.debug("Starting docker-compose cluster");
 
         pullBuildAndUp();
-
-        logCollector().startCollecting(dockerCompose());
 
         emitEventsFor().waitingForServices(this::waitForServices);
     }
@@ -219,11 +235,11 @@ public abstract class DockerComposeRule extends ExternalResource {
 
     public void after() {
         try {
-            emitEventsFor().shutdown(() ->
-                    shutdownStrategy().shutdown(this.dockerCompose(), this.docker()));
-
-            logCollector().stopCollecting();
-
+            emitEventsFor().shutdown(() -> {
+                shutdownStrategy().stop(this.dockerCompose());
+                logCollector().collectLogs(this.dockerCompose());
+                shutdownStrategy().shutdown(this.dockerCompose(), this.docker());
+            });
         } catch (IOException | InterruptedException e) {
             throw new RuntimeException("Error cleaning up docker compose cluster", e);
         }
