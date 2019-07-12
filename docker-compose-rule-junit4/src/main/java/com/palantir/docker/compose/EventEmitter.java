@@ -36,9 +36,6 @@ import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
-import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.Consumer;
 import java.util.function.Function;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -99,41 +96,13 @@ class EventEmitter {
     private InterruptableClusterWait clusterWait(
             ClusterWaitType clusterWaitType,
             ClusterWait clusterWait) {
-        // This weird bit of complexity is because we can't tell what services a ClusterWait is using until it
-        // actually runs. So we have to record the services it accesses then use this to generate the events. The
-        // Optional exists solely as a check again logic errors - in the case when events are generated before the
-        // cluster wait has begun.
-        AtomicReference<Optional<Set<String>>> recordedServiceNames = new AtomicReference<>(Optional.empty());
-
-        Consumer<Cluster> recordingClusterWait = cluster -> {
-            RecordingCluster recordingCluster = new RecordingCluster(cluster);
-            try {
-                clusterWait.waitUntilReady(recordingCluster);
-                log.info(
-                        "Cluster wait for services {} (type: {}) successfully finished",
-                        recordingCluster.recordedContainerNames(),
-                        clusterWaitType.toString().toLowerCase());
-            } catch (Exception e) {
-                // Message is sometimes null eg in the case where an InterruptedException is raised
-                if (e.getMessage() != null) {
-                    log.error(
-                            "Cluster wait for services {} (type: {}) timed out with exception:\n\t{}",
-                            recordingCluster.recordedContainerNames(),
-                            clusterWaitType.toString().toLowerCase(),
-                            e.getMessage());
-                }
-                throw e;
-            } finally {
-                recordedServiceNames.set(Optional.of(recordingCluster.recordedContainerNames()));
-            }
-        };
+        RecordingClusterWait recordingClusterWait = new RecordingClusterWait(clusterWait, clusterWaitType);
 
         return cluster -> emitNotThrowing(
-                () -> recordingClusterWait.accept(cluster),
+                () -> recordingClusterWait.waitForCluster(cluster),
                 task -> Event.clusterWait(ClusterWaitEvent.builder()
                         .task(task)
-                        .serviceNames(recordedServiceNames.get().orElseThrow(
-                                () -> new IllegalStateException("Recorded service names have not yet been computed")))
+                        .serviceNames(recordingClusterWait.recordedServiceNames())
                         .type(clusterWaitType)
                         .build()));
     }
