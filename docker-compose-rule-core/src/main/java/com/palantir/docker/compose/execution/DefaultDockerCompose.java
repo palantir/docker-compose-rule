@@ -195,14 +195,15 @@ public class DefaultDockerCompose implements DockerCompose {
         try {
             Process executedProcess = logs(container);
             IOUtils.copy(executedProcess.getInputStream(), output);
-            boolean processExecuted = executedProcess.waitFor(LOG_TIMEOUT.getMillis(), TimeUnit.MILLISECONDS);
-            if (!processExecuted) {
+            boolean processFinished = executedProcess.waitFor(LOG_TIMEOUT.getMillis(), TimeUnit.MILLISECONDS);
+            boolean timedOut = !processFinished;
+            if (timedOut) {
                 log.error("Log collection timed out after {} millis. Destroying log reading process for container {}",
                         LOG_TIMEOUT.getMillis(),
                         container);
                 executedProcess.destroyForcibly();
             }
-            return processExecuted;
+            return processFinished;
         } catch (InterruptedException e) {
             return false;
         }
