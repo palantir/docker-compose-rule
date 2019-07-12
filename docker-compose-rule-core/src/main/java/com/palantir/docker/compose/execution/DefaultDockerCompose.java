@@ -33,6 +33,7 @@ import java.io.OutputStream;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 import org.apache.commons.io.IOUtils;
 import org.joda.time.Duration;
 import org.slf4j.Logger;
@@ -41,7 +42,7 @@ import org.slf4j.LoggerFactory;
 public class DefaultDockerCompose implements DockerCompose {
 
     public static final Version VERSION_1_7_0 = Version.valueOf("1.7.0");
-    private static final Duration LOG_WAIT_TIMEOUT = standardMinutes(30);
+    private static final Duration LOG_TIMEOUT = standardMinutes(1);
     private static final Logger log = LoggerFactory.getLogger(DefaultDockerCompose.class);
 
     private final Command command;
@@ -194,15 +195,18 @@ public class DefaultDockerCompose implements DockerCompose {
         try {
             Process executedProcess = logs(container);
             IOUtils.copy(executedProcess.getInputStream(), output);
-            executedProcess.waitFor();
-            return true;
+            boolean processFinished = executedProcess.waitFor(LOG_TIMEOUT.getMillis(), TimeUnit.MILLISECONDS);
+            boolean timedOut = !processFinished;
+            if (timedOut) {
+                log.error("Log collection timed out after {} millis. Destroying log reading process for container {}",
+                        LOG_TIMEOUT.getMillis(),
+                        container);
+                executedProcess.destroyForcibly();
+            }
+            return processFinished;
         } catch (InterruptedException e) {
             return false;
         }
-    }
-
-    private boolean exists(final String containerName) throws IOException, InterruptedException {
-        return id(containerName).orElse(null) != null;
     }
 
     private Optional<String> id(String containerName) throws IOException, InterruptedException {
