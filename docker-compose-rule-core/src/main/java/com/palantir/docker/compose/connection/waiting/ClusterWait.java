@@ -20,6 +20,7 @@ import com.jayway.awaitility.core.ConditionTimeoutException;
 import com.palantir.docker.compose.connection.Cluster;
 import java.util.Optional;
 import java.util.concurrent.Callable;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 import org.joda.time.Duration;
@@ -42,13 +43,13 @@ public class ClusterWait {
                 Optional.empty());
 
         // semi-intelligent poll interval. If we specify a fast timeout, it will poll more often, otherwise poll
-        // every second
-        Duration pollInterval = minDuration(Duration.standardSeconds(1), timeout.dividedBy(20));
+        // at a slower rate
+        Duration pollInterval = minDuration(Duration.millis(500), timeout.dividedBy(20));
 
         try {
             Awaitility.await()
                     .pollInterval(pollInterval.getMillis(), TimeUnit.MILLISECONDS)
-                    .pollDelay(50, TimeUnit.MILLISECONDS)
+                    .pollDelay(ThreadLocalRandom.current().nextInt(50), TimeUnit.MILLISECONDS)
                     .atMost(timeout.getMillis(), TimeUnit.MILLISECONDS)
                     .until(weHaveSuccess(cluster, lastSuccessOrFailure));
         } catch (ConditionTimeoutException e) {
