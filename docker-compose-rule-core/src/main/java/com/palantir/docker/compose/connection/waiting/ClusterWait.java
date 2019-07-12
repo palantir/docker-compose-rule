@@ -49,7 +49,7 @@ public class ClusterWait {
         try {
             Awaitility.await()
                     .pollInterval(pollInterval.getMillis(), TimeUnit.MILLISECONDS)
-                    .pollDelay(ThreadLocalRandom.current().nextInt(50), TimeUnit.MILLISECONDS)
+                    .pollDelay(ThreadLocalRandom.current().nextInt(1, 50), TimeUnit.MILLISECONDS)
                     .atMost(timeout.getMillis(), TimeUnit.MILLISECONDS)
                     .until(weHaveSuccess(cluster, lastSuccessOrFailure));
         } catch (ConditionTimeoutException e) {
