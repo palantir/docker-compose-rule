@@ -41,45 +41,24 @@ public class ClusterWait {
         final AtomicReference<Optional<SuccessOrFailure>> lastSuccessOrFailure = new AtomicReference<>(
                 Optional.empty());
 
-        log.info("Waiting for cluster to be healthy");
-
         // semi-intelligent poll interval. If we specify a fast timeout, it will poll more often, otherwise poll
         // every second
         Duration pollInterval = minDuration(Duration.standardSeconds(1), timeout.dividedBy(20));
 
-
-        Duration fastTimeout = Duration.standardSeconds(2);
-        boolean laterExtraTime = timeout.isLongerThan(fastTimeout);
-        Duration quickTimeout = minDuration(timeout, fastTimeout);
-
-        Callable<Boolean> weHaveSuccess = weHaveSuccess(cluster, lastSuccessOrFailure);
-
-        awaitUntilTrueForUpTo(Duration.millis(50), weHaveSuccess, () -> {
-            if (!laterExtraTime) {
-                throw new IllegalStateException(serviceDidNotStartupExceptionMessage(lastSuccessOrFailure));
-            }
-        });
-
-        awaitUntilTrueForUpTo(Duration.standardSeconds(1), weHaveSuccess, () -> {
-            throw new IllegalStateException(serviceDidNotStartupExceptionMessage(lastSuccessOrFailure));
-        });
-    }
-
-    private void awaitUntilTrueForUpTo(Duration pollInterval, Callable<Boolean> condition, Runnable onTimeout) {
         try {
             Awaitility.await()
                     .pollInterval(pollInterval.getMillis(), TimeUnit.MILLISECONDS)
+                    .pollDelay(50, TimeUnit.MILLISECONDS)
                     .atMost(timeout.getMillis(), TimeUnit.MILLISECONDS)
-                    .until(condition);
-        } catch (ConditionTimeoutException e2) {
-            onTimeout.run();
+                    .until(weHaveSuccess(cluster, lastSuccessOrFailure));
+        } catch (ConditionTimeoutException e) {
+            throw new IllegalStateException(serviceDidNotStartupExceptionMessage(lastSuccessOrFailure));
         }
     }
 
     private Callable<Boolean> weHaveSuccess(Cluster cluster,
             AtomicReference<Optional<SuccessOrFailure>> lastSuccessOrFailure) {
         return () -> {
-            log.info("testing");
             SuccessOrFailure successOrFailure = clusterHealthCheck.isClusterHealthy(cluster);
             lastSuccessOrFailure.set(Optional.of(successOrFailure));
             return successOrFailure.succeeded();
