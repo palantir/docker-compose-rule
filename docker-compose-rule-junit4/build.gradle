@@ -4,6 +4,8 @@ testSets {
     integrationTest
 }
 
+build.dependsOn integrationTest
+
 dependencies {
     compile project(':docker-compose-rule-core')
     compile 'com.google.guava:guava'
