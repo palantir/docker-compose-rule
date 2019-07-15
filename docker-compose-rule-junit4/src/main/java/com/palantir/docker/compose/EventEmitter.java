@@ -17,6 +17,7 @@
 package com.palantir.docker.compose;
 
 import com.google.common.base.Throwables;
+import com.google.common.collect.Lists;
 import com.palantir.docker.compose.connection.Cluster;
 import com.palantir.docker.compose.connection.waiting.ClusterWait;
 import com.palantir.docker.compose.connection.waiting.Exceptions;
@@ -149,12 +150,23 @@ class EventEmitter {
     }
 
     private void emitEvent(Event event) {
+        List<Exception> exceptions = Lists.newArrayList();
+
         eventConsumers.forEach(eventConsumer -> {
             try {
                 eventConsumer.receiveEvent(event);
             } catch (Exception e) {
                 log.error("Error sending event {}", event, e);
+                exceptions.add(e);
             }
         });
+
+        if (exceptions.isEmpty()) {
+            return;
+        }
+
+        RuntimeException exception = new RuntimeException("There were exceptions when emitting an event");
+        exceptions.forEach(exception::addSuppressed);
+        throw exception;
     }
 }

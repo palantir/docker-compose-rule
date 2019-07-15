@@ -16,10 +16,12 @@
 
 package com.palantir.docker.compose;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -129,6 +131,23 @@ public class EventEmitterShould {
 
         inOrder.verify(eventConsumer1).receiveEvent(clusterWaitEvent);
         inOrder.verify(eventConsumer2).receiveEvent(clusterWaitEvent);
+    }
+
+    @Test
+    public void return_all_exceptions_as_suppressed() throws IOException, InterruptedException {
+        timeIs(5);
+
+        RuntimeException one = new RuntimeException("one");
+        RuntimeException two = new RuntimeException("two");
+        doThrow(one).when(eventConsumer1).receiveEvent(any());
+        doThrow(two).when(eventConsumer2).receiveEvent(any());
+
+        assertThatExceptionOfType(RuntimeException.class).isThrownBy(() -> {
+            eventEmitter.build(() -> { });
+        }).satisfies(runtimeException -> {
+            assertThat(runtimeException).hasSuppressedException(one);
+            assertThat(runtimeException).hasSuppressedException(two);
+        });
     }
 
     private OffsetDateTime timeIs(int seconds) {
