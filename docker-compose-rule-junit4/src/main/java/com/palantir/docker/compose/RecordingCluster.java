@@ -25,38 +25,38 @@ import java.util.List;
 import java.util.Set;
 
 final class RecordingCluster extends Cluster {
-    private final Cluster realCluster;
+    private final Cluster delegate;
     private final Set<String> recordedContainerNames = Sets.newConcurrentHashSet();
 
-    RecordingCluster(Cluster realCluster) {
-        this.realCluster = realCluster;
+    RecordingCluster(Cluster delegate) {
+        this.delegate = delegate;
     }
 
     @Override
     public String ip() {
-        return realCluster.ip();
+        return delegate.ip();
     }
 
     @Override
     public ContainerCache containerCache() {
-        return realCluster.containerCache();
+        return delegate.containerCache();
     }
 
     @Override
     public Container container(String name) {
         recordedContainerNames.add(name);
-        return realCluster.container(name);
+        return delegate.container(name);
     }
 
     @Override
     public List<Container> containers(List<String> containerNames) {
         recordedContainerNames.addAll(containerNames);
-        return realCluster.containers(containerNames);
+        return delegate.containers(containerNames);
     }
 
     @Override
     public Set<Container> allContainers() throws IOException, InterruptedException {
-        Set<Container> containers = realCluster.allContainers();
+        Set<Container> containers = delegate.allContainers();
         containers.forEach(container -> recordedContainerNames.add(container.getContainerName()));
         return containers;
     }
