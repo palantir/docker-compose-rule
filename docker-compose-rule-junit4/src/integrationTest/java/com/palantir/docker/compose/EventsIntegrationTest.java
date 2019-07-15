@@ -17,6 +17,7 @@
 package com.palantir.docker.compose;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -90,6 +91,7 @@ public class EventsIntegrationTest {
 
         try {
             runDockerComposeRule(dockerComposeRule);
+            fail("Was expecting an exception");
         } catch (Throwable t) {
             // ignore the failure
         }
