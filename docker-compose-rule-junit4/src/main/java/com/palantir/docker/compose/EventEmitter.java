@@ -25,8 +25,10 @@ import com.palantir.docker.compose.events.ClusterWaitEvent;
 import com.palantir.docker.compose.events.ClusterWaitType;
 import com.palantir.docker.compose.events.Event;
 import com.palantir.docker.compose.events.EventConsumer;
+import com.palantir.docker.compose.events.LogCollectionEvent;
 import com.palantir.docker.compose.events.PullEvent;
 import com.palantir.docker.compose.events.ShutdownEvent;
+import com.palantir.docker.compose.events.ShutdownStopEvent;
 import com.palantir.docker.compose.events.Task;
 import com.palantir.docker.compose.events.UpEvent;
 import com.palantir.docker.compose.events.WaitForServicesEvent;
@@ -75,6 +77,14 @@ class EventEmitter {
 
     public void waitingForServices(CheckedRunnable runnable) throws IOException, InterruptedException {
         emitTask(runnable, task -> Event.waitForServices(WaitForServicesEvent.builder().task(task).build()));
+    }
+
+    public void shutdownStop(CheckedRunnable runnable) throws IOException, InterruptedException {
+        emitTask(runnable, task -> Event.shutdownStop(ShutdownStopEvent.builder().task(task).build()));
+    }
+
+    public void logCollection(CheckedRunnable runnable) throws IOException, InterruptedException {
+        emitTask(runnable, task -> Event.logCollection(LogCollectionEvent.builder().task(task).build()));
     }
 
     public void shutdown(CheckedRunnable runnable) throws IOException, InterruptedException {

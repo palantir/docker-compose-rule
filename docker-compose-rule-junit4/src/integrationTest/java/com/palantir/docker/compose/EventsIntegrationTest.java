@@ -29,8 +29,10 @@ import com.palantir.docker.compose.events.BuildEvent;
 import com.palantir.docker.compose.events.ClusterWaitEvent;
 import com.palantir.docker.compose.events.Event;
 import com.palantir.docker.compose.events.EventConsumer;
+import com.palantir.docker.compose.events.LogCollectionEvent;
 import com.palantir.docker.compose.events.PullEvent;
 import com.palantir.docker.compose.events.ShutdownEvent;
+import com.palantir.docker.compose.events.ShutdownStopEvent;
 import com.palantir.docker.compose.events.UpEvent;
 import com.palantir.docker.compose.events.WaitForServicesEvent;
 import java.util.List;
@@ -65,6 +67,8 @@ public class EventsIntegrationTest {
                 ClusterWaitEvent.class,
                 ClusterWaitEvent.class,
                 WaitForServicesEvent.class,
+                ShutdownStopEvent.class,
+                LogCollectionEvent.class,
                 ShutdownEvent.class
         );
 
@@ -155,6 +159,16 @@ public class EventsIntegrationTest {
             @Override
             public Optional<ClusterWaitEvent> visitClusterWait(ClusterWaitEvent value) {
                 return Optional.of(value);
+            }
+
+            @Override
+            public Optional<ClusterWaitEvent> visitShutdownStop(ShutdownStopEvent value) {
+                return Optional.empty();
+            }
+
+            @Override
+            public Optional<ClusterWaitEvent> visitLogCollection(LogCollectionEvent value) {
+                return Optional.empty();
             }
 
             @Override

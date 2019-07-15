@@ -9,36 +9,55 @@ types:
           up: UpEvent
           waitForServices: WaitForServicesEvent
           clusterWait: ClusterWaitEvent
+          shutdownStop: ShutdownStopEvent
+          logCollection: LogCollectionEvent
           shutdown: ShutdownEvent
 
       BuildEvent:
+        docs: Event produced after `docker-compose build`.
         fields:
           task: Task
 
       PullEvent:
+        docs: Event produced after `docker-compose pull`.
         fields:
           task: Task
 
       UpEvent:
+        docs: Event produced after `docker-compose up`.
         fields:
           task: Task
 
       WaitForServicesEvent:
+        docs: Event produced after all services have been started and become healthy.
         fields:
           task: Task
 
       ClusterWaitEvent:
+        docs: Event produced after a cluster wait on a set of services have become healthy.
         fields:
           task: Task
           serviceNames: list<string>
           type: ClusterWaitType
 
       ClusterWaitType:
+        docs: Differentiates cluster waits as being for docker-compose "native healthchecks" or user supplied code.
         values:
             - NATIVE
             - USER
 
+      ShutdownStopEvent:
+        docs: Event produced after the shutdown strategy's stop() method has been called.
+        fields:
+          task: Task
+
+      LogCollectionEvent:
+        docs: Event produced after log collection has finished.
+        fields:
+          task: Task
+
       ShutdownEvent:
+        docs: Event produced after the shutdown strategy's shutdown() method has been called.
         fields:
           task: Task
 
