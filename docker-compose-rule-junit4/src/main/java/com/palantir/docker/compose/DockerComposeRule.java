@@ -69,11 +69,6 @@ public abstract class DockerComposeRule extends ExternalResource {
         return new DockerPort(machine().getIp(), port, port);
     }
 
-    @Value.Derived
-    protected EventEmitter emitEventsFor() {
-        return new EventEmitter(eventConsumers());
-    }
-
     public abstract DockerComposeFiles files();
 
     protected abstract List<ClusterWait> clusterWaits();
@@ -153,6 +148,11 @@ public abstract class DockerComposeRule extends ExternalResource {
     @Value.Default
     protected LogCollector logCollector() {
         return new DoNothingLogCollector();
+    }
+
+    @Value.Derived
+    protected EventEmitter emitEventsFor() {
+        return new EventEmitter(eventConsumers());
     }
 
     @Override
