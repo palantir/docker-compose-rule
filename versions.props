@@ -12,4 +12,4 @@ org.slf4j:* = 1.7.12
 one.util:streamex = 0.6.8
 org.assertj:assertj-core = 3.12.2
 com.palantir.conjure:conjure = 4.6.2
-com.palantir.conjure.java:* = 3.11.1
+com.palantir.conjure.java:* = 3.11.2
