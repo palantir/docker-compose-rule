@@ -21,7 +21,7 @@ import static com.palantir.docker.compose.matchers.IOMatchers.matchingPattern;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 
-import com.palantir.docker.compose.DockerComposeRule;
+import com.palantir.docker.compose.DockerComposeManager;
 import java.io.File;
 import java.io.IOException;
 import org.junit.Before;
@@ -34,11 +34,11 @@ public class LoggingIntegrationTest {
     @Rule
     public TemporaryFolder logFolder = new TemporaryFolder();
 
-    private DockerComposeRule dockerComposeRule;
+    private DockerComposeManager dockerComposeRule;
 
     @Before
     public void before() {
-        dockerComposeRule = DockerComposeRule.builder()
+        dockerComposeRule = DockerComposeManager.testBuilder()
                 .file("src/test/resources/docker-compose.yaml")
                 .waitingForService("db", toHaveAllPortsOpen())
                 .waitingForService("db2", toHaveAllPortsOpen())

@@ -4,7 +4,10 @@ testSets {
     integrationTest
 }
 
+build.dependsOn integrationTest
+
 dependencies {
+    api project(':docker-compose-rule-events-api:docker-compose-rule-events-api-objects')
     compile 'com.jayway.awaitility:awaitility'
     compile 'com.github.zafarkhaja:java-semver'
     compile 'com.google.guava:guava'
@@ -17,9 +20,12 @@ dependencies {
 
     testCompile 'com.github.stefanbirkner:system-rules'
     testCompile 'junit:junit'
+    testCompile 'org.assertj:assertj-core'
     testCompile 'org.hamcrest:hamcrest-all'
     testCompile 'org.hamcrest:hamcrest-core'
     testCompile 'org.hamcrest:hamcrest-library'
     testCompile 'org.mockito:mockito-core'
     testCompile 'org.slf4j:slf4j-simple'
+
+    integrationTestCompile project.sourceSets.test.output
 }

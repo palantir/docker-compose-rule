@@ -16,8 +16,6 @@
 
 package com.palantir.docker.compose;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.doAnswer;
@@ -42,6 +40,7 @@ import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.concurrent.atomic.AtomicReference;
+import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.mockito.InOrder;
 import org.mockito.Mockito;
@@ -81,7 +80,7 @@ public class EventEmitterShould {
         OffsetDateTime startedTime = timeIs(5);
         AtomicReference<OffsetDateTime> endTime = new AtomicReference<>();
 
-        assertThatExceptionOfType(IllegalStateException.class).isThrownBy(() ->
+        Assertions.assertThatExceptionOfType(IllegalStateException.class).isThrownBy(() ->
                 eventEmitter.build(() -> {
                     endTime.set(timeIs(10));
                     throw exception;
@@ -142,11 +141,11 @@ public class EventEmitterShould {
         doThrow(one).when(eventConsumer1).receiveEvent(any());
         doThrow(two).when(eventConsumer2).receiveEvent(any());
 
-        assertThatExceptionOfType(RuntimeException.class).isThrownBy(() -> {
+        Assertions.assertThatExceptionOfType(RuntimeException.class).isThrownBy(() -> {
             eventEmitter.build(() -> { });
         }).satisfies(runtimeException -> {
-            assertThat(runtimeException).hasSuppressedException(one);
-            assertThat(runtimeException).hasSuppressedException(two);
+            Assertions.assertThat(runtimeException).hasSuppressedException(one);
+            Assertions.assertThat(runtimeException).hasSuppressedException(two);
         });
     }
 

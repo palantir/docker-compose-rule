@@ -37,10 +37,7 @@ import com.palantir.docker.compose.events.UpEvent;
 import com.palantir.docker.compose.events.WaitForServicesEvent;
 import java.util.List;
 import java.util.Optional;
-import one.util.streamex.StreamEx;
 import org.junit.Test;
-import org.junit.runner.Description;
-import org.junit.runners.model.Statement;
 import org.mockito.ArgumentCaptor;
 
 @SuppressWarnings("IllegalThrows")
@@ -50,13 +47,13 @@ public class EventsIntegrationTest {
 
     @Test
     public void produce_events_on_a_successful_run() throws Throwable {
-        DockerComposeRule dockerComposeRule = DockerComposeRule.builder()
+        DockerComposeManager dockerComposeManager = DockerComposeManager.testBuilder()
                 .file(ALL_GOOD_DOCKER_COMPOSE_YAML)
                 .waitingForService("one", HealthChecks.toHaveAllPortsOpen())
                 .addEventConsumer(eventConsumer)
                 .build();
 
-        runDockerComposeRule(dockerComposeRule);
+        runDockerComposeRule(dockerComposeManager);
 
         List<Event> events = getEvents();
 
@@ -73,18 +70,16 @@ public class EventsIntegrationTest {
         );
 
         assertThat(events).hasSameSizeAs(expected);
-
-        StreamEx.of(events).zipWith(expected.stream())
-                .forKeyValue((event, expectedClass) -> {
-                    assertThat(event.toString()).contains(expectedClass.getSimpleName());
-                });
+        for (int i = 0; i < events.size(); i++) {
+            assertThat(events.get(i).toString()).contains(expected.get(i).getSimpleName());
+        }
     }
 
     @Test
     public void produces_events_when_a_container_healthcheck_exceeds_its_timeout() {
         String failureMessage = "it went wrong oh no";
 
-        DockerComposeRule dockerComposeRule = DockerComposeRule.builder()
+        DockerComposeManager dockerComposeManager = DockerComposeManager.testBuilder()
                 .file(ALL_GOOD_DOCKER_COMPOSE_YAML)
                 .waitingForService(
                         "one",
@@ -94,7 +89,7 @@ public class EventsIntegrationTest {
                 .build();
 
         try {
-            runDockerComposeRule(dockerComposeRule);
+            runDockerComposeRule(dockerComposeManager);
             fail("Was expecting an exception");
         } catch (Throwable t) {
             // ignore the failure
@@ -124,14 +119,12 @@ public class EventsIntegrationTest {
         return events;
     }
 
-    private void runDockerComposeRule(DockerComposeRule dockerComposeRule) throws Throwable {
-        dockerComposeRule.apply(new Statement() {
-            @Override
-            public void evaluate() throws Throwable {
-
-            }
-        }, Description.createTestDescription(EventsIntegrationTest.class, "blah"))
-                .evaluate();
+    private void runDockerComposeRule(DockerComposeManager dockerComposeManager) throws Throwable {
+        try {
+            dockerComposeManager.before();
+        } finally {
+            dockerComposeManager.after();
+        }
     }
 
     private Optional<ClusterWaitEvent> isClusterWait(Event event) {

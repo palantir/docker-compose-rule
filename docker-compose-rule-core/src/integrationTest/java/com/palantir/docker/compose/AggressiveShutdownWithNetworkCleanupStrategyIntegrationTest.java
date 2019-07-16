@@ -29,7 +29,7 @@ import org.junit.Test;
 
 public class AggressiveShutdownWithNetworkCleanupStrategyIntegrationTest {
 
-    private final DockerComposeRule rule = DockerComposeRule.builder()
+    private final DockerComposeManager docker = DockerComposeManager.testBuilder()
             .file("src/test/resources/shutdown-strategy-with-network.yaml")
             .logCollector(new DoNothingLogCollector())
             .retryAttempts(0)
@@ -38,24 +38,24 @@ public class AggressiveShutdownWithNetworkCleanupStrategyIntegrationTest {
 
     @Test
     public void shut_down_multiple_containers_immediately() throws Exception {
-        assertThat(rule.dockerCompose().ps(), is(TestContainerNames.of()));
+        assertThat(docker.dockerCompose().ps(), is(TestContainerNames.of()));
 
-        rule.before();
-        assertThat(rule.dockerCompose().ps().size(), is(2));
-        rule.after();
+        docker.before();
+        assertThat(docker.dockerCompose().ps().size(), is(2));
+        docker.after();
 
-        assertThat(rule.dockerCompose().ps(), is(TestContainerNames.of()));
+        assertThat(docker.dockerCompose().ps(), is(TestContainerNames.of()));
     }
 
     @Test
     public void clean_up_created_networks_when_shutting_down() throws Exception {
-        Set<String> networksBeforeRun = parseLinesFromOutputString(rule.docker().listNetworks());
+        Set<String> networksBeforeRun = parseLinesFromOutputString(docker.docker().listNetworks());
 
-        rule.before();
-        assertThat(parseLinesFromOutputString(rule.docker().listNetworks()), is(not(networksBeforeRun)));
-        rule.after();
+        docker.before();
+        assertThat(parseLinesFromOutputString(docker.docker().listNetworks()), is(not(networksBeforeRun)));
+        docker.after();
 
-        assertThat(parseLinesFromOutputString(rule.docker().listNetworks()), is(networksBeforeRun));
+        assertThat(parseLinesFromOutputString(docker.docker().listNetworks()), is(networksBeforeRun));
     }
 
     private static Set<String> parseLinesFromOutputString(String output) {
