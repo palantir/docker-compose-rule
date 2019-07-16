@@ -1,0 +1,8 @@
+type: break
+break:
+  description: '`overshadowImplementation` is enabled for all docker-compose-rule
+    builders. Any uses of `ImmutableDockerComposeRule` as returned from `DockerComposeRule.builder()`
+    will now no longer compile. To fix, please use `DockerComposeRule` instead of
+    `ImmutableDockerComposeRule`.'
+  links:
+  - https://github.com/palantir/docker-compose-rule/pull/301
