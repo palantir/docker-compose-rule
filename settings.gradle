@@ -1,7 +1,8 @@
 rootProject.name='docker-compose-rule'
 
+include 'docker-compose-junit-jupiter'
 include 'docker-compose-rule-core'
-include 'docker-compose-rule-junit4'
 include 'docker-compose-rule-events-api'
 include 'docker-compose-rule-events-api:docker-compose-rule-events-api-objects'
+include 'docker-compose-rule-junit4'
 
