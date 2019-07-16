@@ -20,8 +20,10 @@ import com.jayway.awaitility.core.ConditionTimeoutException;
 import com.palantir.docker.compose.connection.Cluster;
 import java.util.Optional;
 import java.util.concurrent.Callable;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
+import org.joda.time.Duration;
 import org.joda.time.ReadableDuration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,21 +31,25 @@ import org.slf4j.LoggerFactory;
 public class ClusterWait {
     private static final Logger log = LoggerFactory.getLogger(ClusterWait.class);
     private final ClusterHealthCheck clusterHealthCheck;
-    private final ReadableDuration timeout;
+    private final Duration timeout;
 
     public ClusterWait(ClusterHealthCheck clusterHealthCheck, ReadableDuration timeout) {
         this.clusterHealthCheck = clusterHealthCheck;
-        this.timeout = timeout;
+        this.timeout = Duration.millis(timeout.getMillis());
     }
 
     public void waitUntilReady(Cluster cluster) {
         final AtomicReference<Optional<SuccessOrFailure>> lastSuccessOrFailure = new AtomicReference<>(
                 Optional.empty());
 
-        log.info("Waiting for cluster to be healthy");
+        // semi-intelligent poll interval. If we specify a fast timeout, it will poll more often, otherwise poll
+        // at a slower rate
+        Duration pollInterval = minDuration(Duration.millis(500), timeout.dividedBy(20));
+
         try {
             Awaitility.await()
-                    .pollInterval(50, TimeUnit.MILLISECONDS)
+                    .pollInterval(pollInterval.getMillis(), TimeUnit.MILLISECONDS)
+                    .pollDelay(ThreadLocalRandom.current().nextInt(1, 50), TimeUnit.MILLISECONDS)
                     .atMost(timeout.getMillis(), TimeUnit.MILLISECONDS)
                     .until(weHaveSuccess(cluster, lastSuccessOrFailure));
         } catch (ConditionTimeoutException e) {
@@ -67,6 +73,14 @@ public class ClusterWait {
                 .orElse("The healthcheck did not finish before the timeout");
 
         return "The cluster failed to pass a startup check: " + healthcheckFailureMessage;
+    }
+
+    private static Duration minDuration(Duration first, Duration second) {
+        if (first.isShorterThan(second)) {
+            return first;
+        }
+
+        return second;
     }
 
 }

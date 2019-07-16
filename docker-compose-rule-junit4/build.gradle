@@ -8,10 +8,13 @@ build.dependsOn integrationTest
 
 dependencies {
     compile project(':docker-compose-rule-core')
+    api project(':docker-compose-rule-events-api:docker-compose-rule-events-api-objects')
     compile 'com.google.guava:guava'
     compile 'joda-time:joda-time'
     compile 'junit:junit'
     compile 'org.slf4j:slf4j-api'
+    implementation 'one.util:streamex'
+
 
     testCompile project(':docker-compose-rule-core').sourceSets.test.output
     testCompile 'com.github.zafarkhaja:java-semver'
@@ -21,5 +24,6 @@ dependencies {
     testCompile 'org.hamcrest:hamcrest-core'
     testCompile 'org.hamcrest:hamcrest-library'
     testCompile 'org.mockito:mockito-core'
+    testCompile 'org.assertj:assertj-core'
     testCompile 'org.slf4j:slf4j-simple'
 }

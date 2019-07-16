@@ -4,7 +4,7 @@ build:
   verbosity: detailed
 
 build_script:
-  - gradlew.bat compileJava compileTestJava --info --no-daemon
+  - gradlew.bat compileJava compileTestJava --info --stacktrace --no-daemon
 
 test_script:
   - gradlew.bat dependencies --info --no-daemon

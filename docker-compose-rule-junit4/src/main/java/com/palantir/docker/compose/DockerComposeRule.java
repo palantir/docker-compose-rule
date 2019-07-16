@@ -6,6 +6,13 @@ package com.palantir.docker.compose;
 import static com.palantir.docker.compose.connection.waiting.ClusterHealthCheck.serviceHealthCheck;
 import static com.palantir.docker.compose.connection.waiting.ClusterHealthCheck.transformingHealthCheck;
 
+import com.google.common.base.Throwables;
+import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.ListeningExecutorService;
+import com.google.common.util.concurrent.MoreExecutors;
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
+import com.palantir.docker.compose.EventEmitter.InterruptableClusterWait;
 import com.palantir.docker.compose.configuration.DockerComposeFiles;
 import com.palantir.docker.compose.configuration.ProjectName;
 import com.palantir.docker.compose.configuration.ShutdownStrategy;
@@ -18,6 +25,7 @@ import com.palantir.docker.compose.connection.ImmutableCluster;
 import com.palantir.docker.compose.connection.waiting.ClusterHealthCheck;
 import com.palantir.docker.compose.connection.waiting.ClusterWait;
 import com.palantir.docker.compose.connection.waiting.HealthCheck;
+import com.palantir.docker.compose.events.EventConsumer;
 import com.palantir.docker.compose.execution.ConflictingContainerRemovingDockerCompose;
 import com.palantir.docker.compose.execution.DefaultDockerCompose;
 import com.palantir.docker.compose.execution.Docker;
@@ -35,6 +43,11 @@ import com.palantir.docker.compose.logging.LogCollector;
 import com.palantir.docker.compose.logging.LogDirectory;
 import java.io.IOException;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.immutables.value.Value;
 import org.joda.time.Duration;
 import org.joda.time.ReadableDuration;
@@ -47,10 +60,10 @@ import org.slf4j.LoggerFactory;
 @Value.Immutable
 @CustomImmutablesStyle
 public abstract class DockerComposeRule extends ExternalResource {
+    private static final Logger log = LoggerFactory.getLogger(DockerComposeRule.class);
+
     public static final Duration DEFAULT_TIMEOUT = Duration.standardMinutes(2);
     public static final int DEFAULT_RETRY_ATTEMPTS = 2;
-
-    private static final Logger log = LoggerFactory.getLogger(DockerComposeRule.class);
 
     public DockerPort hostNetworkedPort(int port) {
         return new DockerPort(machine().getIp(), port, port);
@@ -59,6 +72,8 @@ public abstract class DockerComposeRule extends ExternalResource {
     public abstract DockerComposeFiles files();
 
     protected abstract List<ClusterWait> clusterWaits();
+
+    protected abstract List<EventConsumer> eventConsumers();
 
     @Value.Default
     public DockerMachine machine() {
@@ -135,6 +150,11 @@ public abstract class DockerComposeRule extends ExternalResource {
         return new DoNothingLogCollector();
     }
 
+    @Value.Derived
+    protected EventEmitter emitEventsFor() {
+        return new EventEmitter(eventConsumers());
+    }
+
     @Override
     public Statement apply(Statement base, Description description) {
         return new Statement() {
@@ -153,33 +173,89 @@ public abstract class DockerComposeRule extends ExternalResource {
     @Override
     public void before() throws IOException, InterruptedException {
         log.debug("Starting docker-compose cluster");
+
+        pullBuildAndUp();
+
+        emitEventsFor().waitingForServices(this::waitForServices);
+    }
+
+    private void pullBuildAndUp() throws IOException, InterruptedException {
         if (pullOnStartup()) {
-            dockerCompose().pull();
+            emitEventsFor().pull(dockerCompose()::pull);
         }
 
-        dockerCompose().build();
+        emitEventsFor().build(dockerCompose()::build);
 
         DockerCompose upDockerCompose = dockerCompose();
         if (removeConflictingContainersOnStartup()) {
             upDockerCompose = new ConflictingContainerRemovingDockerCompose(upDockerCompose, docker());
         }
-        upDockerCompose.up();
 
+        emitEventsFor().up(upDockerCompose::up);
+    }
+
+    private void waitForServices() throws InterruptedException {
         log.debug("Waiting for services");
-        new ClusterWait(ClusterHealthCheck.nativeHealthChecks(), nativeServiceHealthCheckTimeout())
-                .waitUntilReady(containers());
-        clusterWaits().forEach(clusterWait -> clusterWait.waitUntilReady(containers()));
+        InterruptableClusterWait nativeHealthCheckClusterWait =
+                emitEventsFor().nativeClusterWait(
+                        new ClusterWait(ClusterHealthCheck.nativeHealthChecks(), nativeServiceHealthCheckTimeout()));
+
+        List<InterruptableClusterWait> allClusterWaits = Stream.concat(
+                Stream.of(nativeHealthCheckClusterWait),
+                clusterWaits().stream().map(emitEventsFor()::userClusterWait))
+                .collect(Collectors.toList());
+
+        waitForAllClusterWaits(allClusterWaits);
+
         log.debug("docker-compose cluster started");
     }
 
-    @Override
+    private void waitForAllClusterWaits(List<InterruptableClusterWait> allClusterWaits) throws InterruptedException {
+        ListeningExecutorService executorService = MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(
+                allClusterWaits.size(),
+                new ThreadFactoryBuilder()
+                        .setNameFormat("dcr-wait-%d")
+                        .build()));
+
+        try {
+            ListenableFuture<?> listListenableFuture =
+                    Futures.allAsList(allClusterWaits.stream()
+                    .map(clusterWait -> executorService.submit(() -> {
+                        try {
+                            clusterWait.waitForCluster(containers());
+                        } catch (InterruptedException e) {
+                            if (executorService.isShutdown()) {
+                                // ignore if this InterruptedException has occurred because we shut down and
+                                // terminated the executor
+                                return;
+                            }
+
+                            Throwables.propagate(e);
+                        }
+                    }))
+                    .collect(Collectors.toList()));
+
+            listListenableFuture.get();
+        } catch (ExecutionException e) {
+            if (e.getCause() instanceof RuntimeException) {
+                throw (RuntimeException) e.getCause();
+            }
+            throw new IllegalStateException("A cluster wait errored out: ", e);
+        } finally {
+            MoreExecutors.shutdownAndAwaitTermination(executorService, 0, TimeUnit.SECONDS);
+        }
+    }
+
     public void after() {
         try {
-            shutdownStrategy().stop(this.dockerCompose());
+            emitEventsFor().shutdownStop(() ->
+                    shutdownStrategy().stop(this.dockerCompose()));
 
-            logCollector().collectLogs(this.dockerCompose());
+            emitEventsFor().logCollection(() ->
+                    logCollector().collectLogs(this.dockerCompose()));
 
-            shutdownStrategy().shutdown(this.dockerCompose(), this.docker());
+            emitEventsFor().shutdown(() ->
+                    shutdownStrategy().shutdown(this.dockerCompose(), this.docker()));
         } catch (IOException | InterruptedException e) {
             throw new RuntimeException("Error cleaning up docker compose cluster", e);
         }
@@ -200,7 +276,6 @@ public abstract class DockerComposeRule extends ExternalResource {
     }
 
     public static class Builder extends ImmutableDockerComposeRule.Builder {
-
         public Builder file(String dockerComposeYmlFile) {
             return files(DockerComposeFiles.from(dockerComposeYmlFile));
         }
