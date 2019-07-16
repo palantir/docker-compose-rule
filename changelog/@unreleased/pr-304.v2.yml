@@ -1,0 +1,6 @@
+type: feature
+feature:
+  description: Add new `docker-compose-junit-jupiter` package which exposes a junit-jupiter
+    compatible `DockerComposeExtension`
+  links:
+  - https://github.com/palantir/docker-compose-rule/pull/304
