@@ -37,11 +37,12 @@ public class DockerComposeManagerUpContainerIntegrationTest {
     private DockerComposeManager dockerComposeManager;
 
     @Before
-    public void before() {
+    public void before() throws Exception {
         dockerComposeManager = new DockerComposeManager.Builder()
                 .shutdownStrategy(AGGRESSIVE)
                 .file("src/test/resources/up-integration-test.yaml")
                 .build();
+        dockerComposeManager.before();
     }
 
     @Test
