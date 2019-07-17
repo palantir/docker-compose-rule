@@ -47,7 +47,7 @@ public class EventsIntegrationTest {
 
     @Test
     public void produce_events_on_a_successful_run() throws Throwable {
-        DockerComposeManager dockerComposeManager = DockerComposeManager.testBuilder()
+        DockerComposeManager dockerComposeManager = new DockerComposeManager.Builder()
                 .file(ALL_GOOD_DOCKER_COMPOSE_YAML)
                 .waitingForService("one", HealthChecks.toHaveAllPortsOpen())
                 .addEventConsumer(eventConsumer)
@@ -79,7 +79,7 @@ public class EventsIntegrationTest {
     public void produces_events_when_a_container_healthcheck_exceeds_its_timeout() {
         String failureMessage = "it went wrong oh no";
 
-        DockerComposeManager dockerComposeManager = DockerComposeManager.testBuilder()
+        DockerComposeManager dockerComposeManager = new DockerComposeManager.Builder()
                 .file(ALL_GOOD_DOCKER_COMPOSE_YAML)
                 .waitingForService(
                         "one",

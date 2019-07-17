@@ -29,7 +29,7 @@ public class AggressiveShutdownStrategyIntegrationTest {
 
     @Test
     public void shut_down_multiple_containers_immediately() throws Exception {
-        DockerComposeManager docker = DockerComposeManager.testBuilder()
+        DockerComposeManager docker = new DockerComposeManager.Builder()
                 .file("src/test/resources/shutdown-strategy.yaml")
                 .logCollector(new DoNothingLogCollector())
                 .retryAttempts(0)

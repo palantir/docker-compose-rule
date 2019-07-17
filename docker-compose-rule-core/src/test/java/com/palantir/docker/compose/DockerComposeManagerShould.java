@@ -97,7 +97,7 @@ public class DockerComposeManagerShould {
     }
 
     private DockerComposeManager.Builder defaultBuilder() {
-        return DockerComposeManager.testBuilder().dockerCompose(dockerCompose)
+        return new DockerComposeManager.Builder().dockerCompose(dockerCompose)
                                           .files(mockFiles)
                                           .machine(machine)
                                           .logCollector(logCollector);
@@ -113,7 +113,7 @@ public class DockerComposeManagerShould {
     @Test
     public void calls_shutdownStrategy_in_after_method() throws IOException, InterruptedException {
         ShutdownStrategy shutdownStrategy = mock(ShutdownStrategy.class);
-        dockerComposeManager = DockerComposeManager.testBuilder()
+        dockerComposeManager = new DockerComposeManager.Builder()
                 .docker(mockDocker)
                 .dockerCompose(dockerCompose)
                 .files(mockFiles)
@@ -230,7 +230,7 @@ public class DockerComposeManagerShould {
     public void be_able_to_save_logs_to_a_directory_while_containers_are_running()
             throws IOException, InterruptedException {
         File logLocation = logFolder.newFolder();
-        DockerComposeManager loggingComposition = DockerComposeManager.testBuilder()
+        DockerComposeManager loggingComposition = new DockerComposeManager.Builder()
                 .docker(mockDocker)
                 .dockerCompose(dockerCompose)
                 .files(mockFiles)
@@ -256,7 +256,7 @@ public class DockerComposeManagerShould {
 
     @Test
     public void not_shut_down_when_skipShutdown_is_true() throws IOException, InterruptedException {
-        DockerComposeManager.testBuilder()
+        new DockerComposeManager.Builder()
                 .dockerCompose(dockerCompose)
                 .files(mockFiles)
                 .machine(machine)
@@ -320,7 +320,7 @@ public class DockerComposeManagerShould {
         exception.expect(IllegalStateException.class);
         exception.expectMessage("Builder of DockerComposeManager is strict, attribute is already set: docker");
 
-        DockerComposeManager.testBuilder()
+        new DockerComposeManager.Builder()
                 .docker(mock(Docker.class))
                 .docker(mock(Docker.class))
                 .build();

@@ -38,7 +38,7 @@ public class LoggingIntegrationTest {
 
     @Before
     public void before() {
-        dockerComposeRule = DockerComposeManager.testBuilder()
+        dockerComposeRule = new DockerComposeManager.Builder()
                 .file("src/test/resources/docker-compose.yaml")
                 .waitingForService("db", toHaveAllPortsOpen())
                 .waitingForService("db2", toHaveAllPortsOpen())

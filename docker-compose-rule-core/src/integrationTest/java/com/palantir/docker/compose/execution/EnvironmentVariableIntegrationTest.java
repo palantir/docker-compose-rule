@@ -38,7 +38,7 @@ public class EnvironmentVariableIntegrationTest {
                                                    .withAdditionalEnvironmentVariable("SOME_VARIABLE", "SOME_VALUE")
                                                    .build();
 
-        DockerComposeManager dockerComposition = DockerComposeManager.testBuilder()
+        DockerComposeManager dockerComposition = new DockerComposeManager.Builder()
                 .file("src/test/resources/environment/docker-compose.yaml")
                 .machine(dockerMachine)
                 .waitingForService("env-test", toHaveAllPortsOpen())

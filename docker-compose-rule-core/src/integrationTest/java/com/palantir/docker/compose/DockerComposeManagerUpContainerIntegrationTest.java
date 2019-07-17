@@ -38,7 +38,7 @@ public class DockerComposeManagerUpContainerIntegrationTest {
 
     @Before
     public void before() {
-        dockerComposeManager = DockerComposeManager.testBuilder()
+        dockerComposeManager = new DockerComposeManager.Builder()
                 .shutdownStrategy(AGGRESSIVE)
                 .file("src/test/resources/up-integration-test.yaml")
                 .build();

@@ -8,11 +8,7 @@ build.dependsOn integrationTest
 
 dependencies {
     compile project(':docker-compose-rule-core')
-    compile 'com.google.guava:guava'
-    compile 'joda-time:joda-time'
     compile 'junit:junit'
-    compile 'org.slf4j:slf4j-api'
-    implementation 'one.util:streamex'
 
     testCompile 'org.hamcrest:hamcrest-all'
     testCompile 'org.mockito:mockito-core'

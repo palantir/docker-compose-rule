@@ -64,7 +64,7 @@ public class DockerComposeManagerNativeHealthcheckIntegrationTest {
         assumeThat("docker version", Docker.version(), new GreaterOrEqual<>(Version.forIntegers(1, 12, 0)));
         assumeThat("docker-compose version", DockerCompose.version(), new GreaterOrEqual<>(Version.forIntegers(1, 10, 0)));
 
-        docker = DockerComposeManager.testBuilder()
+        docker = new DockerComposeManager.Builder()
                 .file("src/test/resources/native-healthcheck.yaml")
                 .build();
         Future<?> beforeFuture = pool.submit(() -> {

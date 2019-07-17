@@ -264,13 +264,6 @@ public abstract class DockerComposeManager {
         return dockerCompose().run(options, containerName, arguments);
     }
 
-    /*
-     *  TODO(forozco)
-     */
-    public static Builder testBuilder() {
-        return new Builder();
-    }
-
     public interface BuilderExtensions {
         BuilderExtensions file(String dockerComposeYmlFile);
 

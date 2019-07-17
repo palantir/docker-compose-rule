@@ -33,11 +33,11 @@ public class RemoveConflictingContainersIntegrationTest {
 
     @Test
     public void removeConflictingContainersOnStartup_off_should_fail_fast_if_containers_exist() throws IOException, InterruptedException {
-        DockerComposeManager composition = DockerComposeManager.testBuilder()
+        DockerComposeManager composition = new DockerComposeManager.Builder()
                 .file(DOCKER_COMPOSE_YAML_PATH)
                 .retryAttempts(0)
                 .build();
-        DockerComposeManager conflictingComposition = DockerComposeManager.testBuilder()
+        DockerComposeManager conflictingComposition = new DockerComposeManager.Builder()
                 .file(DOCKER_COMPOSE_YAML_PATH)
                 .retryAttempts(0)
                 .removeConflictingContainersOnStartup(false)
@@ -55,7 +55,7 @@ public class RemoveConflictingContainersIntegrationTest {
 
     @Test
     public void by_default_existing_containers_should_be_removed_silently() throws IOException, InterruptedException {
-        DockerComposeManager composition = DockerComposeManager.testBuilder()
+        DockerComposeManager composition = new DockerComposeManager.Builder()
                 .file(DOCKER_COMPOSE_YAML_PATH)
                 .retryAttempts(0)
                 .shutdownStrategy(AGGRESSIVE)
