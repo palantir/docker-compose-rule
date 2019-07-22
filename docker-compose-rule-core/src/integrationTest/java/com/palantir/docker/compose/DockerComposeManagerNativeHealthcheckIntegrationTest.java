@@ -40,16 +40,16 @@ import org.junit.After;
 import org.junit.Test;
 import org.mockito.internal.matchers.GreaterOrEqual;
 
-public class DockerComposeRuleNativeHealthcheckIntegrationTest {
+public class DockerComposeManagerNativeHealthcheckIntegrationTest {
 
     private final ExecutorService pool = Executors.newFixedThreadPool(1);
-    private DockerComposeRule rule = null;
+    private DockerComposeManager docker = null;
 
     @After
     public void shutdownPool() {
         pool.shutdown();
-        if (rule != null) {
-            rule.after();
+        if (docker != null) {
+            docker.after();
         }
     }
 
@@ -59,23 +59,23 @@ public class DockerComposeRuleNativeHealthcheckIntegrationTest {
      * @see <a href="https://github.com/palantir/docker-compose-rule/issues/156">Issue #156</a>
      */
     @Test
-    public void dockerComposeRuleWaitsUntilHealthcheckPasses()
+    public void dockerComposeManagerWaitsUntilHealthcheckPasses()
             throws ExecutionException, IOException, InterruptedException, TimeoutException {
         assumeThat("docker version", Docker.version(), new GreaterOrEqual<>(Version.forIntegers(1, 12, 0)));
         assumeThat("docker-compose version", DockerCompose.version(), new GreaterOrEqual<>(Version.forIntegers(1, 10, 0)));
 
-        rule = DockerComposeRule.builder()
+        docker = new DockerComposeManager.Builder()
                 .file("src/test/resources/native-healthcheck.yaml")
                 .build();
         Future<?> beforeFuture = pool.submit(() -> {
-            rule.before();
+            docker.before();
             return null;
         });
 
-        Container container = rule.containers().container("dummy");
+        Container container = docker.containers().container("withHealthcheck");
         await().until(container::state, Matchers.equalTo(State.UNHEALTHY));
 
-        // The "dummy" container should not initially pass its healthcheck
+        // The "withHealthCheck" container should not initially pass its healthcheck
         try {
             getUninterruptibly(beforeFuture, 1, TimeUnit.SECONDS);
             fail("Expected before() to wait");
@@ -83,8 +83,8 @@ public class DockerComposeRuleNativeHealthcheckIntegrationTest {
             // Expected
         }
 
-        // Touching the "healthy" file in the "dummy" container should make its healthcheck pass
-        rule.dockerCompose().exec(noOptions(), "dummy", arguments("touch", "healthy"));
+        // Touching the "healthy" file in the "withHealthCheck" container should make its healthcheck pass
+        docker.dockerCompose().exec(noOptions(), "withHealthcheck", arguments("touch", "healthy"));
         await().until(container::state, Matchers.equalTo(State.HEALTHY));
         getUninterruptibly(beforeFuture, 1, TimeUnit.SECONDS);
     }

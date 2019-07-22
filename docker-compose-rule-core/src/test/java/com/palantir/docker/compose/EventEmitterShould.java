@@ -134,7 +134,7 @@ public class EventEmitterShould {
     }
 
     @Test
-    public void return_all_exceptions_as_suppressed() throws IOException, InterruptedException {
+    public void return_all_exceptions_as_suppressed() {
         timeIs(5);
 
         RuntimeException one = new RuntimeException("one");
@@ -142,12 +142,11 @@ public class EventEmitterShould {
         doThrow(one).when(eventConsumer1).receiveEvent(any());
         doThrow(two).when(eventConsumer2).receiveEvent(any());
 
-        assertThatExceptionOfType(RuntimeException.class).isThrownBy(() -> {
-            eventEmitter.build(() -> { });
-        }).satisfies(runtimeException -> {
-            assertThat(runtimeException).hasSuppressedException(one);
-            assertThat(runtimeException).hasSuppressedException(two);
-        });
+        assertThatExceptionOfType(RuntimeException.class).isThrownBy(() -> eventEmitter.build(() -> { }))
+                .satisfies(runtimeException -> {
+                    assertThat(runtimeException).hasSuppressedException(one);
+                    assertThat(runtimeException).hasSuppressedException(two);
+                });
     }
 
     private OffsetDateTime timeIs(int seconds) {

@@ -29,20 +29,20 @@ public class AggressiveShutdownStrategyIntegrationTest {
 
     @Test
     public void shut_down_multiple_containers_immediately() throws Exception {
-        DockerComposeRule rule = DockerComposeRule.builder()
+        DockerComposeManager docker = new DockerComposeManager.Builder()
                 .file("src/test/resources/shutdown-strategy.yaml")
                 .logCollector(new DoNothingLogCollector())
                 .retryAttempts(0)
                 .shutdownStrategy(ShutdownStrategy.AGGRESSIVE)
                 .build();
 
-        MatcherAssert.assertThat(rule.dockerCompose().ps(), Matchers.is(TestContainerNames.of()));
+        MatcherAssert.assertThat(docker.dockerCompose().ps(), Matchers.is(TestContainerNames.of()));
 
-        rule.before();
-        assertThat(rule.dockerCompose().ps().size(), is(2));
-        rule.after();
+        docker.before();
+        assertThat(docker.dockerCompose().ps().size(), is(2));
+        docker.after();
 
-        assertThat(rule.dockerCompose().ps(), is(TestContainerNames.of()));
+        assertThat(docker.dockerCompose().ps(), is(TestContainerNames.of()));
     }
 
 }
