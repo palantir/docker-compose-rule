@@ -14,16 +14,12 @@ dependencies {
     compile 'commons-io:commons-io'
     compile 'joda-time:joda-time'
     compile 'org.apache.commons:commons-lang3:3.0'
-    compile 'org.hamcrest:hamcrest-all'
     compile 'org.hamcrest:hamcrest-core'
     compile 'org.slf4j:slf4j-api'
 
     testCompile 'com.github.stefanbirkner:system-rules'
     testCompile 'junit:junit'
     testCompile 'org.assertj:assertj-core'
-    testCompile 'org.hamcrest:hamcrest-all'
-    testCompile 'org.hamcrest:hamcrest-core'
-    testCompile 'org.hamcrest:hamcrest-library'
     testCompile 'org.mockito:mockito-core'
     testCompile 'org.slf4j:slf4j-simple'
 
