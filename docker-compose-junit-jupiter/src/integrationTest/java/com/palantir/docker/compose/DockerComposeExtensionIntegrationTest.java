@@ -37,6 +37,7 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
+// Keep in sync with DockerComposeRuleIntegrationTest
 public class DockerComposeExtensionIntegrationTest {
 
     private static final List<String> CONTAINERS = ImmutableList.of("db", "db2", "db3", "db4");
