@@ -24,7 +24,7 @@ final class PostReportOnShutdown {
     private static final ReportCompiler REPORTER = createReporter();
 
     private static ReportCompiler createReporter() {
-        ReportPoster reportPoster = new ReportPoster(new WebhookPoster());
+        ReportPoster reportPoster = new ReportPoster(null);
         return new ReportCompiler(Clock.systemUTC(), reportPoster::postReport);
     }
 

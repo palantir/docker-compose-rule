@@ -13,3 +13,4 @@ one.util:streamex = 0.6.8
 org.assertj:assertj-core = 3.12.2
 com.palantir.conjure:conjure = 4.6.2
 com.palantir.conjure.java:* = 3.11.2
+com.palantir.conjure.java.runtime:* = 4.31.4
