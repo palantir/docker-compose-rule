@@ -16,6 +16,7 @@
 
 package com.palantir.docker.compose.reporting;
 
+import com.palantir.docker.compose.configuration.DockerComposeRuleConfig;
 import java.time.Clock;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -24,7 +25,12 @@ final class PostReportOnShutdown {
     private static final ReportCompiler REPORTER = createReporter();
 
     private static ReportCompiler createReporter() {
-        ReportPoster reportPoster = new ReportPoster(null);
+        JsonPoster jsonPoster = DockerComposeRuleConfig.findAutomatically()
+                .flatMap(DockerComposeRuleConfig::reporting)
+                .<JsonPoster>map(WebhookPoster::new)
+                .orElseGet(JsonPoster.NonConfigured::new);
+
+        ReportPoster reportPoster = new ReportPoster(jsonPoster);
         return new ReportCompiler(Clock.systemUTC(), reportPoster::postReport);
     }
 

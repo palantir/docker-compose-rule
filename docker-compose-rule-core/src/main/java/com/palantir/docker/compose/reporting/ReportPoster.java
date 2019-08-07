@@ -24,14 +24,14 @@ import com.palantir.docker.compose.report.Report;
 class ReportPoster {
     private static final ObjectMapper OBJECT_MAPPER = ObjectMappers.newClientObjectMapper();
 
-    private final WebhookPoster webhookPoster;
+    private final JsonPoster webhookPoster;
 
-    ReportPoster(WebhookPoster webhookPoster) {
+    ReportPoster(JsonPoster webhookPoster) {
         this.webhookPoster = webhookPoster;
     }
 
     public void postReport(Report report) {
-        webhookPoster.postHook(toJson(report));
+        webhookPoster.post(toJson(report));
     }
 
     private static String toJson(Report report) {

@@ -16,17 +16,59 @@
 
 package com.palantir.docker.compose.configuration;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.palantir.docker.compose.reporting.ReportingConfig;
+import java.io.File;
+import java.io.IOException;
 import java.util.Optional;
+import java.util.function.Supplier;
+import java.util.stream.Stream;
+import one.util.streamex.StreamEx;
 import org.immutables.value.Value;
 
 @Value.Immutable
-public interface DockerComposeRuleConfig {
-    Optional<ReportingConfig> reporting();
+public abstract class DockerComposeRuleConfig {
+    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper(new YAMLFactory());
+    public static final String CONFIG_FILENAME = ".docker-compose-rule.yml";
 
-    class Builder extends ImmutableDockerComposeRuleConfig.Builder {}
+    public abstract Optional<ReportingConfig> reporting();
 
-    static Builder builder() {
+    public static class Builder extends ImmutableDockerComposeRuleConfig.Builder {}
+
+    public static Builder builder() {
         return new Builder();
+    }
+
+    public static Optional<DockerComposeRuleConfig> findAutomatically() {
+        File currentDir = new File(".").getAbsoluteFile();
+        Optional<File> configFile = dirAndParents(currentDir)
+                .map(dir -> new File(dir, CONFIG_FILENAME))
+                .findFirst(File::exists);
+
+        return configFile.map(config -> {
+            try {
+                return OBJECT_MAPPER.readValue(config, DockerComposeRuleConfig.class);
+            } catch (IOException e) {
+                throw new RuntimeException("Couldn't deserialize config file", e);
+            }
+        });
+    }
+
+    private static StreamEx<File> dirAndParents(File startDir) {
+        return StreamEx.of(Stream.generate(new Supplier<Optional<File>>() {
+            private Optional<File> dir = Optional.ofNullable(startDir);
+
+            @Override
+            public Optional<File> get() {
+                Optional<File> toReturn = dir;
+                if (dir.isPresent()) {
+                    dir = Optional.ofNullable(dir.get().getParentFile());
+                }
+                return toReturn;
+            }
+        }))
+                .takeWhile(Optional::isPresent)
+                .map(Optional::get);
     }
 }

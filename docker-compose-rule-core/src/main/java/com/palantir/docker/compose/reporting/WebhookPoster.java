@@ -23,7 +23,7 @@ import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-class WebhookPoster {
+class WebhookPoster implements JsonPoster {
     private static final Logger log = LoggerFactory.getLogger(WebhookPoster.class);
 
     private final ReportingConfig reportingConfig;
@@ -32,11 +32,11 @@ class WebhookPoster {
         this.reportingConfig = reportingConfig;
     }
 
-    public void postHook(String json) {
+    public void post(String json) {
         try {
             URL url = new URL(reportingConfig.url());
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-            
+
             connection.setRequestMethod("POST");
             connection.setInstanceFollowRedirects(true);
             connection.setRequestProperty("Content-Type", "application/json");
