@@ -72,16 +72,6 @@ public final class RunRecorder implements EventConsumer {
     }
 
     public static RunRecorder defaults() {
-        return new RunRecorder(Clock.systemUTC(), new Reporter() {
-            @Override
-            public void addRun(DockerComposeRun dockerComposeRun) {
-
-            }
-
-            @Override
-            public void addException(Exception exception) {
-
-            }
-        });
+        return new RunRecorder(Clock.systemUTC(), PostReportOnShutdown.reporter());
     }
 }
