@@ -63,6 +63,7 @@ final class ReportCompiler implements Reporter {
         reportBuilder.exceptions(ExceptionUtils.exceptionToString(exception));
     }
 
+    @Override
     public void report() {
         String reportId = IdGenerator.idFor("report");
         log.info("Reporting docker-compose run statistics to Papaya with id {}", SafeArg.of("reportId", reportId));
@@ -89,6 +90,8 @@ final class ReportCompiler implements Reporter {
     }
 
     private Map<String, String> circleciEnvironmentVariables() {
+        // return EntryStream.of(System.getenv())
+        //         .filterKeys();
         return System.getenv().entrySet().stream()
                 .filter(entry -> entry.getKey().startsWith("CIRCLE"))
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));

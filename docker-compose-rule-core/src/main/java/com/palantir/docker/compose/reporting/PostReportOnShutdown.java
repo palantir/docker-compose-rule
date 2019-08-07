@@ -19,21 +19,23 @@ package com.palantir.docker.compose.reporting;
 import com.google.common.util.concurrent.Uninterruptibles;
 import com.palantir.docker.compose.configuration.DockerComposeRuleConfig;
 import java.time.Clock;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 final class PostReportOnShutdown {
     private static final AtomicBoolean INSTALLED = new AtomicBoolean(false);
-    private static final ReportCompiler REPORTER = createReporter();
+    private static final Reporter REPORTER = createReporter();
 
-    private static ReportCompiler createReporter() {
-        JsonPoster jsonPoster = DockerComposeRuleConfig.findAutomatically()
-                .flatMap(DockerComposeRuleConfig::reporting)
-                .<JsonPoster>map(HttpJsonPoster::new)
-                .orElseGet(JsonPoster.NonConfigured::new);
+    private static Reporter createReporter() {
+        Optional<ReportingConfig> possibleReportingConfig = DockerComposeRuleConfig.findAutomatically()
+                .flatMap(DockerComposeRuleConfig::reporting);
 
-        ReportPoster reportPoster = new ReportPoster(jsonPoster);
-        return new ReportCompiler(Clock.systemUTC(), reportPoster::postReport);
+        return possibleReportingConfig
+                .<Reporter>map(reportingConfig -> new ReportCompiler(
+                        Clock.systemUTC(),
+                        new ReportPoster(new HttpJsonPoster(reportingConfig))::postReport))
+                .orElseGet(Reporter.NotConfigured::new);
     }
 
     private PostReportOnShutdown() {}

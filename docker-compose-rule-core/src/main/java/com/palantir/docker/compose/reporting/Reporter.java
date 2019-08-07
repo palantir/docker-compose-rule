@@ -16,9 +16,32 @@
 
 package com.palantir.docker.compose.reporting;
 
+import com.palantir.docker.compose.configuration.DockerComposeRuleConfig;
 import com.palantir.docker.compose.report.DockerComposeRun;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 interface Reporter {
     void addRun(DockerComposeRun dockerComposeRun);
     void addException(Exception exception);
+    void report();
+
+    class NotConfigured implements Reporter {
+        private static final Logger log = LoggerFactory.getLogger(NotConfigured.class);
+
+        @Override
+        public void addRun(DockerComposeRun dockerComposeRun) {
+
+        }
+
+        @Override
+        public void addException(Exception exception) {
+
+        }
+
+        @Override
+        public void report() {
+            log.debug("Not posting report as no " + DockerComposeRuleConfig.CONFIG_FILENAME + " config file found");
+        }
+    }
 }
