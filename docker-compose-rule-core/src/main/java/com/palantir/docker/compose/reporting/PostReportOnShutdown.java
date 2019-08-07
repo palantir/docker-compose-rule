@@ -27,7 +27,7 @@ final class PostReportOnShutdown {
     private static ReportCompiler createReporter() {
         JsonPoster jsonPoster = DockerComposeRuleConfig.findAutomatically()
                 .flatMap(DockerComposeRuleConfig::reporting)
-                .<JsonPoster>map(WebhookPoster::new)
+                .<JsonPoster>map(HttpJsonPoster::new)
                 .orElseGet(JsonPoster.NonConfigured::new);
 
         ReportPoster reportPoster = new ReportPoster(jsonPoster);

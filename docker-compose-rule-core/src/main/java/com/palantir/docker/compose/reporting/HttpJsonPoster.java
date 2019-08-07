@@ -23,12 +23,12 @@ import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-class WebhookPoster implements JsonPoster {
-    private static final Logger log = LoggerFactory.getLogger(WebhookPoster.class);
+class HttpJsonPoster implements JsonPoster {
+    private static final Logger log = LoggerFactory.getLogger(HttpJsonPoster.class);
 
     private final ReportingConfig reportingConfig;
 
-    WebhookPoster(ReportingConfig reportingConfig) {
+    HttpJsonPoster(ReportingConfig reportingConfig) {
         this.reportingConfig = reportingConfig;
     }
 

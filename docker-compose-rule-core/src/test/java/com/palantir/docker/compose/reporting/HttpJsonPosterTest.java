@@ -18,8 +18,8 @@ package com.palantir.docker.compose.reporting;
 
 import org.junit.Test;
 
-public class WebhookPosterTest {
-    private final WebhookPoster webhookPoster = new WebhookPoster(ReportingConfig.builder()
+public class HttpJsonPosterTest {
+    private final HttpJsonPoster httpJsonPoster = new HttpJsonPoster(ReportingConfig.builder()
             .url("https://papaya-webhook-receiver.palantir.build/general/enhanced-docker-compose-rule-testing/hook")
             .build());
 
@@ -27,7 +27,7 @@ public class WebhookPosterTest {
     public void can_post_webhook() {
         System.out.println(System.getProperty("user.dir"));
         String json = "{\"foo\":\"bar\"}";
-        webhookPoster.post(json);
+        httpJsonPoster.post(json);
     }
 
 }
