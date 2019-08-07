@@ -37,14 +37,14 @@ public class HttpJsonPosterTest {
 
     @Test
     public void can_post_webhook() {
-        wireMockRule.stubFor(post("/some/path").willReturn(status(200)));
+        wireMockRule.stubFor(post("/some/path-v2").willReturn(status(200)));
 
-        when(reportingConfig.url()).thenReturn(String.format("http://localhost:%s/some/path", wireMockRule.port()));
+        when(reportingConfig.url()).thenReturn(String.format("http://localhost:%s/some/path-v$VERSION", wireMockRule.port()));
 
         String json = "{\"foo\":\"bar\"}";
         httpJsonPoster.post(json);
 
-        wireMockRule.verify(postRequestedFor(urlPathEqualTo("/some/path")).withRequestBody(containing(json)));
+        wireMockRule.verify(postRequestedFor(urlPathEqualTo("/some/path-v2")).withRequestBody(containing(json)));
     }
 
 }
