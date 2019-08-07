@@ -42,7 +42,7 @@ class WebhookPoster implements JsonPoster {
             connection.setRequestProperty("Content-Type", "application/json");
 
             String version = Optional.ofNullable(this.getClass().getPackage().getImplementationVersion())
-                    .orElse("unknown");
+                    .orElse("0.0.0");
             connection.setRequestProperty("User-Agent", "docker-compose-rule/" + version);
 
             connection.setDoOutput(true);
