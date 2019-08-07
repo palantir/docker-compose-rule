@@ -1,6 +1,6 @@
 types:
   conjure-imports:
-    events: docker-compose-rule-event-api.yml
+    events: event-api.yml
 
   definitions:
     default-package: com.palantir.docker.compose.report
