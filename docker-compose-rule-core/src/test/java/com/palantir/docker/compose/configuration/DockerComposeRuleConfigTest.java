@@ -42,7 +42,8 @@ public class DockerComposeRuleConfigTest {
         File config = temporaryFolder.newFile(".docker-compose-rule.yml");
         Files.write(config.toPath(), ImmutableList.of(
                 "reporting:",
-                "  url: http://example.com/"
+                "  url: http://example.com/",
+                "  environmentVariableWhitelist: ['^foobar$']"
         ), StandardCharsets.UTF_8);
 
         File startDir = temporaryFolder.newFolder("start-dir");
@@ -50,6 +51,7 @@ public class DockerComposeRuleConfigTest {
         assertThat(DockerComposeRuleConfig.findAutomaticallyFrom(startDir)).hasValue(DockerComposeRuleConfig.builder()
                 .reporting(ReportingConfig.builder()
                         .url("http://example.com/")
+                        .addEnvironmentVariableWhitelist("^foobar$")
                         .build())
                 .build());
     }

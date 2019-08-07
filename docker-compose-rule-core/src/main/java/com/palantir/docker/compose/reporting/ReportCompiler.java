@@ -35,7 +35,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
+import one.util.streamex.EntryStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,13 +43,16 @@ final class ReportCompiler implements Reporter {
     private static final Logger log = LoggerFactory.getLogger(ReportCompiler.class);
 
     private final Clock clock;
+    private final PatternCollection environmentVariableWhitelist;
     private final Consumer<Report> reportConsumer;
     private final Report.Builder reportBuilder = Report.builder();
 
     ReportCompiler(
             Clock clock,
+            PatternCollection environmentVariableWhitelist,
             Consumer<Report> reportConsumer) {
         this.clock = clock;
+        this.environmentVariableWhitelist = environmentVariableWhitelist;
         this.reportConsumer = reportConsumer;
     }
 
@@ -72,7 +75,7 @@ final class ReportCompiler implements Reporter {
                 .submittedTime(clock.instant().atOffset(ZoneOffset.UTC))
                 .username(Optional.ofNullable(System.getProperty("user.name")))
                 .gitInfo(gitInfo())
-                .circleciEnvVars(circleciEnvironmentVariables())
+                .environmentVariables(environmentVariables())
                 .versions(versions())
                 .build());
     }
@@ -89,12 +92,10 @@ final class ReportCompiler implements Reporter {
         return Optional.ofNullable(clazz.getPackage().getImplementationVersion());
     }
 
-    private Map<String, String> circleciEnvironmentVariables() {
-        // return EntryStream.of(System.getenv())
-        //         .filterKeys();
-        return System.getenv().entrySet().stream()
-                .filter(entry -> entry.getKey().startsWith("CIRCLE"))
-                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+    private Map<String, String> environmentVariables() {
+        return EntryStream.of(System.getenv())
+                .filterKeys(environmentVariableWhitelist::anyMatch)
+                .toMap();
     }
 
     private GitInfo gitInfo() {

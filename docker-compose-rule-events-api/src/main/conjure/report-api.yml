@@ -39,7 +39,7 @@ types:
           submittedTime: datetime
           username: optional<string>
           gitInfo: GitInfo
-          circleciEnvVars: map<string, string>
+          environmentVariables: map<string, string>
           versions: Versions
           runs: list<DockerComposeRun>
           exceptions: list<string>

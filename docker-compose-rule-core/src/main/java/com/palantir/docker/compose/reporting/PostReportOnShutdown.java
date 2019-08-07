@@ -34,6 +34,7 @@ final class PostReportOnShutdown {
         return possibleReportingConfig
                 .<Reporter>map(reportingConfig -> new ReportCompiler(
                         Clock.systemUTC(),
+                        reportingConfig.envVarWhitelistPatterns(),
                         new ReportPoster(new HttpJsonPoster(reportingConfig))::postReport))
                 .orElseGet(Reporter.NotConfigured::new);
     }

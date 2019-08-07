@@ -17,6 +17,7 @@
 package com.palantir.docker.compose.reporting;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -35,12 +36,16 @@ import org.mockito.ArgumentCaptor;
 public class ReportCompilerTest {
     private final Clock clock = mock(Clock.class);
     private final Consumer<Report> reportConsumer = mock(Consumer.class);
-    private final ReportCompiler reporter = new ReportCompiler(clock, reportConsumer);
+    private final PatternCollection environmentVariableWhitelist = mock(PatternCollection.class);
+    private final ReportCompiler reporter = new ReportCompiler(clock, environmentVariableWhitelist, reportConsumer);
 
     @Test
     public void can_collect_then_post_runs() {
         Instant time = Instant.ofEpochSecond(1);
         when(clock.instant()).thenReturn(time);
+
+        when(environmentVariableWhitelist.anyMatch(any())).thenReturn(false);
+        when(environmentVariableWhitelist.anyMatch("PATH")).thenReturn(true);
 
         DockerComposeRun run = DockerComposeRun.builder()
                 .runId("runId")
@@ -65,6 +70,7 @@ public class ReportCompilerTest {
             assertThat(exceptionString).contains(exception.getMessage());
         });
         assertThat(sentReport.getSubmittedTime()).isEqualTo(time.atOffset(ZoneOffset.UTC));
+        assertThat(sentReport.getEnvironmentVariables()).containsOnlyKeys("PATH");
     }
 
 }

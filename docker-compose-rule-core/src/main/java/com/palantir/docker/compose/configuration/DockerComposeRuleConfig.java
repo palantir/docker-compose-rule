@@ -19,6 +19,7 @@ package com.palantir.docker.compose.configuration;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+import com.fasterxml.jackson.datatype.guava.GuavaModule;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.google.common.annotations.VisibleForTesting;
 import com.palantir.docker.compose.CustomImmutablesStyle;
@@ -36,7 +37,8 @@ import org.immutables.value.Value;
 @JsonDeserialize(as = ImmutableDockerComposeRuleConfig.class)
 public abstract class DockerComposeRuleConfig {
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper(new YAMLFactory())
-            .registerModule(new Jdk8Module());
+            .registerModule(new Jdk8Module())
+            .registerModule(new GuavaModule());
     public static final String CONFIG_FILENAME = ".docker-compose-rule.yml";
 
     public abstract Optional<ReportingConfig> reporting();
