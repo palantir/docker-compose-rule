@@ -16,3 +16,4 @@ com.palantir.conjure.java:* = 3.11.2
 com.palantir.conjure.java.runtime:* = 4.31.4
 com.fasterxml.jackson.dataformat:* = 2.9.9
 one.util:streamex = 0.6.8
+com.github.tomakehurst:wiremock = 2.24.0

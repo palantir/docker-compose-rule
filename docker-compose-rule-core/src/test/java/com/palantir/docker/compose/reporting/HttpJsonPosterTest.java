@@ -16,17 +16,35 @@
 
 package com.palantir.docker.compose.reporting;
 
+import static com.github.tomakehurst.wiremock.client.WireMock.containing;
+import static com.github.tomakehurst.wiremock.client.WireMock.post;
+import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
+import static com.github.tomakehurst.wiremock.client.WireMock.status;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+import com.github.tomakehurst.wiremock.junit.WireMockRule;
+import org.junit.Rule;
 import org.junit.Test;
 
 public class HttpJsonPosterTest {
-    private final HttpJsonPoster httpJsonPoster = new HttpJsonPoster(ReportingConfig.builder()
-            .url("https://papaya-webhook-receiver.palantir.build/api/general/enhanced-docker-compose-rule-testing/hook")
-            .build());
+    private final ReportingConfig reportingConfig = mock(ReportingConfig.class);
+    private final HttpJsonPoster httpJsonPoster = new HttpJsonPoster(reportingConfig);
+
+    @Rule
+    public final WireMockRule wireMockRule = new WireMockRule();
 
     @Test
     public void can_post_webhook() {
+        wireMockRule.stubFor(post("/some/path").willReturn(status(200)));
+
+        when(reportingConfig.url()).thenReturn(String.format("http://localhost:%s/some/path", wireMockRule.port()));
+
         String json = "{\"foo\":\"bar\"}";
         httpJsonPoster.post(json);
+
+        wireMockRule.verify(postRequestedFor(urlPathEqualTo("/some/path")).withRequestBody(containing(json)));
     }
 
 }

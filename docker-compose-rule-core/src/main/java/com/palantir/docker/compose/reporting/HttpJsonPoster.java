@@ -29,6 +29,7 @@ import org.slf4j.LoggerFactory;
 class HttpJsonPoster implements JsonPoster {
     private static final Logger log = LoggerFactory.getLogger(HttpJsonPoster.class);
     private static final int TIMEOUT = 10_000;
+    private static final String REPORT_API_VERSION = "2";
 
     private final ReportingConfig reportingConfig;
 
@@ -38,7 +39,7 @@ class HttpJsonPoster implements JsonPoster {
 
     public void post(String json) {
         try {
-            URL url = new URL(reportingConfig.url());
+            URL url = new URL(templateVersion(reportingConfig.url()));
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
             connection.setConnectTimeout(TIMEOUT);
@@ -72,5 +73,9 @@ class HttpJsonPoster implements JsonPoster {
         } catch (Exception e) {
             log.error("Failed to post report", e);
         }
+    }
+
+    private String templateVersion(String url) {
+        return url.replace("$VERSION", REPORT_API_VERSION);
     }
 }
