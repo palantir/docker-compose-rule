@@ -27,7 +27,9 @@ import com.palantir.docker.compose.connection.waiting.ClusterHealthCheck;
 import com.palantir.docker.compose.connection.waiting.ClusterWait;
 import com.palantir.docker.compose.connection.waiting.HealthCheck;
 import com.palantir.docker.compose.logging.FileLogCollector;
+import com.palantir.docker.compose.report.TestDescription;
 import java.util.List;
+import java.util.Optional;
 import org.immutables.value.Value;
 import org.joda.time.ReadableDuration;
 import org.junit.rules.TestRule;
@@ -39,6 +41,12 @@ import org.junit.runners.model.Statement;
 public abstract class DockerComposeRule extends DockerComposeManager implements TestRule {
     @Override
     public Statement apply(Statement base, Description description) {
+        this.setDescription(TestDescription.builder()
+                .testClass(Optional.ofNullable(description.getClassName()))
+                .displayName(Optional.ofNullable(description.getDisplayName()))
+                .method(Optional.ofNullable(description.getMethodName()))
+                .build());
+
         return new Statement() {
             @Override
             public void evaluate() throws Throwable {

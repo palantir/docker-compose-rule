@@ -17,15 +17,16 @@
 package com.palantir.docker.compose.reporting;
 
 import com.palantir.docker.compose.events.Event;
+import com.palantir.docker.compose.events.EventConsumer;
 import com.palantir.docker.compose.report.DockerComposeRun;
 import com.palantir.docker.compose.report.TestDescription;
 import java.time.Clock;
 import java.time.ZoneOffset;
-import java.util.function.Supplier;
+import java.util.concurrent.Callable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-final class RunRecorder {
+public final class RunRecorder implements EventConsumer {
     private static final Logger log = LoggerFactory.getLogger(RunRecorder.class);
 
     private final Clock clock;
@@ -45,17 +46,18 @@ final class RunRecorder {
         runBuilder.testDescription(description);
     }
 
-    public void before(Supplier<String> dockerComposeConfig) {
+    public void before(Callable<String> dockerComposeConfig) {
         runBuilder.startTime(clock.instant().atOffset(ZoneOffset.UTC));
         try {
-            runBuilder.dockerComposeConfig(dockerComposeConfig.get());
+            runBuilder.dockerComposeConfig(dockerComposeConfig.call());
         } catch (Exception e) {
             runBuilder.exceptions(ExceptionUtils.exceptionToString(e));
             log.error("EnhancedDockerComposeRule has failed in before()", e);
         }
     }
 
-    public void addEvent(Event event) {
+    @Override
+    public void receiveEvent(Event event) {
         runBuilder.events(event);
     }
 
@@ -67,5 +69,19 @@ final class RunRecorder {
             reporter.addException(e);
             log.error("EnhancedDockerComposeRule has failed in after()", e);
         }
+    }
+
+    public static RunRecorder defaults() {
+        return new RunRecorder(Clock.systemUTC(), new Reporter() {
+            @Override
+            public void addRun(DockerComposeRun dockerComposeRun) {
+
+            }
+
+            @Override
+            public void addException(Exception exception) {
+
+            }
+        });
     }
 }
