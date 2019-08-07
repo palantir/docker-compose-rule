@@ -57,7 +57,7 @@ public final class RunRecorder implements EventConsumer {
     }
 
     @Override
-    public void receiveEvent(Event event) {
+    public synchronized void receiveEvent(Event event) {
         runBuilder.events(event);
     }
 

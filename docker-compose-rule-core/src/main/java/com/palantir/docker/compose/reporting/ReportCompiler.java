@@ -54,12 +54,12 @@ final class ReportCompiler implements Reporter {
     }
 
     @Override
-    public void addRun(DockerComposeRun dockerComposeRun) {
+    public synchronized void addRun(DockerComposeRun dockerComposeRun) {
         reportBuilder.runs(dockerComposeRun);
     }
 
     @Override
-    public void addException(Exception exception) {
+    public synchronized void addException(Exception exception) {
         reportBuilder.exceptions(ExceptionUtils.exceptionToString(exception));
     }
 
