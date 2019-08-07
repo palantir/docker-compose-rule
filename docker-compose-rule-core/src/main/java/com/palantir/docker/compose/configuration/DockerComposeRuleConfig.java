@@ -53,6 +53,11 @@ public abstract class DockerComposeRuleConfig {
 
     @VisibleForTesting
     static Optional<DockerComposeRuleConfig> findAutomaticallyFrom(File startDir) {
+        // If current dir is /foo/bar/baz, we search for:
+        // /foo/bar/baz/.docker-compose-rule.yml
+        // /foo/bar/.docker-compose-rule.yml
+        // /foo/.docker-compose-rule.yml
+        // /.docker-compose-rule.yml
         Optional<File> configFile = dirAndParents(startDir)
                 .map(dir -> new File(dir, CONFIG_FILENAME))
                 .findFirst(File::exists);
