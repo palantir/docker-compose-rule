@@ -20,12 +20,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.palantir.conjure.java.serialization.ObjectMappers;
 import com.palantir.docker.compose.report.Report;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 class ReportPoster {
-    private static final Logger log = LoggerFactory.getLogger(ReportPoster.class);
-
     private static final ObjectMapper OBJECT_MAPPER = ObjectMappers.newClientObjectMapper();
 
     private final WebhookPoster webhookPoster;

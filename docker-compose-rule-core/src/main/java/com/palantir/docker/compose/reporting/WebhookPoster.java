@@ -16,15 +16,10 @@
 
 package com.palantir.docker.compose.reporting;
 
-import com.google.common.collect.ImmutableMap;
-import com.palantir.conjure.java.config.ssl.PemX509Certificate;
-import com.palantir.conjure.java.config.ssl.SslSocketFactories;
 import java.io.PrintWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.Map;
 import java.util.Optional;
-import javax.net.ssl.HttpsURLConnection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,15 +36,7 @@ class WebhookPoster {
         try {
             URL url = new URL(reportingConfig.url());
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-
-            if (url.getProtocol().equals("https") && reportingConfig.caCert().isPresent()) {
-                PemX509Certificate caCert = PemX509Certificate.of(reportingConfig.caCert().get());
-                Map<String, PemX509Certificate> caCerts = ImmutableMap.of("ca-cert", caCert);
-
-                HttpsURLConnection httpsConnection = (HttpsURLConnection) connection;
-                httpsConnection.setSSLSocketFactory(SslSocketFactories.createSslSocketFactory(caCerts));
-            }
-
+            
             connection.setRequestMethod("POST");
             connection.setInstanceFollowRedirects(true);
             connection.setRequestProperty("Content-Type", "application/json");
