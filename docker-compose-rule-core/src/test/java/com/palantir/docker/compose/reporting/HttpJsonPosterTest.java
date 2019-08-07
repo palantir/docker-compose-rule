@@ -20,12 +20,11 @@ import org.junit.Test;
 
 public class HttpJsonPosterTest {
     private final HttpJsonPoster httpJsonPoster = new HttpJsonPoster(ReportingConfig.builder()
-            .url("https://papaya-webhook-receiver.palantir.build/general/enhanced-docker-compose-rule-testing/hook")
+            .url("https://papaya-webhook-receiver.palantir.build/api/general/enhanced-docker-compose-rule-testing/hook")
             .build());
 
     @Test
     public void can_post_webhook() {
-        System.out.println(System.getProperty("user.dir"));
         String json = "{\"foo\":\"bar\"}";
         httpJsonPoster.post(json);
     }

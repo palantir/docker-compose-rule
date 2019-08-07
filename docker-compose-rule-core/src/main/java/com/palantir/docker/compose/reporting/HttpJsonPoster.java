@@ -16,15 +16,19 @@
 
 package com.palantir.docker.compose.reporting;
 
+import com.google.common.io.CharStreams;
+import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 class HttpJsonPoster implements JsonPoster {
     private static final Logger log = LoggerFactory.getLogger(HttpJsonPoster.class);
+    private static final int TIMEOUT = 10_000;
 
     private final ReportingConfig reportingConfig;
 
@@ -36,6 +40,9 @@ class HttpJsonPoster implements JsonPoster {
         try {
             URL url = new URL(reportingConfig.url());
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+
+            connection.setConnectTimeout(TIMEOUT);
+            connection.setReadTimeout(TIMEOUT);
 
             connection.setRequestMethod("POST");
             connection.setInstanceFollowRedirects(true);
@@ -51,6 +58,17 @@ class HttpJsonPoster implements JsonPoster {
             body.close();
 
             connection.connect();
+
+            int status = connection.getResponseCode();
+
+            if (status >= 400) {
+                String error = CharStreams.toString(new InputStreamReader(
+                        connection.getErrorStream(), StandardCharsets.UTF_8));
+
+                throw new RuntimeException("Posting json failed. Error is: " + error);
+            }
+
+            connection.disconnect();
         } catch (Exception e) {
             log.error("Failed to post report", e);
         }

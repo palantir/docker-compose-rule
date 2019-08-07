@@ -16,8 +16,10 @@
 
 package com.palantir.docker.compose.reporting;
 
+import com.google.common.util.concurrent.Uninterruptibles;
 import com.palantir.docker.compose.configuration.DockerComposeRuleConfig;
 import java.time.Clock;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 final class PostReportOnShutdown {
@@ -47,6 +49,10 @@ final class PostReportOnShutdown {
             return;
         }
 
-        Runtime.getRuntime().addShutdownHook(new Thread(REPORTER::report));
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            REPORTER.report();
+            // Give time for logs to flush before killing
+            Uninterruptibles.sleepUninterruptibly(300, TimeUnit.MILLISECONDS);
+        }));
     }
 }
