@@ -21,4 +21,4 @@ import org.immutables.value.Value.Style;
 
 @Target({ElementType.PACKAGE, ElementType.TYPE})
 @Style(depluralize = true, strictBuilder = true, overshadowImplementation = true)
-@interface CustomImmutablesStyle {}
+public @interface CustomImmutablesStyle {}

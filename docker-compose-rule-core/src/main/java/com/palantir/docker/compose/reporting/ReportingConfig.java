@@ -16,13 +16,15 @@
 
 package com.palantir.docker.compose.reporting;
 
-import java.util.Optional;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.palantir.docker.compose.CustomImmutablesStyle;
 import org.immutables.value.Value;
 
 @Value.Immutable
+@CustomImmutablesStyle
+@JsonDeserialize(as = ImmutableReportingConfig.class)
 public interface ReportingConfig {
     String url();
-    Optional<String> caCert();
 
     class Builder extends ImmutableReportingConfig.Builder {}
 

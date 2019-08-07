@@ -17,7 +17,11 @@
 package com.palantir.docker.compose.configuration;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
+import com.google.common.annotations.VisibleForTesting;
+import com.palantir.docker.compose.CustomImmutablesStyle;
 import com.palantir.docker.compose.reporting.ReportingConfig;
 import java.io.File;
 import java.io.IOException;
@@ -28,8 +32,11 @@ import one.util.streamex.StreamEx;
 import org.immutables.value.Value;
 
 @Value.Immutable
+@CustomImmutablesStyle
+@JsonDeserialize(as = ImmutableDockerComposeRuleConfig.class)
 public abstract class DockerComposeRuleConfig {
-    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper(new YAMLFactory());
+    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper(new YAMLFactory())
+            .registerModule(new Jdk8Module());
     public static final String CONFIG_FILENAME = ".docker-compose-rule.yml";
 
     public abstract Optional<ReportingConfig> reporting();
@@ -41,8 +48,12 @@ public abstract class DockerComposeRuleConfig {
     }
 
     public static Optional<DockerComposeRuleConfig> findAutomatically() {
-        File currentDir = new File(".").getAbsoluteFile();
-        Optional<File> configFile = dirAndParents(currentDir)
+        return findAutomaticallyFrom(new File("."));
+    }
+
+    @VisibleForTesting
+    static Optional<DockerComposeRuleConfig> findAutomaticallyFrom(File startDir) {
+        Optional<File> configFile = dirAndParents(startDir)
                 .map(dir -> new File(dir, CONFIG_FILENAME))
                 .findFirst(File::exists);
 
@@ -57,7 +68,7 @@ public abstract class DockerComposeRuleConfig {
 
     private static StreamEx<File> dirAndParents(File startDir) {
         return StreamEx.of(Stream.generate(new Supplier<Optional<File>>() {
-            private Optional<File> dir = Optional.ofNullable(startDir);
+            private Optional<File> dir = Optional.of(startDir.getAbsoluteFile());
 
             @Override
             public Optional<File> get() {
