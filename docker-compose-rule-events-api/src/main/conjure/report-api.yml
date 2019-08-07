@@ -30,7 +30,6 @@ types:
       Versions:
         fields:
           dockerComposeRule: optional<string>
-          enhancedDockerComposeRule: optional<string>
           docker: optional<string>
           dockerCompose: optional<string>
 
