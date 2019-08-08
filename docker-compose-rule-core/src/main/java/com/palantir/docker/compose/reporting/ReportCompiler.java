@@ -75,7 +75,7 @@ final class ReportCompiler implements Reporter {
                 .submittedTime(clock.instant().atOffset(ZoneOffset.UTC))
                 .username(Optional.ofNullable(System.getProperty("user.name")))
                 .gitInfo(gitInfo())
-                .environmentVariables(environmentVariables())
+                .whitelistedEnvironmentVariables(whitelistedEnvironmentVariables())
                 .versions(versions())
                 .build());
     }
@@ -92,7 +92,7 @@ final class ReportCompiler implements Reporter {
         return Optional.ofNullable(clazz.getPackage().getImplementationVersion());
     }
 
-    private Map<String, String> environmentVariables() {
+    private Map<String, String> whitelistedEnvironmentVariables() {
         return EntryStream.of(System.getenv())
                 .filterKeys(environmentVariableWhitelist::anyMatch)
                 .toMap();

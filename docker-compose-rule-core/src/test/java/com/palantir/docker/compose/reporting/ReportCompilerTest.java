@@ -70,7 +70,7 @@ public class ReportCompilerTest {
             assertThat(exceptionString).contains(exception.getMessage());
         });
         assertThat(sentReport.getSubmittedTime()).isEqualTo(time.atOffset(ZoneOffset.UTC));
-        assertThat(sentReport.getEnvironmentVariables()).containsOnlyKeys("PATH");
+        assertThat(sentReport.getWhitelistedEnvironmentVariables()).containsOnlyKeys("PATH");
     }
 
 }

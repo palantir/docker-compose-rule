@@ -18,13 +18,14 @@ types:
           method: optional<string>
 
       DockerComposeRun:
+        docs: Data from a single lifetime (usually from an @Rule or @ClassRule) of a DockerComposeRule.
         fields:
           runId: string
+          testDescription: TestDescription
           startTime: datetime
           finishTime: datetime
           events: list<events.Event>
           dockerComposeConfig: optional<string>
-          testDescription: TestDescription
           exceptions: list<string>
 
       Versions:
@@ -39,7 +40,7 @@ types:
           submittedTime: datetime
           username: optional<string>
           gitInfo: GitInfo
-          environmentVariables: map<string, string>
+          whitelistedEnvironmentVariables: map<string, string>
           versions: Versions
           runs: list<DockerComposeRun>
           exceptions: list<string>
