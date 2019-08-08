@@ -28,7 +28,6 @@ import org.slf4j.LoggerFactory;
 
 class HttpJsonPoster {
     private static final Logger log = LoggerFactory.getLogger(HttpJsonPoster.class);
-    private static final String REPORT_API_VERSION = "2";
 
     private final ReportingConfig reportingConfig;
 
@@ -38,7 +37,7 @@ class HttpJsonPoster {
 
     public void post(String json) {
         try {
-            URL url = new URL(templateVersion(reportingConfig.url()));
+            URL url = new URL(reportingConfig.url());
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
             connection.setConnectTimeout(1_000);
@@ -72,9 +71,5 @@ class HttpJsonPoster {
         } catch (Exception e) {
             log.error("Failed to post report", e);
         }
-    }
-
-    private String templateVersion(String url) {
-        return url.replace("$VERSION", REPORT_API_VERSION);
     }
 }
