@@ -28,7 +28,6 @@ import org.slf4j.LoggerFactory;
 
 class HttpJsonPoster {
     private static final Logger log = LoggerFactory.getLogger(HttpJsonPoster.class);
-    private static final int TIMEOUT = 10_000;
     private static final String REPORT_API_VERSION = "2";
 
     private final ReportingConfig reportingConfig;
@@ -42,8 +41,8 @@ class HttpJsonPoster {
             URL url = new URL(templateVersion(reportingConfig.url()));
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
-            connection.setConnectTimeout(TIMEOUT);
-            connection.setReadTimeout(TIMEOUT);
+            connection.setConnectTimeout(1_000);
+            connection.setReadTimeout(10_000);
 
             connection.setRequestMethod("POST");
             connection.setInstanceFollowRedirects(true);
