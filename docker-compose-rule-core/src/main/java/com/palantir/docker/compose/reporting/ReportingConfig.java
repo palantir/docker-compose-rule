@@ -17,10 +17,9 @@
 package com.palantir.docker.compose.reporting;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.google.common.collect.ImmutableList;
 import com.palantir.docker.compose.CustomImmutablesStyle;
-import java.util.List;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 import org.immutables.value.Value;
 
 @Value.Immutable
@@ -28,14 +27,12 @@ import org.immutables.value.Value;
 @JsonDeserialize(as = ImmutableReportingConfig.class)
 public interface ReportingConfig {
     String url();
-    List<String> environmentVariableWhitelist();
 
     @Value.Auxiliary
     @Value.Derived
     default PatternCollection envVarWhitelistPatterns() {
-        return new PatternCollection(environmentVariableWhitelist().stream()
-                .map(Pattern::compile)
-                .collect(Collectors.toList()));
+        return new PatternCollection(ImmutableList.of(
+                Pattern.compile("^CIRCLE")));
     }
 
     class Builder extends ImmutableReportingConfig.Builder {}
