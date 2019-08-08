@@ -20,15 +20,20 @@ import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.status;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
+import static java.nio.charset.StandardCharsets.UTF_8;
 
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import com.google.common.collect.ImmutableList;
+import com.google.common.io.CharStreams;
 import com.palantir.docker.compose.DockerComposeManager;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.util.function.Supplier;
+import java.nio.file.Paths;
+import java.util.concurrent.TimeUnit;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -40,6 +45,23 @@ public class ReportingIntegrationTest {
     @Rule
     public final TemporaryFolder temporaryFolder = new TemporaryFolder();
 
+    // Run by test
+    public static void main(String... args) throws IOException, InterruptedException {
+        String testCodeWorkingDir = args[0];
+
+        DockerComposeManager dockerComposeManager = new DockerComposeManager.Builder()
+                .file(Paths.get(testCodeWorkingDir, "src/test/resources/no-healthcheck.yaml")
+                        .toAbsolutePath()
+                        .toString())
+                .build();
+
+        try {
+            dockerComposeManager.before();
+        } finally {
+            dockerComposeManager.after();
+        }
+    }
+
     @Test
     public void a_report_of_the_right_format_is_posted() throws IOException, InterruptedException {
         File config = temporaryFolder.newFile(".docker-compose-rule.yml");
@@ -48,30 +70,30 @@ public class ReportingIntegrationTest {
                 "  url: http://localhost:" + wireMockRule.port() + "/some/path"
         ), StandardCharsets.UTF_8);
 
-        DockerComposeManager dockerComposeManager = changeToDirWithConfigFor(() -> new DockerComposeManager.Builder()
-                .file("src/test/resources/no-healthcheck.yaml")
-                .build());
+        wireMockRule.stubFor(post("/some/path").willReturn(status(200)));
 
-        try {
-            dockerComposeManager.before();
+        // We start this in a new java subprocess, as the *intentional* use of shutdown hooks and reading config files
+        // from the current working directory makes it very hard to run in process, since other instantiations of
+        // DockerComposeManger may have already set statics
+        Process process = new ProcessBuilder()
+                .command("java",
+                        "-classpath",
+                        System.getProperty("java.class.path"),
+                        ReportingIntegrationTest.class.getCanonicalName(),
+                        System.getProperty("user.dir"))
+                .directory(temporaryFolder.getRoot())
+                .start();
 
-            wireMockRule.stubFor(post("/some/path").willReturn(status(200)));
-        } finally {
-            dockerComposeManager.after();
-        }
+        process.waitFor(30, TimeUnit.SECONDS);
 
-        PostReportOnShutdown.triggerShutdown();
+        String stdout = streamToString(process.getInputStream());
+        System.out.println("stdout: " + stdout);
+        System.out.println("stderr: " + streamToString(process.getErrorStream()));
 
         wireMockRule.verify(postRequestedFor(urlPathEqualTo("/some/path")));
     }
 
-    private <T> T changeToDirWithConfigFor(Supplier<T> supplier) {
-        String originalDir = System.getProperty("user.dir");
-        try {
-            System.setProperty("user.dir", temporaryFolder.getRoot().getAbsolutePath());
-            return supplier.get();
-        } finally {
-            System.setProperty("user.dir", originalDir);
-        }
+    private String streamToString(InputStream inputStream) throws IOException {
+        return CharStreams.toString(new InputStreamReader(inputStream, UTF_8));
     }
 }
