@@ -265,9 +265,10 @@ public abstract class DockerComposeManager {
                     shutdownStrategy().shutdown(this.dockerCompose(), this.docker()));
         } catch (IOException | InterruptedException e) {
             throw new RuntimeException("Error cleaning up docker compose cluster", e);
+        } finally {
+            runRecorder.after();
         }
 
-        runRecorder.after();
     }
 
     public String exec(DockerComposeExecOption options, String containerName,
