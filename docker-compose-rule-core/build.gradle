@@ -18,7 +18,6 @@ dependencies {
     compile 'org.slf4j:slf4j-api'
     implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-yaml'
     implementation 'com.palantir.conjure.java.runtime:conjure-java-jackson-serialization'
-    implementation 'com.palantir.conjure.java.runtime:keystores'
     implementation 'one.util:streamex'
 
     testCompile 'com.github.stefanbirkner:system-rules'
