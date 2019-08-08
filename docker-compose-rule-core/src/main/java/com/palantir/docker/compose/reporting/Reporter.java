@@ -26,8 +26,12 @@ interface Reporter {
     void addException(Exception exception);
     void report();
 
-    class NotConfigured implements Reporter {
-        private static final Logger log = LoggerFactory.getLogger(NotConfigured.class);
+    class NoOpReporter implements Reporter {
+        private static final Logger log = LoggerFactory.getLogger(NoOpReporter.class);
+
+        public static final Reporter INSTANCE = new NoOpReporter();
+
+        private NoOpReporter() { }
 
         @Override
         public void addRun(DockerComposeRun dockerComposeRun) {

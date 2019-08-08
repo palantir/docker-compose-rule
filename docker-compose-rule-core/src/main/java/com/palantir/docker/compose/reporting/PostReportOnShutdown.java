@@ -36,7 +36,7 @@ final class PostReportOnShutdown {
                         Clock.systemUTC(),
                         reportingConfig.envVarWhitelistPatterns(),
                         new ReportPoster(new HttpJsonPoster(reportingConfig))::postReport))
-                .orElseGet(Reporter.NotConfigured::new);
+                .orElse(Reporter.NoOpReporter.INSTANCE);
     }
 
     private PostReportOnShutdown() {}
