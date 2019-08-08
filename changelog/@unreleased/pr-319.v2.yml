@@ -1,0 +1,6 @@
+type: feature
+feature:
+  description: Reporting stats to a http endpoint is possible by creating a `.docker-compose-rule.yml`
+    config file in the root of your project
+  links:
+  - https://github.com/palantir/docker-compose-rule/pull/319

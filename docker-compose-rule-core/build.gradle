@@ -16,12 +16,16 @@ dependencies {
     compile 'org.apache.commons:commons-lang3:3.0'
     compile 'org.hamcrest:hamcrest-core'
     compile 'org.slf4j:slf4j-api'
+    implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-yaml'
+    implementation 'com.palantir.conjure.java.runtime:conjure-java-jackson-serialization'
+    implementation 'one.util:streamex'
 
     testCompile 'com.github.stefanbirkner:system-rules'
     testCompile 'junit:junit'
     testCompile 'org.assertj:assertj-core'
     testCompile 'org.mockito:mockito-core'
     testCompile 'org.slf4j:slf4j-simple'
+    testImplementation 'com.github.tomakehurst:wiremock'
 
     integrationTestCompile project.sourceSets.test.output
 }

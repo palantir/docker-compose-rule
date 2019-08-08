@@ -1,5 +1,5 @@
 /*
- * (c) Copyright 2016 Palantir Technologies Inc. All rights reserved.
+ * (c) Copyright 2019 Palantir Technologies Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,12 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.palantir.docker.compose;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Target;
-import org.immutables.value.Value.Style;
+package com.palantir.docker.compose.reporting;
 
-@Target({ElementType.PACKAGE, ElementType.TYPE})
-@Style(depluralize = true, strictBuilder = true, overshadowImplementation = true)
-public @interface CustomImmutablesStyle {}
+import org.apache.commons.lang3.RandomStringUtils;
+
+final class IdGenerator {
+    private IdGenerator() {}
+
+    public static String idFor(String idType) {
+        return idType + "-" + RandomStringUtils.randomAlphabetic(14);
+    }
+}
