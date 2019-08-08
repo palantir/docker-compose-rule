@@ -24,9 +24,9 @@ import com.palantir.docker.compose.report.Report;
 class ReportPoster {
     private static final ObjectMapper OBJECT_MAPPER = ObjectMappers.newClientObjectMapper();
 
-    private final JsonPoster webhookPoster;
+    private final HttpJsonPoster webhookPoster;
 
-    ReportPoster(JsonPoster webhookPoster) {
+    ReportPoster(HttpJsonPoster webhookPoster) {
         this.webhookPoster = webhookPoster;
     }
 

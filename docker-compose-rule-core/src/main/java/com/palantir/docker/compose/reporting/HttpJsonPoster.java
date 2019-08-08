@@ -26,7 +26,7 @@ import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-class HttpJsonPoster implements JsonPoster {
+class HttpJsonPoster {
     private static final Logger log = LoggerFactory.getLogger(HttpJsonPoster.class);
     private static final int TIMEOUT = 10_000;
     private static final String REPORT_API_VERSION = "2";
