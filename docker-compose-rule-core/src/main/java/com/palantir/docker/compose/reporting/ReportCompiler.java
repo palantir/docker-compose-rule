@@ -69,7 +69,7 @@ final class ReportCompiler implements Reporter {
     @Override
     public void report() {
         String reportId = IdGenerator.idFor("report");
-        log.info("Reporting docker-compose run statistics to Papaya with id {}", SafeArg.of("reportId", reportId));
+        log.info("Reporting docker-compose run statistics with id {}", SafeArg.of("reportId", reportId));
         reportConsumer.accept(reportBuilder
                 .reportId(reportId)
                 .submittedTime(clock.instant().atOffset(ZoneOffset.UTC))
