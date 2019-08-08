@@ -42,6 +42,8 @@ import org.slf4j.LoggerFactory;
 final class ReportCompiler implements Reporter {
     private static final Logger log = LoggerFactory.getLogger(ReportCompiler.class);
 
+    private static final String REPORT_API_VERSION = "2";
+
     private final Clock clock;
     private final PatternCollection environmentVariableWhitelist;
     private final Consumer<Report> reportConsumer;
@@ -71,6 +73,7 @@ final class ReportCompiler implements Reporter {
         String reportId = IdGenerator.idFor("report");
         log.info("Reporting docker-compose run statistics with id {}", SafeArg.of("reportId", reportId));
         reportConsumer.accept(reportBuilder
+                .reportApiVersion(REPORT_API_VERSION)
                 .reportId(reportId)
                 .submittedTime(clock.instant().atOffset(ZoneOffset.UTC))
                 .username(Optional.ofNullable(System.getProperty("user.name")))

@@ -36,6 +36,7 @@ types:
 
       Report:
         fields:
+          reportApiVersion: string
           reportId: string
           submittedTime: datetime
           username: optional<string>
