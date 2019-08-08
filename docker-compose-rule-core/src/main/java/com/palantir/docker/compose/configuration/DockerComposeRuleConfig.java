@@ -80,9 +80,7 @@ public abstract class DockerComposeRuleConfig {
             @Override
             public Optional<File> get() {
                 Optional<File> toReturn = dir;
-                if (dir.isPresent()) {
-                    dir = Optional.ofNullable(dir.get().getParentFile());
-                }
+                dir = dir.flatMap(directory -> Optional.ofNullable(directory.getParentFile()));
                 return toReturn;
             }
         }))
