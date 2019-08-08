@@ -31,12 +31,10 @@ interface Reporter {
 
         @Override
         public void addRun(DockerComposeRun dockerComposeRun) {
-
         }
 
         @Override
         public void addException(Exception exception) {
-
         }
 
         @Override
