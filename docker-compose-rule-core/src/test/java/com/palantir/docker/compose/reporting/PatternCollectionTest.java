@@ -16,19 +16,31 @@
 
 package com.palantir.docker.compose.reporting;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import com.google.common.collect.ImmutableList;
-import java.util.List;
 import java.util.regex.Pattern;
+import org.junit.Test;
 
-class PatternCollection {
-    private final List<Pattern> patterns;
+public class PatternCollectionTest {
+    private final PatternCollection patternCollection = new PatternCollection(ImmutableList.of(
+            Pattern.compile("foo"),
+            Pattern.compile("bar")
+    ));
 
-    PatternCollection(List<Pattern> patterns) {
-        this.patterns = ImmutableList.copyOf(patterns);
+    @Test
+    public void matching_one_pattern() {
+        assertThat(patternCollection.anyMatch("afoolol")).isTrue();
     }
 
-    public boolean anyMatch(String text) {
-        return patterns.stream()
-                .anyMatch(pattern -> pattern.matcher(text).find());
+    @Test
+    public void matching_two_patterns() {
+        assertThat(patternCollection.anyMatch("foobar")).isTrue();
     }
+
+    @Test
+    public void matching_zero_patterns() {
+        assertThat(patternCollection.anyMatch("bbbbb")).isFalse();
+    }
+
 }
