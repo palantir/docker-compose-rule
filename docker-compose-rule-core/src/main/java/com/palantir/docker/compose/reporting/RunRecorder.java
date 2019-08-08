@@ -39,7 +39,9 @@ public final class RunRecorder implements EventConsumer {
         this.clock = clock;
         this.reporter = reporter;
 
-        runBuilder.runId(IdGenerator.idFor("run"));
+        runBuilder
+                .runId(IdGenerator.idFor("run"))
+                .testDescription(TestDescription.builder().build());
     }
 
     public void setDescription(TestDescription description) {
