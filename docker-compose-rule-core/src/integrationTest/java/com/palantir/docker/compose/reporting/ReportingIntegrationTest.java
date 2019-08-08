@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.palantir.docker.compose;
+package com.palantir.docker.compose.reporting;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor;
@@ -23,6 +23,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import com.google.common.collect.ImmutableList;
+import com.palantir.docker.compose.DockerComposeManager;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -41,13 +42,13 @@ public class ReportingIntegrationTest {
 
     @Test
     public void a_report_of_the_right_format_is_posted() throws IOException, InterruptedException {
-        File file = temporaryFolder.newFile(".docker-compose-rule.yml");
-        Files.write(file.toPath(), ImmutableList.of(
+        File config = temporaryFolder.newFile(".docker-compose-rule.yml");
+        Files.write(config.toPath(), ImmutableList.of(
                 "reporting:",
                 "  url: http://localhost:" + wireMockRule.port() + "/some/path"
         ), StandardCharsets.UTF_8);
 
-        DockerComposeManager dockerComposeManager = changeDirWhenRunning(() -> new DockerComposeManager.Builder()
+        DockerComposeManager dockerComposeManager = changeToDirWithConfigFor(() -> new DockerComposeManager.Builder()
                 .file("src/test/resources/no-healthcheck.yaml")
                 .build());
 
@@ -59,14 +60,15 @@ public class ReportingIntegrationTest {
             dockerComposeManager.after();
         }
 
+        PostReportOnShutdown.triggerShutdown();
+
         wireMockRule.verify(postRequestedFor(urlPathEqualTo("/some/path")));
     }
 
-    public <T> T changeDirWhenRunning(Supplier<T> supplier) {
+    private <T> T changeToDirWithConfigFor(Supplier<T> supplier) {
         String originalDir = System.getProperty("user.dir");
         try {
             System.setProperty("user.dir", temporaryFolder.getRoot().getAbsolutePath());
-
             return supplier.get();
         } finally {
             System.setProperty("user.dir", originalDir);

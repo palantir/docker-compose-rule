@@ -16,6 +16,7 @@
 
 package com.palantir.docker.compose.reporting;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.util.concurrent.Uninterruptibles;
 import com.palantir.docker.compose.configuration.DockerComposeRuleConfig;
 import java.time.Clock;
@@ -52,10 +53,13 @@ final class PostReportOnShutdown {
             return;
         }
 
-        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-            REPORTER.report();
-            // Give time for logs to flush before killing
-            Uninterruptibles.sleepUninterruptibly(300, TimeUnit.MILLISECONDS);
-        }));
+        Runtime.getRuntime().addShutdownHook(new Thread(PostReportOnShutdown::triggerShutdown));
+    }
+
+    @VisibleForTesting
+    static void triggerShutdown() {
+        REPORTER.report();
+        // Give time for logs to flush before killing
+        Uninterruptibles.sleepUninterruptibly(300, TimeUnit.MILLISECONDS);
     }
 }
