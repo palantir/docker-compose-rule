@@ -20,6 +20,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Optional;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -28,28 +29,32 @@ import org.junit.runners.Parameterized;
 public class GitUtilsTest {
 
     @Parameterized.Parameters(name = "{0}")
-    public static Collection<String[]> params() {
-        return Arrays.asList(new String[][] {
-                { "git@github.com:palantir/docker-compose-rule.git", "palantir/docker-compose-rule" },
-                { "user@github.some.corp:palantir/docker-compose-rule.git", "palantir/docker-compose-rule" },
-                { "github.some.url:palantir/docker-compose-rule.git", "palantir/docker-compose-rule" },
-                { "github.some.url:3456/palantir/docker-compose-rule.git", "palantir/docker-compose-rule" },
-                { "ssh://user@github.some.url:3456/palantir/docker-compose-rule.git", "palantir/docker-compose-rule" },
-                { "ssh://github.some.url/palantir/docker-compose-rule.git", "palantir/docker-compose-rule" },
-                { "git@github.com:palantir/docker-compose-rule.git/", "palantir/docker-compose-rule" },
-                { "ssh://user@github.some.url/~/palantir/docker-compose-rule.git", "palantir/docker-compose-rule" },
-                { "user@github.some.url/~user/palantir/docker-compose-rule.git", "palantir/docker-compose-rule" },
-                { "git://github.some.url/~user/palantir/docker-compose-rule.git", "palantir/docker-compose-rule" },
-                { "http://host.xz/path/to/repo.git/", "path/to/repo" },
-                { "http://host.xz:6575/path/to/repo.git/", "path/to/repo" },
-                { "https://host.xz/path/to/repo.git/", "path/to/repo" },
+    public static Collection<Object[]> params() {
+        return Arrays.asList(new Object[][] {
+                { "git@github.com:palantir/docker-compose-rule.git", yes("palantir/docker-compose-rule") },
+                { "user@github.some.corp:palantir/docker-compose-rule.git", yes("palantir/docker-compose-rule") },
+                { "github.some.url:palantir/docker-compose-rule.git", yes("palantir/docker-compose-rule") },
+                { "github.some.url:3456/palantir/docker-compose-rule.git", yes("palantir/docker-compose-rule") },
+                { "ssh://user@github.some.url:3456/palantir/docker-compose.git", yes("palantir/docker-compose") },
+                { "ssh://github.some.url/palantir/docker-compose-rule.git", yes("palantir/docker-compose-rule") },
+                { "git@github.com:palantir/docker-compose-rule.git/", yes("palantir/docker-compose-rule") },
+                { "ssh://user@github.some.url/~/palantir/docker-compose.git", yes("palantir/docker-compose") },
+                { "user@github.some.url/~user/palantir/docker-compose-rule.git", yes("palantir/docker-compose-rule") },
+                { "git://github.some.url/~user/palantir/docker-compose-rule.git", yes("palantir/docker-compose-rule") },
+                { "http://host.xz/path/to/repo.git/", yes("path/to/repo") },
+                { "http://host.xz:6575/path/to/repo-blah.git/", yes("path/to/repo-blah") },
+                { "https://host.xz/path/to/repo.git/", yes("path/to/repo") },
                 });
     }
 
-    private final String input;
-    private final String expected;
+    private static Optional<String> yes(String str) {
+        return Optional.of(str);
+    }
 
-    public GitUtilsTest(String input, String expected) {
+    private final String input;
+    private final Optional<String> expected;
+
+    public GitUtilsTest(String input, Optional<String> expected) {
         this.input = input;
         this.expected = expected;
     }

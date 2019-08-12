@@ -16,10 +16,12 @@
 
 package com.palantir.docker.compose.reporting;
 
+import java.util.Optional;
+
 class GitUtils {
     private GitUtils() { }
 
-    public static String parsePathFromGitRemoteUrl(String gitRemoteUrl) {
+    public static Optional<String> parsePathFromGitRemoteUrl(String gitRemoteUrl) {
         String sshOrGit     = "(?:(?:ssh|git)://)?";
         String user         = "(?:.+@)?";
         String hostname     = ".*?";
@@ -34,9 +36,9 @@ class GitUtils {
 
         String httpRegex = "https?://.*?/(.*?)\\.git";
 
-        return gitRemoteUrl
+        return Optional.of(gitRemoteUrl
                 .replaceAll(httpRegex, "$1")
                 .replaceAll(sshRegex, "$1")
-                .replaceAll("/$", "");
+                .replaceAll("/$", ""));
     }
 }
