@@ -106,9 +106,10 @@ final class ReportCompiler implements Reporter {
                 .branch(runProcess("git", "rev-parse", "--abbrev-ref", "HEAD"))
                 .commit(runProcess("git", "rev-parse", "HEAD"))
                 .dirty(runProcess("git", "status", "--short").map(output -> !output.isEmpty()))
+                .originPath(runProcess("git", "ls-remote", "--get-url", "origin")
+                        .map(GitUtils::parsePathFromGitRemoteUrl))
                 .build();
     }
-
     private Optional<String> runProcess(String... args) {
         try {
             Process process = new ProcessBuilder()
