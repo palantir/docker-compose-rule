@@ -39,6 +39,10 @@ public class GitUtilsTest {
                 { "git@github.com:palantir/docker-compose-rule.git/", "palantir/docker-compose-rule" },
                 { "ssh://user@github.some.url/~/palantir/docker-compose-rule.git", "palantir/docker-compose-rule" },
                 { "user@github.some.url/~user/palantir/docker-compose-rule.git", "palantir/docker-compose-rule" },
+                { "git://github.some.url/~user/palantir/docker-compose-rule.git", "palantir/docker-compose-rule" },
+                { "http://host.xz/path/to/repo.git/", "path/to/repo" },
+                { "http://host.xz:6575/path/to/repo.git/", "path/to/repo" },
+                { "https://host.xz/path/to/repo.git/", "path/to/repo" },
                 });
     }
 
