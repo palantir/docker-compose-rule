@@ -36,6 +36,9 @@ public class GitUtilsTest {
                 { "github.some.url:3456/palantir/docker-compose-rule.git", "palantir/docker-compose-rule" },
                 { "ssh://user@github.some.url:3456/palantir/docker-compose-rule.git", "palantir/docker-compose-rule" },
                 { "ssh://github.some.url/palantir/docker-compose-rule.git", "palantir/docker-compose-rule" },
+                { "git@github.com:palantir/docker-compose-rule.git/", "palantir/docker-compose-rule" },
+                { "ssh://user@github.some.url/~/palantir/docker-compose-rule.git", "palantir/docker-compose-rule" },
+                { "user@github.some.url/~user/palantir/docker-compose-rule.git", "palantir/docker-compose-rule" },
                 });
     }
 
