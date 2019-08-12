@@ -20,6 +20,20 @@ class GitUtils {
     private GitUtils() { }
 
     public static String parsePathFromGitRemoteUrl(String gitRemoteUrl) {
-        return gitRemoteUrl.replaceAll("(?:ssh://)?(?:.+@)?.*?[:/](?:~[^/]*/)?(?:\\d+/)?(.*)\\.git(?:/)?", "$1");
+        String ssh          = "(?:ssh://)?";
+        String user         = "(?:.+@)?";
+        String hostname     = ".*?";
+        String separator    = "[:/]";
+        String port         = "(?:\\d+/)?";
+        String squigglyUser = "(?:~[^/]*/)?";
+        String pathCapture  = "(.*)";
+        String dotGit       = "\\.git";
+
+        String sshRegex =
+                ssh + user + hostname + separator + port + squigglyUser + pathCapture + dotGit;
+
+        return gitRemoteUrl
+                .replaceAll(sshRegex, "$1")
+                .replaceAll("/$", "");
     }
 }
