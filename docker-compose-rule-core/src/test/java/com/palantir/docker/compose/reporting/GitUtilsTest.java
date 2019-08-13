@@ -40,15 +40,28 @@ public class GitUtilsTest {
                 { "git@github.com:palantir/docker-compose-rule.git/", yes("palantir/docker-compose-rule") },
                 { "ssh://user@github.some.url/~/palantir/docker-compose.git", yes("palantir/docker-compose") },
                 { "user@github.some.url/~user/palantir/docker-compose-rule.git", yes("palantir/docker-compose-rule") },
+
                 { "git://github.some.url/~user/palantir/docker-compose-rule.git", yes("palantir/docker-compose-rule") },
+
                 { "http://host.xz/path/to/repo.git/", yes("path/to/repo") },
                 { "http://host.xz:6575/path/to/repo-blah.git/", yes("path/to/repo-blah") },
                 { "https://host.xz/path/to/repo.git/", yes("path/to/repo") },
+                { "https://user:tokenauth@host.name/some/path/to/place", yes("some/path/to/place") },
+
+                { "file://lol/some/path", no() },
+                { "/lol/some/path", no() },
+                { "lol/some/path", no() },
+
+                { "lol/some/path", no() },
                 });
     }
 
     private static Optional<String> yes(String str) {
         return Optional.of(str);
+    }
+
+    private static Optional<String> no() {
+        return Optional.empty();
     }
 
     private final String input;

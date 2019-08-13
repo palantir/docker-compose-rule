@@ -22,23 +22,32 @@ class GitUtils {
     private GitUtils() { }
 
     public static Optional<String> parsePathFromGitRemoteUrl(String gitRemoteUrl) {
+        return Optional.of(gitRemoteUrl
+                .replaceAll(httpRegex(), "$1")
+                .replaceAll(sshRegex(), "$1")
+                .replaceAll("/$", ""));
+    }
+
+    private static String sshRegex() {
         String sshOrGit     = "(?:(?:ssh|git)://)?";
         String user         = "(?:.+@)?";
         String hostname     = ".*?";
         String separator    = "[:/]";
         String port         = "(?:\\d+/)?";
         String squigglyUser = "(?:~[^/]*/)?";
-        String pathCapture  = "(.*)";
-        String dotGit       = "\\.git";
+        String pathCapture  = "(.*?)";
+        String dotGit       = "(:?\\.git)";
 
-        String sshRegex =
-                sshOrGit + user + hostname + separator + port + squigglyUser + pathCapture + dotGit;
+        return sshOrGit + user + hostname + separator + port + squigglyUser + pathCapture + dotGit;
+    }
 
-        String httpRegex = "https?://.*?/(.*?)\\.git";
+    private static String httpRegex() {
+        String http        = "https?://";
+        String hostname    = ".*?";
+        String separator   = "/";
+        String pathCapture = "(.*?)";
+        String dotGit      = "(:?\\.git)";
 
-        return Optional.of(gitRemoteUrl
-                .replaceAll(httpRegex, "$1")
-                .replaceAll(sshRegex, "$1")
-                .replaceAll("/$", ""));
+        return http + hostname + separator + pathCapture + dotGit;
     }
 }
