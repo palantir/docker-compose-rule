@@ -50,9 +50,9 @@ public class GitUtilsTest {
 
                 { "file://lol/some/path", no() },
                 { "/lol/some/path", no() },
+                { "/lol/some/path/", no() },
                 { "lol/some/path", no() },
-
-                { "lol/some/path", no() },
+                { "lol/some/path/", no() },
                 });
     }
 

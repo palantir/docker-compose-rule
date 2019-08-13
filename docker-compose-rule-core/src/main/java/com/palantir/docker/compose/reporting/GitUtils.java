@@ -25,9 +25,18 @@ import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
 class GitUtils {
+    private static final Pattern SSH_REGEX = Pattern.compile(sshRegex());
+    private static final Pattern JUST_A_PATH = Pattern.compile("[\\w/]+", Pattern.UNICODE_CHARACTER_CLASS);
+
     private GitUtils() { }
 
     public static Optional<String> parsePathFromGitRemoteUrl(String gitRemoteUrl) {
+        if (gitRemoteUrl.startsWith("file://")
+                || gitRemoteUrl.startsWith("/")
+                || JUST_A_PATH.matcher(gitRemoteUrl).matches()) {
+            return Optional.empty();
+        }
+
         return Stream.of(parseHttp(gitRemoteUrl), parseSshOrGit(gitRemoteUrl))
                 .flatMap(Streams::stream)
                 .map(path -> path.replaceAll("(\\.git)?/?$", ""))
@@ -36,8 +45,7 @@ class GitUtils {
     }
 
     private static Optional<String> parseSshOrGit(String gitRemoteUrl) {
-        Pattern sshRegex = Pattern.compile(sshRegex());
-        Matcher matcher = sshRegex.matcher(gitRemoteUrl);
+        Matcher matcher = SSH_REGEX.matcher(gitRemoteUrl);
 
         if (!matcher.matches()) {
             return Optional.empty();
