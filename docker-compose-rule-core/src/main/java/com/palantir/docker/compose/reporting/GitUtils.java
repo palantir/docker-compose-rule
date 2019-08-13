@@ -16,16 +16,42 @@
 
 package com.palantir.docker.compose.reporting;
 
+import com.google.common.collect.Streams;
 import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Stream;
 
 class GitUtils {
     private GitUtils() { }
 
     public static Optional<String> parsePathFromGitRemoteUrl(String gitRemoteUrl) {
-        return Optional.of(gitRemoteUrl
-                .replaceAll(httpRegex(), "$1")
-                .replaceAll(sshRegex(), "$1")
-                .replaceAll("/$", ""));
+        return Stream.of(parseSshOrGit(gitRemoteUrl), parseHttp(gitRemoteUrl))
+                .flatMap(Streams::stream)
+                .map(path -> path.replaceAll("(\\.git)?/?$", ""))
+                .findFirst();
+    }
+
+    private static Optional<String> parseSshOrGit(String gitRemoteUrl) {
+        Pattern sshRegex = Pattern.compile(sshRegex());
+        Matcher matcher = sshRegex.matcher(gitRemoteUrl);
+
+        if (!matcher.matches()) {
+            return Optional.empty();
+        }
+
+        return Optional.of(matcher.group(1));
+    }
+
+    private static Optional<String> parseHttp(String gitRemoteUrl) {
+        Pattern sshRegex = Pattern.compile(httpRegex());
+        Matcher matcher = sshRegex.matcher(gitRemoteUrl);
+
+        if (!matcher.matches()) {
+            return Optional.empty();
+        }
+
+        return Optional.of(matcher.group(1));
     }
 
     private static String sshRegex() {
@@ -35,19 +61,17 @@ class GitUtils {
         String separator    = "[:/]";
         String port         = "(?:\\d+/)?";
         String squigglyUser = "(?:~[^/]*/)?";
-        String pathCapture  = "(.*?)";
-        String dotGit       = "(:?\\.git)";
+        String pathCapture  = "(.*)";
 
-        return sshOrGit + user + hostname + separator + port + squigglyUser + pathCapture + dotGit;
+        return sshOrGit + user + hostname + separator + port + squigglyUser + pathCapture;
     }
 
     private static String httpRegex() {
         String http        = "https?://";
         String hostname    = ".*?";
         String separator   = "/";
-        String pathCapture = "(.*?)";
-        String dotGit      = "(:?\\.git)";
+        String pathCapture = "(.*)";
 
-        return http + hostname + separator + pathCapture + dotGit;
+        return http + hostname + separator + pathCapture;
     }
 }
