@@ -10,6 +10,7 @@ types:
           branch: optional<string>
           commit: optional<string>
           dirty: optional<boolean>
+          originPath: optional<string>
 
       TestDescription:
         fields:
