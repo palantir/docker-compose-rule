@@ -17,6 +17,8 @@
 package com.palantir.docker.compose.reporting;
 
 import com.google.common.collect.Streams;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -26,9 +28,10 @@ class GitUtils {
     private GitUtils() { }
 
     public static Optional<String> parsePathFromGitRemoteUrl(String gitRemoteUrl) {
-        return Stream.of(parseSshOrGit(gitRemoteUrl), parseHttp(gitRemoteUrl))
+        return Stream.of(parseHttp(gitRemoteUrl), parseSshOrGit(gitRemoteUrl))
                 .flatMap(Streams::stream)
                 .map(path -> path.replaceAll("(\\.git)?/?$", ""))
+                .map(path -> path.replaceAll("^/", ""))
                 .findFirst();
     }
 
@@ -44,14 +47,12 @@ class GitUtils {
     }
 
     private static Optional<String> parseHttp(String gitRemoteUrl) {
-        Pattern sshRegex = Pattern.compile(httpRegex());
-        Matcher matcher = sshRegex.matcher(gitRemoteUrl);
-
-        if (!matcher.matches()) {
+        try {
+            URL url = new URL(gitRemoteUrl);
+            return Optional.of(url.getPath());
+        } catch (MalformedURLException e) {
             return Optional.empty();
         }
-
-        return Optional.of(matcher.group(1));
     }
 
     private static String sshRegex() {
@@ -64,14 +65,5 @@ class GitUtils {
         String pathCapture  = "(.*)";
 
         return sshOrGit + user + hostname + separator + port + squigglyUser + pathCapture;
-    }
-
-    private static String httpRegex() {
-        String http        = "https?://";
-        String hostname    = ".*?";
-        String separator   = "/";
-        String pathCapture = "(.*)";
-
-        return http + hostname + separator + pathCapture;
     }
 }
