@@ -1,0 +1,6 @@
+type: fix
+fix:
+  description: When a DCR instance is reused, duplication of data in the produced
+    report (if configured) will no longer be produced.
+  links:
+  - https://github.com/palantir/docker-compose-rule/pull/324

@@ -31,7 +31,7 @@ public final class RunRecorder implements EventConsumer {
 
     private final Clock clock;
     private final Reporter reporter;
-    private final DockerComposeRun.Builder runBuilder = DockerComposeRun.builder();
+    private DockerComposeRun.Builder runBuilder;
 
     RunRecorder(
             Clock clock,
@@ -39,7 +39,11 @@ public final class RunRecorder implements EventConsumer {
         this.clock = clock;
         this.reporter = reporter;
 
-        runBuilder
+        resetRunBuilder();
+    }
+
+    private void resetRunBuilder() {
+        runBuilder = DockerComposeRun.builder()
                 .runId(IdGenerator.idFor("run"))
                 .testDescription(TestDescription.builder().build());
     }
@@ -67,6 +71,7 @@ public final class RunRecorder implements EventConsumer {
         try {
             runBuilder.finishTime(clock.instant().atOffset(ZoneOffset.UTC));
             reporter.addRun(runBuilder.build());
+            resetRunBuilder();
         } catch (Exception e) {
             reporter.addException(e);
             log.error("EnhancedDockerComposeRule has failed in after()", e);
