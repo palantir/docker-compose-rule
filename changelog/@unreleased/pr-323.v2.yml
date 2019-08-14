@@ -1,0 +1,6 @@
+type: fix
+fix:
+  description: Depend on older version of conjure-java-runtime serialization lib to
+    not cause transitive breaks for users of conjure-java-runtime.
+  links:
+  - https://github.com/palantir/docker-compose-rule/pull/323
