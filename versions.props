@@ -16,6 +16,7 @@ com.palantir.conjure.java:* = 4.0.0
 com.fasterxml.jackson.dataformat:* = 2.9.9
 one.util:streamex = 0.6.8
 com.github.tomakehurst:wiremock = 2.24.0
+org.junit.jupiter:* = 5.5.0
 
 # dependency-upgrader:OFF
 com.palantir.conjure.java.runtime:conjure-java-jackson-serialization = 4.18.1
