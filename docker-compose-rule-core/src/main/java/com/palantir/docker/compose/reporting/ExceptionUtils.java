@@ -1,5 +1,5 @@
 /*
- * (c) Copyright 2016 Palantir Technologies Inc. All rights reserved.
+ * (c) Copyright 2019 Palantir Technologies Inc. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,12 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.palantir.docker.compose;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Target;
-import org.immutables.value.Value.Style;
+package com.palantir.docker.compose.reporting;
 
-@Target({ElementType.PACKAGE, ElementType.TYPE})
-@Style(depluralize = true, strictBuilder = true, overshadowImplementation = true)
-public @interface CustomImmutablesStyle {}
+import java.io.PrintWriter;
+import java.io.StringWriter;
+
+final class ExceptionUtils {
+    private ExceptionUtils() {}
+
+    public static String exceptionToString(Exception exception) {
+        StringWriter stringWriter = new StringWriter();
+        PrintWriter printWriter = new PrintWriter(stringWriter);
+        exception.printStackTrace(printWriter);
+        return stringWriter.toString();
+    }
+}

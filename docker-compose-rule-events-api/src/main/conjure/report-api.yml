@@ -1,0 +1,48 @@
+types:
+  conjure-imports:
+    events: event-api.yml
+
+  definitions:
+    default-package: com.palantir.docker.compose.report
+    objects:
+      GitInfo:
+        fields:
+          branch: optional<string>
+          commit: optional<string>
+          dirty: optional<boolean>
+          originPath: optional<string>
+
+      TestDescription:
+        fields:
+          testClass: optional<string>
+          displayName: optional<string>
+          method: optional<string>
+
+      DockerComposeRun:
+        docs: Data from a single lifetime (usually from an @Rule or @ClassRule) of a DockerComposeRule.
+        fields:
+          runId: string
+          testDescription: TestDescription
+          startTime: datetime
+          finishTime: datetime
+          events: list<events.Event>
+          dockerComposeConfig: optional<string>
+          exceptions: list<string>
+
+      Versions:
+        fields:
+          dockerComposeRule: optional<string>
+          docker: optional<string>
+          dockerCompose: optional<string>
+
+      Report:
+        fields:
+          reportApiVersion: string
+          reportId: string
+          submittedTime: datetime
+          username: optional<string>
+          gitInfo: GitInfo
+          whitelistedEnvironmentVariables: map<string, string>
+          versions: Versions
+          runs: list<DockerComposeRun>
+          exceptions: list<string>

@@ -52,6 +52,8 @@ import com.palantir.docker.compose.logging.DoNothingLogCollector;
 import com.palantir.docker.compose.logging.FileLogCollector;
 import com.palantir.docker.compose.logging.LogCollector;
 import com.palantir.docker.compose.logging.LogDirectory;
+import com.palantir.docker.compose.report.TestDescription;
+import com.palantir.docker.compose.reporting.RunRecorder;
 import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -72,6 +74,8 @@ public abstract class DockerComposeManager {
 
     public static final Duration DEFAULT_TIMEOUT = Duration.standardMinutes(2);
     public static final int DEFAULT_RETRY_ATTEMPTS = 2;
+
+    private final RunRecorder runRecorder = RunRecorder.defaults();
 
     public DockerPort hostNetworkedPort(int port) {
         return new DockerPort(machine().getIp(), port, port);
@@ -161,11 +165,21 @@ public abstract class DockerComposeManager {
 
     @Value.Derived
     protected EventEmitter emitEventsFor() {
-        return new EventEmitter(eventConsumers());
+        List<EventConsumer> eventConsumers =
+                Stream.concat(Stream.of(runRecorder), eventConsumers().stream())
+                .collect(Collectors.toList());
+
+        return new EventEmitter(eventConsumers);
+    }
+
+    protected void setDescription(TestDescription testDescription) {
+        runRecorder.setDescription(testDescription);
     }
 
     public void before() throws IOException, InterruptedException {
         log.debug("Starting docker-compose cluster");
+
+        runRecorder.before(() -> dockerCompose().config());
 
         pullBuildAndUp();
 
@@ -251,7 +265,10 @@ public abstract class DockerComposeManager {
                     shutdownStrategy().shutdown(this.dockerCompose(), this.docker()));
         } catch (IOException | InterruptedException e) {
             throw new RuntimeException("Error cleaning up docker compose cluster", e);
+        } finally {
+            runRecorder.after();
         }
+
     }
 
     public String exec(DockerComposeExecOption options, String containerName,

@@ -1,0 +1,5 @@
+type: feature
+feature:
+  description: Stats reporting will now send the path of the origin git url.
+  links:
+  - https://github.com/palantir/docker-compose-rule/pull/322
