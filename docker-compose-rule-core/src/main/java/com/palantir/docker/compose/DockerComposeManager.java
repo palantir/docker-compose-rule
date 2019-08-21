@@ -281,18 +281,18 @@ public abstract class DockerComposeManager {
         return dockerCompose().run(options, containerName, arguments);
     }
 
-    public interface BuilderExtensions<B> {
-        B files(DockerComposeFiles files);
+    public interface BuilderExtensions<TSelf extends BuilderExtensions<TSelf>> {
+        TSelf files(DockerComposeFiles files);
 
-        B logCollector(LogCollector logCollector);
+        TSelf logCollector(LogCollector logCollector);
 
-        B shutdownStrategy(ShutdownStrategy shutdownStrategy);
+        TSelf shutdownStrategy(ShutdownStrategy shutdownStrategy);
 
-        B addClusterWait(ClusterWait element);
+        TSelf addClusterWait(ClusterWait element);
 
-        B addAllClusterWaits(Iterable<? extends ClusterWait> elements);
+        TSelf addAllClusterWaits(Iterable<? extends ClusterWait> elements);
 
-        default B file(String dockerComposeYmlFile) {
+        default TSelf file(String dockerComposeYmlFile) {
             return files(DockerComposeFiles.from(dockerComposeYmlFile));
         }
 
@@ -304,7 +304,7 @@ public abstract class DockerComposeManager {
          *
          * @param path directory into which log files should be saved
          */
-        default B saveLogsTo(String path) {
+        default TSelf saveLogsTo(String path) {
             return logCollector(FileLogCollector.fromPath(path));
         }
 
@@ -313,45 +313,45 @@ public abstract class DockerComposeManager {
          * @deprecated Please use {@link DockerComposeManager#shutdownStrategy()} with {@link ShutdownStrategy#SKIP} instead.
          */
         @Deprecated
-        default B skipShutdown(boolean skipShutdown) {
+        default TSelf skipShutdown(boolean skipShutdown) {
             if (skipShutdown) {
                 return shutdownStrategy(ShutdownStrategy.SKIP);
             }
 
-            return (B) this;
+            return (TSelf) this;
         }
 
-        default B waitingForService(String serviceName, HealthCheck<Container> healthCheck) {
+        default TSelf waitingForService(String serviceName, HealthCheck<Container> healthCheck) {
             return waitingForService(serviceName, healthCheck, DEFAULT_TIMEOUT);
         }
 
-        default B waitingForService(String serviceName, HealthCheck<Container> healthCheck,
+        default TSelf waitingForService(String serviceName, HealthCheck<Container> healthCheck,
                 ReadableDuration timeout) {
             ClusterHealthCheck clusterHealthCheck = serviceHealthCheck(serviceName, healthCheck);
             return addClusterWait(new ClusterWait(clusterHealthCheck, timeout));
         }
 
-        default B waitingForServices(List<String> services, HealthCheck<List<Container>> healthCheck) {
+        default TSelf waitingForServices(List<String> services, HealthCheck<List<Container>> healthCheck) {
             return waitingForServices(services, healthCheck, DEFAULT_TIMEOUT);
         }
 
-        default B waitingForServices(List<String> services, HealthCheck<List<Container>> healthCheck,
+        default TSelf waitingForServices(List<String> services, HealthCheck<List<Container>> healthCheck,
                 ReadableDuration timeout) {
             ClusterHealthCheck clusterHealthCheck = serviceHealthCheck(services, healthCheck);
             return addClusterWait(new ClusterWait(clusterHealthCheck, timeout));
         }
 
-        default B waitingForHostNetworkedPort(int port, HealthCheck<DockerPort> healthCheck) {
+        default TSelf waitingForHostNetworkedPort(int port, HealthCheck<DockerPort> healthCheck) {
             return waitingForHostNetworkedPort(port, healthCheck, DEFAULT_TIMEOUT);
         }
 
-        default B waitingForHostNetworkedPort(int port, HealthCheck<DockerPort> healthCheck,
+        default TSelf waitingForHostNetworkedPort(int port, HealthCheck<DockerPort> healthCheck,
                 ReadableDuration timeout) {
             ClusterHealthCheck clusterHealthCheck = transformingHealthCheck(cluster -> new DockerPort(cluster.ip(), port, port), healthCheck);
             return addClusterWait(new ClusterWait(clusterHealthCheck, timeout));
         }
 
-        default B clusterWaits(Iterable<? extends ClusterWait> elements) {
+        default TSelf clusterWaits(Iterable<? extends ClusterWait> elements) {
             return addAllClusterWaits(elements);
         }
     }
