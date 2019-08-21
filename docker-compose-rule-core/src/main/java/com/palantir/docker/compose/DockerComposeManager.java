@@ -281,47 +281,18 @@ public abstract class DockerComposeManager {
         return dockerCompose().run(options, containerName, arguments);
     }
 
-    public interface BuilderExtensions {
-        BuilderExtensions file(String dockerComposeYmlFile);
+    public interface BuilderExtensions<B> {
+        B files(DockerComposeFiles files);
 
-        /**
-         * Save the output of docker logs to files, stored in the <code>path</code> directory.
-         *
-         * See {@link LogDirectory} for some useful utilities, for example:
-         * {@link LogDirectory#circleAwareLogDirectory}.
-         *
-         * @param path directory into which log files should be saved
-         */
-        BuilderExtensions saveLogsTo(String path);
+        B logCollector(LogCollector logCollector);
 
-        /**
-         * Deprecated.
-         * @deprecated Please use {@link DockerComposeManager#shutdownStrategy()} with {@link ShutdownStrategy#SKIP} instead.
-         */
-        @Deprecated
-        BuilderExtensions skipShutdown(boolean skipShutdown);
+        B shutdownStrategy(ShutdownStrategy shutdownStrategy);
 
+        B addClusterWait(ClusterWait element);
 
-        BuilderExtensions waitingForService(String serviceName, HealthCheck<Container> healthCheck);
+        B addAllClusterWaits(Iterable<? extends ClusterWait> elements);
 
-        BuilderExtensions waitingForService(
-                String serviceName, HealthCheck<Container> healthCheck, ReadableDuration timeout);
-
-        BuilderExtensions waitingForServices(List<String> services, HealthCheck<List<Container>> healthCheck);
-
-        BuilderExtensions waitingForServices(
-                List<String> services, HealthCheck<List<Container>> healthCheck, ReadableDuration timeout);
-
-        BuilderExtensions waitingForHostNetworkedPort(int port, HealthCheck<DockerPort> healthCheck);
-
-        BuilderExtensions waitingForHostNetworkedPort(
-                int port, HealthCheck<DockerPort> healthCheck, ReadableDuration timeout);
-
-        BuilderExtensions clusterWaits(Iterable<? extends ClusterWait> elements);
-    }
-
-    public static class Builder extends ImmutableDockerComposeManager.Builder implements BuilderExtensions {
-        public Builder file(String dockerComposeYmlFile) {
+        default B file(String dockerComposeYmlFile) {
             return files(DockerComposeFiles.from(dockerComposeYmlFile));
         }
 
@@ -333,7 +304,7 @@ public abstract class DockerComposeManager {
          *
          * @param path directory into which log files should be saved
          */
-        public Builder saveLogsTo(String path) {
+        default B saveLogsTo(String path) {
             return logCollector(FileLogCollector.fromPath(path));
         }
 
@@ -342,45 +313,50 @@ public abstract class DockerComposeManager {
          * @deprecated Please use {@link DockerComposeManager#shutdownStrategy()} with {@link ShutdownStrategy#SKIP} instead.
          */
         @Deprecated
-        public Builder skipShutdown(boolean skipShutdown) {
+        default B skipShutdown(boolean skipShutdown) {
             if (skipShutdown) {
                 return shutdownStrategy(ShutdownStrategy.SKIP);
             }
 
-            return this;
+            return (B) this;
         }
 
-        public Builder waitingForService(String serviceName, HealthCheck<Container> healthCheck) {
+        default B waitingForService(String serviceName, HealthCheck<Container> healthCheck) {
             return waitingForService(serviceName, healthCheck, DEFAULT_TIMEOUT);
         }
 
-        public Builder waitingForService(String serviceName, HealthCheck<Container> healthCheck, ReadableDuration timeout) {
+        default B waitingForService(String serviceName, HealthCheck<Container> healthCheck,
+                ReadableDuration timeout) {
             ClusterHealthCheck clusterHealthCheck = serviceHealthCheck(serviceName, healthCheck);
             return addClusterWait(new ClusterWait(clusterHealthCheck, timeout));
         }
 
-        public Builder waitingForServices(List<String> services, HealthCheck<List<Container>> healthCheck) {
+        default B waitingForServices(List<String> services, HealthCheck<List<Container>> healthCheck) {
             return waitingForServices(services, healthCheck, DEFAULT_TIMEOUT);
         }
 
-        public Builder waitingForServices(List<String> services, HealthCheck<List<Container>> healthCheck, ReadableDuration timeout) {
+        default B waitingForServices(List<String> services, HealthCheck<List<Container>> healthCheck,
+                ReadableDuration timeout) {
             ClusterHealthCheck clusterHealthCheck = serviceHealthCheck(services, healthCheck);
             return addClusterWait(new ClusterWait(clusterHealthCheck, timeout));
         }
 
-        public Builder waitingForHostNetworkedPort(int port, HealthCheck<DockerPort> healthCheck) {
+        default B waitingForHostNetworkedPort(int port, HealthCheck<DockerPort> healthCheck) {
             return waitingForHostNetworkedPort(port, healthCheck, DEFAULT_TIMEOUT);
         }
 
-        public Builder waitingForHostNetworkedPort(int port, HealthCheck<DockerPort> healthCheck, ReadableDuration timeout) {
+        default B waitingForHostNetworkedPort(int port, HealthCheck<DockerPort> healthCheck,
+                ReadableDuration timeout) {
             ClusterHealthCheck clusterHealthCheck = transformingHealthCheck(cluster -> new DockerPort(cluster.ip(), port, port), healthCheck);
             return addClusterWait(new ClusterWait(clusterHealthCheck, timeout));
         }
 
-        public Builder clusterWaits(Iterable<? extends ClusterWait> elements) {
+        default B clusterWaits(Iterable<? extends ClusterWait> elements) {
             return addAllClusterWaits(elements);
         }
+    }
 
+    public static class Builder extends ImmutableDockerComposeManager.Builder implements BuilderExtensions<Builder> {
         @Override
         public DockerComposeManager build() {
             return super.build();

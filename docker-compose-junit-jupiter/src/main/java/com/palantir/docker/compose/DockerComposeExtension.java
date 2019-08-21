@@ -16,20 +16,7 @@
 
 package com.palantir.docker.compose;
 
-import static com.palantir.docker.compose.connection.waiting.ClusterHealthCheck.serviceHealthCheck;
-import static com.palantir.docker.compose.connection.waiting.ClusterHealthCheck.transformingHealthCheck;
-
-import com.palantir.docker.compose.configuration.DockerComposeFiles;
-import com.palantir.docker.compose.configuration.ShutdownStrategy;
-import com.palantir.docker.compose.connection.Container;
-import com.palantir.docker.compose.connection.DockerPort;
-import com.palantir.docker.compose.connection.waiting.ClusterHealthCheck;
-import com.palantir.docker.compose.connection.waiting.ClusterWait;
-import com.palantir.docker.compose.connection.waiting.HealthCheck;
-import com.palantir.docker.compose.logging.FileLogCollector;
-import java.util.List;
 import org.immutables.value.Value;
-import org.joda.time.ReadableDuration;
 import org.junit.jupiter.api.extension.AfterEachCallback;
 import org.junit.jupiter.api.extension.BeforeEachCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
@@ -53,65 +40,7 @@ public abstract class DockerComposeExtension extends DockerComposeManager
         return new Builder();
     }
 
-    public static class Builder extends ImmutableDockerComposeExtension.Builder implements BuilderExtensions {
-        @Override
-        public Builder file(String dockerComposeYmlFile) {
-            return files(DockerComposeFiles.from(dockerComposeYmlFile));
-        }
-
-        @Override
-        public Builder saveLogsTo(String path) {
-            return logCollector(FileLogCollector.fromPath(path));
-        }
-
-        @Override
-        public Builder skipShutdown(boolean skipShutdown) {
-            if (skipShutdown) {
-                return shutdownStrategy(ShutdownStrategy.SKIP);
-            }
-
-            return this;
-        }
-
-        @Override
-        public Builder waitingForService(String serviceName, HealthCheck<Container> healthCheck) {
-            return waitingForService(serviceName, healthCheck, DEFAULT_TIMEOUT);
-        }
-
-        @Override
-        public Builder waitingForService(String serviceName, HealthCheck<Container> healthCheck, ReadableDuration timeout) {
-            ClusterHealthCheck clusterHealthCheck = serviceHealthCheck(serviceName, healthCheck);
-            return addClusterWait(new ClusterWait(clusterHealthCheck, timeout));
-        }
-
-        @Override
-        public Builder waitingForServices(List<String> services, HealthCheck<List<Container>> healthCheck) {
-            return waitingForServices(services, healthCheck, DEFAULT_TIMEOUT);
-        }
-
-        @Override
-        public Builder waitingForServices(List<String> services, HealthCheck<List<Container>> healthCheck, ReadableDuration timeout) {
-            ClusterHealthCheck clusterHealthCheck = serviceHealthCheck(services, healthCheck);
-            return addClusterWait(new ClusterWait(clusterHealthCheck, timeout));
-        }
-
-        @Override
-        public Builder waitingForHostNetworkedPort(int port, HealthCheck<DockerPort> healthCheck) {
-            return waitingForHostNetworkedPort(port, healthCheck, DEFAULT_TIMEOUT);
-        }
-
-        @Override
-        public Builder waitingForHostNetworkedPort(int port, HealthCheck<DockerPort> healthCheck, ReadableDuration timeout) {
-            ClusterHealthCheck clusterHealthCheck = transformingHealthCheck(cluster ->
-                    new DockerPort(cluster.ip(), port, port), healthCheck);
-            return addClusterWait(new ClusterWait(clusterHealthCheck, timeout));
-        }
-
-        @Override
-        public Builder clusterWaits(Iterable<? extends ClusterWait> elements) {
-            return addAllClusterWaits(elements);
-        }
-
+    public static class Builder extends ImmutableDockerComposeExtension.Builder implements BuilderExtensions<Builder> {
         @Override
         public DockerComposeExtension build() {
             return super.build();
