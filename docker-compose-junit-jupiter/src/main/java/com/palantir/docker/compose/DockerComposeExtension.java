@@ -16,23 +16,27 @@
 
 package com.palantir.docker.compose;
 
+import java.io.IOException;
 import org.immutables.value.Value;
-import org.junit.jupiter.api.extension.AfterEachCallback;
-import org.junit.jupiter.api.extension.BeforeEachCallback;
+import org.junit.jupiter.api.extension.AfterAllCallback;
+import org.junit.jupiter.api.extension.BeforeAllCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
 
+/**
+ * A JUnit 5 extension to bring up Docker containers defined in a docker-compose.yml before running tests.
+ */
 @Value.Immutable
 @CustomImmutablesStyle
 public abstract class DockerComposeExtension extends DockerComposeManager
-        implements BeforeEachCallback, AfterEachCallback {
+        implements BeforeAllCallback, AfterAllCallback {
 
     @Override
-    public void beforeEach(ExtensionContext context) throws Exception {
+    public void beforeAll(ExtensionContext unused) throws IOException, InterruptedException {
         before();
     }
 
     @Override
-    public void afterEach(ExtensionContext context) throws Exception {
+    public void afterAll(ExtensionContext unused) {
         after();
     }
 
