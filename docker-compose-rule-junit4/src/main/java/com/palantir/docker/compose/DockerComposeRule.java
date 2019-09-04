@@ -16,20 +16,9 @@
 
 package com.palantir.docker.compose;
 
-import static com.palantir.docker.compose.connection.waiting.ClusterHealthCheck.serviceHealthCheck;
-import static com.palantir.docker.compose.connection.waiting.ClusterHealthCheck.transformingHealthCheck;
-
-import com.palantir.docker.compose.configuration.DockerComposeFiles;
-import com.palantir.docker.compose.configuration.ShutdownStrategy;
-import com.palantir.docker.compose.connection.Container;
-import com.palantir.docker.compose.connection.DockerPort;
-import com.palantir.docker.compose.connection.waiting.ClusterHealthCheck;
-import com.palantir.docker.compose.connection.waiting.ClusterWait;
-import com.palantir.docker.compose.connection.waiting.HealthCheck;
-import com.palantir.docker.compose.logging.FileLogCollector;
-import java.util.List;
+import com.palantir.docker.compose.report.TestDescription;
+import java.util.Optional;
 import org.immutables.value.Value;
-import org.joda.time.ReadableDuration;
 import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
@@ -39,6 +28,12 @@ import org.junit.runners.model.Statement;
 public abstract class DockerComposeRule extends DockerComposeManager implements TestRule {
     @Override
     public Statement apply(Statement base, Description description) {
+        this.setDescription(TestDescription.builder()
+                .testClass(Optional.ofNullable(description.getClassName()))
+                .displayName(Optional.ofNullable(description.getDisplayName()))
+                .method(Optional.ofNullable(description.getMethodName()))
+                .build());
+
         return new Statement() {
             @Override
             public void evaluate() throws Throwable {
@@ -56,65 +51,7 @@ public abstract class DockerComposeRule extends DockerComposeManager implements 
         return new Builder();
     }
 
-    public static class Builder extends ImmutableDockerComposeRule.Builder implements BuilderExtensions {
-        @Override
-        public Builder file(String dockerComposeYmlFile) {
-            return files(DockerComposeFiles.from(dockerComposeYmlFile));
-        }
-
-        @Override
-        public Builder saveLogsTo(String path) {
-            return logCollector(FileLogCollector.fromPath(path));
-        }
-
-        @Override
-        public Builder skipShutdown(boolean skipShutdown) {
-            if (skipShutdown) {
-                return shutdownStrategy(ShutdownStrategy.SKIP);
-            }
-
-            return this;
-        }
-
-        @Override
-        public Builder waitingForService(String serviceName, HealthCheck<Container> healthCheck) {
-            return waitingForService(serviceName, healthCheck, DEFAULT_TIMEOUT);
-        }
-
-        @Override
-        public Builder waitingForService(String serviceName, HealthCheck<Container> healthCheck, ReadableDuration timeout) {
-            ClusterHealthCheck clusterHealthCheck = serviceHealthCheck(serviceName, healthCheck);
-            return addClusterWait(new ClusterWait(clusterHealthCheck, timeout));
-        }
-
-        @Override
-        public Builder waitingForServices(List<String> services, HealthCheck<List<Container>> healthCheck) {
-            return waitingForServices(services, healthCheck, DEFAULT_TIMEOUT);
-        }
-
-        @Override
-        public Builder waitingForServices(List<String> services, HealthCheck<List<Container>> healthCheck, ReadableDuration timeout) {
-            ClusterHealthCheck clusterHealthCheck = serviceHealthCheck(services, healthCheck);
-            return addClusterWait(new ClusterWait(clusterHealthCheck, timeout));
-        }
-
-        @Override
-        public Builder waitingForHostNetworkedPort(int port, HealthCheck<DockerPort> healthCheck) {
-            return waitingForHostNetworkedPort(port, healthCheck, DEFAULT_TIMEOUT);
-        }
-
-        @Override
-        public Builder waitingForHostNetworkedPort(int port, HealthCheck<DockerPort> healthCheck, ReadableDuration timeout) {
-            ClusterHealthCheck clusterHealthCheck = transformingHealthCheck(cluster ->
-                    new DockerPort(cluster.ip(), port, port), healthCheck);
-            return addClusterWait(new ClusterWait(clusterHealthCheck, timeout));
-        }
-
-        @Override
-        public Builder clusterWaits(Iterable<? extends ClusterWait> elements) {
-            return addAllClusterWaits(elements);
-        }
-
+    public static class Builder extends ImmutableDockerComposeRule.Builder implements BuilderExtensions<Builder> {
         @Override
         public DockerComposeRule build() {
             return super.build();

@@ -63,6 +63,32 @@ This will cause the containers defined in `src/test/resources/docker-compose.yml
 
 The `docker-compose.yml` file is referenced using the path given, relative to the working directory of the test. It will not be copied elsewhere and so references to shared directories and other resources for your containers can be made using path relative to this file as normal. If you wish to manually run the Docker containers for debugging the tests simply run `docker-compose up` in the same directory as the `docker-compose.yml`.
 
+### JUnit 5
+
+If you'd prefer to use JUnit 5 (aka JUnit Jupiter), use the following dependency and replace your usages of `DockerComposeRule` with `DockerComposeExtension`.
+
+```gradle
+dependencies {
+    testCompile 'com.palantir.docker.compose:docker-compose-junit-jupiter:<latest-tag-from-bintray>'
+}
+```
+
+```java
+public class MyIntegrationTest {
+
+    @RegisterExtension
+    public static DockerComposeExtension docker = DockerComposeExtension.builder()
+            .file("src/test/resources/docker-compose.yml")
+            .build();
+
+    @Test
+    public void testThatUsesSomeDockerServices() throws InterruptedException, IOException {
+       ...
+    }
+
+}
+```
+
 ### Running on a Mac
 
 The above example will work out of the box on Linux machines with Docker installed. On Mac you will first need to install Docker using the instructions [here](https://docs.docker.com/v1.8/installation/mac/).
