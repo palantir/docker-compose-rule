@@ -14,8 +14,8 @@ buildscript {
         classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.8.4'
         classpath 'com.netflix.nebula:nebula-publishing-plugin:13.3.0'
         classpath 'com.palantir.baseline:gradle-baseline-java:0.62.1'
-        classpath 'com.palantir.gradle.consistentversions:gradle-consistent-versions:1.11.2'
-        classpath 'gradle.plugin.com.palantir.gradle.gitversion:gradle-git-version:0.11.0'
+        classpath 'com.palantir.gradle.consistentversions:gradle-consistent-versions:1.12.1'
+        classpath 'com.palantir.gradle.gitversion:gradle-git-version:0.12.2'
         classpath 'gradle.plugin.org.inferred:gradle-processors:3.1.0'
         classpath 'org.unbroken-dome.gradle-plugins:gradle-testsets-plugin:2.1.1'
         classpath 'com.palantir.gradle.conjure:gradle-conjure:4.13.1'
@@ -23,7 +23,7 @@ buildscript {
 }
 
 plugins {
-    id 'com.palantir.git-version' version '0.11.0'
+    id 'com.palantir.git-version' version '0.12.2'
     id 'com.palantir.configuration-resolver' version '0.2.0'
 }
 
