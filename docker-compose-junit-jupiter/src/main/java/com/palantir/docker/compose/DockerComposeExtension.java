@@ -32,7 +32,12 @@ public abstract class DockerComposeExtension extends DockerComposeManager
 
     @Override
     public void beforeAll(ExtensionContext unused) throws IOException, InterruptedException {
-        before();
+        try {
+            before();
+        } catch (RuntimeException e) {
+            after();
+            throw e;
+        }
     }
 
     @Override

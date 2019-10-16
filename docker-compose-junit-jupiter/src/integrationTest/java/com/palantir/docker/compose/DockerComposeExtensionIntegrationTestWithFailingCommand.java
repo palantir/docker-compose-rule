@@ -19,40 +19,27 @@ package com.palantir.docker.compose;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.palantir.docker.compose.configuration.DockerComposeFiles;
+import com.palantir.docker.compose.connection.State;
 import com.palantir.docker.compose.connection.waiting.HealthChecks;
+import java.io.IOException;
+import org.joda.time.Duration;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
-public class DockerComposeExtensionIntegrationTest {
+public class DockerComposeExtensionIntegrationTestWithFailingCommand {
 
     @RegisterExtension
     public static final DockerComposeExtension docker = DockerComposeExtension.builder()
-                .files(DockerComposeFiles.from("src/integrationTest/resources/docker-compose.yaml"))
-                .waitingForService("db", HealthChecks.toHaveAllPortsOpen())
-                .waitingForService("db2", HealthChecks.toHaveAllPortsOpen())
-                .waitingForService("db3", HealthChecks.toHaveAllPortsOpen())
-                .waitingForService("db4", HealthChecks.toHaveAllPortsOpen())
-                .build();
-
-    private static int port;
+            .files(DockerComposeFiles.from("src/integrationTest/resources/docker-compose-with-failing-command"
+                    + ".yaml"))
+            .waitingForService("cmd", HealthChecks.toRespondOverHttp(9999, _$ -> "http://will-fail"),
+                    Duration.millis(50))
+            .build();
 
     @Test
     @Order(1)
-    public void an_external_port_exists() {
-        port = docker.containers().container("db").port(5432).getExternalPort();
-        assertThat(port).isNotZero();
-    }
-
-    @Test
-    @Order(2)
-    public void container_stays_up_between_tests() {
-        assertThat(docker.containers().container("db").port(5432).getExternalPort()).isEqualTo(port);
-    }
-
-    @Test
-    @Order(3)
-    public void calls_after_on_exception() {
-        assertThat(docker.containers().container("db").port(5432).getExternalPort()).isEqualTo(port);
+    public void calls_after_on_exception() throws IOException, InterruptedException {
+        assertThat(docker.containers().container("cmd").state()).isEqualTo(State.DOWN);
     }
 }
