@@ -1,0 +1,8 @@
+type: improvement
+improvement:
+  description: |-
+    always copy logs to circle in finally
+
+    doesnt work - jupiter always calls after anyway
+  links:
+  - https://github.com/palantir/docker-compose-rule/pull/384
