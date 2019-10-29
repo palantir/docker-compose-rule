@@ -30,19 +30,24 @@ import org.junit.jupiter.api.extension.ExtensionContext;
 public abstract class DockerComposeExtension extends DockerComposeManager
         implements BeforeAllCallback, AfterAllCallback {
 
+    private boolean hasCalledAfterMethod;
+
     @Override
     public void beforeAll(ExtensionContext unused) throws IOException, InterruptedException {
         try {
             before();
         } catch (RuntimeException e) {
             after();
+            hasCalledAfterMethod = true;
             throw e;
         }
     }
 
     @Override
     public void afterAll(ExtensionContext unused) {
-        after();
+        if (!hasCalledAfterMethod) {
+            after();
+        }
     }
 
     public static Builder builder() {
