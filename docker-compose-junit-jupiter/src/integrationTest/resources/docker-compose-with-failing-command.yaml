@@ -1,5 +1,0 @@
-cmd:
-  image: appropriate/nc
-  command: /bin/sh -c 'sleep 1000'
-  ports:
-    - "9999:9999"
