@@ -35,7 +35,6 @@ public class DockerComposeExtensionTest {
     public void calls_after_only_once() throws IOException, InterruptedException {
         AtomicInteger count = new AtomicInteger();
         DockerComposeExtension dockerComposeExtension = new DockerComposeExtension() {
-
             @Override
             public void before() {
                 throw new IllegalStateException("some error");
