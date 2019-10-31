@@ -49,10 +49,4 @@ public class DockerComposeExtensionIntegrationTest {
     public void container_stays_up_between_tests() {
         assertThat(docker.containers().container("db").port(5432).getExternalPort()).isEqualTo(port);
     }
-
-    @Test
-    @Order(3)
-    public void calls_after_on_exception() {
-        assertThat(docker.containers().container("db").port(5432).getExternalPort()).isEqualTo(port);
-    }
 }
