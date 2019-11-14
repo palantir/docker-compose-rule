@@ -76,6 +76,7 @@ public abstract class DockerComposeManager {
     public static final int DEFAULT_RETRY_ATTEMPTS = 2;
 
     private final RunRecorder runRecorder = RunRecorder.defaults();
+    private boolean hasCalledAfterMethod;
 
     public DockerPort hostNetworkedPort(int port) {
         return new DockerPort(machine().getIp(), port, port);
@@ -177,13 +178,19 @@ public abstract class DockerComposeManager {
     }
 
     public void before() throws IOException, InterruptedException {
-        log.debug("Starting docker-compose cluster");
+        try {
+            log.debug("Starting docker-compose cluster");
 
-        runRecorder.before(() -> dockerCompose().config());
+            runRecorder.before(() -> dockerCompose().config());
 
-        pullBuildAndUp();
+            pullBuildAndUp();
 
-        emitEventsFor().waitingForServices(this::waitForServices);
+            emitEventsFor().waitingForServices(this::waitForServices);
+        } catch (RuntimeException e) {
+            after();
+            hasCalledAfterMethod = true;
+            throw e;
+        }
     }
 
     private void pullBuildAndUp() throws IOException, InterruptedException {
@@ -254,6 +261,10 @@ public abstract class DockerComposeManager {
     }
 
     public void after() {
+        if (hasCalledAfterMethod) {
+            return;
+        }
+
         try {
             emitEventsFor().shutdownStop(() ->
                     shutdownStrategy().stop(this.dockerCompose()));

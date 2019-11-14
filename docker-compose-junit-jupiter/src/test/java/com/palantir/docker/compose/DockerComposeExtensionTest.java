@@ -22,7 +22,6 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import com.palantir.docker.compose.configuration.DockerComposeFiles;
 import com.palantir.docker.compose.connection.waiting.ClusterWait;
 import com.palantir.docker.compose.events.EventConsumer;
-import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.jupiter.api.Test;
@@ -32,7 +31,7 @@ import org.mockito.Mockito;
 public class DockerComposeExtensionTest {
 
     @Test
-    public void calls_after_only_once() throws IOException, InterruptedException {
+    public void calls_after_only_once() {
         AtomicInteger count = new AtomicInteger();
         DockerComposeExtension dockerComposeExtension = new DockerComposeExtension() {
             @Override
