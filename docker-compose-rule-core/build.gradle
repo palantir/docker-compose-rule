@@ -8,24 +8,28 @@ build.dependsOn integrationTest
 
 dependencies {
     api project(':docker-compose-rule-events-api:docker-compose-rule-events-api-objects')
-    compile 'com.jayway.awaitility:awaitility'
-    compile 'com.github.zafarkhaja:java-semver'
-    compile 'com.google.guava:guava'
-    compile 'commons-io:commons-io'
-    compile 'joda-time:joda-time'
-    compile 'org.apache.commons:commons-lang3:3.0'
-    compile 'org.hamcrest:hamcrest-core'
-    compile 'org.slf4j:slf4j-api'
+    api 'joda-time:joda-time'
+
+    implementation 'com.fasterxml.jackson.core:jackson-core'
+    implementation 'com.fasterxml.jackson.core:jackson-databind'
     implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-yaml'
-    implementation 'com.palantir.conjure.java.runtime:conjure-java-jackson-serialization'
+    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-guava'
+    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jdk8'
+    implementation 'commons-io:commons-io'
+    implementation 'com.github.zafarkhaja:java-semver'
+    implementation 'com.google.guava:guava'
+    implementation 'com.jayway.awaitility:awaitility'
     implementation 'one.util:streamex'
+    implementation 'org.apache.commons:commons-lang3'
+    implementation 'org.hamcrest:hamcrest-core'
+    implementation 'org.slf4j:slf4j-api'
 
-    testCompile 'com.github.stefanbirkner:system-rules'
-    testCompile 'junit:junit'
-    testCompile 'org.assertj:assertj-core'
-    testCompile 'org.mockito:mockito-core'
-    testCompile 'org.slf4j:slf4j-simple'
+    testImplementation 'com.github.stefanbirkner:system-rules'
     testImplementation 'com.github.tomakehurst:wiremock'
+    testImplementation 'junit:junit'
+    testImplementation 'org.assertj:assertj-core'
+    testImplementation 'org.mockito:mockito-core'
+    testImplementation 'org.slf4j:slf4j-simple'
 
-    integrationTestCompile project.sourceSets.test.output
+    integrationTestImplementation project.sourceSets.test.output
 }

@@ -18,11 +18,10 @@ package com.palantir.docker.compose.reporting;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.palantir.conjure.java.serialization.ObjectMappers;
 import com.palantir.docker.compose.report.Report;
 
 class ReportPoster {
-    private static final ObjectMapper OBJECT_MAPPER = ObjectMappers.newClientObjectMapper();
+    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
     private final HttpJsonPoster webhookPoster;
 
