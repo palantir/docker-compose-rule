@@ -9,9 +9,9 @@ build.dependsOn integrationTest
 dependencies {
     api project(':docker-compose-rule-events-api:docker-compose-rule-events-api-objects')
     api project(':docker-compose-rule-core')
+    api 'junit:junit'
 
     implementation 'com.google.guava:guava'
-    implementation 'junit:junit'
 
     testImplementation 'org.hamcrest:hamcrest-core'
     testImplementation 'org.mockito:mockito-core'
