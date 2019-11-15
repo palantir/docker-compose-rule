@@ -7,10 +7,13 @@ testSets {
 build.dependsOn integrationTest
 
 dependencies {
-    compile project(':docker-compose-rule-core')
-    compile 'junit:junit'
+    api project(':docker-compose-rule-events-api:docker-compose-rule-events-api-objects')
+    api project(':docker-compose-rule-core')
+    api 'junit:junit'
 
-    testCompile 'org.hamcrest:hamcrest-core'
-    testCompile 'org.mockito:mockito-core'
-    testCompile 'org.assertj:assertj-core'
+    implementation 'com.google.guava:guava'
+
+    testImplementation 'org.hamcrest:hamcrest-core'
+    testImplementation 'org.mockito:mockito-core'
+    testImplementation 'org.assertj:assertj-core'
 }

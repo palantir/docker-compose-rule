@@ -21,7 +21,6 @@ import static com.jayway.awaitility.Awaitility.await;
 import static com.palantir.docker.compose.execution.DockerComposeExecArgument.arguments;
 import static com.palantir.docker.compose.execution.DockerComposeExecOption.noOptions;
 import static org.junit.Assert.fail;
-import static org.junit.Assume.assumeThat;
 
 import com.github.zafarkhaja.semver.Version;
 import com.palantir.docker.compose.connection.Container;
@@ -37,8 +36,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import org.hamcrest.Matchers;
 import org.junit.After;
+import org.junit.AssumptionViolatedException;
 import org.junit.Test;
-import org.mockito.internal.matchers.GreaterOrEqual;
 
 public class DockerComposeManagerNativeHealthcheckIntegrationTest {
 
@@ -61,8 +60,12 @@ public class DockerComposeManagerNativeHealthcheckIntegrationTest {
     @Test
     public void dockerComposeManagerWaitsUntilHealthcheckPasses()
             throws ExecutionException, IOException, InterruptedException, TimeoutException {
-        assumeThat("docker version", Docker.version(), new GreaterOrEqual<>(Version.forIntegers(1, 12, 0)));
-        assumeThat("docker-compose version", DockerCompose.version(), new GreaterOrEqual<>(Version.forIntegers(1, 10, 0)));
+        if (Docker.version().compareTo(Version.forIntegers(1, 12, 0)) < 0) {
+            throw new AssumptionViolatedException("docker version");
+        }
+        if (DockerCompose.version().compareTo(Version.forIntegers(1, 10, 0)) < 0) {
+            throw new AssumptionViolatedException("docker-compose version");
+        }
 
         docker = new DockerComposeManager.Builder()
                 .file("src/test/resources/native-healthcheck.yaml")
