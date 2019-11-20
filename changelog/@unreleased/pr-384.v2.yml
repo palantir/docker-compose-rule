@@ -1,0 +1,6 @@
+type: improvement
+improvement:
+  description: |-
+    copy logs to circle even if there's an error initializing in `before`
+  links:
+  - https://github.com/palantir/docker-compose-rule/pull/384

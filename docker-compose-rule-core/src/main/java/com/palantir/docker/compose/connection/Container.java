@@ -88,7 +88,8 @@ public class Container {
                            .stream()
                            .filter(port -> port.getInternalPort() == internalPort)
                            .findFirst()
-                           .orElseThrow(() -> new IllegalArgumentException("No internal port '" + internalPort + "' for container '" + containerName + "': " + portMappings));
+                           .orElseThrow(() -> new IllegalArgumentException("No internal port '" + internalPort + "' "
+                                   + "for container '" + containerName + "': " + portMappings.get()));
     }
 
     public void start() throws IOException, InterruptedException {
