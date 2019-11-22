@@ -215,6 +215,9 @@ workflows:
           requires: [ compile ]
           filters: { tags: { only: /.*/ } }
 
+      - markdown:
+          filters: { tags: { only: /.*/ } }
+
       - trial-publish:
           requires: [ compile ]
 
