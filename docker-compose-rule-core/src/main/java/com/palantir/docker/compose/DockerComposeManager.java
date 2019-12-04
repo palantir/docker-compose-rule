@@ -126,7 +126,7 @@ public abstract class DockerComposeManager {
     @Value.Default
     public com.palantir.docker.compose.execution.DockerCompose dockerCompose() {
         com.palantir.docker.compose.execution.DockerCompose
-                dockerCompose = new DefaultDockerCompose(dockerComposeExecutable(), machine());
+                dockerCompose = new DefaultDockerCompose(dockerComposeExecutable(), dockerExecutable(), machine());
         return new RetryingDockerCompose(retryAttempts(), dockerCompose);
     }
 
