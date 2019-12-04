@@ -69,7 +69,7 @@ public class ContainerIntegrationTests {
      */
     @Test
     public void testStateChanges_withHealthCheck() throws IOException, InterruptedException {
-        assumeThat("docker version", Docker.version(), new GreaterOrEqual<>(Version.forIntegers(1, 12, 0)));
+        assumeThat("docker version", Version.valueOf("19.3.5"), new GreaterOrEqual<>(Version.forIntegers(1, 12, 0)));
         assumeThat("docker-compose version", DockerCompose.version(), new GreaterOrEqual<>(Version.forIntegers(1, 10, 0)));
 
         DockerCompose dockerCompose = new DefaultDockerCompose(

@@ -272,6 +272,7 @@ public class DefaultDockerCompose implements DockerCompose {
 
         String portOutput = dockerCommand.execute(Command.throwingOnError(),
                 "ps",
+                "-a", // Show all containers, not just running
                 "--no-trunc",
                 "--filter",
                 String.format("id=%s", containerId),

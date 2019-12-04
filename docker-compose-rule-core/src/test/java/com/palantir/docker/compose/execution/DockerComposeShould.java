@@ -198,6 +198,7 @@ public class DockerComposeShould {
 
         verify(dockerComposeExecutor).execute("ps", "-q", "db");
         verify(dockerExecutor).execute("ps",
+                "-a",
                 "--no-trunc",
                 "--filter",
                 String.format("id=%s", CONTAINER_ID),

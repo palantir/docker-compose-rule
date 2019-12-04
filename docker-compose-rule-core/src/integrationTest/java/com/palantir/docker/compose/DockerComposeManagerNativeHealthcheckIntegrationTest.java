@@ -61,7 +61,7 @@ public class DockerComposeManagerNativeHealthcheckIntegrationTest {
     @Test
     public void dockerComposeManagerWaitsUntilHealthcheckPasses()
             throws ExecutionException, IOException, InterruptedException, TimeoutException {
-        assumeThat("docker version", Docker.version(), new GreaterOrEqual<>(Version.forIntegers(1, 12, 0)));
+        assumeThat("docker version", Version.valueOf("19.3.5"), new GreaterOrEqual<>(Version.forIntegers(1, 12, 0)));
         assumeThat("docker-compose version", DockerCompose.version(), new GreaterOrEqual<>(Version.forIntegers(1, 10, 0)));
 
         docker = new DockerComposeManager.Builder()
