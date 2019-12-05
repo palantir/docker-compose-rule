@@ -20,14 +20,18 @@ import static com.palantir.docker.compose.execution.DockerComposeExecOption.opti
 import static org.apache.commons.io.IOUtils.toInputStream;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.core.Is.is;
 import static org.mockito.Matchers.anyVararg;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 
+import com.google.common.base.Joiner;
+import com.google.common.collect.ImmutableList;
 import com.palantir.docker.compose.connection.Container;
 import com.palantir.docker.compose.connection.ContainerName;
 import com.palantir.docker.compose.connection.DockerMachine;
@@ -116,9 +120,80 @@ public class DockerComposeShould {
         assertThat(containerNames, contains(ImmutableContainerName.builder().semanticName("db").rawName("dir_db_1").build()));
     }
 
+    @Test
+    public void parse_and_returns_multiple_container_names() throws IOException, InterruptedException {
+        String containerIdA = RandomStringUtils.randomAlphanumeric(20);
+        String containerIdB = RandomStringUtils.randomAlphanumeric(20);
+        String containerIdC = RandomStringUtils.randomAlphanumeric(20);
+        String containerIdString = Joiner.on("\n").join(containerIdA, containerIdB, containerIdC);
+
+        when(dockerComposeExecutor.execute(anyVararg())).thenReturn(dockerComposeExecutedProcess);
+        when(dockerComposeExecutedProcess.getInputStream()).thenReturn(toInputStream(containerIdString, DEFAULT_CHARSET));
+        when(dockerComposeExecutedProcess.exitValue()).thenReturn(0);
+
+        String containerNameA = "custom.container.name";
+        String containerNameB = "directory_service_index";
+        String containerNameC = "directory_service_index_slug";
+        String containerNameString = Joiner.on("\n").join(containerNameA, containerNameB, containerNameC);
+        when(dockerExecutor.execute(anyVararg())).thenReturn(dockerExecutedProcess);
+        when(dockerExecutedProcess.getInputStream()).thenReturn(toInputStream(containerNameString, DEFAULT_CHARSET));
+        when(dockerExecutedProcess.exitValue()).thenReturn(0);
+
+
+        List<ContainerName> containerNames = compose.ps();
+        assertThat(containerNames, is(ImmutableList.of(
+                ImmutableContainerName.builder()
+                .rawName("custom.container.name")
+                .semanticName("custom.container.name")
+                .build(),
+                ImmutableContainerName.builder()
+                        .rawName("directory_service_index")
+                        .semanticName("service")
+                        .build(),
+                ImmutableContainerName.builder()
+                        .rawName("directory_service_index_slug")
+                        .semanticName("service")
+                        .build()
+        )));
+        verify(dockerComposeExecutor).execute("ps", "-q");
+        verify(dockerExecutor).execute(
+                "ps", "-a", "--no-trunc", "--format", "\"{{ .Names }}\"",
+                "--filter", String.format("id=%s", containerIdA),
+                "--filter", String.format("id=%s", containerIdB),
+                "--filter", String.format("id=%s", containerIdC));
+    }
     // multiple container ids, with whitespace, and custom + default names
 
     // No containers
+
+    @Test
+    public void parse_and_returns_no_container_names_when_no_container_ids_are_found() throws IOException, InterruptedException {
+        when(dockerComposeExecutor.execute(anyVararg())).thenReturn(dockerComposeExecutedProcess);
+        when(dockerComposeExecutedProcess.getInputStream()).thenReturn(toInputStream("", DEFAULT_CHARSET));
+        when(dockerComposeExecutedProcess.exitValue()).thenReturn(0);
+
+        List<ContainerName> containerNames = compose.ps();
+        assertThat(containerNames, empty());
+        verify(dockerComposeExecutor).execute("ps", "-q");
+        verifyZeroInteractions(dockerExecutor);
+    }
+
+    @Test
+    public void parse_and_returns_no_container_names_when_no_names_can_be_found_for_container_ids() throws IOException, InterruptedException {
+        when(dockerComposeExecutor.execute(anyVararg())).thenReturn(dockerComposeExecutedProcess);
+        when(dockerComposeExecutedProcess.getInputStream()).thenReturn(toInputStream(CONTAINER_ID, DEFAULT_CHARSET));
+        when(dockerComposeExecutedProcess.exitValue()).thenReturn(0);
+
+        when(dockerExecutor.execute(anyVararg())).thenReturn(dockerExecutedProcess);
+        when(dockerExecutedProcess.getInputStream()).thenReturn(toInputStream("", DEFAULT_CHARSET));
+        when(dockerExecutedProcess.exitValue()).thenReturn(0);
+
+        List<ContainerName> containerNames = compose.ps();
+        assertThat(containerNames, empty());
+        verify(dockerComposeExecutor).execute("ps", "-q");
+        verify(dockerExecutor).execute(
+                "ps", "-a", "--no-trunc", "--format", "\"{{ .Names }}\"", "--filter", String.format("id=%s", CONTAINER_ID));
+    }
 
     @Test
     public void call_docker_compose_with_no_colour_flag_on_logs() throws IOException {
@@ -257,7 +332,7 @@ public class DockerComposeShould {
     @Test
     public void return_the_output_from_the_executed_process_on_docker_compose_exec() throws Exception {
         String lsString = String.format("-rw-r--r--  1 user  1318458867  11326 Mar  9 17:47 LICENSE%n"
-                                        + "-rw-r--r--  1 user  1318458867  12570 May 12 14:51 README.md");
+                + "-rw-r--r--  1 user  1318458867  12570 May 12 14:51 README.md");
 
         String versionString = "docker-compose version 1.7.0rc1, build 1ad8866";
 
@@ -274,7 +349,7 @@ public class DockerComposeShould {
     @Test
     public void return_the_output_from_the_executed_process_on_docker_compose_run() throws Exception {
         String lsString = String.format("-rw-r--r--  1 user  1318458867  11326 Mar  9 17:47 LICENSE%n"
-                                        + "-rw-r--r--  1 user  1318458867  12570 May 12 14:51 README.md");
+                + "-rw-r--r--  1 user  1318458867  12570 May 12 14:51 README.md");
 
         DockerComposeExecutable processExecutor = mock(DockerComposeExecutable.class);
 
