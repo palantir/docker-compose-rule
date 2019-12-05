@@ -48,9 +48,9 @@ public class Ports {
         return ports.stream();
     }
 
-    public static Ports parseFromDockerComposePs(String psOutput, String dockerMachineIp) {
-        Preconditions.checkArgument(!Strings.isNullOrEmpty(psOutput), "No container found");
-        Matcher matcher = PORT_PATTERN.matcher(psOutput);
+    public static Ports parseFromPortsString(String portsString, String dockerMachineIp) {
+        Preconditions.checkArgument(!Strings.isNullOrEmpty(portsString), "No ports found"); // Dupe
+        Matcher matcher = PORT_PATTERN.matcher(portsString);
         List<DockerPort> ports = new ArrayList<>();
         while (matcher.find()) {
             String matchedIpAddress = matcher.group(IP_ADDRESS);

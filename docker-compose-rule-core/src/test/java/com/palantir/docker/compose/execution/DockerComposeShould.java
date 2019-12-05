@@ -101,9 +101,18 @@ public class DockerComposeShould {
 
     @Test
     public void parse_and_returns_container_names_on_ps() throws IOException, InterruptedException {
-        when(dockerComposeExecutedProcess.getInputStream()).thenReturn(toInputStream("ps\n----\ndir_db_1", DEFAULT_CHARSET));
+        when(dockerComposeExecutor.execute(anyVararg())).thenReturn(dockerComposeExecutedProcess);
+        when(dockerComposeExecutedProcess.getInputStream()).thenReturn(toInputStream(CONTAINER_ID, DEFAULT_CHARSET));
+        when(dockerComposeExecutedProcess.exitValue()).thenReturn(0);
+
+        when(dockerExecutor.execute(anyVararg())).thenReturn(dockerExecutedProcess);
+        when(dockerExecutedProcess.getInputStream()).thenReturn(toInputStream("dir_db_1", DEFAULT_CHARSET));
+        when(dockerExecutedProcess.exitValue()).thenReturn(0);
+
         List<ContainerName> containerNames = compose.ps();
-        verify(dockerComposeExecutor).execute("ps");
+        verify(dockerComposeExecutor).execute("ps", "-q");
+        verify(dockerExecutor).execute(
+                "ps", "-a", "--no-trunc", "--format", "\"{{ .Names }}\"", "--filter", String.format("id=%s", CONTAINER_ID));
         assertThat(containerNames, contains(ImmutableContainerName.builder().semanticName("db").rawName("dir_db_1").build()));
     }
 
@@ -197,13 +206,8 @@ public class DockerComposeShould {
         Ports ports = compose.ports("db");
 
         verify(dockerComposeExecutor).execute("ps", "-q", "db");
-        verify(dockerExecutor).execute("ps",
-                "-a",
-                "--no-trunc",
-                "--filter",
-                String.format("id=%s", CONTAINER_ID),
-                "--format",
-                "\"{{ .Ports }}\"");
+        verify(dockerExecutor).execute(
+                "ps", "-a", "--no-trunc", "--format", "\"{{ .Ports }}\"", "--filter", String.format("id=%s", CONTAINER_ID));
         assertThat(ports, is(new Ports(new DockerPort("0.0.0.0", 7000, 7000))));
     }
 

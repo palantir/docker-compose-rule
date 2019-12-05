@@ -26,7 +26,6 @@ import static org.junit.Assume.assumeThat;
 import com.github.zafarkhaja.semver.Version;
 import com.palantir.docker.compose.connection.Container;
 import com.palantir.docker.compose.connection.State;
-import com.palantir.docker.compose.execution.Docker;
 import com.palantir.docker.compose.execution.DockerCompose;
 import java.io.IOException;
 import java.util.concurrent.ExecutionException;
