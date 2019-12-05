@@ -19,8 +19,10 @@ import static java.util.Collections.emptyList;
 import static java.util.stream.Collectors.toList;
 
 import com.google.common.base.Splitter;
+import com.google.common.collect.ImmutableList;
 import java.util.List;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class ContainerNames {
@@ -29,6 +31,7 @@ public class ContainerNames {
 
     private ContainerNames() {}
 
+    /*
     public static List<ContainerName> parseFromDockerComposePs(String psOutput) {
         List<String> psHeadAndBody = Splitter.on(HEAD_PATTERN).splitToList(psOutput);
         if (psHeadAndBody.size() < 2) {
@@ -40,12 +43,17 @@ public class ContainerNames {
                 .map(ContainerName::fromPsLine)
                 .collect(toList());
     }
+    */
 
-    private static Stream<String> psBodyLines(String psBody) {
-        List<String> lines = Splitter.on(BODY_PATTERN).splitToList(psBody);
-        return lines.stream()
-                .map(String::trim)
-                .filter(line -> !line.isEmpty());
+    public static List<ContainerName> parseFromDockerComposePs(String containerIdsString) {
+        if (containerIdsString.isEmpty()) {
+            return ImmutableList.of();
+        }
+
+        List<String> containerIds = Splitter.on("\n").splitToList(containerIdsString);
+
+        return containerIds.stream()
+                .map(ContainerName::fromPsLine)
+                .collect(Collectors.toList());
     }
-
 }

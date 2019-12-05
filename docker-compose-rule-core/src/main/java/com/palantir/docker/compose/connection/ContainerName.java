@@ -23,10 +23,7 @@ public abstract class ContainerName {
         return semanticName();
     }
 
-    public static ContainerName fromPsLine(String psLine) {
-        List<String> lineComponents = Splitter.on(" ").splitToList(psLine);
-        String rawName = lineComponents.get(0);
-
+    public static ContainerName fromPsLine(String rawName) { // Rename
         if (probablyCustomName(rawName)) {
             return ImmutableContainerName.builder()
                 .rawName(rawName)

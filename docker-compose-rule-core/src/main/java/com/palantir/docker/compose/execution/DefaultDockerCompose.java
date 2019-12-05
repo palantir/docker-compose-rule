@@ -19,8 +19,10 @@ import static org.apache.commons.lang3.Validate.validState;
 import static org.joda.time.Duration.standardMinutes;
 
 import com.github.zafarkhaja.semver.Version;
+import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Streams;
 import com.palantir.docker.compose.configuration.DockerComposeFiles;
 import com.palantir.docker.compose.configuration.ProjectName;
 import com.palantir.docker.compose.connection.Container;
@@ -34,6 +36,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.apache.commons.io.IOUtils;
 import org.joda.time.Duration;
 import org.slf4j.Logger;
@@ -181,8 +185,45 @@ public class DefaultDockerCompose implements DockerCompose {
 
     @Override
     public List<ContainerName> ps() throws IOException, InterruptedException {
-        String psOutput = dockerComposeCommand.execute(Command.throwingOnError(), "ps");
-        return ContainerNames.parseFromDockerComposePs(psOutput);
+        String containerIdsString = dockerComposeCommand.execute(Command.throwingOnError(), "ps", "-q");
+        List<String> containerIds = parseContainerIds(containerIdsString);
+
+        List<String> baseCommand = ImmutableList.of(
+                "ps",
+                "-a", // Show all containers, not just running
+                "--no-trunc",
+                "--format",
+                "\"{{ .Names }}\""
+                );
+
+        List<String> containerFilters = containerIds.stream()
+                .flatMap(containerId -> Stream.of("--filter", String.format("id=%s", containerId)))
+                .collect(Collectors.toList());
+
+        String containerNamesString = dockerCommand.execute(Command.throwingOnError(),
+                Streams.concat(baseCommand.stream(), containerFilters.stream()).toArray(String[]::new));
+
+        return parseContainerNames(containerNamesString).stream()
+                .map(ContainerName::fromPsLine)
+                .collect(Collectors.toList());
+
+        //return ContainerNames.parseFromDockerComposePs(containerIds);
+    }
+
+    public static List<String> parseContainerIds(String containerIdsString) {
+        if (containerIdsString.isEmpty()) {
+            return ImmutableList.of();
+        }
+
+        return Splitter.on("\n").splitToList(containerIdsString);
+    }
+
+    public static List<String> parseContainerNames(String containerNamesString) {
+        if (containerNamesString.isEmpty()) {
+            return ImmutableList.of();
+        }
+
+        return Splitter.on("\n").splitToList(containerNamesString);
     }
 
     @Override
@@ -274,10 +315,10 @@ public class DefaultDockerCompose implements DockerCompose {
                 "ps",
                 "-a", // Show all containers, not just running
                 "--no-trunc",
-                "--filter",
-                String.format("id=%s", containerId),
                 "--format",
-                "\"{{ .Ports }}\""
+                "\"{{ .Ports }}\"",
+                "--filter",
+                String.format("id=%s", containerId)
                 );
 
         validState(!Strings.isNullOrEmpty(portOutput), "No ports found for container with name '" + service);
