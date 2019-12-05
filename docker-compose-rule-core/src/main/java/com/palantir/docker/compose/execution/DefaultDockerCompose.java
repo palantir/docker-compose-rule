@@ -184,9 +184,14 @@ public class DefaultDockerCompose implements DockerCompose {
 
     @Override
     public List<ContainerName> ps() throws IOException, InterruptedException {
+        List<String> containerIds = split(dockerComposeCommand.execute(Command.throwingOnError(), "ps", "-q"));
+
+        if (containerIds.isEmpty()) {
+            return ImmutableList.of(); // Don't want to return unfiltered ps output
+        }
+
         List<String> dockerPsBaseCommand = ImmutableList.of("ps", "-a", "--no-trunc", "--format", "\"{{ .Names }}\"");
 
-        List<String> containerIds = split(dockerComposeCommand.execute(Command.throwingOnError(), "ps", "-q"));
         List<String> additionalContainerFilters = containerIds.stream()
                 .flatMap(containerId -> Stream.of("--filter", String.format("id=%s", containerId)))
                 .collect(Collectors.toList());

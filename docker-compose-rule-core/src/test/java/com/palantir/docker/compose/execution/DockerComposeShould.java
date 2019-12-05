@@ -116,6 +116,10 @@ public class DockerComposeShould {
         assertThat(containerNames, contains(ImmutableContainerName.builder().semanticName("db").rawName("dir_db_1").build()));
     }
 
+    // multiple container ids, with whitespace, and custom + default names
+
+    // No containers
+
     @Test
     public void call_docker_compose_with_no_colour_flag_on_logs() throws IOException {
         when(dockerComposeExecutedProcess.getInputStream()).thenReturn(
@@ -219,6 +223,10 @@ public class DockerComposeShould {
         exception.expectMessage("No container with name 'db' found");
         compose.ports("db");
     }
+
+    // container not found exception
+
+    // ports not found exception
 
     @Test
     public void pass_concatenated_arguments_to_executor_on_docker_compose_exec()
