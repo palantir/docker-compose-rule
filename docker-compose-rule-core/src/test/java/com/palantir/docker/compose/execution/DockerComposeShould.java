@@ -306,7 +306,7 @@ public class DockerComposeShould {
     }
 
     @Test
-    public void attempt_to_get_ports_but_no_ports_found_for_container_id() throws IOException, InterruptedException {
+    public void attempt_to_get_ports_but_all_ports_are_open_for_container() throws IOException, InterruptedException {
         when(dockerComposeExecutor.execute(anyVararg())).thenReturn(dockerComposeExecutedProcess);
         when(dockerComposeExecutedProcess.getInputStream()).thenReturn(toInputStream(CONTAINER_ID, DEFAULT_CHARSET));
         when(dockerComposeExecutedProcess.exitValue()).thenReturn(0);
@@ -315,9 +315,8 @@ public class DockerComposeShould {
         when(dockerExecutedProcess.getInputStream()).thenReturn(toInputStream("", DEFAULT_CHARSET));
         when(dockerExecutedProcess.exitValue()).thenReturn(0);
 
-        exception.expect(IllegalStateException.class);
-        exception.expectMessage("No container port information found for service with name 'service_that_doesnt_exist'.");
-        compose.ports("service_that_doesnt_exist");
+        Ports ports = compose.ports("service");
+        assertThat(ports, is(new Ports(ImmutableList.of())));
     }
 
     @Test

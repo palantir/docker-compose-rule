@@ -272,8 +272,6 @@ public class DefaultDockerCompose implements DockerCompose {
                 String.format("id=%s", containerId)
                 );
 
-        validState(!Strings.isNullOrEmpty(portInformation), String.format("No container port information found for service with name '%s'.", service));
-
         return Ports.parseFromPortInformation(portInformation, dockerMachine.getIp());
     }
 
