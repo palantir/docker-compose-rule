@@ -20,10 +20,11 @@ import static org.joda.time.Duration.standardMinutes;
 
 import com.github.zafarkhaja.semver.Version;
 import com.google.common.base.CharMatcher;
+import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Streams;
 import com.palantir.docker.compose.configuration.DockerComposeFiles;
 import com.palantir.docker.compose.configuration.ProjectName;
@@ -187,17 +188,17 @@ public class DefaultDockerCompose implements DockerCompose {
         List<String> containerIds = split(dockerComposeCommand.execute(Command.throwingOnError(), "ps", "-q"));
 
         if (containerIds.isEmpty()) {
-            return ImmutableList.of(); // Don't want to return unfiltered ps output
+            return ImmutableList.of();
         }
 
-        List<String> dockerPsBaseCommand = ImmutableList.of("ps", "-a", "--no-trunc", "--format", "\"{{ .Names }}\"");
+        List<String> dockerPsBaseCommand = ImmutableList.of("ps", "--no-trunc", "--format", "\"{{ .Names }}\"");
 
         List<String> additionalContainerFilters = containerIds.stream()
                 .flatMap(containerId -> Stream.of("--filter", String.format("id=%s", containerId)))
                 .collect(Collectors.toList());
 
-        String[] dockerPsCommand = Streams.concat(dockerPsBaseCommand.stream(), additionalContainerFilters.stream())
-                .toArray(String[]::new);
+        String[] dockerPsCommand = Streams.concat(
+                dockerPsBaseCommand.stream(), additionalContainerFilters.stream()).toArray(String[]::new);
 
         List<String> containerNames = split(dockerCommand.execute(Command.throwingOnError(), dockerPsCommand));
 
@@ -257,16 +258,13 @@ public class DefaultDockerCompose implements DockerCompose {
 
     @Override
     public Ports ports(String service) throws IOException, InterruptedException {
-        String containerId = Iterables.getOnlyElement(split(
-                dockerComposeCommand.execute(Command.throwingOnError(),
-                        "ps",
-                        "-q",
-                        service)));
-        validState(!Strings.isNullOrEmpty(containerId), "No container with name '" + service + "' found"); // Check this
+        validState(!Strings.isNullOrEmpty(service), String.format("Service cannot be empty"));
 
-        String portString = dockerCommand.execute(Command.throwingOnError(),
+        String containerId = dockerComposeCommand.execute(swallowingServiceDoesNotExist(), "ps", "-q", service);
+        validState(!Strings.isNullOrEmpty(containerId), String.format("No container ID found for service with name '%s'.", service));
+
+        String portInformation = dockerCommand.execute(Command.throwingOnError(),
                 "ps",
-                "-a", // Show all containers, not just running
                 "--no-trunc",
                 "--format",
                 "\"{{ .Ports }}\"",
@@ -274,9 +272,9 @@ public class DefaultDockerCompose implements DockerCompose {
                 String.format("id=%s", containerId)
                 );
 
-        validState(!Strings.isNullOrEmpty(portString), "No ports found for container with name '" + service);
+        validState(!Strings.isNullOrEmpty(portInformation), String.format("No container port information found for service with name '%s'.", service));
 
-        return Ports.parseFromPortsString(portString, dockerMachine.getIp());
+        return Ports.parseFromPortInformation(portInformation, dockerMachine.getIp());
     }
 
     private static ErrorHandler swallowingDownCommandDoesNotExist() {
@@ -293,6 +291,21 @@ public class DefaultDockerCompose implements DockerCompose {
 
     private static boolean downCommandWasPresent(String output) {
         return !output.contains("No such command");
+    }
+
+    private static ErrorHandler swallowingServiceDoesNotExist() {
+        return (exitCode, output, commandName, commands) -> {
+            if (exitCode == 1 && output.isEmpty()) {
+                // Note: The proper way to check this should be to inspect
+                // error output for "ERROR: No such service: <service_name>"
+
+                String fullCommand = Joiner.on(" ").join(Lists.asList(commandName, commands));
+                String serviceName = commands[commands.length - 1];
+
+                log.warn("It looks like `{}` failed.", fullCommand);
+                log.warn("This probably happened because no `{}` service exists.", serviceName);
+            }
+        };
     }
 
     public static List<String> split(String input) {

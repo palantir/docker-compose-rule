@@ -104,7 +104,7 @@ public class DockerComposeShould {
     }
 
     @Test
-    public void parse_and_returns_container_names_on_ps() throws IOException, InterruptedException {
+    public void ps_returns_container_names() throws IOException, InterruptedException {
         when(dockerComposeExecutor.execute(anyVararg())).thenReturn(dockerComposeExecutedProcess);
         when(dockerComposeExecutedProcess.getInputStream()).thenReturn(toInputStream(CONTAINER_ID, DEFAULT_CHARSET));
         when(dockerComposeExecutedProcess.exitValue()).thenReturn(0);
@@ -116,12 +116,12 @@ public class DockerComposeShould {
         List<ContainerName> containerNames = compose.ps();
         verify(dockerComposeExecutor).execute("ps", "-q");
         verify(dockerExecutor).execute(
-                "ps", "-a", "--no-trunc", "--format", "\"{{ .Names }}\"", "--filter", String.format("id=%s", CONTAINER_ID));
+                "ps", "--no-trunc", "--format", "\"{{ .Names }}\"", "--filter", String.format("id=%s", CONTAINER_ID));
         assertThat(containerNames, contains(ImmutableContainerName.builder().semanticName("db").rawName("dir_db_1").build()));
     }
 
     @Test
-    public void parse_and_returns_multiple_container_names() throws IOException, InterruptedException {
+    public void ps_returns_multiple_container_names() throws IOException, InterruptedException {
         String containerIdA = RandomStringUtils.randomAlphanumeric(20);
         String containerIdB = RandomStringUtils.randomAlphanumeric(20);
         String containerIdC = RandomStringUtils.randomAlphanumeric(20);
@@ -157,17 +157,14 @@ public class DockerComposeShould {
         )));
         verify(dockerComposeExecutor).execute("ps", "-q");
         verify(dockerExecutor).execute(
-                "ps", "-a", "--no-trunc", "--format", "\"{{ .Names }}\"",
+                "ps", "--no-trunc", "--format", "\"{{ .Names }}\"",
                 "--filter", String.format("id=%s", containerIdA),
                 "--filter", String.format("id=%s", containerIdB),
                 "--filter", String.format("id=%s", containerIdC));
     }
-    // multiple container ids, with whitespace, and custom + default names
-
-    // No containers
 
     @Test
-    public void parse_and_returns_no_container_names_when_no_container_ids_are_found() throws IOException, InterruptedException {
+    public void ps_returns_no_container_names_when_no_container_ids_are_found() throws IOException, InterruptedException {
         when(dockerComposeExecutor.execute(anyVararg())).thenReturn(dockerComposeExecutedProcess);
         when(dockerComposeExecutedProcess.getInputStream()).thenReturn(toInputStream("", DEFAULT_CHARSET));
         when(dockerComposeExecutedProcess.exitValue()).thenReturn(0);
@@ -179,7 +176,7 @@ public class DockerComposeShould {
     }
 
     @Test
-    public void parse_and_returns_no_container_names_when_no_names_can_be_found_for_container_ids() throws IOException, InterruptedException {
+    public void ps_returns_no_container_names_when_no_names_can_be_found_for_container_ids() throws IOException, InterruptedException {
         when(dockerComposeExecutor.execute(anyVararg())).thenReturn(dockerComposeExecutedProcess);
         when(dockerComposeExecutedProcess.getInputStream()).thenReturn(toInputStream(CONTAINER_ID, DEFAULT_CHARSET));
         when(dockerComposeExecutedProcess.exitValue()).thenReturn(0);
@@ -192,7 +189,7 @@ public class DockerComposeShould {
         assertThat(containerNames, empty());
         verify(dockerComposeExecutor).execute("ps", "-q");
         verify(dockerExecutor).execute(
-                "ps", "-a", "--no-trunc", "--format", "\"{{ .Names }}\"", "--filter", String.format("id=%s", CONTAINER_ID));
+                "ps", "--no-trunc", "--format", "\"{{ .Names }}\"", "--filter", String.format("id=%s", CONTAINER_ID));
     }
 
     @Test
@@ -271,7 +268,7 @@ public class DockerComposeShould {
     }
 
     @Test
-    public void parse_the_ps_output_on_ports() throws IOException, InterruptedException {
+    public void get_correct_ports() throws IOException, InterruptedException {
         when(dockerComposeExecutor.execute(anyVararg())).thenReturn(dockerComposeExecutedProcess);
         when(dockerComposeExecutedProcess.getInputStream())
                 .thenReturn(toInputStream(CONTAINER_ID, DEFAULT_CHARSET));
@@ -286,22 +283,42 @@ public class DockerComposeShould {
 
         verify(dockerComposeExecutor).execute("ps", "-q", "db");
         verify(dockerExecutor).execute(
-                "ps", "-a", "--no-trunc", "--format", "\"{{ .Ports }}\"", "--filter", String.format("id=%s", CONTAINER_ID));
+                "ps", "--no-trunc", "--format", "\"{{ .Ports }}\"", "--filter", String.format("id=%s", CONTAINER_ID));
         assertThat(ports, is(new Ports(new DockerPort("0.0.0.0", 7000, 7000))));
     }
 
     @Test
-    public void throw_illegal_state_exception_when_there_is_no_container_found_for_ports()
-            throws IOException, InterruptedException {
-        when(dockerComposeExecutedProcess.getInputStream()).thenReturn(toInputStream("", DEFAULT_CHARSET));
+    public void attempt_to_get_ports_but_service_is_empty() throws IOException, InterruptedException {
         exception.expect(IllegalStateException.class);
-        exception.expectMessage("No container with name 'db' found");
-        compose.ports("db");
+        exception.expectMessage("Service cannot be empty");
+        compose.ports("");
     }
 
-    // container not found exception
+    @Test
+    public void attempt_to_get_ports_but_service_doesnt_exist() throws IOException, InterruptedException {
+        when(dockerComposeExecutor.execute(anyVararg())).thenReturn(dockerComposeExecutedProcess);
+        when(dockerComposeExecutedProcess.getInputStream()).thenReturn(toInputStream("", DEFAULT_CHARSET));
+        when(dockerComposeExecutedProcess.exitValue()).thenReturn(1);
 
-    // ports not found exception
+        exception.expect(IllegalStateException.class);
+        exception.expectMessage("No container ID found for service with name 'service_that_doesnt_exist'.");
+        compose.ports("service_that_doesnt_exist");
+    }
+
+    @Test
+    public void attempt_to_get_ports_but_no_ports_found_for_container_id() throws IOException, InterruptedException {
+        when(dockerComposeExecutor.execute(anyVararg())).thenReturn(dockerComposeExecutedProcess);
+        when(dockerComposeExecutedProcess.getInputStream()).thenReturn(toInputStream(CONTAINER_ID, DEFAULT_CHARSET));
+        when(dockerComposeExecutedProcess.exitValue()).thenReturn(0);
+
+        when(dockerExecutor.execute(anyVararg())).thenReturn(dockerExecutedProcess);
+        when(dockerExecutedProcess.getInputStream()).thenReturn(toInputStream("", DEFAULT_CHARSET));
+        when(dockerExecutedProcess.exitValue()).thenReturn(0);
+
+        exception.expect(IllegalStateException.class);
+        exception.expectMessage("No container port information found for service with name 'service_that_doesnt_exist'.");
+        compose.ports("service_that_doesnt_exist");
+    }
 
     @Test
     public void pass_concatenated_arguments_to_executor_on_docker_compose_exec()

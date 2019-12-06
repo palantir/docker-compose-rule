@@ -15,8 +15,6 @@
  */
 package com.palantir.docker.compose.connection;
 
-import com.google.common.base.Preconditions;
-import com.google.common.base.Strings;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -48,9 +46,8 @@ public class Ports {
         return ports.stream();
     }
 
-    public static Ports parseFromPortsString(String portsString, String dockerMachineIp) {
-        Preconditions.checkArgument(!Strings.isNullOrEmpty(portsString), "No ports found"); // Dupe
-        Matcher matcher = PORT_PATTERN.matcher(portsString);
+    public static Ports parseFromPortInformation(String portInformation, String dockerMachineIp) {
+        Matcher matcher = PORT_PATTERN.matcher(portInformation);
         List<DockerPort> ports = new ArrayList<>();
         while (matcher.find()) {
             String matchedIpAddress = matcher.group(IP_ADDRESS);
