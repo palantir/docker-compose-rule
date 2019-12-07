@@ -10,11 +10,13 @@ import org.immutables.value.Value;
 
 @Value.Immutable
 public abstract class ContainerName {
+    // Getting closer: ^(?<project>[^\W_]+)_(?<service>[^\W_]+)_(?<index>[^\W_]+)(?<slug>_[^\W_]+)?$
 
     // Containers can be given custom names within docker-compose.yml
     // Or by default will be assigned a name like:
     // * <project>_<service>_<index> (docker-compose version < 1.23.0)
     // * <project>_<service>_<index>_<slug> (docker-compose version >= 1.23.0)
+    private static final Version
 
     // The assigned name of the container
     public abstract String rawName();

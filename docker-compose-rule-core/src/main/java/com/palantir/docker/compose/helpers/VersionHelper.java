@@ -32,10 +32,10 @@ import java.util.regex.Pattern;
 public enum VersionHelper {
     INSTANCE;
 
-    // Without escape characters: (?<major>\d+)\.(?<minor>\d+)\.(?<patch>\d+)(?<rest>.*)
+    // Without escape characters: ^(?<major>\d+)\.(?<minor>\d+)\.(?<patch>\d+)(?<rest>.*)$
     // This regex groups pre-release and build metadata into the "rest" group
     private static final Pattern BASIC_SEM_VER_PATTERN =
-            Pattern.compile("(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)(?<rest>.*)");
+            Pattern.compile("^(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)(?<rest>.*)$");
 
     public static Version toSemVer(String version) {
         Matcher matcher = BASIC_SEM_VER_PATTERN.matcher(version);
