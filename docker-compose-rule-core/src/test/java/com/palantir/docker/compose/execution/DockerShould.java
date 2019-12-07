@@ -25,10 +25,14 @@ import static org.mockito.Mockito.when;
 
 import com.github.zafarkhaja.semver.Version;
 import java.io.IOException;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import org.junit.Before;
 import org.junit.Test;
 
 public class DockerShould {
+
+    private static final Charset DEFAULT_CHARSET = StandardCharsets.UTF_8;
 
     private final DockerExecutable executor = mock(DockerExecutable.class);
     private final Docker docker = new Docker(executor);
@@ -43,7 +47,7 @@ public class DockerShould {
 
     @Test
     public void call_docker_rm_with_force_flag_on_rm() throws IOException, InterruptedException {
-        when(executedProcess.getInputStream()).thenReturn(toInputStream(""));
+        when(executedProcess.getInputStream()).thenReturn(toInputStream("", DEFAULT_CHARSET));
 
         docker.rm("testContainer");
 
@@ -53,7 +57,7 @@ public class DockerShould {
     @Test
     public void call_docker_network_ls() throws IOException, InterruptedException {
         String lsOutput = "0.0.0.0:7000->7000/tcp";
-        when(executedProcess.getInputStream()).thenReturn(toInputStream(lsOutput));
+        when(executedProcess.getInputStream()).thenReturn(toInputStream(lsOutput, DEFAULT_CHARSET));
 
         assertThat(docker.listNetworks(), is(lsOutput));
 
@@ -63,7 +67,7 @@ public class DockerShould {
     @Test
     public void call_docker_network_prune() throws IOException, InterruptedException {
         String lsOutput = "0.0.0.0:7000->7000/tcp";
-        when(executedProcess.getInputStream()).thenReturn(toInputStream(lsOutput));
+        when(executedProcess.getInputStream()).thenReturn(toInputStream(lsOutput, DEFAULT_CHARSET));
 
         assertThat(docker.pruneNetworks(), is(lsOutput));
 
@@ -72,7 +76,7 @@ public class DockerShould {
 
     @Test
     public void understand_old_version_format() throws IOException, InterruptedException {
-        when(executedProcess.getInputStream()).thenReturn(toInputStream("Docker version 1.7.2"));
+        when(executedProcess.getInputStream()).thenReturn(toInputStream("Docker version 1.7.2", DEFAULT_CHARSET));
 
         Version version = docker.configuredVersion();
         assertThat(version, is(Version.valueOf("1.7.2")));
@@ -80,7 +84,7 @@ public class DockerShould {
 
     @Test
     public void understand_new_version_format() throws IOException, InterruptedException {
-        when(executedProcess.getInputStream()).thenReturn(toInputStream("Docker version 17.03.1-ce"));
+        when(executedProcess.getInputStream()).thenReturn(toInputStream("Docker version 17.03.1-ce", DEFAULT_CHARSET));
 
         Version version = docker.configuredVersion();
         assertThat(version, is(Version.valueOf("17.3.1")));

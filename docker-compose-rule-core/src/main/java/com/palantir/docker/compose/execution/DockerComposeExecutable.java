@@ -19,6 +19,7 @@ import com.github.zafarkhaja.semver.Version;
 import com.google.common.collect.ImmutableList;
 import com.palantir.docker.compose.configuration.DockerComposeFiles;
 import com.palantir.docker.compose.configuration.ProjectName;
+import com.palantir.docker.compose.helpers.VersionHelper;
 import java.io.IOException;
 import java.util.List;
 import org.immutables.value.Value;
@@ -62,8 +63,8 @@ public abstract class DockerComposeExecutable implements Executable {
             }
         }, log::trace);
 
-        String versionOutput = dockerCompose.execute(Command.throwingOnError(), "-v");
-        return DockerComposeVersion.parseFromDockerComposeVersion(versionOutput);
+        String version = dockerCompose.execute(Command.throwingOnError(), "version", "--short");
+        return VersionHelper.toSemVer(version);
     }
 
     @Value.Parameter protected abstract DockerComposeFiles dockerComposeFiles();
