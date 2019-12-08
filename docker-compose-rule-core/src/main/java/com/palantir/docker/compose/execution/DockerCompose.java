@@ -25,9 +25,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface DockerCompose {
-    static Version version() throws IOException, InterruptedException {
-        return DockerComposeExecutable.version();
-    }
+    Version version() throws IOException, InterruptedException;
     void pull() throws IOException, InterruptedException;
     void build() throws IOException, InterruptedException;
     void up() throws IOException, InterruptedException;

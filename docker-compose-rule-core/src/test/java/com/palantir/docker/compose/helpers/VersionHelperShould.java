@@ -36,25 +36,15 @@ public class VersionHelperShould {
     }
 
     @Test
-    public void satisfactory_full_version_remains_unchanged() {
+    public void satisfactory_full_version_gets_simplified() {
         String version = "1.2.3-rc4+build5";
-        Version.Builder builder = new Version.Builder("1.2.3");
-        builder.setPreReleaseVersion("rc4");
-        builder.setBuildMetadata("build5");
-
-        Version expectedVersion = builder.build();
-        assertThat(VersionHelper.toSemVer(version), is(expectedVersion));
+        assertThat(VersionHelper.toSemVer(version), is(Version.valueOf("1.2.3")));
     }
 
     @Test
-    public void leading_zeroes_are_removed_from_version_core_and_rest_untouched() {
+    public void leading_zeroes_are_removed_from_version_core() {
         String version = "01.02.03-rc4+build5";
-        Version.Builder builder = new Version.Builder("1.2.3");
-        builder.setPreReleaseVersion("rc4");
-        builder.setBuildMetadata("build5");
-
-        Version expectedVersion = builder.build();
-        assertThat(VersionHelper.toSemVer(version), is(expectedVersion));
+        assertThat(VersionHelper.toSemVer(version), is(Version.valueOf("1.2.3")));
     }
 
     @Test

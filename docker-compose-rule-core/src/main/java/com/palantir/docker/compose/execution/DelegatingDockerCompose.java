@@ -15,6 +15,7 @@
  */
 package com.palantir.docker.compose.execution;
 
+import com.github.zafarkhaja.semver.Version;
 import com.palantir.docker.compose.connection.Container;
 import com.palantir.docker.compose.connection.ContainerName;
 import com.palantir.docker.compose.connection.Ports;
@@ -28,6 +29,11 @@ abstract class DelegatingDockerCompose implements DockerCompose {
 
     protected DelegatingDockerCompose(DockerCompose dockerCompose) {
         this.dockerCompose = dockerCompose;
+    }
+
+    @Override
+    public Version version() throws IOException, InterruptedException {
+        return dockerCompose.version();
     }
 
     @Override

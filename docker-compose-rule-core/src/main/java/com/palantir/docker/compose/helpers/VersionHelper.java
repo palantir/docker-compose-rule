@@ -26,14 +26,15 @@ import java.util.regex.Pattern;
 /**
  * We depend on semantic versioning (https://semver.org/) and use Java SemVer within
  * this library to handle versions (https://github.com/zafarkhaja/jsemver).
- * Docker however doesn't use exact semantic versioning (https://github.com/moby/moby/releases),
- * so this helper does some light coercion to get docker versions to work nicely.
+ * Docker however doesn't use exact semantic versioning so this helper does
+ * some light processing to get simple, useable versions
  */
 public enum VersionHelper {
     INSTANCE;
 
-    // Without escape characters: ^(?<major>\d+)\.(?<minor>\d+)\.(?<patch>\d+)(?<rest>.*)$
+    // Semantic versions have a structure of <major>.<minor>.<patch>-<pre-release>+<build metadata>
     // This regex groups pre-release and build metadata into the "rest" group
+    // Regex without escape characters: ^(?<major>\d+)\.(?<minor>\d+)\.(?<patch>\d+)(?<rest>.*)$
     private static final Pattern BASIC_SEM_VER_PATTERN =
             Pattern.compile("^(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)(?<rest>.*)$");
 
@@ -47,9 +48,8 @@ public enum VersionHelper {
         String patch = dropLeadingZeroes(matcher.group("patch"));
 
         String versionCore = Joiner.on(".").join(major, minor, patch);
-        String rest = matcher.group("rest");
 
-        return Version.valueOf(versionCore + rest);
+        return Version.valueOf(versionCore);
     }
 
     private static String dropLeadingZeroes(String numericString) {

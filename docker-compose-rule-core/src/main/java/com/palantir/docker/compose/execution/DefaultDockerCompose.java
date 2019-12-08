@@ -81,6 +81,12 @@ public class DefaultDockerCompose implements DockerCompose {
     }
 
     @Override
+    public Version version() throws IOException, InterruptedException {
+        String version = dockerComposeCommand.execute(Command.throwingOnError(), "version", "--short");
+        return VersionHelper.toSemVer(version);
+    }
+
+    @Override
     public void pull() throws IOException, InterruptedException {
         dockerComposeCommand.execute(Command.throwingOnError(), "pull");
     }
@@ -153,11 +159,6 @@ public class DefaultDockerCompose implements DockerCompose {
 
     private void verifyDockerComposeVersionAtLeast(Version targetVersion, String message) throws IOException, InterruptedException {
         validState(version().greaterThanOrEqualTo(targetVersion), message);
-    }
-
-    private Version version() throws IOException, InterruptedException {
-        String version = dockerComposeCommand.execute(Command.throwingOnError(), "version", "--short");
-        return VersionHelper.toSemVer(version);
     }
 
     private static String[] constructFullDockerComposeExecArguments(DockerComposeExecOption dockerComposeExecOption,

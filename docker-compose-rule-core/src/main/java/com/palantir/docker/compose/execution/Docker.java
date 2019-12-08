@@ -18,7 +18,6 @@ package com.palantir.docker.compose.execution;
 
 import com.github.zafarkhaja.semver.Version;
 import com.google.common.collect.ObjectArrays;
-import com.palantir.docker.compose.connection.DockerMachine;
 import com.palantir.docker.compose.connection.State;
 import com.palantir.docker.compose.helpers.VersionHelper;
 import java.io.IOException;
@@ -41,20 +40,15 @@ public class Docker {
                     + "{{else}}HEALTHY{{end}}";
     private static final String HEALTH_STATUS_FORMAT_WINDOWS = HEALTH_STATUS_FORMAT.replaceAll("\"", "`\"");
 
-    public static Version version() throws IOException, InterruptedException {
-        return new Docker(DockerExecutable.builder().dockerConfiguration(DockerMachine.localMachine().build()).build())
-                .configuredVersion();
-    }
-
-    public Version configuredVersion() throws IOException, InterruptedException {
-        String clientVersionString = command.execute(Command.throwingOnError(), "version", "--format", "{{ .Client.Version }}");
-        return VersionHelper.toSemVer(clientVersionString);
-    }
-
     private final Command command;
 
     public Docker(DockerExecutable rawExecutable) {
         this.command = new Command(rawExecutable, log::trace);
+    }
+
+    public Version version() throws IOException, InterruptedException {
+        String clientVersionString = command.execute(Command.throwingOnError(), "version", "--format", "{{.Client.Version}}");
+        return VersionHelper.toSemVer(clientVersionString);
     }
 
     public State state(String containerId) throws IOException, InterruptedException {

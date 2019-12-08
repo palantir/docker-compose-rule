@@ -5,24 +5,21 @@
 package com.palantir.docker.compose.connection;
 
 
-import com.google.common.base.Splitter;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import org.immutables.value.Value;
 
 @Value.Immutable
 public abstract class ContainerName {
-    // Getting closer: ^(?<project>[^\W_]+)_(?<service>[^\W_]+)_(?<index>[^\W_]+)(?<slug>_[^\W_]+)?$
 
-    // Containers can be given custom names within docker-compose.yml
-    // Or by default will be assigned a name like:
-    // * <project>_<service>_<index> (docker-compose version < 1.23.0)
-    // * <project>_<service>_<index>_<slug> (docker-compose version >= 1.23.0)
-    private static final Version
+    // Docker default container names have the format of:
+    // <project>_<service>_<index> or <project>_<service>_<index>_<slug>
+    // Regex without escape characters: ^(?<project>[^\W_]+)_(?<service>[^\W_]+)_(?<index>[^\W_]+)(_(?<slug>[^\W_]+))?$
+    private static final Pattern DEFAULT_CONTAINER_NAME_PATTERN =
+            Pattern.compile("^(?<project>[^\\W_]+)_(?<service>[^\\W_]+)_(?<index>[^\\W_]+)(_(?<slug>[^\\W_]+))?$");
 
-    // The assigned name of the container
     public abstract String rawName();
 
-    // Custom name if container was named, otherwise simply the name
-    // of the service stripped from the default name
     public abstract String semanticName();
 
     @Override
@@ -33,17 +30,17 @@ public abstract class ContainerName {
     public static ContainerName fromName(String name) {
         return ImmutableContainerName.builder()
                 .rawName(name)
-                .semanticName(isProbablyDefaultName(name)
-                        ? stripSemanticNameFromDefaultName(name)
-                        : name)
+                .semanticName(parseSemanticName(name))
                 .build();
     }
 
-    private static boolean isProbablyDefaultName(String name) {
-        return Splitter.on("_").splitToList(name).size() >= 3;
-    }
+    private static String parseSemanticName(String name) {
+        Matcher matcher = DEFAULT_CONTAINER_NAME_PATTERN.matcher(name);
 
-    private static String stripSemanticNameFromDefaultName(String name) {
-        return Splitter.on("_").splitToList(name).get(1); // Technically a break
+        if (matcher.matches()) {
+            return matcher.group("service");
+        }
+
+        return name;
     }
 }

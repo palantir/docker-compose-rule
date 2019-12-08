@@ -20,13 +20,13 @@ import static com.google.common.util.concurrent.Uninterruptibles.getUninterrupti
 import static com.jayway.awaitility.Awaitility.await;
 import static com.palantir.docker.compose.execution.DockerComposeExecArgument.arguments;
 import static com.palantir.docker.compose.execution.DockerComposeExecOption.noOptions;
+import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.junit.Assert.fail;
 import static org.junit.Assume.assumeThat;
 
 import com.github.zafarkhaja.semver.Version;
 import com.palantir.docker.compose.connection.Container;
 import com.palantir.docker.compose.connection.State;
-import com.palantir.docker.compose.execution.DockerCompose;
 import java.io.IOException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -37,7 +37,6 @@ import java.util.concurrent.TimeoutException;
 import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Test;
-import org.mockito.internal.matchers.GreaterOrEqual;
 
 public class DockerComposeManagerNativeHealthcheckIntegrationTest {
 
@@ -60,12 +59,13 @@ public class DockerComposeManagerNativeHealthcheckIntegrationTest {
     @Test
     public void dockerComposeManagerWaitsUntilHealthcheckPasses()
             throws ExecutionException, IOException, InterruptedException, TimeoutException {
-        assumeThat("docker version", Version.valueOf("19.3.5"), new GreaterOrEqual<>(Version.forIntegers(1, 12, 0)));
-        assumeThat("docker-compose version", DockerCompose.version(), new GreaterOrEqual<>(Version.forIntegers(1, 10, 0)));
-
         docker = new DockerComposeManager.Builder()
                 .file("src/test/resources/native-healthcheck.yaml")
                 .build();
+
+        assumeThat(docker.docker().version(), greaterThanOrEqualTo(Version.valueOf("1.12.0")));
+        assumeThat(docker.dockerCompose().version(), greaterThanOrEqualTo(Version.valueOf("1.10.0")));
+
         Future<?> beforeFuture = pool.submit(() -> {
             docker.before();
             return null;

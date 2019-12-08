@@ -15,11 +15,9 @@
  */
 package com.palantir.docker.compose.execution;
 
-import com.github.zafarkhaja.semver.Version;
 import com.google.common.collect.ImmutableList;
 import com.palantir.docker.compose.configuration.DockerComposeFiles;
 import com.palantir.docker.compose.configuration.ProjectName;
-import com.palantir.docker.compose.helpers.VersionHelper;
 import java.io.IOException;
 import java.util.List;
 import org.immutables.value.Value;
@@ -44,27 +42,6 @@ public abstract class DockerComposeExecutable implements Executable {
         log.debug("Using docker-compose found at " + pathToUse);
 
         return pathToUse;
-    }
-
-    static Version version() throws IOException, InterruptedException {
-        Command dockerCompose = new Command(new Executable() {
-            @Override
-            public String commandName() {
-                return "docker-compose";
-            }
-
-            @Override
-            public Process execute(String... commands) throws IOException {
-                List<String> args = ImmutableList.<String>builder()
-                        .add(defaultDockerComposePath())
-                        .add(commands)
-                        .build();
-                return new ProcessBuilder(args).redirectErrorStream(true).start();
-            }
-        }, log::trace);
-
-        String version = dockerCompose.execute(Command.throwingOnError(), "version", "--short");
-        return VersionHelper.toSemVer(version);
     }
 
     @Value.Parameter protected abstract DockerComposeFiles dockerComposeFiles();
