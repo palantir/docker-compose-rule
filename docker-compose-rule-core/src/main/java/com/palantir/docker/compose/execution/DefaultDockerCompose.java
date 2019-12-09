@@ -193,7 +193,7 @@ public class DefaultDockerCompose implements DockerCompose {
             return ImmutableList.of();
         }
 
-        List<String> dockerPsBaseCommand = ImmutableList.of("ps", "--no-trunc", "--format", "\"{{ .Names }}\"");
+        List<String> dockerPsBaseCommand = ImmutableList.of("ps", "--no-trunc", "--format", "{{.Names}}");
 
         List<String> additionalContainerFilters = containerIds.stream()
                 .flatMap(containerId -> Stream.of("--filter", String.format("id=%s", containerId)))

@@ -116,7 +116,7 @@ public class DockerComposeShould {
         List<ContainerName> containerNames = compose.ps();
         verify(dockerComposeExecutor).execute("ps", "-q");
         verify(dockerExecutor).execute(
-                "ps", "--no-trunc", "--format", "\"{{ .Names }}\"", "--filter", String.format("id=%s", CONTAINER_ID));
+                "ps", "--no-trunc", "--format", "{{.Names}}", "--filter", String.format("id=%s", CONTAINER_ID));
         assertThat(containerNames, contains(ImmutableContainerName.builder().semanticName("db").rawName("dir_db_1").build()));
     }
 
@@ -157,7 +157,7 @@ public class DockerComposeShould {
         )));
         verify(dockerComposeExecutor).execute("ps", "-q");
         verify(dockerExecutor).execute(
-                "ps", "--no-trunc", "--format", "\"{{ .Names }}\"",
+                "ps", "--no-trunc", "--format", "{{.Names}}",
                 "--filter", String.format("id=%s", containerIdA),
                 "--filter", String.format("id=%s", containerIdB),
                 "--filter", String.format("id=%s", containerIdC));
@@ -189,7 +189,7 @@ public class DockerComposeShould {
         assertThat(containerNames, empty());
         verify(dockerComposeExecutor).execute("ps", "-q");
         verify(dockerExecutor).execute(
-                "ps", "--no-trunc", "--format", "\"{{ .Names }}\"", "--filter", String.format("id=%s", CONTAINER_ID));
+                "ps", "--no-trunc", "--format", "{{.Names}}", "--filter", String.format("id=%s", CONTAINER_ID));
     }
 
     @Test

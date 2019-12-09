@@ -14,9 +14,9 @@ public abstract class ContainerName {
 
     // Docker default container names have the format of:
     // <project>_<service>_<index> or <project>_<service>_<index>_<slug>
-    // Regex without escape characters: ^(?<project>[^\W_]+)_(?<service>[^\W_]+)_(?<index>[^\W_]+)(_(?<slug>[^\W_]+))?$
+    // Regex without escape characters: ^(?<project>[^_]+)_(?<service>[^_]+)_(?<index>[^_]+)(_(?<slug>[^_]+))?$
     private static final Pattern DEFAULT_CONTAINER_NAME_PATTERN =
-            Pattern.compile("^(?<project>[^\\W_]+)_(?<service>[^\\W_]+)_(?<index>[^\\W_]+)(_(?<slug>[^\\W_]+))?$");
+            Pattern.compile("^(?<project>[^_]+)_(?<service>[^_]+)_(?<index>[^_]+)(_(?<slug>[^_]+))?$");
 
     public abstract String rawName();
 
