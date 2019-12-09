@@ -26,7 +26,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
-import com.palantir.docker.compose.TestContainerNames;
+import com.google.common.collect.ImmutableList;
 import com.palantir.docker.compose.connection.ContainerName;
 import com.palantir.docker.compose.execution.Retryer.RetryableDockerOperation;
 import java.io.IOException;
@@ -38,7 +38,7 @@ public class RetryingDockerComposeShould {
     private final DockerCompose dockerCompose = mock(DockerCompose.class);
     private final Retryer retryer = mock(Retryer.class);
     private final RetryingDockerCompose retryingDockerCompose = new RetryingDockerCompose(retryer, dockerCompose);
-    private final List<ContainerName> someContainerNames = TestContainerNames.of("hey");
+    private final List<ContainerName> containerNames = ImmutableList.of(ContainerName.fromName("name"));
     private static final String CONTAINER_NAME = "container";
 
     @Before
@@ -68,9 +68,9 @@ public class RetryingDockerComposeShould {
 
     @Test
     public void call_ps_on_the_underlying_docker_compose_and_returns_the_same_value() throws IOException, InterruptedException {
-        when(dockerCompose.ps()).thenReturn(someContainerNames);
+        when(dockerCompose.ps()).thenReturn(containerNames);
 
-        assertThat(retryingDockerCompose.ps(), is(someContainerNames));
+        assertThat(retryingDockerCompose.ps(), is(containerNames));
 
         verifyRetryerWasUsed();
         verify(dockerCompose).ps();
