@@ -20,6 +20,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Sets;
 import com.palantir.docker.compose.configuration.ShutdownStrategy;
 import com.palantir.docker.compose.logging.DoNothingLogCollector;
@@ -39,13 +40,13 @@ public class AggressiveShutdownWithNetworkCleanupStrategyIntegrationTest {
 
     @Test
     public void shut_down_multiple_containers_immediately() throws Exception {
-        assertThat(docker.dockerCompose().ps(), is(TestContainerNames.of()));
+        assertThat(docker.dockerCompose().ps(), is(ImmutableList.of()));
 
         docker.before();
         assertThat(docker.dockerCompose().ps().size(), is(2));
         docker.after();
 
-        assertThat(docker.dockerCompose().ps(), is(TestContainerNames.of()));
+        assertThat(docker.dockerCompose().ps(), is(ImmutableList.of()));
     }
 
     @Test
