@@ -20,6 +20,7 @@ import static com.jayway.awaitility.Awaitility.await;
 import static com.palantir.docker.compose.execution.DockerComposeExecArgument.arguments;
 import static com.palantir.docker.compose.execution.DockerComposeExecOption.noOptions;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assume.assumeThat;
 
@@ -35,7 +36,6 @@ import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 import org.junit.Assert;
 import org.junit.Test;
-import org.mockito.internal.matchers.GreaterOrEqual;
 
 public class ContainerIntegrationTests {
 
@@ -69,13 +69,13 @@ public class ContainerIntegrationTests {
      */
     @Test
     public void testStateChanges_withHealthCheck() throws IOException, InterruptedException {
-        assumeThat("docker version", Docker.version(), new GreaterOrEqual<>(Version.forIntegers(1, 12, 0)));
-        assumeThat("docker-compose version", DockerCompose.version(), new GreaterOrEqual<>(Version.forIntegers(1, 10, 0)));
-
         DockerCompose dockerCompose = new DefaultDockerCompose(
                 DockerComposeFiles.from("src/test/resources/native-healthcheck.yaml"),
                 dockerMachine,
                 ProjectName.random());
+
+        assumeThat(docker.version(), greaterThanOrEqualTo(Version.valueOf("1.12.0")));
+        assumeThat(dockerCompose.version(), greaterThanOrEqualTo(Version.valueOf("1.10.0")));
 
         // The withHealthcheck service's healthcheck checks every 100ms whether the file "healthy" exists
         Container container = new Container("withHealthcheck", docker, dockerCompose);
