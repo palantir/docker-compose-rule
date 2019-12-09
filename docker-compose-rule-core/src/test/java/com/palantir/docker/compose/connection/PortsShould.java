@@ -72,7 +72,7 @@ public class PortsShould {
     }
 
     @Test
-    public void reult_in_a_variety_of_ports_when_there_are_many_ports_in_port_information() {
+    public void result_in_a_variety_of_ports_when_there_are_many_ports_in_port_information() {
         String portInformation = "0.0.0.0:8880->8880/tcp, 0.0.0.0:8881->8881/tcp, 8882/tcp, 8883/tcp, 8884/tcp";
         Ports ports = Ports.parseFromPortInformation(portInformation, LOCALHOST_IP);
         Ports expected = new Ports(newArrayList(new DockerPort(LOCALHOST_IP, 8880, 8880),
