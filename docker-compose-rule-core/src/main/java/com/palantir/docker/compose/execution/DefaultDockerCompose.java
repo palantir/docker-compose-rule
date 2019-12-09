@@ -19,9 +19,7 @@ import static org.apache.commons.lang3.Validate.validState;
 import static org.joda.time.Duration.standardMinutes;
 
 import com.github.zafarkhaja.semver.Version;
-import com.google.common.base.CharMatcher;
 import com.google.common.base.Joiner;
-import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
@@ -268,8 +266,10 @@ public class DefaultDockerCompose implements DockerCompose {
     private static ErrorHandler swallowingServiceDoesNotExist() {
         return (exitCode, output, commandName, commands) -> {
             if (exitCode == 1 && output.isEmpty()) {
-                // Note: The proper way to check this should be to inspect
-                // error output for "ERROR: No such service: <service_name>"
+                // Note: This (badly) checks if the command most likely failed due to
+                // the service not existing. If the ErrorHandler had access to
+                // error output, the proper way to check this would be to inspect
+                // the error output for "ERROR: No such service: <service_name>"
 
                 String fullCommand = Joiner.on(" ").join(Lists.asList(commandName, commands));
                 String serviceName = commands[commands.length - 1];
@@ -278,11 +278,5 @@ public class DefaultDockerCompose implements DockerCompose {
                 log.warn("This probably happened because no `{}` service exists.", serviceName);
             }
         };
-    }
-
-    public static List<String> split(String input) {
-        return Splitter.on(CharMatcher.whitespace())
-                .omitEmptyStrings()
-                .splitToList(input);
     }
 }

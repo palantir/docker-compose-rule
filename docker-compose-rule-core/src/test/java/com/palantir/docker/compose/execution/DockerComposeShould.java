@@ -64,12 +64,9 @@ public class DockerComposeShould {
     @Before
     public void before() throws IOException {
         when(dockerMachine.getIp()).thenReturn("0.0.0.0");
-
-        // Mock successful output in general
         when(dockerComposeExecutor.execute(anyVararg())).thenReturn(dockerComposeExecutedProcess);
         when(dockerComposeExecutedProcess.getInputStream()).thenReturn(toInputStream(""));
         when(dockerComposeExecutedProcess.exitValue()).thenReturn(0);
-
         when(container.getContainerName()).thenReturn("my-container");
     }
 
@@ -181,8 +178,7 @@ public class DockerComposeShould {
     @Test
     public void get_correct_ports() throws IOException, InterruptedException {
         when(dockerComposeExecutor.execute(anyVararg())).thenReturn(dockerComposeExecutedProcess);
-        when(dockerComposeExecutedProcess.getInputStream())
-                .thenReturn(toInputStream(CONTAINER_ID));
+        when(dockerComposeExecutedProcess.getInputStream()).thenReturn(toInputStream(CONTAINER_ID));
         when(dockerComposeExecutedProcess.exitValue()).thenReturn(0);
 
         when(dockerExecutor.execute(anyVararg())).thenReturn(dockerExecutedProcess);
