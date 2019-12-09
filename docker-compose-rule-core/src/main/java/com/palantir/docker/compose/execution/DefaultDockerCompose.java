@@ -28,6 +28,7 @@ import com.palantir.docker.compose.connection.ContainerName;
 import com.palantir.docker.compose.connection.ContainerNames;
 import com.palantir.docker.compose.connection.DockerMachine;
 import com.palantir.docker.compose.connection.Ports;
+import com.palantir.docker.compose.helpers.VersionHelper;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Arrays;
@@ -62,6 +63,12 @@ public class DefaultDockerCompose implements DockerCompose {
         this.rawExecutable = rawExecutable;
         this.command = new Command(rawExecutable, log::trace);
         this.dockerMachine = dockerMachine;
+    }
+
+    @Override
+    public Version version() throws IOException, InterruptedException {
+        String version = command.execute(Command.throwingOnError(), "version", "--short");
+        return VersionHelper.toSemVer(version);
     }
 
     @Override
@@ -137,11 +144,6 @@ public class DefaultDockerCompose implements DockerCompose {
 
     private void verifyDockerComposeVersionAtLeast(Version targetVersion, String message) throws IOException, InterruptedException {
         validState(version().greaterThanOrEqualTo(targetVersion), message);
-    }
-
-    private Version version() throws IOException, InterruptedException {
-        String versionOutput = command.execute(Command.throwingOnError(), "-v");
-        return DockerComposeVersion.parseFromDockerComposeVersion(versionOutput);
     }
 
     private static String[] constructFullDockerComposeExecArguments(DockerComposeExecOption dockerComposeExecOption,

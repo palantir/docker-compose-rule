@@ -71,18 +71,12 @@ public class DockerShould {
     }
 
     @Test
-    public void understand_old_version_format() throws IOException, InterruptedException {
-        when(executedProcess.getInputStream()).thenReturn(toInputStream("Docker version 1.7.2"));
+    public void call_docker_version() throws IOException, InterruptedException {
+        when(executedProcess.getInputStream()).thenReturn(toInputStream("19.03.5"));
 
-        Version version = docker.configuredVersion();
-        assertThat(version, is(Version.valueOf("1.7.2")));
-    }
+        Version version = docker.version();
+        assertThat(version, is(Version.valueOf("19.3.5")));
 
-    @Test
-    public void understand_new_version_format() throws IOException, InterruptedException {
-        when(executedProcess.getInputStream()).thenReturn(toInputStream("Docker version 17.03.1-ce"));
-
-        Version version = docker.configuredVersion();
-        assertThat(version, is(Version.valueOf("17.3.1")));
+        verify(executor).execute("version", "--format", "{{.Client.Version}}");
     }
 }

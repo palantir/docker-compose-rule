@@ -99,7 +99,7 @@ public class DockerComposeShould {
     @Test
     public void call_docker_compose_with_no_colour_flag_on_logs() throws IOException {
         when(executedProcess.getInputStream()).thenReturn(
-                toInputStream("docker-compose version 1.7.0, build 1ad8866"),
+                toInputStream("1.7.0"),
                 toInputStream("logs"));
         ByteArrayOutputStream output = new ByteArrayOutputStream();
 
@@ -116,8 +116,8 @@ public class DockerComposeShould {
 
         final Process mockVersionProcess = mock(Process.class);
         when(mockVersionProcess.exitValue()).thenReturn(0);
-        when(mockVersionProcess.getInputStream()).thenReturn(toInputStream("docker-compose version 1.7.0, build 1ad8866"));
-        when(executor.execute("-v")).thenReturn(mockVersionProcess);
+        when(mockVersionProcess.getInputStream()).thenReturn(toInputStream("1.7.0"));
+        when(executor.execute("version", "--short")).thenReturn(mockVersionProcess);
         when(executor.execute("logs", "--no-color", "db")).thenReturn(executedProcess);
         when(executedProcess.getInputStream()).thenReturn(toInputStream("logs"));
         ByteArrayOutputStream output = new ByteArrayOutputStream();
@@ -130,7 +130,7 @@ public class DockerComposeShould {
     @Test
     public void fail_if_docker_compose_version_is_prior_1_7_on_logs()
             throws IOException, InterruptedException {
-        when(executedProcess.getInputStream()).thenReturn(toInputStream("docker-compose version 1.5.6, build 1ad8866"));
+        when(executedProcess.getInputStream()).thenReturn(toInputStream("1.5.6"));
         exception.expect(IllegalStateException.class);
         exception.expectMessage("You need at least docker-compose 1.7 to run docker-compose exec");
         compose.exec(options("-d"), "container_1", arguments("ls"));
@@ -188,7 +188,7 @@ public class DockerComposeShould {
     @Test
     public void pass_concatenated_arguments_to_executor_on_docker_compose_exec()
             throws IOException, InterruptedException {
-        when(executedProcess.getInputStream()).thenReturn(toInputStream("docker-compose version 1.7.0rc1, build 1ad8866"));
+        when(executedProcess.getInputStream()).thenReturn(toInputStream("1.7.0-rc1"));
         compose.exec(options("-d"), "container_1", arguments("ls"));
         verify(executor, times(1)).execute("exec", "-T", "-d", "container_1", "ls");
     }
@@ -196,7 +196,7 @@ public class DockerComposeShould {
     @Test
     public void fail_if_docker_compose_version_is_prior_1_7_on_docker_compose_exec()
             throws IOException, InterruptedException {
-        when(executedProcess.getInputStream()).thenReturn(toInputStream("docker-compose version 1.5.6, build 1ad8866"));
+        when(executedProcess.getInputStream()).thenReturn(toInputStream("1.5.6"));
         exception.expect(IllegalStateException.class);
         exception.expectMessage("You need at least docker-compose 1.7 to run docker-compose exec");
         compose.exec(options("-d"), "container_1", arguments("ls"));
@@ -214,11 +214,11 @@ public class DockerComposeShould {
         String lsString = String.format("-rw-r--r--  1 user  1318458867  11326 Mar  9 17:47 LICENSE%n"
                                         + "-rw-r--r--  1 user  1318458867  12570 May 12 14:51 README.md");
 
-        String versionString = "docker-compose version 1.7.0rc1, build 1ad8866";
+        String versionString = "1.7.0-rc1";
 
         DockerComposeExecutable processExecutor = mock(DockerComposeExecutable.class);
 
-        addProcessToExecutor(processExecutor, processWithOutput(versionString), "-v");
+        addProcessToExecutor(processExecutor, processWithOutput(versionString), "version", "--short");
         addProcessToExecutor(processExecutor, processWithOutput(lsString), "exec", "-T", "container_1", "ls", "-l");
 
         DockerCompose processCompose = new DefaultDockerCompose(processExecutor, dockerMachine);
