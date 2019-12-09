@@ -55,8 +55,7 @@ public class DockerComposeShould {
     private final DockerComposeExecutable dockerComposeExecutor = mock(DockerComposeExecutable.class);
     private final DockerExecutable dockerExecutor = mock(DockerExecutable.class);
     private final DockerMachine dockerMachine = mock(DockerMachine.class);
-    private final DockerCompose compose =
-            new DefaultDockerCompose(dockerComposeExecutor, dockerExecutor, dockerMachine);
+    private final DockerCompose compose = new DefaultDockerCompose(dockerComposeExecutor, dockerExecutor, dockerMachine);
 
     private final Process dockerComposeExecutedProcess = mock(Process.class);
     private final Process dockerExecutedProcess = mock(Process.class);
@@ -187,15 +186,13 @@ public class DockerComposeShould {
         when(dockerComposeExecutedProcess.exitValue()).thenReturn(0);
 
         when(dockerExecutor.execute(anyVararg())).thenReturn(dockerExecutedProcess);
-        when(dockerExecutedProcess.getInputStream())
-                .thenReturn(toInputStream("0.0.0.0:7000->7000/tcp"));
+        when(dockerExecutedProcess.getInputStream()).thenReturn(toInputStream("0.0.0.0:7000->7000/tcp"));
         when(dockerExecutedProcess.exitValue()).thenReturn(0);
 
         Ports ports = compose.ports("db");
-
         verify(dockerComposeExecutor).execute("ps", "-q", "db");
         verify(dockerExecutor).execute(
-                "ps", "--no-trunc", "--format", "\"{{ .Ports }}\"", "--filter", String.format("id=%s", CONTAINER_ID));
+                "ps", "--no-trunc", "--format", "{{.Ports}}", "--filter", String.format("id=%s", CONTAINER_ID));
         assertThat(ports, is(new Ports(new DockerPort("0.0.0.0", 7000, 7000))));
     }
 
@@ -257,7 +254,7 @@ public class DockerComposeShould {
     @Test
     public void return_the_output_from_the_executed_process_on_docker_compose_exec() throws Exception {
         String lsString = String.format("-rw-r--r--  1 user  1318458867  11326 Mar  9 17:47 LICENSE%n"
-                + "-rw-r--r--  1 user  1318458867  12570 May 12 14:51 README.md");
+                                        + "-rw-r--r--  1 user  1318458867  12570 May 12 14:51 README.md");
 
         String versionString = "docker-compose version 1.7.0rc1, build 1ad8866";
 
@@ -274,7 +271,7 @@ public class DockerComposeShould {
     @Test
     public void return_the_output_from_the_executed_process_on_docker_compose_run() throws Exception {
         String lsString = String.format("-rw-r--r--  1 user  1318458867  11326 Mar  9 17:47 LICENSE%n"
-                + "-rw-r--r--  1 user  1318458867  12570 May 12 14:51 README.md");
+                                        + "-rw-r--r--  1 user  1318458867  12570 May 12 14:51 README.md");
 
         DockerComposeExecutable processExecutor = mock(DockerComposeExecutable.class);
 
