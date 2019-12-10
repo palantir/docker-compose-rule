@@ -25,10 +25,15 @@ import java.util.stream.Stream;
 
 public class Ports {
 
-    private static final Pattern PORT_PATTERN = Pattern.compile("((\\d+).(\\d+).(\\d+).(\\d+)):(\\d+)->(\\d+)/tcp");
-    private static final int IP_ADDRESS = 1;
-    private static final int EXTERNAL_PORT = 6;
-    private static final int INTERNAL_PORT = 7;
+    // Note: This regex doesn't account for usage of the
+    // udp protocol or port ranges (ex: 9090-9091:8080-8081)
+    // Without escape characters: (?<ipAddress>(\d+).(\d+).(\d+).(\d+)):(?<externalPort>\d+)->(?<internalPort>\d+)\/tcp
+    private static final Pattern PORT_PATTERN = Pattern.compile(
+            "(?<ipAddress>(\\d+).(\\d+).(\\d+).(\\d+)):(?<externalPort>\\d+)->(?<internalPort>\\d+)\\/tcp");
+
+    private static final String IP_ADDRESS = "ipAddress";
+    private static final String EXTERNAL_PORT = "externalPort";
+    private static final String INTERNAL_PORT = "internalPort";
 
     private static final String NO_IP_ADDRESS = "0.0.0.0";
 

@@ -1,0 +1,48 @@
+version: "2"
+
+services:
+  no-ports-mapped-service:
+    image: gliderlabs/alpine:3.4
+    command: tail -f /dev/null
+
+  ports-mapped-identically:
+    image: gliderlabs/alpine:3.4
+    command: tail -f /dev/null
+    ports:
+      - "5432:5432"
+
+  ports-mapped-differently:
+    image: gliderlabs/alpine:3.4
+    command: tail -f /dev/null
+    ports:
+      - "1234:5678"
+
+  ports-mapped-with-different-ip:
+    image: gliderlabs/alpine:3.4
+    command: tail -f /dev/null
+    ports:
+      - "127.0.0.1:8000:8000"
+
+  ports-exposed-but-not-mapped:
+    image: gliderlabs/alpine:3.4
+    command: tail -f /dev/null
+    expose:
+      - "8000"
+
+  lots-of-port-information:
+    image: gliderlabs/alpine:3.4
+    command: tail -f /dev/null
+    ports:
+      - "9000:9000"
+      - "9010:9010"
+      - "9020:9020"
+      - "6666:7777"
+      - "7777:8888"
+      - "8888:9999"
+      - "127.0.0.1:4000:4000"
+      - "127.0.0.1:4010:4010"
+      - "127.0.0.1:4020:4020"
+    expose:
+      - "5000"
+      - "5010"
+      - "5020"
