@@ -2,7 +2,9 @@
 # To request a modification to the general template, file an issue on Excavator.
 # To manually manage the CircleCI configuration for this project, remove the .circleci/template.sh file.
 
-version: 2
+version: 2.1
+orbs:
+  win: circleci/windows@2.2.0 # https://circleci.com/orbs/registry/orb/circleci/windows
 jobs:
   compile:
     docker: [{ image: 'circleci/openjdk:8u222-stretch-node' }]
@@ -163,6 +165,30 @@ jobs:
       - store_test_results: { path: ~/junit }
       - store_artifacts: { path: ~/artifacts }
 
+  windows:
+    executor: win/default
+    environment:
+      JAVA_HOME: C:\Program Files\Zulu\zulu-11
+    #   CIRCLE_TEST_REPORTS: C:\Users\circleci\junit
+    #   CIRCLE_ARTIFACTS: C:\Users\circleci\artifacts
+    steps:
+      - run: |
+          New-Item -ItemType "directory" -Path "C:\Users\circleci\junit", "C:\Users\circleci\artifacts"
+          choco install zulu11
+          $Env:JAVA_HOME = "C:\Program Files\Zulu\zulu-11"
+          echo $Env:JAVA_HOME
+      - checkout
+      - restore_cache: { key: 'windows-gradle-wrapper-v1-{{ checksum "gradle/wrapper/gradle-wrapper.properties" }}' }
+      - restore_cache: { key: 'windows-dependencies-v1-{{ checksum "versions.props" }}-{{ checksum "build.gradle" }}' }
+      - run: ./gradlew.bat build --no-daemon --stacktrace
+      - save_cache:
+          key: 'windows-dependencies-v1-{{ checksum "versions.props" }}-{{ checksum "build.gradle" }}'
+          paths: [ C:\Users\circleci\.gradle\caches ]
+      - save_cache:
+          key: 'windows-gradle-wrapper-v1-{{ checksum "gradle/wrapper/gradle-wrapper.properties" }}'
+          paths: [ C:\Users\circleci\.gradle\wrapper ]
+      # - store_test_results: { path: C:\Users\circleci\junit }
+      # - store_artifacts: { path: C:\Users\circleci\artifacts }
   trial-publish:
     docker: [{ image: 'circleci/openjdk:8u222-stretch-node' }]
     environment:
@@ -232,6 +258,9 @@ workflows:
           requires: [ compile ]
           filters: { tags: { only: /.*/ } }
 
+      - windows:
+          filters: { tags: { only: /.*/ } }
+
       - markdown:
           filters: { tags: { only: /.*/ } }
 
@@ -239,5 +268,5 @@ workflows:
           requires: [ compile ]
 
       - publish:
-          requires: [ unit-test, unit-test-11, check, build, build-11 ]
+          requires: [ unit-test, unit-test-11, check, build, build-11, windows ]
           filters: { tags: { only: /.*/ }, branches: { only: master } }
