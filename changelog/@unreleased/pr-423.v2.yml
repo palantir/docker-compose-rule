@@ -1,0 +1,11 @@
+type: improvement
+improvement:
+  description: |-
+    update awaitility:awaitility to the most recent version
+
+    ## Before this PR
+    jay.awaitility 1.7.0 was released in 2015
+    ## After this PR
+    use org.awaitility which is a successor of jay.awaitility
+  links:
+  - https://github.com/palantir/docker-compose-rule/pull/423
