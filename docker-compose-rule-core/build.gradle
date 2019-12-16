@@ -8,12 +8,12 @@ build.dependsOn integrationTest
 
 dependencies {
     api project(':docker-compose-rule-events-api:docker-compose-rule-events-api-objects')
-    compile 'com.jayway.awaitility:awaitility'
     compile 'com.github.zafarkhaja:java-semver'
     compile 'com.google.guava:guava'
     compile 'commons-io:commons-io'
     compile 'joda-time:joda-time'
     compile 'org.apache.commons:commons-lang3:3.0'
+    compile 'org.awaitility:awaitility'
     compile 'org.hamcrest:hamcrest-core'
     compile 'org.slf4j:slf4j-api'
     implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-yaml'
