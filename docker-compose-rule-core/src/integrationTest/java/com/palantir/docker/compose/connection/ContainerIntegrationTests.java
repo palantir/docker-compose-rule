@@ -16,15 +16,14 @@
 
 package com.palantir.docker.compose.connection;
 
-import static com.jayway.awaitility.Awaitility.await;
 import static com.palantir.docker.compose.execution.DockerComposeExecArgument.arguments;
 import static com.palantir.docker.compose.execution.DockerComposeExecOption.noOptions;
+import static org.awaitility.Awaitility.await;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assume.assumeThat;
 
 import com.github.zafarkhaja.semver.Version;
-import com.jayway.awaitility.core.ConditionFactory;
 import com.palantir.docker.compose.configuration.DockerComposeFiles;
 import com.palantir.docker.compose.configuration.ProjectName;
 import com.palantir.docker.compose.execution.DefaultDockerCompose;
@@ -33,6 +32,7 @@ import com.palantir.docker.compose.execution.DockerCompose;
 import com.palantir.docker.compose.execution.DockerExecutable;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
+import org.awaitility.core.ConditionFactory;
 import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.internal.matchers.GreaterOrEqual;

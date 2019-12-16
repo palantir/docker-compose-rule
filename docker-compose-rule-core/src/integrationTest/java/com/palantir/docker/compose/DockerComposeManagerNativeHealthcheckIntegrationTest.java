@@ -17,9 +17,9 @@
 package com.palantir.docker.compose;
 
 import static com.google.common.util.concurrent.Uninterruptibles.getUninterruptibly;
-import static com.jayway.awaitility.Awaitility.await;
 import static com.palantir.docker.compose.execution.DockerComposeExecArgument.arguments;
 import static com.palantir.docker.compose.execution.DockerComposeExecOption.noOptions;
+import static org.awaitility.Awaitility.await;
 import static org.junit.Assert.fail;
 import static org.junit.Assume.assumeThat;
 
