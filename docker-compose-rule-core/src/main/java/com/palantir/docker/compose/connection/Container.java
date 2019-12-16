@@ -84,11 +84,12 @@ public class Container {
     }
 
     public DockerPort port(int internalPort) {
-        return portMappings.get()
-                           .stream()
-                           .filter(port -> port.getInternalPort() == internalPort)
-                           .findFirst()
-                           .orElseThrow(() -> new IllegalArgumentException("No internal port '" + internalPort + "' for container '" + containerName + "': " + portMappings));
+        Ports ports = portMappings.get();
+        return ports.stream()
+                .filter(port -> port.getInternalPort() == internalPort)
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException(
+                        "No internal port '" + internalPort + "' for container '" + containerName + "': " + ports));
     }
 
     public void start() throws IOException, InterruptedException {
