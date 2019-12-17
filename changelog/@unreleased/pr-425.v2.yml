@@ -1,0 +1,5 @@
+type: fix
+fix:
+  description: Include port mappings in exception thrown when failing to resolve a port.
+  links:
+  - https://github.com/palantir/docker-compose-rule/pull/425
