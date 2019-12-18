@@ -102,6 +102,7 @@ public class ContainerShould {
         env.availableService("service", IP, 5400, 5400);
         exception.expect(IllegalArgumentException.class);
         exception.expectMessage("No internal port '5432' for container 'service'");
+        exception.expectMessage("externalPort=5400, internalPort=5400");
         container.port(5432);
     }
 
