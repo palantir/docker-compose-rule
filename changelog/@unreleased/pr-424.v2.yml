@@ -1,0 +1,9 @@
+type: fix
+fix:
+  description: |+
+    Fix parsing of docker-compose output
+
+    Set the `COLUMNS` environment variable to an artificially large value for the docker-compose process. This works around newer versions of docker-compose (at least 1.25.0-rc4+) which adjust their output based on the width of the terminal.
+
+  links:
+  - https://github.com/palantir/docker-compose-rule/pull/424
