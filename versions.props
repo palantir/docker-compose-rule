@@ -1,20 +1,20 @@
 com.github.stefanbirkner:system-rules = 1.19.0
 com.github.zafarkhaja:java-semver = 0.9.0
 com.google.guava:guava = 21.0
-org.awaitility:awaitility = 4.0.1
+org.awaitility:awaitility = 4.0.2
 commons-io:commons-io = 2.6
 joda-time:joda-time = 2.10.3
-junit:junit = 4.12
+junit:junit = 4.13
 org.hamcrest:* = 2.1
-org.immutables:* = 2.7.5
+org.immutables:* = 2.8.3
 org.mockito:mockito-core = 1.9.5
 org.slf4j:* = 1.7.12
-one.util:streamex = 0.6.8
-org.assertj:assertj-core = 3.13.2
+one.util:streamex = 0.7.2
+org.assertj:assertj-core = 3.14.0
 com.palantir.conjure:conjure = 4.7.0
 com.palantir.conjure.java:* = 5.0.0
-com.fasterxml.jackson.dataformat:* = 2.9.9
-one.util:streamex = 0.6.8
+com.fasterxml.jackson.dataformat:* = 2.10.2
+one.util:streamex = 0.7.2
 com.github.tomakehurst:wiremock = 2.24.0
 org.junit.jupiter:* = 5.5.0
 
