@@ -144,6 +144,7 @@ jobs:
     environment:
       CIRCLE_TEST_REPORTS: /home/circleci/junit
       CIRCLE_ARTIFACTS: /home/circleci/artifacts
+      JAVA_HOME: /opt/jdk/latest
       _JAVA_OPTIONS: -Dorg.gradle.internal.launcher.welcomeMessageEnabled=false -Xmx8192m
     steps:
       - attach_workspace: { at: /home/circleci }
@@ -152,7 +153,7 @@ jobs:
       - run: |
           sudo mkdir -p /opt/java && cd /opt/java && sudo chown -R circleci:circleci .
           curl https://cdn.azul.com/zulu/bin/zulu11.37.17-ca-jdk11.0.6-linux_x64.tar.gz | tar -xzf - -C /opt/java
-          sudo rm /opt/jdk/latest && sudo ln -s /opt/java/zulu*/ /opt/jdk/latest
+          sudo rm -f /opt/jdk/latest && sudo ln -s /opt/java/zulu*/ /opt/jdk/latest
       - run: ./gradlew --parallel --stacktrace build -x test -x check
       - save_cache:
           key: 'build-11-gradle-cache-v2-{{ checksum "versions.props" }}-{{ checksum "build.gradle" }}'
