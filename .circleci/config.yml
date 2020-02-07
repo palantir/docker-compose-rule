@@ -108,7 +108,7 @@ jobs:
       - checkout
       - restore_cache: { key: 'gradle-wrapper-v2-{{ checksum "gradle/wrapper/gradle-wrapper.properties" }}' }
       - restore_cache: { key: 'unit-test-11-gradle-cache-v2-{{ checksum "versions.props" }}-{{ checksum "build.gradle" }}' }
-      - run: ./gradlew --parallel --stacktrace --continue test
+      - run: ./gradlew --parallel --stacktrace --continue test -Pcom.palantir.baseline-error-prone.disable
       - save_cache:
           key: 'unit-test-11-gradle-cache-v2-{{ checksum "versions.props" }}-{{ checksum "build.gradle" }}'
           paths: [ ~/.gradle/caches ]
@@ -154,7 +154,7 @@ jobs:
           sudo mkdir -p /opt/java && cd /opt/java && sudo chown -R circleci:circleci .
           curl https://cdn.azul.com/zulu/bin/zulu11.37.17-ca-jdk11.0.6-linux_x64.tar.gz | tar -xzf - -C /opt/java
           sudo ln -s /opt/java/zulu*/ /opt/java11
-      - run: ./gradlew --parallel --stacktrace build -x test -x check
+      - run: ./gradlew --parallel --stacktrace build -x test -x check -Pcom.palantir.baseline-error-prone.disable
       - save_cache:
           key: 'build-11-gradle-cache-v2-{{ checksum "versions.props" }}-{{ checksum "build.gradle" }}'
           paths: [ ~/.gradle/caches ]
