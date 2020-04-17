@@ -4,15 +4,19 @@
 
 package com.palantir.docker.compose.connection;
 
-import static java.util.stream.Collectors.joining;
 
-import com.google.common.base.Splitter;
-import java.util.Arrays;
-import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import org.immutables.value.Value;
 
 @Value.Immutable
 public abstract class ContainerName {
+
+    // Docker default container names have the format of:
+    // <project>_<service>_<index> or <project>_<service>_<index>_<slug>
+    // Regex without escape characters: ^(?<project>[^_]+)_(?<service>[^_]+)_(?<index>[^_]+)(_(?<slug>[^_]+))?$
+    private static final Pattern DEFAULT_CONTAINER_NAME_PATTERN =
+            Pattern.compile("^(?<project>[^_]+)_(?<service>[^_]+)_(?<index>[^_]+)(_(?<slug>[^_]+))?$");
 
     public abstract String rawName();
 
@@ -23,39 +27,20 @@ public abstract class ContainerName {
         return semanticName();
     }
 
-    public static ContainerName fromPsLine(String psLine) {
-        List<String> lineComponents = Splitter.on(" ").splitToList(psLine);
-        String rawName = lineComponents.get(0);
-
-        if (probablyCustomName(rawName)) {
-            return ImmutableContainerName.builder()
-                .rawName(rawName)
-                .semanticName(rawName)
+    public static ContainerName fromName(String name) {
+        return ImmutableContainerName.builder()
+                .rawName(name)
+                .semanticName(parseSemanticName(name))
                 .build();
+    }
+
+    private static String parseSemanticName(String name) {
+        Matcher matcher = DEFAULT_CONTAINER_NAME_PATTERN.matcher(name);
+
+        if (matcher.matches()) {
+            return matcher.group("service");
         }
 
-        String semanticName = withoutDirectory(withoutScaleNumber(rawName));
-        return ImmutableContainerName.builder()
-                .rawName(rawName)
-                .semanticName(semanticName)
-                .build();
+        return name;
     }
-
-    private static boolean probablyCustomName(String rawName) {
-        return !(rawName.split("_").length >= 3);
-    }
-
-    private static String withoutDirectory(String rawName) {
-        return Arrays.stream(rawName.split("_"))
-                .skip(1)
-                .collect(joining("_"));
-    }
-
-    public static String withoutScaleNumber(String rawName) {
-        String[] components = rawName.split("_");
-        return Arrays.stream(components)
-                .limit(components.length - 1)
-                .collect(joining("_"));
-    }
-
 }
