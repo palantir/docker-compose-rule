@@ -19,6 +19,7 @@ import static com.google.common.base.Preconditions.checkState;
 
 import com.google.common.collect.ImmutableList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
@@ -31,39 +32,54 @@ import org.immutables.value.Value.Parameter;
 public abstract class ProjectName {
 
     @Parameter
-    protected abstract String projectName();
+    protected abstract Optional<String> projectName();
 
     @Check
     protected void validate() {
-        checkState(projectName().trim().length() > 0, "ProjectName must not be blank.");
+        if (!projectName().isPresent()) {
+            return;
+        }
 
-        checkState(validCharacters(),
-                "ProjectName '%s' not allowed, please use lowercase letters and numbers only.", projectName());
+        checkState(
+                projectName().get().trim().length() > 0,
+                "ProjectName must not be blank. If you want to omit the project name, use ProjectName.omit()");
+
+        checkState(validCharacters(projectName().get()),
+                "ProjectName '%s' not allowed, please use lowercase letters and numbers only.", projectName().get());
     }
 
     // Only allows strings that docker-compose-cli would not modify
     // https://github.com/docker/compose/blob/85e2fb63b3309280a602f1f76d77d3a82e53b6c2/compose/cli/command.py#L84
-    protected boolean validCharacters() {
+    protected boolean validCharacters(String projectName) {
         Predicate<String> illegalCharacters = Pattern.compile("[^a-z0-9]").asPredicate();
-        return !illegalCharacters.test(projectName());
+        return !illegalCharacters.test(projectName);
     }
 
     public String asString() {
-        return projectName();
+        return projectName().orElseThrow(() -> new IllegalStateException(
+                "Cannot get the ProjectName as string if the ProjectName is omitted"));
     }
 
     public List<String> constructComposeFileCommand() {
-        return ImmutableList.of("--project-name", projectName());
+        return projectName().map(projectName -> ImmutableList.of("--project-name", projectName))
+                .orElseGet(ImmutableList::of);
     }
 
     public static ProjectName random() {
-        return ImmutableProjectName.of(UUID.randomUUID().toString().substring(0, 8));
+        return ImmutableProjectName.of(Optional.of(UUID.randomUUID().toString().substring(0, 8)));
     }
 
     /**
      * A name consisting of lowercase letters and numbers only.
      */
     public static ProjectName fromString(String name) {
-        return ImmutableProjectName.of(name);
+        return ImmutableProjectName.of(Optional.of(name));
+    }
+
+    /**
+     * Omit the project name which makes docker-compose use its current directory as project name.
+     */
+    public static ProjectName omit() {
+        return ImmutableProjectName.of(Optional.empty());
     }
 }

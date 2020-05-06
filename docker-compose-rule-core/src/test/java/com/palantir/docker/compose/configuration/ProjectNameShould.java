@@ -17,6 +17,7 @@ package com.palantir.docker.compose.configuration;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
@@ -67,6 +68,12 @@ public class ProjectNameShould {
     }
 
     @Test
+    public void return_empty_command_when_omitted() {
+        List<String> command = ProjectName.omit().constructComposeFileCommand();
+        assertThat(command, empty());
+    }
+
+    @Test
     public void reject_blanks_in_from_string() {
         exception.expect(IllegalStateException.class);
         exception.expectMessage("ProjectName must not be blank.");
@@ -76,7 +83,8 @@ public class ProjectNameShould {
     @Test
     public void match_validation_behavior_of_docker_compose_cli() {
         exception.expect(IllegalStateException.class);
-        exception.expectMessage("ProjectName 'Crazy#Proj ect!Name' not allowed, please use lowercase letters and numbers only.");
+        exception.expectMessage(
+                "ProjectName 'Crazy#Proj ect!Name' not allowed, please use lowercase letters and numbers only.");
         ProjectName.fromString("Crazy#Proj ect!Name");
     }
 
