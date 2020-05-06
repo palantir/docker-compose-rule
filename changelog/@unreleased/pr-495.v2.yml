@@ -1,0 +1,5 @@
+type: improvement
+improvement:
+  description: Add option to omit the project name
+  links:
+  - https://github.com/palantir/docker-compose-rule/pull/495
