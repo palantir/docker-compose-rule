@@ -47,16 +47,16 @@ public class Command {
         ProcessResult result = run(commands);
 
         if (result.exitCode() != 0) {
-            errorHandler.handle(result.exitCode(), result.output(), executable.commandName(), commands);
+            errorHandler.handle(result.exitCode(), result.output(), result.error(), executable.commandName(), commands);
         }
 
         return result.output();
     }
 
     public static ErrorHandler throwingOnError() {
-        return (exitCode, output, commandName, commands) -> {
+        return (exitCode, output, error, commandName, commands) -> {
             String message =
-                    constructNonZeroExitErrorMessage(exitCode, commandName, commands) + "\nThe output was:\n" + output;
+                    constructNonZeroExitErrorMessage(exitCode, commandName, commands) + "\nThe output was:\n" + output + "\nThe error output was:\n" + error;
             throw new DockerExecutionException(message);
         };
     }
@@ -70,15 +70,17 @@ public class Command {
         Process process = executable.execute(commands);
 
         ExecutorService exec = newSingleThreadExecutor();
-        Future<String> outputProcessing = exec
-                .submit(() -> processOutputFrom(process));
+        Future<String[]> outputProcessing = exec
+                .submit(() -> new String[]{processOutputFrom(process), processErrorFrom(process)});
 
-        String output = waitForResultFrom(outputProcessing);
+        String[] outputs = waitForResultFrom(outputProcessing);
+        String output = outputs[0];
+        String error =  outputs[1];
 
         process.waitFor(MINUTES_TO_WAIT_AFTER_STD_OUT_CLOSES, TimeUnit.MINUTES);
         exec.shutdown();
 
-        return new ProcessResult(process.exitValue(), output);
+        return new ProcessResult(process.exitValue(), output, error);
     }
 
     private String processOutputFrom(Process process) {
@@ -87,7 +89,17 @@ public class Command {
                 .collect(joining(System.lineSeparator()));
     }
 
-    private static String waitForResultFrom(Future<String> outputProcessing) {
+    private String processErrorFrom(Process process) {
+        if (process.getErrorStream() != null) {
+            return asReader(process.getErrorStream()).lines()
+                    .peek(logConsumer)
+                    .collect(joining(System.lineSeparator()));
+        } else {
+            return null;
+        }
+    }
+
+    private static String[] waitForResultFrom(Future<String[]> outputProcessing) {
         try {
             return outputProcessing.get(HOURS_TO_WAIT_FOR_STD_OUT_TO_CLOSE, TimeUnit.HOURS);
         } catch (InterruptedException | ExecutionException | TimeoutException e) {

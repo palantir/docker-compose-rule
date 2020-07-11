@@ -58,7 +58,7 @@ public abstract class DockerComposeExecutable implements Executable {
                         .add(defaultDockerComposePath())
                         .add(commands)
                         .build();
-                return new ProcessBuilder(args).redirectErrorStream(true).start();
+                return new ProcessBuilder(args).redirectErrorStream(false).start();
             }
         }, log::trace);
 
@@ -96,7 +96,7 @@ public abstract class DockerComposeExecutable implements Executable {
 
         return dockerConfiguration().configuredDockerComposeProcess()
                 .command(args)
-                .redirectErrorStream(true)
+                .redirectErrorStream(false)
                 .start();
     }
 

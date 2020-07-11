@@ -59,7 +59,7 @@ public abstract class DockerExecutable implements Executable {
 
         return dockerConfiguration().configuredDockerComposeProcess()
                 .command(args)
-                .redirectErrorStream(true)
+                .redirectErrorStream(false)
                 .start();
     }
 
