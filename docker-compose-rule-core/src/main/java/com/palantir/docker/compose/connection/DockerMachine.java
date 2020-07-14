@@ -100,12 +100,19 @@ public class DockerMachine implements DockerConfiguration {
         public DockerMachine build() {
             dockerType.validateEnvironmentVariables(systemEnvironment);
             AdditionalEnvironmentValidator.validate(additionalEnvironment);
-            Map<String, String> combinedEnvironment = newHashMap();
-            combinedEnvironment.putAll(systemEnvironment);
-            combinedEnvironment.putAll(additionalEnvironment);
 
             String dockerHost = systemEnvironment.getOrDefault(DOCKER_HOST, "");
-            return new DockerMachine(dockerType.resolveIp(dockerHost), ImmutableMap.copyOf(combinedEnvironment));
+            String hostIp = dockerType.resolveIp(dockerHost);
+
+            Map<String, String> environment = ImmutableMap.<String, String>builder()
+                    // 2019-12-17: newer docker-compose adjusts its output based on the number of columns available
+                    // in the terminal. This interferes with parsing of the output of docker-compose, so "COLUMNS" is
+                    // set to an artificially large value.
+                                                          .put("COLUMNS", "10000")
+                                                          .putAll(systemEnvironment)
+                                                          .putAll(additionalEnvironment)
+                                                          .build();
+            return new DockerMachine(hostIp, environment);
         }
     }
 
