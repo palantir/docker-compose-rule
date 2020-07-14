@@ -108,9 +108,9 @@ public class DockerMachine implements DockerConfiguration {
                     // 2019-12-17: newer docker-compose adjusts its output based on the number of columns available
                     // in the terminal. This interferes with parsing of the output of docker-compose, so "COLUMNS" is
                     // set to an artificially large value.
-                                                          .put("COLUMNS", "10000")
                                                           .putAll(systemEnvironment)
                                                           .putAll(additionalEnvironment)
+                                                          .put("COLUMNS", "10000")
                                                           .build();
             return new DockerMachine(hostIp, environment);
         }
