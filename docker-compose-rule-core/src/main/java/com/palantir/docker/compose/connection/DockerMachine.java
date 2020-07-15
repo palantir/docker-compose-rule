@@ -110,7 +110,7 @@ public class DockerMachine implements DockerConfiguration {
             // 2019-12-17: newer docker-compose adjusts its output based on the number of columns available
             // in the terminal. This interferes with parsing of the output of docker-compose, so "COLUMNS" is
             // set to an artificially large value.
-            combinedEnvironment.put("COLUMNS", "10000"):
+            combinedEnvironment.put("COLUMNS", "10000");
 
             return new DockerMachine(hostIp, ImmutableMap.copyOf(combinedEnvironment));
         }
@@ -167,7 +167,7 @@ public class DockerMachine implements DockerConfiguration {
             // 2019-12-17: newer docker-compose adjusts its output based on the number of columns available
             // in the terminal. This interferes with parsing of the output of docker-compose, so "COLUMNS" is
             // set to an artificially large value.
-            combinedEnvironment.put("COLUMNS", "10000"):
+            combinedEnvironment.put("COLUMNS", "10000");
 
             return new DockerMachine(hostIp, ImmutableMap.copyOf(combinedEnvironment));
         }
