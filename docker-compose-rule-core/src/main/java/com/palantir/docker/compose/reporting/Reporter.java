@@ -34,11 +34,11 @@ interface Reporter {
         private NoOpReporter() { }
 
         @Override
-        public void addRun(DockerComposeRun dockerComposeRun) {
+        public void addRun(DockerComposeRun _dockerComposeRun) {
         }
 
         @Override
-        public void addException(Exception exception) {
+        public void addException(Exception _exception) {
         }
 
         @Override

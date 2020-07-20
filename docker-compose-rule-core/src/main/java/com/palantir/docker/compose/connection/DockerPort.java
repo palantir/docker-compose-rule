@@ -71,7 +71,10 @@ public class DockerPort {
         return isHttpRespondingSuccessfully(urlFunction, andCheckStatus).succeeded();
     }
 
-    public SuccessOrFailure isHttpRespondingSuccessfully(Function<DockerPort, String> urlFunction, boolean andCheckStatus) {
+    @SuppressWarnings("ReadReturnValueIgnored")
+    public SuccessOrFailure isHttpRespondingSuccessfully(
+            Function<DockerPort, String> urlFunction,
+            boolean andCheckStatus) {
         URL url;
         try {
             String urlString = urlFunction.apply(this);
@@ -86,20 +89,28 @@ public class DockerPort {
             log.debug("Http connection acquired, assuming port active");
             return SuccessOrFailure.success();
         } catch (SocketException e) {
-            return SuccessOrFailure.failureWithCondensedException("Failed to acquire http connection, assuming port inactive", e);
+            return SuccessOrFailure.failureWithCondensedException(
+                    "Failed to acquire http connection, assuming port inactive",
+                    e);
         } catch (FileNotFoundException e) {
-            return SuccessOrFailure.fromBoolean(!andCheckStatus, "Received 404, assuming port inactive: " + e.getMessage());
+            return SuccessOrFailure.fromBoolean(
+                    !andCheckStatus,
+                    "Received 404, assuming port inactive: " + e.getMessage());
         } catch (SSLHandshakeException e) {
-            return SuccessOrFailure.failureWithCondensedException("Received bad SSL response, assuming port inactive", e);
+            return SuccessOrFailure.failureWithCondensedException(
+                    "Received bad SSL response, assuming port inactive",
+                    e);
         } catch (IOException e) {
-            return SuccessOrFailure.failureWithCondensedException("Error acquiring http connection, assuming port open but inactive", e);
+            return SuccessOrFailure.failureWithCondensedException(
+                    "Error acquiring http connection, assuming port open but inactive",
+                    e);
         }
     }
 
     /**
      * Formats the docker port into a particular form.
      * <p>
-     *     Example: dockerPort.inFormat("https://$HOST:$EXTERNAL_PORT/api")
+     * Example: dockerPort.inFormat("https://$HOST:$EXTERNAL_PORT/api")
      * </p>
      * Available options are:
      * <ul>
@@ -116,7 +127,6 @@ public class DockerPort {
                 .replaceAll("\\$HOST", getIp())
                 .replaceAll("\\$EXTERNAL_PORT", String.valueOf(getExternalPort()))
                 .replaceAll("\\$INTERNAL_PORT", String.valueOf(getInternalPort()));
-
     }
 
     @Override
