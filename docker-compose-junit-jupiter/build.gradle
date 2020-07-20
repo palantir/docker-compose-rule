@@ -12,4 +12,6 @@ dependencies {
 
     testCompile 'org.mockito:mockito-core'
     testCompile 'org.assertj:assertj-core'
+
+    integrationTestCompile 'org.junit.jupiter:junit-jupiter'
 }

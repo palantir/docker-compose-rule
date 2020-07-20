@@ -43,7 +43,7 @@ public class DockerMachineEnvironmentMatcher extends ValueCachingMatcher<DockerM
     }
 
     @Override
-    protected void describeMismatchSafely(DockerMachine item, Description mismatchDescription) {
+    protected void describeMismatchSafely(DockerMachine _item, Description mismatchDescription) {
         mismatchDescription.appendText("\nThese environment variables were missing:\n");
         mismatchDescription.appendValue(missingEnvironmentVariables());
     }
