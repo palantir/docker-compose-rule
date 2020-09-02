@@ -18,15 +18,6 @@
     <module name="NewlineAtEndOfFile"> <!-- Java Style Guide: Line ending: LF -->
         <property name="lineSeparator" value="lf"/>
     </module>
-    <module name="RegexpHeader">
-        <property name="header" value="^/\*$\n^ \* \(c\) Copyright \d{4} Palantir Technologies Inc\. All rights reserved\.$"/>
-        <property name="fileExtensions" value=".java,.ts"/>
-    </module>
-    <module name="RegexpMultiline"> <!-- Development Practices: Writing good unit tests -->
-        <property name="fileExtensions" value="java"/>
-        <property name="format" value="@VisibleForTesting\s+(protected|public)"/>
-        <property name="message" value="@VisibleForTesting members should be package-private."/>
-    </module>
     <module name="RegexpSingleline"> <!-- No reference needed as this is evident. -->
         <property name="format" value="&lt;&lt;&lt;&lt;&lt;&lt;&lt;"/>
         <property name="message" value="Found (&lt;&lt;&lt;&lt;&lt;&lt;&lt;), so it looks like you had a merge conflict that compiles. Please fix it."/>
@@ -53,6 +44,13 @@
         <property name="optional" value="true"/>
     </module>
     <module name="SuppressWarningsFilter"/> <!-- baseline-gradle: README.md -->
+    <module name="BeforeExecutionExclusionFileFilter">
+        <property name="fileNamePattern" value="module\-info\.java$"/>
+    </module>
+    <module name="LineLength"> <!-- Java Style Guide: No line-wrapping -->
+        <property name="max" value="120"/>
+        <property name="ignorePattern" value="^package.*|^import.*|a href|href|http://|https://|ftp://"/>
+    </module>
     <module name="TreeWalker">
         <module name="SuppressionCommentFilter"/> <!-- baseline-gradle: README.md -->
         <module name="SuppressionCommentFilter">
@@ -84,11 +82,13 @@
         <module name="AvoidStarImport"/> <!-- Java Style Guide: No wildcard imports -->
         <module name="AvoidStaticImport"> <!-- Java Style Guide: No static imports -->
             <property name="excludes" value="
+                com.google.common.base.Preconditions.*,
+                com.palantir.logsafe.Preconditions.*,
                 java.util.Collections.*,
                 java.util.stream.Collectors.*,
-                com.palantir.logsafe.Preconditions.*,
-                com.google.common.base.Preconditions.*,
-                org.apache.commons.lang3.Validate.*"/>
+                org.apache.commons.lang3.Validate.*,
+                org.assertj.core.api.Assertions.*,
+                org.mockito.Mockito.*"/>
         </module>
         <module name="ClassTypeParameterName"> <!-- Java Style Guide: Type variable names -->
             <property name="format" value="(^[A-Z][0-9]?)$|([A-Z][a-zA-Z0-9]*[T]$)"/>
@@ -110,7 +110,6 @@
         <module name="EmptyStatement"/> <!-- Java Style Guide: One statement per line -->
         <module name="EqualsHashCode"/>
         <module name="FallThrough"/> <!-- Java Style Guide: Fall-through: commented -->
-        <module name="FinalClass"/> <!-- Java Coding Guidelines: Private constructors -->
         <module name="GenericWhitespace"> <!-- Java Style Guide: Horizontal whitespace -->
             <message key="ws.followed" value="GenericWhitespace ''{0}'' is followed by whitespace."/>
             <message key="ws.preceded" value="GenericWhitespace ''{0}'' is preceded with whitespace."/>
@@ -203,10 +202,6 @@
         </module>
         <module name="InnerAssignment"/> <!-- Java Coding Guidelines: Inner assignments: Not used -->
         <module name="LeftCurly"/> <!-- Java Style Guide: Nonempty blocks: K & R style -->
-        <module name="LineLength"> <!-- Java Style Guide: No line-wrapping -->
-            <property name="max" value="120"/>
-            <property name="ignorePattern" value="^package.*|^import.*|a href|href|http://|https://|ftp://"/>
-        </module>
         <module name="MemberName"> <!-- Java Style Guide: Non-constant field names -->
             <property name="format" value="^[a-z][a-zA-Z0-9]+$"/>
             <message key="name.invalidPattern" value="Member name ''{0}'' must match pattern ''{1}''."/>
@@ -370,12 +365,9 @@
             <property name="message" value="Prefer Guava''s [CharStreams,Files,Resources].toString to avoid charset/stream closing issues."/>
         </module>
         <module name="RegexpSinglelineJava">
-            <property name="format" value="static enum"/>
-            <property name="message" value="Redundant ''static'' modifier."/>
-        </module>
-        <module name="RegexpSinglelineJava">
             <property name="format" value="\/\/TODO|\/\/ TODO(?!\([^()\s]+\): )"/>
             <property name="message" value="TODO format: // TODO(#issue): explanation"/>
+            <property name="ignoreCase" value="true"/>
         </module>
         <module name="RegexpSinglelineJava">
             <property name="format" value="(void setUp\(\))|(void setup\(\))|(void setupStatic\(\))|(void setUpStatic\(\))|(void beforeTest\(\))|(void teardown\(\))|(void tearDown\(\))|(void beforeStatic\(\))|(void afterStatic\(\))"/>
@@ -383,11 +375,11 @@
         </module>
         <module name="RightCurly"> <!-- Java Style Guide: Nonempty blocks: K & R style -->
             <property name="option" value="same"/>
-            <property name="tokens" value="LITERAL_TRY, LITERAL_CATCH, LITERAL_FINALLY, LITERAL_IF, LITERAL_ELSE, LITERAL_DO"/>
+            <property name="tokens" value="CLASS_DEF, METHOD_DEF, CTOR_DEF, LITERAL_TRY, LITERAL_CATCH, LITERAL_FINALLY, LITERAL_IF, LITERAL_ELSE, LITERAL_DO"/>
         </module>
         <module name="RightCurly"> <!-- Java Style Guide: Nonempty blocks: K & R style -->
             <property name="option" value="alone"/>
-            <property name="tokens" value="CLASS_DEF, METHOD_DEF, CTOR_DEF, LITERAL_FOR, LITERAL_WHILE, STATIC_INIT, INSTANCE_INIT"/>
+            <property name="tokens" value="LITERAL_FOR, LITERAL_WHILE, STATIC_INIT, INSTANCE_INIT"/>
         </module>
         <module name="SeparatorWrap"> <!-- Java Style Guide: Where to break -->
             <property name="tokens" value="DOT"/>
@@ -410,7 +402,6 @@
             <message key="name.invalidPattern" value="Type name ''{0}'' must match pattern ''{1}''."/>
         </module>
         <module name="TypecastParenPad"/> <!-- Java Style Guide: Horizontal whitespace -->
-        <module name="UnnecessaryParentheses"/>
         <module name="UnusedImports"> <!-- Java Style Guide: No unused imports -->
             <property name="processJavadoc" value="true"/>
         </module>
@@ -422,6 +413,7 @@
             <property name="allowEmptyMethods" value="true"/>
             <property name="allowEmptyTypes" value="true"/>
             <property name="allowEmptyLoops" value="true"/>
+            <property name="allowEmptyLambdas" value="true"/>
             <property name="ignoreEnhancedForColon" value="false"/>
             <message key="ws.notFollowed" value="WhitespaceAround: ''{0}'' is not followed by whitespace. Empty blocks may only be represented as '{}' when not part of a multi-block statement (4.1.3)"/>
             <message key="ws.notPreceded" value="WhitespaceAround: ''{0}'' is not preceded with whitespace."/>
@@ -435,16 +427,13 @@
         </module>
         <module name="CyclomaticComplexity"/> <!-- Java Coding Guidelines: Reduce Cyclomatic Complexity -->
         <module name="DesignForExtension"> <!-- Java Coding Guidelines: Design for extension -->
-            <property name="ignoredAnnotations" value="Test, Before, BeforeEach, After, AfterEach, BeforeClass, BeforeAll, AfterClass, AfterAll"/>
+            <property name="ignoredAnnotations" value="ParameterizedTest, Test, Before, BeforeEach, After, AfterEach, BeforeClass, BeforeAll, AfterClass, AfterAll"/>
         </module>
         <module name="JavadocMethod"> <!-- Java Style Guide: Where Javadoc is used -->
             <property name="scope" value="public"/>
             <property name="allowMissingParamTags" value="true"/>
-            <property name="allowMissingThrowsTags" value="true"/>
             <property name="allowMissingReturnTag" value="true"/>
-            <property name="minLineCount" value="99999999"/>
             <property name="allowedAnnotations" value="Override, Test"/>
-            <property name="allowThrowsTagsForSubclasses" value="true"/>
         </module>
         <module name="JavadocStyle"/> <!-- Java Style Guide: Javadoc -->
         <module name="JavadocTagContinuationIndentation"> <!-- Java Style Guide: At-clauses -->
@@ -468,10 +457,9 @@
         <module name="NestedTryDepth"/> <!-- Java Coding Guide: Try/catch blocks: never nested -->
         <module name="NonEmptyAtclauseDescription"/> <!-- Java Style Guide: At-clauses -->
         <module name="ParameterName"> <!-- Java Style Guide: Parameter names -->
-            <property name="format" value="^[a-z][a-zA-Z0-9]+$"/>
+            <property name="format" value="^_?[a-z][a-zA-Z0-9]+$"/>
             <message key="name.invalidPattern" value="Parameter name ''{0}'' must match pattern ''{1}''."/>
         </module>
-        <module name="SingleLineJavadoc"/> <!-- Java Style Guide: General form -->
         <module name="SummaryJavadocCheck"> <!-- Java Coding Guidelines: Javadoc -->
             <property name="forbiddenSummaryFragments" value="^@return the *|^This method returns |^A [{]@code [a-zA-Z0-9]+[}]( is a )"/>
         </module>
