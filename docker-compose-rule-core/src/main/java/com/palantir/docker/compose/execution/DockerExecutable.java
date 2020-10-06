@@ -29,7 +29,8 @@ public abstract class DockerExecutable implements Executable {
     private static final DockerCommandLocations DOCKER_LOCATIONS = new DockerCommandLocations(
             System.getenv("DOCKER_LOCATION"),
             "/usr/local/bin/docker",
-            "/usr/bin/docker"
+            "/usr/bin/docker",
+            "C:/program files/docker/docker/resources/bin/docker.exe"
     );
 
     @Value.Parameter protected abstract DockerConfiguration dockerConfiguration();
