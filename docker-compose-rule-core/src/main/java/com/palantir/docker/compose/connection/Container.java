@@ -60,7 +60,7 @@ public class Container {
                 return SuccessOrFailure.failure("Internal port " + internalPort + " is not listening in container " + containerName);
             }
             return port.isHttpRespondingSuccessfully(urlFunction, andCheckStatus)
-                    .mapFailure(failureMessage -> internalPort + " does not have a http response from " + urlFunction.apply(port) + ":\n" + failureMessage);
+                    .mapFailure(failureMessage -> containerName+":"+internalPort + " does not have a http response from " + urlFunction.apply(port) + ":\n" + failureMessage);
         } catch (Exception e) {
             return SuccessOrFailure.fromException(e);
         }
