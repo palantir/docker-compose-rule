@@ -100,12 +100,19 @@ public class DockerMachine implements DockerConfiguration {
         public DockerMachine build() {
             dockerType.validateEnvironmentVariables(systemEnvironment);
             AdditionalEnvironmentValidator.validate(additionalEnvironment);
+
+            String dockerHost = systemEnvironment.getOrDefault(DOCKER_HOST, "");
+            String hostIp = dockerType.resolveIp(dockerHost);
+
             Map<String, String> combinedEnvironment = newHashMap();
             combinedEnvironment.putAll(systemEnvironment);
             combinedEnvironment.putAll(additionalEnvironment);
+            // 2019-12-17: newer docker-compose adjusts its output based on the number of columns available
+            // in the terminal. This interferes with parsing of the output of docker-compose, so "COLUMNS" is
+            // set to an artificially large value.
+            combinedEnvironment.put("COLUMNS", "10000");
 
-            String dockerHost = systemEnvironment.getOrDefault(DOCKER_HOST, "");
-            return new DockerMachine(dockerType.resolveIp(dockerHost), ImmutableMap.copyOf(combinedEnvironment));
+            return new DockerMachine(hostIp, ImmutableMap.copyOf(combinedEnvironment));
         }
     }
 
@@ -154,15 +161,15 @@ public class DockerMachine implements DockerConfiguration {
             String dockerHost = dockerEnvironment.getOrDefault(DOCKER_HOST, "");
             String hostIp = new RemoteHostIpResolver().resolveIp(dockerHost);
 
-            Map<String, String> environment = ImmutableMap.<String, String>builder()
-                    // 2019-12-17: newer docker-compose adjusts its output based on the number of columns available
-                    // in the terminal. This interferes with parsing of the output of docker-compose, so "COLUMNS" is
-                    // set to an artificially large value.
-                                                          .put("COLUMNS", "10000")
-                                                          .putAll(dockerEnvironment)
-                                                          .putAll(additionalEnvironment)
-                                                          .build();
-            return new DockerMachine(hostIp, environment);
+            Map<String, String> combinedEnvironment = newHashMap();
+            combinedEnvironment.putAll(dockerEnvironment);
+            combinedEnvironment.putAll(additionalEnvironment);
+            // 2019-12-17: newer docker-compose adjusts its output based on the number of columns available
+            // in the terminal. This interferes with parsing of the output of docker-compose, so "COLUMNS" is
+            // set to an artificially large value.
+            combinedEnvironment.put("COLUMNS", "10000");
+
+            return new DockerMachine(hostIp, ImmutableMap.copyOf(combinedEnvironment));
         }
 
     }
