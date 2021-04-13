@@ -32,7 +32,8 @@ public abstract class DockerComposeExecutable implements Executable {
     private static final DockerCommandLocations DOCKER_COMPOSE_LOCATIONS = new DockerCommandLocations(
             System.getenv("DOCKER_COMPOSE_LOCATION"),
             "/usr/local/bin/docker-compose",
-            "/usr/bin/docker-compose"
+            "/usr/bin/docker-compose",
+            "/Program Files/Docker/Docker/resources/bin/docker-compose.exe"
     );
 
     private static String defaultDockerComposePath() {

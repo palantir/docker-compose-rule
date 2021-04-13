@@ -16,17 +16,17 @@
 
 package com.palantir.docker.compose;
 
-import com.google.common.collect.Sets;
 import com.palantir.docker.compose.connection.Cluster;
 import com.palantir.docker.compose.connection.Container;
 import com.palantir.docker.compose.connection.ContainerCache;
 import java.io.IOException;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 final class RecordingCluster extends Cluster {
     private final Cluster delegate;
-    private final Set<String> recordedContainerNames = Sets.newConcurrentHashSet();
+    private final Set<String> recordedContainerNames = ConcurrentHashMap.newKeySet();
 
     RecordingCluster(Cluster delegate) {
         this.delegate = delegate;
