@@ -30,6 +30,7 @@ import java.io.IOException;
  * How should a cluster of containers be shut down by the `after` method of
  * DockerComposeRule.
  */
+@SuppressWarnings("ClassInitializationDeadlock")
 public interface ShutdownStrategy {
 
     /**

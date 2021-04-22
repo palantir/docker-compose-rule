@@ -17,7 +17,9 @@
 package com.palantir.docker.compose.reporting;
 
 import com.google.common.io.CharStreams;
+import java.io.BufferedWriter;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -52,7 +54,10 @@ class HttpJsonPoster {
             connection.setRequestProperty("User-Agent", "docker-compose-rule/" + version);
 
             connection.setDoOutput(true);
-            PrintWriter body = new PrintWriter(connection.getOutputStream());
+            PrintWriter body = new PrintWriter(new BufferedWriter(new OutputStreamWriter(
+                    connection.getOutputStream(),
+                    StandardCharsets.UTF_8)));
+
             body.println(json);
             body.close();
 

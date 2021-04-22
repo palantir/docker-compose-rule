@@ -29,7 +29,7 @@ import javax.net.ssl.SSLHandshakeException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class DockerPort {
+public final class DockerPort {
 
     private static final Logger log = LoggerFactory.getLogger(DockerPort.class);
 
@@ -71,6 +71,7 @@ public class DockerPort {
         return isHttpRespondingSuccessfully(urlFunction, andCheckStatus).succeeded();
     }
 
+    @SuppressWarnings("ReadReturnValueIgnored")
     public SuccessOrFailure isHttpRespondingSuccessfully(Function<DockerPort, String> urlFunction, boolean andCheckStatus) {
         URL url;
         try {

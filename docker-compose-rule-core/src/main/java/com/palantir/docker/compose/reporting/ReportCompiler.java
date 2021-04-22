@@ -124,14 +124,14 @@ final class ReportCompiler implements Reporter {
             }
 
             if (process.exitValue() != 0) {
-                throw new SafeRuntimeException("Process exited with exit value {} and stderr:\n{}",
+                throw new SafeRuntimeException("Process exited with non-zero exit code",
                         SafeArg.of("exitValue", process.exitValue()),
                         SafeArg.of("stderr", inputStreamToString(process.getErrorStream())));
             }
 
             return Optional.of(inputStreamToString(process.getInputStream()));
         } catch (IOException | InterruptedException | RuntimeException exception) {
-            addException(new SafeRuntimeException("Running command failed. Args: {}",
+            addException(new SafeRuntimeException("Running command failed.",
                     exception,
                     SafeArg.of("args", Arrays.asList(args))));
             return Optional.empty();
