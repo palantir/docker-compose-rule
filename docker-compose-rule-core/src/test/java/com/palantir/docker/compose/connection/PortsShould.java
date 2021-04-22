@@ -76,10 +76,11 @@ public class PortsShould {
     public void parse_actual_docker_compose_output() {
         String psOutput =
                 "       Name                      Command               State                                        "
-                    + " Ports                                        \n"
-                    + "-------------------------------------------------------------------------------------------------------------------------------------------------\n"
-                    + "postgres_postgres_1   /bin/sh -c /usr/local/bin/ ...   Up      0.0.0.0:8880->8880/tcp,"
-                    + " 8881/tcp, 8882/tcp, 8883/tcp, 8884/tcp, 8885/tcp, 8886/tcp \n";
+                        + " Ports                                        \n"
+                        + "-------------------------------------------------------------------------------------------"
+                        + "------------------------------------------------------\n"
+                        + "postgres_postgres_1   /bin/sh -c /usr/local/bin/ ...   Up      0.0.0.0:8880->8880/tcp,"
+                        + " 8881/tcp, 8882/tcp, 8883/tcp, 8884/tcp, 8885/tcp, 8886/tcp \n";
         Ports ports = Ports.parseFromDockerComposePs(psOutput, LOCALHOST_IP);
         Ports expected = new Ports(newArrayList(new DockerPort(LOCALHOST_IP, 8880, 8880)));
         assertThat(ports, is(expected));

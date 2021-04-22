@@ -29,7 +29,7 @@ import org.apache.commons.lang3.SystemUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class Docker {
+public final class Docker {
 
     private static final Logger log = LoggerFactory.getLogger(Docker.class);
 

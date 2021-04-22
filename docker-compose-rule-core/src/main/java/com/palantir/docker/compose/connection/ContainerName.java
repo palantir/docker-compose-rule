@@ -24,6 +24,7 @@ import java.util.List;
 import org.immutables.value.Value;
 
 @Value.Immutable
+@SuppressWarnings("checkstyle:DesignForExtension")
 public abstract class ContainerName {
 
     public abstract String rawName();

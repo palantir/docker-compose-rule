@@ -24,7 +24,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
-public class ContainerCache {
+public final class ContainerCache {
 
     private final ConcurrentMap<String, Container> containers = new ConcurrentHashMap<>();
     private final Docker docker;

@@ -15,7 +15,7 @@
  */
 package com.palantir.docker.compose.configuration;
 
-public class DaemonHostIpResolver implements HostIpResolver {
+public final class DaemonHostIpResolver implements HostIpResolver {
 
     public static final String LOCALHOST = "127.0.0.1";
 

@@ -15,9 +15,6 @@
  */
 package com.palantir.docker.compose.execution;
 
-import static org.apache.commons.lang3.Validate.validState;
-import static org.joda.time.Duration.standardMinutes;
-
 import com.github.zafarkhaja.semver.Version;
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
@@ -35,6 +32,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.Validate;
 import org.joda.time.Duration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,7 +40,7 @@ import org.slf4j.LoggerFactory;
 public final class DefaultDockerCompose implements DockerCompose {
 
     public static final Version VERSION_1_7_0 = Version.valueOf("1.7.0");
-    private static final Duration LOG_TIMEOUT = standardMinutes(1);
+    private static final Duration LOG_TIMEOUT = Duration.standardMinutes(1);
     private static final Logger log = LoggerFactory.getLogger(DefaultDockerCompose.class);
 
     private final Command command;
@@ -82,6 +80,11 @@ public final class DefaultDockerCompose implements DockerCompose {
     }
 
     @Override
+    public void up(Container container) throws IOException, InterruptedException {
+        command.execute(Command.throwingOnError(), "up", "-d", container.getContainerName());
+    }
+
+    @Override
     public void down() throws IOException, InterruptedException {
         command.execute(swallowingDownCommandDoesNotExist(), "down", "--volumes");
     }
@@ -92,8 +95,18 @@ public final class DefaultDockerCompose implements DockerCompose {
     }
 
     @Override
+    public void stop(Container container) throws IOException, InterruptedException {
+        command.execute(Command.throwingOnError(), "stop", container.getContainerName());
+    }
+
+    @Override
     public void kill() throws IOException, InterruptedException {
         command.execute(Command.throwingOnError(), "kill");
+    }
+
+    @Override
+    public void kill(Container container) throws IOException, InterruptedException {
+        command.execute(Command.throwingOnError(), "kill", container.getContainerName());
     }
 
     @Override
@@ -102,23 +115,8 @@ public final class DefaultDockerCompose implements DockerCompose {
     }
 
     @Override
-    public void up(Container container) throws IOException, InterruptedException {
-        command.execute(Command.throwingOnError(), "up", "-d", container.getContainerName());
-    }
-
-    @Override
     public void start(Container container) throws IOException, InterruptedException {
         command.execute(Command.throwingOnError(), "start", container.getContainerName());
-    }
-
-    @Override
-    public void stop(Container container) throws IOException, InterruptedException {
-        command.execute(Command.throwingOnError(), "stop", container.getContainerName());
-    }
-
-    @Override
-    public void kill(Container container) throws IOException, InterruptedException {
-        command.execute(Command.throwingOnError(), "kill", container.getContainerName());
     }
 
     @Override
@@ -147,7 +145,7 @@ public final class DefaultDockerCompose implements DockerCompose {
 
     private void verifyDockerComposeVersionAtLeast(Version targetVersion, String message)
             throws IOException, InterruptedException {
-        validState(version().greaterThanOrEqualTo(targetVersion), message);
+        Validate.validState(version().greaterThanOrEqualTo(targetVersion), message);
     }
 
     private Version version() throws IOException, InterruptedException {
@@ -192,11 +190,6 @@ public final class DefaultDockerCompose implements DockerCompose {
     }
 
     @Override
-    public Optional<String> id(Container container) throws IOException, InterruptedException {
-        return id(container.getContainerName());
-    }
-
-    @Override
     public String config() throws IOException, InterruptedException {
         return command.execute(Command.throwingOnError(), "config");
     }
@@ -225,6 +218,11 @@ public final class DefaultDockerCompose implements DockerCompose {
         } catch (InterruptedException e) {
             return false;
         }
+    }
+
+    @Override
+    public Optional<String> id(Container container) throws IOException, InterruptedException {
+        return id(container.getContainerName());
     }
 
     private Optional<String> id(String containerName) throws IOException, InterruptedException {
@@ -264,7 +262,7 @@ public final class DefaultDockerCompose implements DockerCompose {
 
     private String psOutput(String service) throws IOException, InterruptedException {
         String psOutput = command.execute(Command.throwingOnError(), "ps", service);
-        validState(!Strings.isNullOrEmpty(psOutput), "No container with name '" + service + "' found");
+        Validate.validState(!Strings.isNullOrEmpty(psOutput), "No container with name '" + service + "' found");
         return psOutput;
     }
 }

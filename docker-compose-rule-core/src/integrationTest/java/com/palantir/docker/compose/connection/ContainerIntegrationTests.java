@@ -60,7 +60,8 @@ public class ContainerIntegrationTests {
     }
 
     /**
-     * This test is not currently enabled in Circle as it does not provide a sufficiently recent version of docker-compose.
+     * This test is not currently enabled in Circle as it does not provide a
+     * sufficiently recent version of docker-compose.
      *
      * @see <a href="https://github.com/palantir/docker-compose-rule/issues/156">Issue #156</a>
      */

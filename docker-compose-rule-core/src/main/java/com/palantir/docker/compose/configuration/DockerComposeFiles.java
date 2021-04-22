@@ -15,15 +15,12 @@
  */
 package com.palantir.docker.compose.configuration;
 
-import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.base.Preconditions.checkState;
-import static com.google.common.collect.Lists.newArrayList;
-import static java.util.stream.Collectors.joining;
-import static java.util.stream.Collectors.toList;
-
+import com.google.common.base.Preconditions;
+import com.google.common.collect.Lists;
 import java.io.File;
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class DockerComposeFiles {
 
@@ -34,8 +31,9 @@ public class DockerComposeFiles {
     }
 
     public static DockerComposeFiles from(String... dockerComposeFilenames) {
-        List<File> dockerComposeFiles =
-                newArrayList(dockerComposeFilenames).stream().map(File::new).collect(toList());
+        List<File> dockerComposeFiles = Lists.newArrayList(dockerComposeFilenames).stream()
+                .map(File::new)
+                .collect(Collectors.toList());
         validateAtLeastOneComposeFileSpecified(dockerComposeFiles);
         validateComposeFilesExist(dockerComposeFiles);
         return new DockerComposeFiles(dockerComposeFiles);
@@ -44,22 +42,22 @@ public class DockerComposeFiles {
     public List<String> constructComposeFileCommand() {
         return dockerComposeFiles.stream()
                 .map(File::getAbsolutePath)
-                .map(f -> newArrayList("--file", f))
+                .map(f -> Lists.newArrayList("--file", f))
                 .flatMap(Collection::stream)
-                .collect(toList());
+                .collect(Collectors.toList());
     }
 
     private static void validateAtLeastOneComposeFileSpecified(List<File> dockerComposeFiles) {
-        checkArgument(!dockerComposeFiles.isEmpty(), "A docker compose file must be specified.");
+        Preconditions.checkArgument(!dockerComposeFiles.isEmpty(), "A docker compose file must be specified.");
     }
 
     private static void validateComposeFilesExist(List<File> dockerComposeFiles) {
         List<File> missingFiles =
-                dockerComposeFiles.stream().filter(f -> !f.exists()).collect(toList());
+                dockerComposeFiles.stream().filter(f -> !f.exists()).collect(Collectors.toList());
 
         String errorMessage = missingFiles.stream()
                 .map(File::getAbsolutePath)
-                .collect(joining(", ", "The following docker-compose files: ", " do not exist."));
-        checkState(missingFiles.isEmpty(), errorMessage);
+                .collect(Collectors.joining(", ", "The following docker-compose files: ", " do not exist."));
+        Preconditions.checkState(missingFiles.isEmpty(), errorMessage);
     }
 }

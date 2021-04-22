@@ -29,6 +29,7 @@ import org.junit.runners.Parameterized;
 public class GitUtilsTest {
 
     @Parameterized.Parameters(name = "{0}")
+    @SuppressWarnings("Indentation")
     public static Collection<Object[]> params() {
         return Arrays.asList(new Object[][] {
             {"git@github.com:palantir/docker-compose-rule.git", yes("palantir/docker-compose-rule")},

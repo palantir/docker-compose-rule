@@ -15,11 +15,7 @@
  */
 package com.palantir.docker.compose.configuration;
 
-import static com.google.common.base.Preconditions.checkState;
-import static com.palantir.docker.compose.configuration.EnvironmentVariables.DOCKER_CERT_PATH;
-import static com.palantir.docker.compose.configuration.EnvironmentVariables.DOCKER_HOST;
-import static com.palantir.docker.compose.configuration.EnvironmentVariables.DOCKER_TLS_VERIFY;
-
+import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
 import java.util.Map;
@@ -27,8 +23,10 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 public final class AdditionalEnvironmentValidator {
-    private static final ImmutableSet<String> ILLEGAL_VARIABLES =
-            ImmutableSet.of(DOCKER_TLS_VERIFY, DOCKER_HOST, DOCKER_CERT_PATH);
+    private static final ImmutableSet<String> ILLEGAL_VARIABLES = ImmutableSet.of(
+            EnvironmentVariables.DOCKER_TLS_VERIFY,
+            EnvironmentVariables.DOCKER_HOST,
+            EnvironmentVariables.DOCKER_CERT_PATH);
 
     private AdditionalEnvironmentValidator() {}
 
@@ -40,7 +38,7 @@ public final class AdditionalEnvironmentValidator {
                         "The following variables: ",
                         " cannot exist in your additional environment variable block as they will interfere"
                                 + " with Docker."));
-        checkState(invalidVariables.isEmpty(), errorMessage);
+        Preconditions.checkState(invalidVariables.isEmpty(), errorMessage);
         return additionalEnvironment;
     }
 }
