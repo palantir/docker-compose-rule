@@ -20,6 +20,7 @@ import static com.google.common.util.concurrent.Uninterruptibles.getUninterrupti
 import static com.palantir.docker.compose.execution.DockerComposeExecArgument.arguments;
 import static com.palantir.docker.compose.execution.DockerComposeExecOption.noOptions;
 import static org.awaitility.Awaitility.await;
+import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.junit.Assert.fail;
 import static org.junit.Assume.assumeThat;
 
@@ -38,7 +39,6 @@ import java.util.concurrent.TimeoutException;
 import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Test;
-import org.mockito.internal.matchers.GreaterOrEqual;
 
 public class DockerComposeManagerNativeHealthcheckIntegrationTest {
 
@@ -61,8 +61,8 @@ public class DockerComposeManagerNativeHealthcheckIntegrationTest {
     @Test
     public void dockerComposeManagerWaitsUntilHealthcheckPasses()
             throws ExecutionException, IOException, InterruptedException, TimeoutException {
-        assumeThat("docker version", Docker.version(), new GreaterOrEqual<>(Version.forIntegers(1, 12, 0)));
-        assumeThat("docker-compose version", DockerCompose.version(), new GreaterOrEqual<>(Version.forIntegers(1, 10, 0)));
+        assumeThat("docker version", Docker.version(), greaterThanOrEqualTo(Version.forIntegers(1, 12, 0)));
+        assumeThat("docker-compose version", DockerCompose.version(), greaterThanOrEqualTo(Version.forIntegers(1, 10, 0)));
 
         docker = new DockerComposeManager.Builder()
                 .file("src/test/resources/native-healthcheck.yaml")

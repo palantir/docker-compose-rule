@@ -20,6 +20,7 @@ import static com.palantir.docker.compose.execution.DockerComposeExecArgument.ar
 import static com.palantir.docker.compose.execution.DockerComposeExecOption.noOptions;
 import static org.awaitility.Awaitility.await;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assume.assumeThat;
 
@@ -32,11 +33,9 @@ import com.palantir.docker.compose.execution.DockerCompose;
 import com.palantir.docker.compose.execution.DockerExecutable;
 import java.io.IOException;
 import java.time.Duration;
-import java.util.concurrent.TimeUnit;
 import org.awaitility.core.ConditionFactory;
 import org.junit.Assert;
 import org.junit.Test;
-import org.mockito.internal.matchers.GreaterOrEqual;
 
 public class ContainerIntegrationTests {
 
@@ -70,8 +69,8 @@ public class ContainerIntegrationTests {
      */
     @Test
     public void testStateChanges_withHealthCheck() throws IOException, InterruptedException {
-        assumeThat("docker version", Docker.version(), new GreaterOrEqual<>(Version.forIntegers(1, 12, 0)));
-        assumeThat("docker-compose version", DockerCompose.version(), new GreaterOrEqual<>(Version.forIntegers(1, 10, 0)));
+        assumeThat("docker version", Docker.version(), greaterThanOrEqualTo(Version.forIntegers(1, 12, 0)));
+        assumeThat("docker-compose version", DockerCompose.version(), greaterThanOrEqualTo(Version.forIntegers(1, 10, 0)));
 
         DockerCompose dockerCompose = new DefaultDockerCompose(
                 DockerComposeFiles.from("src/test/resources/native-healthcheck.yaml"),
