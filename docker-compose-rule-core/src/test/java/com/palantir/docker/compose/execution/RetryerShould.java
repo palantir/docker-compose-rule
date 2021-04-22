@@ -64,7 +64,7 @@ public class RetryerShould {
         Retryer timeRetryer = new Retryer(1, Duration.millis(100));
 
         Stopwatch stopwatch = Stopwatch.createStarted();
-        when(operation.call()).thenThrow(new DockerExecutionException()).thenAnswer(i -> {
+        when(operation.call()).thenThrow(new DockerExecutionException()).thenAnswer(_i -> {
             assertThat(stopwatch.elapsed(TimeUnit.MILLISECONDS), greaterThan(100L));
             return "success";
         });
@@ -76,10 +76,10 @@ public class RetryerShould {
     @Test
     public void retry_the_operation_if_it_failed_once_and_return_the_result_of_the_next_successful_call() throws Exception {
         when(operation.call()).thenAnswer(MockitoMultiAnswer.<String>of(
-                firstInvocation -> {
+                _firstInvocation -> {
                     throw new DockerExecutionException();
                 },
-                secondInvocation -> "hola"
+                _secondInvocation -> "hola"
         ));
 
         assertThat(retryer.runWithRetries(operation), is("hola"));
@@ -91,10 +91,10 @@ public class RetryerShould {
         DockerExecutionException finalException = new DockerExecutionException();
 
         when(operation.call()).thenAnswer(MockitoMultiAnswer.<String>of(
-                firstInvocation -> {
+                _firstInvocation -> {
                     throw new DockerExecutionException();
                 },
-                secondInvocation -> {
+                _secondInvocation -> {
                     throw finalException;
                 }
         ));

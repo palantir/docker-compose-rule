@@ -72,7 +72,7 @@ public class MockDockerEnvironment {
 
     public void ephemeralPort(String service, String ip, int internalPortNumber) throws IOException, InterruptedException {
         AtomicInteger currentExternalPort = new AtomicInteger(33700);
-        when(dockerComposeProcess.ports(service)).then(a -> {
+        when(dockerComposeProcess.ports(service)).then(_a -> {
             DockerPort port = dockerPortSpy(ip, currentExternalPort.incrementAndGet(), internalPortNumber);
             return new Ports(port);
         });

@@ -29,7 +29,7 @@ import java.util.function.Function;
 import org.junit.Test;
 
 public class HttpHealthCheckShould {
-    private static final Function<DockerPort, String> URL_FUNCTION = port -> null;
+    private static final Function<DockerPort, String> URL_FUNCTION = _port -> null;
     public static final int PORT = 1234;
     private final Container container = mock(Container.class);
 

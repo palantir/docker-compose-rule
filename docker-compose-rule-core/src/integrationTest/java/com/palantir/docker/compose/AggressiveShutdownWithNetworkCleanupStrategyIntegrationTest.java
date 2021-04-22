@@ -24,6 +24,7 @@ import com.google.common.collect.Sets;
 import com.palantir.docker.compose.configuration.ShutdownStrategy;
 import com.palantir.docker.compose.logging.DoNothingLogCollector;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Set;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -62,6 +63,6 @@ public class AggressiveShutdownWithNetworkCleanupStrategyIntegrationTest {
     }
 
     private static Set<String> parseLinesFromOutputString(String output) {
-        return Sets.newHashSet(Arrays.asList(output.split("\n")));
+        return new HashSet<>(Arrays.asList(output.split("\n")));
     }
 }

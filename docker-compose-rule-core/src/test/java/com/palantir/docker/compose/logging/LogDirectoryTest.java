@@ -57,5 +57,5 @@ public class LogDirectoryTest {
         assertThat(directory, is("/tmp/circle-artifacts.123456/dockerLogs/some-path"));
     }
 
-    private static class SomeTestClass {}
+    private static final class SomeTestClass {}
 }

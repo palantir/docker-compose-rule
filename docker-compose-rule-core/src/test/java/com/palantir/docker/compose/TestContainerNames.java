@@ -23,7 +23,7 @@ import com.palantir.docker.compose.connection.ImmutableContainerName;
 import java.util.Arrays;
 import java.util.List;
 
-public class TestContainerNames {
+public final class TestContainerNames {
 
     private TestContainerNames() {}
 

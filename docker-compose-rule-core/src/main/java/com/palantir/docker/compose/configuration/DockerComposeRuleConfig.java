@@ -80,7 +80,7 @@ public abstract class DockerComposeRuleConfig {
             @Override
             public Optional<File> get() {
                 Optional<File> toReturn = dir;
-                dir = dir.map(directory -> directory.getParentFile());
+                dir = dir.map(File::getParentFile);
                 return toReturn;
             }
         }))

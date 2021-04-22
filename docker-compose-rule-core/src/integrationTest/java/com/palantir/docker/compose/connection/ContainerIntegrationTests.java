@@ -31,6 +31,7 @@ import com.palantir.docker.compose.execution.Docker;
 import com.palantir.docker.compose.execution.DockerCompose;
 import com.palantir.docker.compose.execution.DockerExecutable;
 import java.io.IOException;
+import java.time.Duration;
 import java.util.concurrent.TimeUnit;
 import org.awaitility.core.ConditionFactory;
 import org.junit.Assert;
@@ -39,7 +40,7 @@ import org.mockito.internal.matchers.GreaterOrEqual;
 
 public class ContainerIntegrationTests {
 
-    private static final ConditionFactory wait = await().atMost(10, TimeUnit.SECONDS);
+    private static final ConditionFactory wait = await().atMost(Duration.ofSeconds(10));
 
     private final DockerMachine dockerMachine = DockerMachine.localMachine().build();
     private final Docker docker = new Docker(DockerExecutable.builder()

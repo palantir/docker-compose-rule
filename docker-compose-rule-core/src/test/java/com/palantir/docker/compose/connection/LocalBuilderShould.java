@@ -29,6 +29,7 @@ import static org.hamcrest.core.Is.is;
 
 import com.google.common.collect.ImmutableMap;
 import com.palantir.docker.compose.connection.DockerMachine.LocalBuilder;
+import java.util.HashMap;
 import java.util.Map;
 import org.junit.Rule;
 import org.junit.Test;
@@ -43,7 +44,7 @@ public class LocalBuilderShould {
     public void override_previous_environment_when_additional_environment_set_twice_daemon() {
         Map<String, String> environment1 = ImmutableMap.of("ENV_1", "VAL_1");
         Map<String, String> environment2 = ImmutableMap.of("ENV_2", "VAL_2");
-        DockerMachine localMachine = new LocalBuilder(DAEMON, newHashMap()).withEnvironment(environment1)
+        DockerMachine localMachine = new LocalBuilder(DAEMON, new HashMap<>()).withEnvironment(environment1)
                                                                            .withEnvironment(environment2)
                                                                            .build();
         assertThat(localMachine, not(containsEnvironment(environment1)));
@@ -56,7 +57,7 @@ public class LocalBuilderShould {
                                                        .put("ENV_1", "VAL_1")
                                                        .put("ENV_2", "VAL_2")
                                                        .build();
-        DockerMachine localMachine = new LocalBuilder(DAEMON, newHashMap()).withEnvironment(environment)
+        DockerMachine localMachine = new LocalBuilder(DAEMON, new HashMap<>()).withEnvironment(environment)
                                                                            .withAdditionalEnvironmentVariable("ENV_3", "VAL_3")
                                                                            .build();
         assertThat(localMachine, containsEnvironment(environment));
@@ -99,7 +100,7 @@ public class LocalBuilderShould {
                 .put("ENV_1", "VAL_1")
                 .put("ENV_2", "VAL_2")
                 .build();
-        DockerMachine localMachine = new LocalBuilder(DAEMON, newHashMap()).withEnvironment(environment)
+        DockerMachine localMachine = new LocalBuilder(DAEMON, new HashMap<>()).withEnvironment(environment)
                                                                            .withAdditionalEnvironmentVariable("ENV_2", "DIFFERENT_VALUE")
                                                                            .build();
 
@@ -152,7 +153,7 @@ public class LocalBuilderShould {
         exception.expectMessage(DOCKER_HOST);
         exception.expectMessage("cannot exist in your additional environment variable block");
 
-        new LocalBuilder(DAEMON, newHashMap()).withAdditionalEnvironmentVariable(DOCKER_HOST, "tcp://192.168.99.100:2376")
+        new LocalBuilder(DAEMON, new HashMap<>()).withAdditionalEnvironmentVariable(DOCKER_HOST, "tcp://192.168.99.100:2376")
                                               .build();
     }
 
@@ -175,7 +176,7 @@ public class LocalBuilderShould {
 
     @Test
     public void return_localhost_as_ip_daemon() {
-        DockerMachine localMachine = new LocalBuilder(DAEMON, newHashMap()).build();
+        DockerMachine localMachine = new LocalBuilder(DAEMON, new HashMap<>()).build();
         assertThat(localMachine.getIp(), is(LOCALHOST));
     }
 
@@ -196,7 +197,7 @@ public class LocalBuilderShould {
         exception.expect(IllegalStateException.class);
         exception.expectMessage("Missing required environment variables: ");
         exception.expectMessage(DOCKER_HOST);
-        new LocalBuilder(REMOTE, newHashMap()).build();
+        new LocalBuilder(REMOTE, new HashMap<>()).build();
     }
 
     @Test

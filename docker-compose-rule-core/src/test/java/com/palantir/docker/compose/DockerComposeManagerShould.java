@@ -140,7 +140,7 @@ public class DockerComposeManagerShould {
     public void pass_wait_for_service_when_check_is_true() throws IOException, InterruptedException {
         AtomicInteger timesCheckCalled = new AtomicInteger(0);
         withComposeExecutableReturningContainerFor("db");
-        HealthCheck<Container> checkCalledOnce = container -> SuccessOrFailure.fromBoolean(timesCheckCalled.incrementAndGet() == 1, "not called once yet");
+        HealthCheck<Container> checkCalledOnce = _container -> SuccessOrFailure.fromBoolean(timesCheckCalled.incrementAndGet() == 1, "not called once yet");
         defaultBuilder().waitingForService("db", checkCalledOnce).build().before();
         assertThat(timesCheckCalled.get(), is(1));
     }
@@ -162,7 +162,7 @@ public class DockerComposeManagerShould {
     public void pass_wait_for_service_when_check_is_true_after_being_false() throws IOException, InterruptedException {
         AtomicInteger timesCheckCalled = new AtomicInteger(0);
         withComposeExecutableReturningContainerFor("db");
-        HealthCheck<Container> checkCalledTwice = container -> SuccessOrFailure.fromBoolean(timesCheckCalled.incrementAndGet() == 2, "not called twice yet");
+        HealthCheck<Container> checkCalledTwice = _container -> SuccessOrFailure.fromBoolean(timesCheckCalled.incrementAndGet() == 2, "not called twice yet");
         defaultBuilder().waitingForService("db", checkCalledTwice).build().before();
         assertThat(timesCheckCalled.get(), is(2));
     }
@@ -176,7 +176,7 @@ public class DockerComposeManagerShould {
         exception.expectMessage("failed to pass a startup check");
         exception.expectMessage("oops");
 
-        defaultBuilder().waitingForService("db", container -> SuccessOrFailure.failure("oops"), millis(200)).build().before();
+        defaultBuilder().waitingForService("db", _container -> SuccessOrFailure.failure("oops"), millis(200)).build().before();
     }
 
     @Test

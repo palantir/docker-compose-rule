@@ -93,7 +93,7 @@ public class DockerMachine implements DockerConfiguration {
         }
 
         public LocalBuilder withEnvironment(Map<String, String> newEnvironment) {
-            this.additionalEnvironment = new HashMap<>(firstNonNull(newEnvironment, newHashMap()));
+            this.additionalEnvironment = new HashMap<>(firstNonNull(newEnvironment, new HashMap<>()));
             return this;
         }
 
@@ -143,7 +143,7 @@ public class DockerMachine implements DockerConfiguration {
         }
 
         public RemoteBuilder withEnvironment(Map<String, String> newEnvironment) {
-            this.additionalEnvironment = new HashMap<>(firstNonNull(newEnvironment, newHashMap()));
+            this.additionalEnvironment = new HashMap<>(firstNonNull(newEnvironment, new HashMap<>()));
             return this;
         }
 
