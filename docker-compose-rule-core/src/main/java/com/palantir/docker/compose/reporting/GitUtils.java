@@ -24,7 +24,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
-class GitUtils {
+final class GitUtils {
     private static final Pattern SSH_REGEX = Pattern.compile(sshRegex());
     private static final Pattern JUST_A_PATH = Pattern.compile("[\\w/]+", Pattern.UNICODE_CHARACTER_CLASS);
 

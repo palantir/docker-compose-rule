@@ -37,7 +37,7 @@ public class ContainerCache {
 
     public Container container(String containerName) {
         return containers.computeIfAbsent(containerName,
-                ignored -> new Container(containerName, docker, dockerCompose));
+                _ignored -> new Container(containerName, docker, dockerCompose));
     }
 
     public Set<Container> containers() throws IOException, InterruptedException {

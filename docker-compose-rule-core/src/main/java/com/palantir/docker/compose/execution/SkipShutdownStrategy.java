@@ -25,7 +25,7 @@ public class SkipShutdownStrategy implements ShutdownStrategy {
     private static final Logger log = LoggerFactory.getLogger(SkipShutdownStrategy.class);
 
     @Override
-    public void shutdown(DockerCompose dockerCompose, Docker docker) {
+    public void shutdown(DockerCompose _dockerCompose, Docker _docker) {
         log.warn("\n"
                 + "******************************************************************************************\n"
                 + "* docker-compose-rule has been configured to skip docker-compose shutdown:               *\n"

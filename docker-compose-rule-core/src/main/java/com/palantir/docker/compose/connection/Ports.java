@@ -65,7 +65,7 @@ public class Ports {
 
     @Override
     public int hashCode() {
-        return Objects.hash(ports);
+        return Objects.hashCode(ports);
     }
 
     @Override

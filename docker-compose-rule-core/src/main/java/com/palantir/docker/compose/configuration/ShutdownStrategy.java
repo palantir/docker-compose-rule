@@ -72,7 +72,7 @@ public interface ShutdownStrategy {
         return new CallbackThenDelegateShutdownStrategy(shutdownStrategy, callback);
     }
 
-    default void stop(DockerCompose dockerCompose) throws IOException, InterruptedException {}
+    default void stop(DockerCompose _dockerCompose) throws IOException, InterruptedException {}
 
     void shutdown(DockerCompose dockerCompose, Docker docker) throws IOException, InterruptedException;
 

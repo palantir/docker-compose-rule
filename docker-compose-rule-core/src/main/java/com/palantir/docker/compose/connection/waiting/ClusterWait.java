@@ -48,9 +48,9 @@ public class ClusterWait {
 
         try {
             Awaitility.await()
-                    .pollInterval(pollInterval.getMillis(), TimeUnit.MILLISECONDS)
-                    .pollDelay(ThreadLocalRandom.current().nextInt(1, 50), TimeUnit.MILLISECONDS)
-                    .atMost(timeout.getMillis(), TimeUnit.MILLISECONDS)
+                    .pollInterval(java.time.Duration.ofMillis(pollInterval.getMillis()))
+                    .pollDelay(java.time.Duration.ofMillis(ThreadLocalRandom.current().nextInt(1, 50)))
+                    .atMost(java.time.Duration.ofMillis(timeout.getMillis()))
                     .until(weHaveSuccess(cluster, lastSuccessOrFailure));
         } catch (ConditionTimeoutException e) {
             throw new IllegalStateException(serviceDidNotStartupExceptionMessage(lastSuccessOrFailure));

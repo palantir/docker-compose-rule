@@ -93,14 +93,14 @@ public class DockerMachine implements DockerConfiguration {
         }
 
         public LocalBuilder withEnvironment(Map<String, String> newEnvironment) {
-            this.additionalEnvironment = newHashMap(firstNonNull(newEnvironment, newHashMap()));
+            this.additionalEnvironment = new HashMap<>(firstNonNull(newEnvironment, newHashMap()));
             return this;
         }
 
         public DockerMachine build() {
             dockerType.validateEnvironmentVariables(systemEnvironment);
             AdditionalEnvironmentValidator.validate(additionalEnvironment);
-            Map<String, String> combinedEnvironment = newHashMap();
+            Map<String, String> combinedEnvironment = new HashMap<>();
             combinedEnvironment.putAll(systemEnvironment);
             combinedEnvironment.putAll(additionalEnvironment);
 
@@ -113,10 +113,10 @@ public class DockerMachine implements DockerConfiguration {
         return new RemoteBuilder();
     }
 
-    public static class RemoteBuilder {
+    public static final class RemoteBuilder {
 
-        private final Map<String, String> dockerEnvironment = newHashMap();
-        private Map<String, String> additionalEnvironment = newHashMap();
+        private final Map<String, String> dockerEnvironment = new HashMap<>();
+        private Map<String, String> additionalEnvironment = new HashMap<>();
 
         private RemoteBuilder() {}
 
@@ -143,7 +143,7 @@ public class DockerMachine implements DockerConfiguration {
         }
 
         public RemoteBuilder withEnvironment(Map<String, String> newEnvironment) {
-            this.additionalEnvironment = newHashMap(firstNonNull(newEnvironment, newHashMap()));
+            this.additionalEnvironment = new HashMap<>(firstNonNull(newEnvironment, newHashMap()));
             return this;
         }
 

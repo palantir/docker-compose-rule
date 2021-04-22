@@ -37,7 +37,7 @@ public class GracefulShutdownStrategy implements ShutdownStrategy {
     }
 
     @Override
-    public void shutdown(DockerCompose dockerCompose, Docker docker) throws IOException, InterruptedException {
+    public void shutdown(DockerCompose dockerCompose, Docker _docker) throws IOException, InterruptedException {
         log.debug("Downing docker-compose cluster");
         dockerCompose.down();
     }

@@ -37,6 +37,7 @@ import java.io.IOException;
 import java.time.Clock;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
@@ -150,7 +151,7 @@ class EventEmitter {
     }
 
     private void emitEvent(Event event) {
-        List<Exception> exceptions = Lists.newArrayList();
+        List<Exception> exceptions = new ArrayList<>();
 
         eventConsumers.forEach(eventConsumer -> {
             try {

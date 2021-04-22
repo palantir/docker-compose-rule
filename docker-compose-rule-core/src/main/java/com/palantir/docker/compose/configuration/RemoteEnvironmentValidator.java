@@ -26,11 +26,12 @@ import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class RemoteEnvironmentValidator implements EnvironmentValidator {
+public final class RemoteEnvironmentValidator implements EnvironmentValidator {
 
     private static final Set<String> SECURE_VARIABLES = ImmutableSet.of(DOCKER_TLS_VERIFY, DOCKER_CERT_PATH);
     private static final RemoteEnvironmentValidator VALIDATOR = new RemoteEnvironmentValidator();
@@ -62,7 +63,7 @@ public class RemoteEnvironmentValidator implements EnvironmentValidator {
     }
 
     private static Set<String> secureVariablesRequired(Map<String, String> dockerEnvironment) {
-        return certVerificationEnabled(dockerEnvironment) ? SECURE_VARIABLES : newHashSet();
+        return certVerificationEnabled(dockerEnvironment) ? SECURE_VARIABLES : new HashSet<>();
     }
 
     private static boolean certVerificationEnabled(Map<String, String> dockerEnvironment) {

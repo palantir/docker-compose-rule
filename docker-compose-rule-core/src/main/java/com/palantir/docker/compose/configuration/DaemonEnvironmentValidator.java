@@ -28,11 +28,11 @@ import java.util.Set;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-public class DaemonEnvironmentValidator implements EnvironmentValidator {
+public final class DaemonEnvironmentValidator implements EnvironmentValidator {
 
     private static final Set<String> ILLEGAL_VARIABLES = ImmutableSet.of(DOCKER_TLS_VERIFY, DOCKER_HOST, DOCKER_CERT_PATH);
     private static final Supplier<DaemonEnvironmentValidator> SUPPLIER = Suppliers.memoize(
-            () -> new DaemonEnvironmentValidator())::get;
+            () -> new DaemonEnvironmentValidator());
 
     public static DaemonEnvironmentValidator instance() {
         return SUPPLIER.get();

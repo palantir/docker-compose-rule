@@ -18,7 +18,7 @@ package com.palantir.docker.compose.logging;
 
 import java.util.Optional;
 
-public class LogDirectory {
+public final class LogDirectory {
 
     private LogDirectory() {}
 

@@ -31,12 +31,12 @@ public abstract class DockerComposeExtension extends DockerComposeManager
         implements BeforeAllCallback, AfterAllCallback {
 
     @Override
-    public void beforeAll(ExtensionContext unused) throws IOException, InterruptedException {
+    public void beforeAll(ExtensionContext _value) throws IOException, InterruptedException {
         before();
     }
 
     @Override
-    public void afterAll(ExtensionContext unused) {
+    public void afterAll(ExtensionContext _value) {
         after();
     }
 
