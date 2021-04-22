@@ -49,13 +49,15 @@ public final class DefaultDockerCompose implements DockerCompose {
     private final DockerMachine dockerMachine;
     private final DockerComposeExecutable rawExecutable;
 
-
-    public DefaultDockerCompose(DockerComposeFiles dockerComposeFiles, DockerMachine dockerMachine, ProjectName projectName) {
-        this(DockerComposeExecutable.builder()
-                .dockerComposeFiles(dockerComposeFiles)
-                .dockerConfiguration(dockerMachine)
-                .projectName(projectName)
-                .build(), dockerMachine);
+    public DefaultDockerCompose(
+            DockerComposeFiles dockerComposeFiles, DockerMachine dockerMachine, ProjectName projectName) {
+        this(
+                DockerComposeExecutable.builder()
+                        .dockerComposeFiles(dockerComposeFiles)
+                        .dockerConfiguration(dockerMachine)
+                        .projectName(projectName)
+                        .build(),
+                dockerMachine);
     }
 
     public DefaultDockerCompose(DockerComposeExecutable rawExecutable, DockerMachine dockerMachine) {
@@ -87,7 +89,6 @@ public final class DefaultDockerCompose implements DockerCompose {
     @Override
     public void stop() throws IOException, InterruptedException {
         command.execute(Command.throwingOnError(), "stop");
-
     }
 
     @Override
@@ -102,7 +103,7 @@ public final class DefaultDockerCompose implements DockerCompose {
 
     @Override
     public void up(Container container) throws IOException, InterruptedException {
-        command.execute(Command.throwingOnError(), "up", "-d",  container.getContainerName());
+        command.execute(Command.throwingOnError(), "up", "-d", container.getContainerName());
     }
 
     @Override
@@ -121,21 +122,31 @@ public final class DefaultDockerCompose implements DockerCompose {
     }
 
     @Override
-    public String exec(DockerComposeExecOption dockerComposeExecOption, String containerName,
-            DockerComposeExecArgument dockerComposeExecArgument) throws IOException, InterruptedException {
-        verifyDockerComposeVersionAtLeast(VERSION_1_7_0, "You need at least docker-compose 1.7 to run docker-compose exec");
-        String[] fullArgs = constructFullDockerComposeExecArguments(dockerComposeExecOption, containerName, dockerComposeExecArgument);
+    public String exec(
+            DockerComposeExecOption dockerComposeExecOption,
+            String containerName,
+            DockerComposeExecArgument dockerComposeExecArgument)
+            throws IOException, InterruptedException {
+        verifyDockerComposeVersionAtLeast(
+                VERSION_1_7_0, "You need at least docker-compose 1.7 to run docker-compose exec");
+        String[] fullArgs = constructFullDockerComposeExecArguments(
+                dockerComposeExecOption, containerName, dockerComposeExecArgument);
         return command.execute(Command.throwingOnError(), fullArgs);
     }
 
     @Override
-    public String run(DockerComposeRunOption dockerComposeRunOption, String containerName,
-            DockerComposeRunArgument dockerComposeRunArgument) throws IOException, InterruptedException {
-        String[] fullArgs = constructFullDockerComposeRunArguments(dockerComposeRunOption, containerName, dockerComposeRunArgument);
+    public String run(
+            DockerComposeRunOption dockerComposeRunOption,
+            String containerName,
+            DockerComposeRunArgument dockerComposeRunArgument)
+            throws IOException, InterruptedException {
+        String[] fullArgs =
+                constructFullDockerComposeRunArguments(dockerComposeRunOption, containerName, dockerComposeRunArgument);
         return command.execute(Command.throwingOnError(), fullArgs);
     }
 
-    private void verifyDockerComposeVersionAtLeast(Version targetVersion, String message) throws IOException, InterruptedException {
+    private void verifyDockerComposeVersionAtLeast(Version targetVersion, String message)
+            throws IOException, InterruptedException {
         validState(version().greaterThanOrEqualTo(targetVersion), message);
     }
 
@@ -144,23 +155,29 @@ public final class DefaultDockerCompose implements DockerCompose {
         return DockerComposeVersion.parseFromDockerComposeVersion(versionOutput);
     }
 
-    private static String[] constructFullDockerComposeExecArguments(DockerComposeExecOption dockerComposeExecOption,
-            String containerName, DockerComposeExecArgument dockerComposeExecArgument) {
+    private static String[] constructFullDockerComposeExecArguments(
+            DockerComposeExecOption dockerComposeExecOption,
+            String containerName,
+            DockerComposeExecArgument dockerComposeExecArgument) {
         // The "-T" option here disables pseudo-TTY allocation, which is not useful here since we are not using
         // terminal features here (e.g. we are not sending ^C to kill the executed process).
         // Disabling pseudo-TTY allocation means this will work on OS's that don't support TTY (i.e. Windows)
-        ImmutableList<String> fullArgs = new ImmutableList.Builder<String>().add("exec")
-                                                                            .add("-T")
-                                                                            .addAll(dockerComposeExecOption.options())
-                                                                            .add(containerName)
-                                                                            .addAll(dockerComposeExecArgument.arguments())
-                                                                            .build();
+        ImmutableList<String> fullArgs = new ImmutableList.Builder<String>()
+                .add("exec")
+                .add("-T")
+                .addAll(dockerComposeExecOption.options())
+                .add(containerName)
+                .addAll(dockerComposeExecArgument.arguments())
+                .build();
         return fullArgs.toArray(new String[fullArgs.size()]);
     }
 
-    private static String[] constructFullDockerComposeRunArguments(DockerComposeRunOption dockerComposeRunOption,
-            String containerName, DockerComposeRunArgument dockerComposeRunArgument) {
-        ImmutableList<String> fullArgs = new ImmutableList.Builder<String>().add("run")
+    private static String[] constructFullDockerComposeRunArguments(
+            DockerComposeRunOption dockerComposeRunOption,
+            String containerName,
+            DockerComposeRunArgument dockerComposeRunArgument) {
+        ImmutableList<String> fullArgs = new ImmutableList.Builder<String>()
+                .add("run")
                 .addAll(dockerComposeRunOption.options())
                 .add(containerName)
                 .addAll(dockerComposeRunArgument.arguments())
@@ -198,7 +215,8 @@ public final class DefaultDockerCompose implements DockerCompose {
             boolean processFinished = executedProcess.waitFor(LOG_TIMEOUT.getMillis(), TimeUnit.MILLISECONDS);
             boolean timedOut = !processFinished;
             if (timedOut) {
-                log.error("Log collection timed out after {} millis. Destroying log reading process for container {}",
+                log.error(
+                        "Log collection timed out after {} millis. Destroying log reading process for container {}",
                         LOG_TIMEOUT.getMillis(),
                         container);
                 executedProcess.destroyForcibly();
@@ -218,8 +236,8 @@ public final class DefaultDockerCompose implements DockerCompose {
     }
 
     private Process logs(String container) throws IOException, InterruptedException {
-        verifyDockerComposeVersionAtLeast(VERSION_1_7_0,
-                "You need at least docker-compose 1.7 to run docker-compose logs");
+        verifyDockerComposeVersionAtLeast(
+                VERSION_1_7_0, "You need at least docker-compose 1.7 to run docker-compose logs");
         return rawExecutable.execute("logs", "--no-color", container);
     }
 

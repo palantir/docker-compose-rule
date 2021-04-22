@@ -43,6 +43,7 @@ public class DockerComposeRuleShould {
 
     @Rule
     public ExpectedException exception = ExpectedException.none();
+
     @Rule
     public TemporaryFolder logFolder = new TemporaryFolder();
 
@@ -82,5 +83,4 @@ public class DockerComposeRuleShould {
             verify(logCollector, times(1)).collectLogs(dockerCompose);
         }
     }
-
 }

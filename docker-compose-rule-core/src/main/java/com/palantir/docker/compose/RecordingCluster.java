@@ -16,7 +16,6 @@
 
 package com.palantir.docker.compose;
 
-import com.google.common.collect.Sets;
 import com.palantir.docker.compose.connection.Cluster;
 import com.palantir.docker.compose.connection.Container;
 import com.palantir.docker.compose.connection.ContainerCache;

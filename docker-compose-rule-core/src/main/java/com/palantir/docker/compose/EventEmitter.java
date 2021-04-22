@@ -17,7 +17,6 @@
 package com.palantir.docker.compose;
 
 import com.google.common.base.Throwables;
-import com.google.common.collect.Lists;
 import com.palantir.docker.compose.connection.Cluster;
 import com.palantir.docker.compose.connection.waiting.ClusterWait;
 import com.palantir.docker.compose.connection.waiting.Exceptions;
@@ -64,9 +63,7 @@ class EventEmitter {
     }
 
     public void pull(CheckedRunnable runnable) throws IOException, InterruptedException {
-        emitTask(runnable, task -> Event.pull(PullEvent.builder()
-                .task(task)
-                .build()));
+        emitTask(runnable, task -> Event.pull(PullEvent.builder().task(task).build()));
     }
 
     public void build(CheckedRunnable runnable) throws IOException, InterruptedException {
@@ -78,26 +75,37 @@ class EventEmitter {
     }
 
     public void waitingForServices(CheckedRunnable runnable) throws IOException, InterruptedException {
-        emitTask(runnable, task -> Event.waitForServices(WaitForServicesEvent.builder().task(task).build()));
+        emitTask(
+                runnable,
+                task -> Event.waitForServices(
+                        WaitForServicesEvent.builder().task(task).build()));
     }
 
     public void shutdownStop(CheckedRunnable runnable) throws IOException, InterruptedException {
-        emitTask(runnable, task -> Event.shutdownStop(ShutdownStopEvent.builder().task(task).build()));
+        emitTask(
+                runnable,
+                task -> Event.shutdownStop(
+                        ShutdownStopEvent.builder().task(task).build()));
     }
 
     public void logCollection(CheckedRunnable runnable) throws IOException, InterruptedException {
-        emitTask(runnable, task -> Event.logCollection(LogCollectionEvent.builder().task(task).build()));
+        emitTask(
+                runnable,
+                task -> Event.logCollection(
+                        LogCollectionEvent.builder().task(task).build()));
     }
 
     public void shutdown(CheckedRunnable runnable) throws IOException, InterruptedException {
-        emitTask(runnable, task -> Event.shutdown(ShutdownEvent.builder().task(task).build()));
+        emitTask(
+                runnable,
+                task -> Event.shutdown(ShutdownEvent.builder().task(task).build()));
     }
 
     interface InterruptableClusterWait {
         void waitForCluster(Cluster cluster) throws InterruptedException;
     }
 
-    public InterruptableClusterWait userClusterWait(ClusterWait clusterWait)  {
+    public InterruptableClusterWait userClusterWait(ClusterWait clusterWait) {
         return clusterWait(ClusterWaitType.USER, clusterWait);
     }
 
@@ -105,9 +113,7 @@ class EventEmitter {
         return clusterWait(ClusterWaitType.NATIVE, clusterWait);
     }
 
-    private InterruptableClusterWait clusterWait(
-            ClusterWaitType clusterWaitType,
-            ClusterWait clusterWait) {
+    private InterruptableClusterWait clusterWait(ClusterWaitType clusterWaitType, ClusterWait clusterWait) {
         RecordingClusterWait recordingClusterWait = new RecordingClusterWait(clusterWait, clusterWaitType);
 
         return cluster -> emitNotThrowing(

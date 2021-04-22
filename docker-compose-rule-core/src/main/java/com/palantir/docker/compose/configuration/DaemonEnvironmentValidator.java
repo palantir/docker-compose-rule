@@ -30,9 +30,10 @@ import java.util.stream.Collectors;
 
 public final class DaemonEnvironmentValidator implements EnvironmentValidator {
 
-    private static final Set<String> ILLEGAL_VARIABLES = ImmutableSet.of(DOCKER_TLS_VERIFY, DOCKER_HOST, DOCKER_CERT_PATH);
-    private static final Supplier<DaemonEnvironmentValidator> SUPPLIER = Suppliers.memoize(
-            () -> new DaemonEnvironmentValidator());
+    private static final Set<String> ILLEGAL_VARIABLES =
+            ImmutableSet.of(DOCKER_TLS_VERIFY, DOCKER_HOST, DOCKER_CERT_PATH);
+    private static final Supplier<DaemonEnvironmentValidator> SUPPLIER =
+            Suppliers.memoize(() -> new DaemonEnvironmentValidator());
 
     public static DaemonEnvironmentValidator instance() {
         return SUPPLIER.get();
@@ -43,14 +44,14 @@ public final class DaemonEnvironmentValidator implements EnvironmentValidator {
     @Override
     public void validateEnvironmentVariables(Map<String, String> dockerEnvironment) {
         Set<String> invalidVariables = ILLEGAL_VARIABLES.stream()
-                                                         .filter(dockerEnvironment::containsKey)
-                                                         .collect(Collectors.toSet());
+                .filter(dockerEnvironment::containsKey)
+                .collect(Collectors.toSet());
 
         String errorMessage = invalidVariables.stream()
-                                              .collect(joining(", ",
-                                                               "These variables were set: ",
-                                                               ". They cannot be set when connecting to a local docker daemon."));
+                .collect(joining(
+                        ", ",
+                        "These variables were set: ",
+                        ". They cannot be set when connecting to a local docker daemon."));
         checkState(invalidVariables.isEmpty(), errorMessage);
     }
-
 }

@@ -39,7 +39,8 @@ public abstract class SuccessOrFailure {
         }
     }
 
-    @Value.Parameter protected abstract Optional<String> optionalFailureMessage();
+    @Value.Parameter
+    protected abstract Optional<String> optionalFailureMessage();
 
     public static SuccessOrFailure success() {
         return ImmutableSuccessOrFailure.of(Optional.empty());

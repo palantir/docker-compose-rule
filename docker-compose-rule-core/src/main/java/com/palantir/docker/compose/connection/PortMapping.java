@@ -52,14 +52,11 @@ public final class PortMapping {
             return false;
         }
         PortMapping other = (PortMapping) obj;
-        return Objects.equals(externalPort, other.externalPort)
-                && Objects.equals(internalPort, other.internalPort);
+        return Objects.equals(externalPort, other.externalPort) && Objects.equals(internalPort, other.internalPort);
     }
 
     @Override
     public String toString() {
-        return "PortMapping [externalPort=" + externalPort + ", internalPort="
-                + internalPort + "]";
+        return "PortMapping [externalPort=" + externalPort + ", internalPort=" + internalPort + "]";
     }
-
 }

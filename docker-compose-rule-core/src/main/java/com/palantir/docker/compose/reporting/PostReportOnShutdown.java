@@ -28,8 +28,8 @@ final class PostReportOnShutdown {
     private static final Reporter REPORTER = createReporter();
 
     private static Reporter createReporter() {
-        Optional<ReportingConfig> possibleReportingConfig = DockerComposeRuleConfig.findAutomatically()
-                .flatMap(DockerComposeRuleConfig::reporting);
+        Optional<ReportingConfig> possibleReportingConfig =
+                DockerComposeRuleConfig.findAutomatically().flatMap(DockerComposeRuleConfig::reporting);
 
         return possibleReportingConfig
                 .<Reporter>map(reportingConfig -> new ReportCompiler(

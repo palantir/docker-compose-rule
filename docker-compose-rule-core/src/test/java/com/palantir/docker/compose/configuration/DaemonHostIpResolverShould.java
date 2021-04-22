@@ -37,5 +37,4 @@ public class DaemonHostIpResolverShould {
     public void return_local_host_with_arbitrary() {
         assertThat(new DaemonHostIpResolver().resolveIp("arbitrary"), is(LOCALHOST));
     }
-
 }

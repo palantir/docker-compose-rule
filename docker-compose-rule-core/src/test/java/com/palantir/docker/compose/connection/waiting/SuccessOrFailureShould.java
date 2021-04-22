@@ -44,11 +44,9 @@ public class SuccessOrFailureShould {
     @Test
     public void fail_from_an_exception() {
         Exception exception = new RuntimeException("oh no");
-        assertThat(SuccessOrFailure.fromException(exception),
-                is(failureWithMessage(both(
-                    containsString("RuntimeException")).and(
-                    containsString("oh no")
-                ))));
+        assertThat(
+                SuccessOrFailure.fromException(exception),
+                is(failureWithMessage(both(containsString("RuntimeException")).and(containsString("oh no")))));
     }
 
     @Test
@@ -63,11 +61,10 @@ public class SuccessOrFailureShould {
             throw new IllegalArgumentException("oh no");
         });
 
-        assertThat(failureFromLambda,
-                is(failureWithMessage(both(
-                        containsString("IllegalArgumentException")).and(
-                        containsString("oh no")
-                ))));
+        assertThat(
+                failureFromLambda,
+                is(failureWithMessage(
+                        both(containsString("IllegalArgumentException")).and(containsString("oh no")))));
     }
 
     @Test

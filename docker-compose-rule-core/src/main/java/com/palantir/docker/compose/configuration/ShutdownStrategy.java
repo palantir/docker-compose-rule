@@ -76,5 +76,4 @@ public interface ShutdownStrategy {
     default void stop(DockerCompose _dockerCompose) throws IOException, InterruptedException {}
 
     void shutdown(DockerCompose dockerCompose, Docker docker) throws IOException, InterruptedException;
-
 }

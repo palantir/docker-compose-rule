@@ -36,9 +36,8 @@ import org.immutables.value.Value;
 @CustomImmutablesStyle
 @JsonDeserialize(as = ImmutableDockerComposeRuleConfig.class)
 public abstract class DockerComposeRuleConfig {
-    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper(new YAMLFactory())
-            .registerModule(new Jdk8Module())
-            .registerModule(new GuavaModule());
+    private static final ObjectMapper OBJECT_MAPPER =
+            new ObjectMapper(new YAMLFactory()).registerModule(new Jdk8Module()).registerModule(new GuavaModule());
     public static final String CONFIG_FILENAME = ".docker-compose-rule.yml";
 
     public abstract Optional<ReportingConfig> reporting();
@@ -75,15 +74,15 @@ public abstract class DockerComposeRuleConfig {
 
     private static StreamEx<File> dirAndParents(File startDir) {
         return StreamEx.of(Stream.generate(new Supplier<Optional<File>>() {
-            private Optional<File> dir = Optional.of(startDir.getAbsoluteFile());
+                    private Optional<File> dir = Optional.of(startDir.getAbsoluteFile());
 
-            @Override
-            public Optional<File> get() {
-                Optional<File> toReturn = dir;
-                dir = dir.map(File::getParentFile);
-                return toReturn;
-            }
-        }))
+                    @Override
+                    public Optional<File> get() {
+                        Optional<File> toReturn = dir;
+                        dir = dir.map(File::getParentFile);
+                        return toReturn;
+                    }
+                }))
                 .takeWhile(Optional::isPresent)
                 .map(Optional::get);
     }

@@ -29,7 +29,8 @@ public class DockerCommandLocationsShould {
     private static final String badLocation = "file/that/does/not/exist";
     private static final String otherBadLocation = "another/file/that/does/not/exist";
 
-    @Rule public TemporaryFolder folder = new TemporaryFolder();
+    @Rule
+    public TemporaryFolder folder = new TemporaryFolder();
 
     private String goodLocation;
 
@@ -38,33 +39,26 @@ public class DockerCommandLocationsShould {
         goodLocation = folder.newFile("docker-compose.yml").getAbsolutePath();
     }
 
-    @Test public void
-    provide_the_first_docker_command_location_if_it_exists() {
-        DockerCommandLocations dockerCommandLocations = new DockerCommandLocations(
-                badLocation,
-                goodLocation,
-                otherBadLocation);
+    @Test
+    public void provide_the_first_docker_command_location_if_it_exists() {
+        DockerCommandLocations dockerCommandLocations =
+                new DockerCommandLocations(badLocation, goodLocation, otherBadLocation);
 
-        assertThat(dockerCommandLocations.preferredLocation().get(),
-                is(goodLocation));
+        assertThat(dockerCommandLocations.preferredLocation().get(), is(goodLocation));
     }
 
-    @Test public void
-    skip_paths_from_environment_variables_that_are_unset() {
-        DockerCommandLocations dockerCommandLocations = new DockerCommandLocations(
-                System.getenv("AN_UNSET_DOCKER_COMPOSE_PATH"),
-                goodLocation);
+    @Test
+    public void skip_paths_from_environment_variables_that_are_unset() {
+        DockerCommandLocations dockerCommandLocations =
+                new DockerCommandLocations(System.getenv("AN_UNSET_DOCKER_COMPOSE_PATH"), goodLocation);
 
-        assertThat(dockerCommandLocations.preferredLocation().get(),
-                is(goodLocation));
+        assertThat(dockerCommandLocations.preferredLocation().get(), is(goodLocation));
     }
 
-    @Test public void
-    have_no_preferred_path_when_all_possible_paths_are_all_invalid() {
-        DockerCommandLocations dockerCommandLocations = new DockerCommandLocations(
-                badLocation);
+    @Test
+    public void have_no_preferred_path_when_all_possible_paths_are_all_invalid() {
+        DockerCommandLocations dockerCommandLocations = new DockerCommandLocations(badLocation);
 
-        assertThat(dockerCommandLocations.preferredLocation(),
-                is(empty()));
+        assertThat(dockerCommandLocations.preferredLocation(), is(empty()));
     }
 }

@@ -86,14 +86,20 @@ abstract class DelegatingDockerCompose implements DockerCompose {
     }
 
     @Override
-    public String exec(DockerComposeExecOption dockerComposeExecOption, String containerName,
-            DockerComposeExecArgument dockerComposeExecArgument) throws IOException, InterruptedException {
+    public String exec(
+            DockerComposeExecOption dockerComposeExecOption,
+            String containerName,
+            DockerComposeExecArgument dockerComposeExecArgument)
+            throws IOException, InterruptedException {
         return dockerCompose.exec(dockerComposeExecOption, containerName, dockerComposeExecArgument);
     }
 
     @Override
-    public String run(DockerComposeRunOption dockerComposeRunOption, String containerName,
-            DockerComposeRunArgument dockerComposeRunArgument) throws IOException, InterruptedException {
+    public String run(
+            DockerComposeRunOption dockerComposeRunOption,
+            String containerName,
+            DockerComposeRunArgument dockerComposeRunArgument)
+            throws IOException, InterruptedException {
         return dockerCompose.run(dockerComposeRunOption, containerName, dockerComposeRunArgument);
     }
 
@@ -130,5 +136,4 @@ abstract class DelegatingDockerCompose implements DockerCompose {
     protected final DockerCompose getDockerCompose() {
         return dockerCompose;
     }
-
 }

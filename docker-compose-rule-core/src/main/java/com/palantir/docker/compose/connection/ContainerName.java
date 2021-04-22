@@ -41,9 +41,9 @@ public abstract class ContainerName {
 
         if (probablyCustomName(rawName)) {
             return ImmutableContainerName.builder()
-                .rawName(rawName)
-                .semanticName(rawName)
-                .build();
+                    .rawName(rawName)
+                    .semanticName(rawName)
+                    .build();
         }
 
         String semanticName = withoutDirectory(withoutScaleNumber(rawName));
@@ -58,16 +58,11 @@ public abstract class ContainerName {
     }
 
     private static String withoutDirectory(String rawName) {
-        return Arrays.stream(rawName.split("_"))
-                .skip(1)
-                .collect(joining("_"));
+        return Arrays.stream(rawName.split("_")).skip(1).collect(joining("_"));
     }
 
     public static String withoutScaleNumber(String rawName) {
         String[] components = rawName.split("_");
-        return Arrays.stream(components)
-                .limit(components.length - 1)
-                .collect(joining("_"));
+        return Arrays.stream(components).limit(components.length - 1).collect(joining("_"));
     }
-
 }

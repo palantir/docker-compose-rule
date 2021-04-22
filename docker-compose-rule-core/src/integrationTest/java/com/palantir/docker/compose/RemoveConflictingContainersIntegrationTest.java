@@ -32,7 +32,8 @@ public class RemoveConflictingContainersIntegrationTest {
     public ExpectedException exception = ExpectedException.none();
 
     @Test
-    public void removeConflictingContainersOnStartup_off_should_fail_fast_if_containers_exist() throws IOException, InterruptedException {
+    public void removeConflictingContainersOnStartup_off_should_fail_fast_if_containers_exist()
+            throws IOException, InterruptedException {
         DockerComposeManager composition = new DockerComposeManager.Builder()
                 .file(DOCKER_COMPOSE_YAML_PATH)
                 .retryAttempts(0)
@@ -64,5 +65,4 @@ public class RemoveConflictingContainersIntegrationTest {
         composition.before();
         composition.after();
     }
-
 }

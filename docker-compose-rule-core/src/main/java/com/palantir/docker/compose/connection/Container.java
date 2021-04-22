@@ -45,7 +45,8 @@ public final class Container {
         return containerName;
     }
 
-    public SuccessOrFailure portIsListeningOnHttpAndCheckStatus2xx(int internalPort, Function<DockerPort, String> urlFunction) {
+    public SuccessOrFailure portIsListeningOnHttpAndCheckStatus2xx(
+            int internalPort, Function<DockerPort, String> urlFunction) {
         return portIsListeningOnHttp(internalPort, urlFunction, true);
     }
 
@@ -53,25 +54,28 @@ public final class Container {
         return portIsListeningOnHttp(internalPort, urlFunction, false);
     }
 
-    public SuccessOrFailure portIsListeningOnHttp(int internalPort, Function<DockerPort, String> urlFunction, boolean andCheckStatus) {
+    public SuccessOrFailure portIsListeningOnHttp(
+            int internalPort, Function<DockerPort, String> urlFunction, boolean andCheckStatus) {
         try {
             DockerPort port = port(internalPort);
             if (!port.isListeningNow()) {
-                return SuccessOrFailure.failure("Internal port " + internalPort + " is not listening in container " + containerName);
+                return SuccessOrFailure.failure(
+                        "Internal port " + internalPort + " is not listening in container " + containerName);
             }
             return port.isHttpRespondingSuccessfully(urlFunction, andCheckStatus)
-                    .mapFailure(failureMessage -> internalPort + " does not have a http response from " + urlFunction.apply(port) + ":\n" + failureMessage);
+                    .mapFailure(failureMessage -> internalPort + " does not have a http response from "
+                            + urlFunction.apply(port) + ":\n" + failureMessage);
         } catch (Exception e) {
             return SuccessOrFailure.fromException(e);
         }
     }
 
     public DockerPort portMappedExternallyTo(int externalPort) {
-        return portMappings.get()
-                           .stream()
-                           .filter(port -> port.getExternalPort() == externalPort)
-                           .findFirst()
-                           .orElseThrow(() -> new IllegalArgumentException("No port mapped externally to '" + externalPort + "' for container '" + containerName + "'"));
+        return portMappings.get().stream()
+                .filter(port -> port.getExternalPort() == externalPort)
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException(
+                        "No port mapped externally to '" + externalPort + "' for container '" + containerName + "'"));
     }
 
     /**

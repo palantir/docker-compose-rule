@@ -81,12 +81,11 @@ public class EventEmitterShould {
         OffsetDateTime startedTime = timeIs(5);
         AtomicReference<OffsetDateTime> endTime = new AtomicReference<>();
 
-        assertThatExceptionOfType(IllegalStateException.class).isThrownBy(() ->
-                eventEmitter.build(() -> {
+        assertThatExceptionOfType(IllegalStateException.class)
+                .isThrownBy(() -> eventEmitter.build(() -> {
                     endTime.set(timeIs(10));
                     throw exception;
-                })
-        );
+                }));
 
         Event failedBuild = Event.build(BuildEvent.builder()
                 .task(Task.builder()
@@ -108,12 +107,14 @@ public class EventEmitterShould {
 
         ClusterWait clusterWait = mock(ClusterWait.class);
         doAnswer(invocation -> {
-            Cluster cluster = (Cluster) invocation.getArguments()[0];
-            cluster.container("one");
-            cluster.containers(ImmutableList.of("two", "three"));
-            endTime.set(timeIs(20));
-            return null;
-        }).when(clusterWait).waitUntilReady(any());
+                    Cluster cluster = (Cluster) invocation.getArguments()[0];
+                    cluster.container("one");
+                    cluster.containers(ImmutableList.of("two", "three"));
+                    endTime.set(timeIs(20));
+                    return null;
+                })
+                .when(clusterWait)
+                .waitUntilReady(any());
 
         InterruptableClusterWait eventedClusterWait = eventEmitter.userClusterWait(clusterWait);
 
@@ -142,7 +143,8 @@ public class EventEmitterShould {
         doThrow(one).when(eventConsumer1).receiveEvent(any());
         doThrow(two).when(eventConsumer2).receiveEvent(any());
 
-        assertThatExceptionOfType(RuntimeException.class).isThrownBy(() -> eventEmitter.build(() -> { }))
+        assertThatExceptionOfType(RuntimeException.class)
+                .isThrownBy(() -> eventEmitter.build(() -> {}))
                 .satisfies(runtimeException -> {
                     assertThat(runtimeException).hasSuppressedException(one);
                     assertThat(runtimeException).hasSuppressedException(two);

@@ -70,8 +70,7 @@ public class Command {
         Process process = executable.execute(commands);
 
         ExecutorService exec = newSingleThreadExecutor();
-        Future<String> outputProcessing = exec
-                .submit(() -> processOutputFrom(process));
+        Future<String> outputProcessing = exec.submit(() -> processOutputFrom(process));
 
         String output = waitForResultFrom(outputProcessing);
 
@@ -82,9 +81,7 @@ public class Command {
     }
 
     private String processOutputFrom(Process process) {
-        return asReader(process.getInputStream()).lines()
-                .peek(logConsumer)
-                .collect(joining(System.lineSeparator()));
+        return asReader(process.getInputStream()).lines().peek(logConsumer).collect(joining(System.lineSeparator()));
     }
 
     private static String waitForResultFrom(Future<String> outputProcessing) {

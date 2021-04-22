@@ -34,5 +34,4 @@ public final class SkipShutdownStrategy implements ShutdownStrategy {
                 + "* long running processes and leaking resources.                                          *\n"
                 + "******************************************************************************************");
     }
-
 }

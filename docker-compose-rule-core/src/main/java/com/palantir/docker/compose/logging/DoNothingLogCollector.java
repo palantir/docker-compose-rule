@@ -20,5 +20,5 @@ import com.palantir.docker.compose.execution.DockerCompose;
 public class DoNothingLogCollector implements LogCollector {
 
     @Override
-    public void collectLogs(DockerCompose _dockerCompose) { }
+    public void collectLogs(DockerCompose _dockerCompose) {}
 }

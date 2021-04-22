@@ -26,8 +26,8 @@ public final class RemoteHostIpResolver implements HostIpResolver {
     @Override
     public String resolveIp(String dockerHost) {
         return Optional.ofNullable(emptyToNull(dockerHost))
-                       .map(host -> StringUtils.substringAfter(host, TCP_PROTOCOL))
-                       .map(ipAndMaybePort -> StringUtils.substringBefore(ipAndMaybePort, ":"))
-                       .orElseThrow(() -> new IllegalArgumentException("DOCKER_HOST cannot be blank/null"));
+                .map(host -> StringUtils.substringAfter(host, TCP_PROTOCOL))
+                .map(ipAndMaybePort -> StringUtils.substringBefore(ipAndMaybePort, ":"))
+                .orElseThrow(() -> new IllegalArgumentException("DOCKER_HOST cannot be blank/null"));
     }
 }

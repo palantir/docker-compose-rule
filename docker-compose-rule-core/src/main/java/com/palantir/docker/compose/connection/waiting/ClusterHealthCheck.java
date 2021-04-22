@@ -59,8 +59,8 @@ public interface ClusterHealthCheck {
                     }
                 }
                 if (!unhealthyContainers.isEmpty()) {
-                    return SuccessOrFailure.failure(
-                            "The following containers are not healthy: " + unhealthyContainers.stream().collect(joining(", ")));
+                    return SuccessOrFailure.failure("The following containers are not healthy: "
+                            + unhealthyContainers.stream().collect(joining(", ")));
                 }
                 return SuccessOrFailure.success();
             } catch (IOException e) {

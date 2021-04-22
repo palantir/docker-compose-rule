@@ -42,13 +42,10 @@ public class AggressiveShutdownWithNetworkCleanupStrategyTest {
 
     @Test
     public void docker_compose_down_should_be_called_despite_docker_rm_throwing_exception() throws Exception {
-        doThrow(new DockerExecutionException(error_msg))
-                .when(mockDocker)
-                .rm(anyListOf(String.class));
+        doThrow(new DockerExecutionException(error_msg)).when(mockDocker).rm(anyListOf(String.class));
 
         ShutdownStrategy.AGGRESSIVE_WITH_NETWORK_CLEANUP.shutdown(mockDockerCompose, mockDocker);
 
         verify(mockDockerCompose, times(1)).down();
     }
-
 }

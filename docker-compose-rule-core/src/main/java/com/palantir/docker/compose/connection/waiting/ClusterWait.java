@@ -38,8 +38,8 @@ public final class ClusterWait {
     }
 
     public void waitUntilReady(Cluster cluster) {
-        final AtomicReference<Optional<SuccessOrFailure>> lastSuccessOrFailure = new AtomicReference<>(
-                Optional.empty());
+        final AtomicReference<Optional<SuccessOrFailure>> lastSuccessOrFailure =
+                new AtomicReference<>(Optional.empty());
 
         // semi-intelligent poll interval. If we specify a fast timeout, it will poll more often, otherwise poll
         // at a slower rate
@@ -48,7 +48,8 @@ public final class ClusterWait {
         try {
             Awaitility.await()
                     .pollInterval(java.time.Duration.ofMillis(pollInterval.getMillis()))
-                    .pollDelay(java.time.Duration.ofMillis(ThreadLocalRandom.current().nextInt(1, 50)))
+                    .pollDelay(java.time.Duration.ofMillis(
+                            ThreadLocalRandom.current().nextInt(1, 50)))
                     .atMost(java.time.Duration.ofMillis(timeout.getMillis()))
                     .until(weHaveSuccess(cluster, lastSuccessOrFailure));
         } catch (ConditionTimeoutException e) {
@@ -56,8 +57,8 @@ public final class ClusterWait {
         }
     }
 
-    private Callable<Boolean> weHaveSuccess(Cluster cluster,
-            AtomicReference<Optional<SuccessOrFailure>> lastSuccessOrFailure) {
+    private Callable<Boolean> weHaveSuccess(
+            Cluster cluster, AtomicReference<Optional<SuccessOrFailure>> lastSuccessOrFailure) {
         return () -> {
             SuccessOrFailure successOrFailure = clusterHealthCheck.isClusterHealthy(cluster);
             lastSuccessOrFailure.set(Optional.of(successOrFailure));
@@ -67,7 +68,8 @@ public final class ClusterWait {
 
     private static String serviceDidNotStartupExceptionMessage(
             AtomicReference<Optional<SuccessOrFailure>> lastSuccessOrFailure) {
-        String healthcheckFailureMessage = lastSuccessOrFailure.get()
+        String healthcheckFailureMessage = lastSuccessOrFailure
+                .get()
                 .flatMap(SuccessOrFailure::toOptionalFailureMessage)
                 .orElse("The healthcheck did not finish before the timeout");
 
@@ -81,5 +83,4 @@ public final class ClusterWait {
 
         return second;
     }
-
 }

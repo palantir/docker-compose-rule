@@ -29,12 +29,13 @@ import org.junit.Test;
 
 public class HostNetworkedPortsIntegrationTest {
     private static HealthCheck<DockerPort> toBeOpen() {
-        return port -> SuccessOrFailure.fromBoolean(port.isListeningNow(), "Internal port " + port + " was not listening");
+        return port ->
+                SuccessOrFailure.fromBoolean(port.isListeningNow(), "Internal port " + port + " was not listening");
     }
 
     @Ignore("No idea why is this now failing on circleci")
-    @Test public void
-    can_access_host_networked_ports() throws Exception {
+    @Test
+    public void can_access_host_networked_ports() throws Exception {
         // On linux the docker host is running on localhost, so host ports are accessible through localhost.
         // On Windows and Mac however, docker is being run in a linux VM. As such the docker host is the running
         // VM, not localhost, and the ports are inaccessible from outside the VM.

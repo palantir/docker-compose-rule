@@ -35,7 +35,9 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 @RunWith(MockitoJUnitRunner.class)
 public class RetryerShould {
-    @Mock private Retryer.RetryableDockerOperation<String> operation;
+    @Mock
+    private Retryer.RetryableDockerOperation<String> operation;
+
     private final Retryer retryer = new Retryer(1, Duration.millis(0));
 
     @Test
@@ -74,30 +76,33 @@ public class RetryerShould {
     }
 
     @Test
-    public void retry_the_operation_if_it_failed_once_and_return_the_result_of_the_next_successful_call() throws Exception {
-        when(operation.call()).thenAnswer(MockitoMultiAnswer.<String>of(
-                _firstInvocation -> {
-                    throw new DockerExecutionException();
-                },
-                _secondInvocation -> "hola"
-        ));
+    public void retry_the_operation_if_it_failed_once_and_return_the_result_of_the_next_successful_call()
+            throws Exception {
+        when(operation.call())
+                .thenAnswer(MockitoMultiAnswer.<String>of(
+                        _firstInvocation -> {
+                            throw new DockerExecutionException();
+                        },
+                        _secondInvocation -> "hola"));
 
         assertThat(retryer.runWithRetries(operation), is("hola"));
         verify(operation, times(2)).call();
     }
 
     @Test
-    public void throw_the_last_exception_when_the_operation_fails_more_times_than_the_number_of_specified_retry_attempts() throws Exception {
+    public void
+            throw_the_last_exception_when_the_operation_fails_more_times_than_the_number_of_specified_retry_attempts()
+                    throws Exception {
         DockerExecutionException finalException = new DockerExecutionException();
 
-        when(operation.call()).thenAnswer(MockitoMultiAnswer.<String>of(
-                _firstInvocation -> {
-                    throw new DockerExecutionException();
-                },
-                _secondInvocation -> {
-                    throw finalException;
-                }
-        ));
+        when(operation.call())
+                .thenAnswer(MockitoMultiAnswer.<String>of(
+                        _firstInvocation -> {
+                            throw new DockerExecutionException();
+                        },
+                        _secondInvocation -> {
+                            throw finalException;
+                        }));
 
         try {
             retryer.runWithRetries(operation);

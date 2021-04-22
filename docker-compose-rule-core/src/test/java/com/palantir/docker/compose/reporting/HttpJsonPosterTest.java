@@ -46,5 +46,4 @@ public class HttpJsonPosterTest {
 
         wireMockRule.verify(postRequestedFor(urlPathEqualTo("/some/path")).withRequestBody(containing(json)));
     }
-
 }

@@ -51,5 +51,4 @@ public enum DockerType implements HostIpResolver, EnvironmentValidator {
         }
         return Optional.empty();
     }
-
 }

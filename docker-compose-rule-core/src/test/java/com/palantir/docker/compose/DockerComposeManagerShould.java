@@ -76,6 +76,7 @@ public class DockerComposeManagerShould {
 
     @Rule
     public ExpectedException exception = ExpectedException.none();
+
     @Rule
     public TemporaryFolder logFolder = new TemporaryFolder();
 
@@ -90,17 +91,18 @@ public class DockerComposeManagerShould {
     private LogCollector logCollector = mock(LogCollector.class);
     private DockerComposeManager dockerComposeManager;
 
-    @Before public void
-    setup() {
+    @Before
+    public void setup() {
         when(machine.getIp()).thenReturn(IP);
         dockerComposeManager = defaultBuilder().build();
     }
 
     private DockerComposeManager.Builder defaultBuilder() {
-        return new DockerComposeManager.Builder().dockerCompose(dockerCompose)
-                                          .files(mockFiles)
-                                          .machine(machine)
-                                          .logCollector(logCollector);
+        return new DockerComposeManager.Builder()
+                .dockerCompose(dockerCompose)
+                .files(mockFiles)
+                .machine(machine)
+                .logCollector(logCollector);
     }
 
     @Test
@@ -127,10 +129,9 @@ public class DockerComposeManagerShould {
     }
 
     @Test
-    public void calls_pull_build_and_up_when_tests_are_run_and_pullOnStartup_is_true() throws InterruptedException, IOException {
-        defaultBuilder().pullOnStartup(true)
-                        .build()
-                        .before();
+    public void calls_pull_build_and_up_when_tests_are_run_and_pullOnStartup_is_true()
+            throws InterruptedException, IOException {
+        defaultBuilder().pullOnStartup(true).build().before();
         verify(dockerCompose).pull();
         verify(dockerCompose).build();
         verify(dockerCompose).up();
@@ -140,7 +141,8 @@ public class DockerComposeManagerShould {
     public void pass_wait_for_service_when_check_is_true() throws IOException, InterruptedException {
         AtomicInteger timesCheckCalled = new AtomicInteger(0);
         withComposeExecutableReturningContainerFor("db");
-        HealthCheck<Container> checkCalledOnce = _container -> SuccessOrFailure.fromBoolean(timesCheckCalled.incrementAndGet() == 1, "not called once yet");
+        HealthCheck<Container> checkCalledOnce = _container ->
+                SuccessOrFailure.fromBoolean(timesCheckCalled.incrementAndGet() == 1, "not called once yet");
         defaultBuilder().waitingForService("db", checkCalledOnce).build().before();
         assertThat(timesCheckCalled.get(), is(1));
     }
@@ -153,7 +155,10 @@ public class DockerComposeManagerShould {
 
         when(healthCheck.isHealthy(containers)).thenReturn(SuccessOrFailure.success());
 
-        defaultBuilder().waitingForServices(ImmutableList.of("db1", "db2"), healthCheck).build().before();
+        defaultBuilder()
+                .waitingForServices(ImmutableList.of("db1", "db2"), healthCheck)
+                .build()
+                .before();
 
         verify(healthCheck).isHealthy(containers);
     }
@@ -162,7 +167,8 @@ public class DockerComposeManagerShould {
     public void pass_wait_for_service_when_check_is_true_after_being_false() throws IOException, InterruptedException {
         AtomicInteger timesCheckCalled = new AtomicInteger(0);
         withComposeExecutableReturningContainerFor("db");
-        HealthCheck<Container> checkCalledTwice = _container -> SuccessOrFailure.fromBoolean(timesCheckCalled.incrementAndGet() == 2, "not called twice yet");
+        HealthCheck<Container> checkCalledTwice = _container ->
+                SuccessOrFailure.fromBoolean(timesCheckCalled.incrementAndGet() == 2, "not called twice yet");
         defaultBuilder().waitingForService("db", checkCalledTwice).build().before();
         assertThat(timesCheckCalled.get(), is(2));
     }
@@ -176,7 +182,10 @@ public class DockerComposeManagerShould {
         exception.expectMessage("failed to pass a startup check");
         exception.expectMessage("oops");
 
-        defaultBuilder().waitingForService("db", _container -> SuccessOrFailure.failure("oops"), millis(200)).build().before();
+        defaultBuilder()
+                .waitingForService("db", _container -> SuccessOrFailure.failure("oops"), millis(200))
+                .build()
+                .before();
     }
 
     @Test
@@ -184,7 +193,8 @@ public class DockerComposeManagerShould {
         DockerPort expectedPort = env.port("db", IP, 5433, 5432);
         withComposeExecutableReturningContainerFor("db");
 
-        DockerPort actualPort = dockerComposeManager.containers().container("db").portMappedExternallyTo(5433);
+        DockerPort actualPort =
+                dockerComposeManager.containers().container("db").portMappedExternallyTo(5433);
 
         assertThat(actualPort, is(expectedPort));
     }
@@ -195,7 +205,8 @@ public class DockerComposeManagerShould {
         withComposeExecutableReturningContainerFor("db");
 
         @SuppressWarnings("deprecation") // intentionally using the deprecated method temporarily
-        DockerPort actualPort = dockerComposeManager.containers().container("db").portMappedInternallyTo(5432);
+        DockerPort actualPort =
+                dockerComposeManager.containers().container("db").portMappedInternallyTo(5432);
 
         assertThat(actualPort, is(expectedPort));
     }
@@ -216,13 +227,16 @@ public class DockerComposeManagerShould {
             throws IOException, InterruptedException {
         String nonExistentContainer = "nonExistent";
         when(dockerCompose.ports(nonExistentContainer))
-            .thenThrow(new IllegalStateException("No container with name 'nonExistent' found"));
+                .thenThrow(new IllegalStateException("No container with name 'nonExistent' found"));
         withComposeExecutableReturningContainerFor(nonExistentContainer);
 
         exception.expect(IllegalStateException.class);
         exception.expectMessage(nonExistentContainer);
 
-        defaultBuilder().waitingForService(nonExistentContainer, toHaveAllPortsOpen(), Duration.millis(100)).build().before();
+        defaultBuilder()
+                .waitingForService(nonExistentContainer, toHaveAllPortsOpen(), Duration.millis(100))
+                .build()
+                .before();
     }
 
     @SuppressWarnings("unchecked")
@@ -277,11 +291,13 @@ public class DockerComposeManagerShould {
     }
 
     @Test
-    public void before_retries_when_docker_up_reports_conflicting_containers() throws IOException, InterruptedException {
+    public void before_retries_when_docker_up_reports_conflicting_containers()
+            throws IOException, InterruptedException {
         String conflictingContainer = "conflictingContainer";
         doThrow(new DockerExecutionException("The name \"" + conflictingContainer + "\" is already in use"))
                 .doNothing()
-                .when(dockerCompose).up();
+                .when(dockerCompose)
+                .up();
         dockerComposeManager = defaultBuilder().docker(mockDocker).build();
         dockerComposeManager.before();
 
@@ -294,8 +310,12 @@ public class DockerComposeManagerShould {
             throws IOException, InterruptedException {
         String conflictingContainer = "conflictingContainer";
         doThrow(new DockerExecutionException("The name \"" + conflictingContainer + "\" is already in use"))
-                .when(dockerCompose).up();
-        dockerComposeManager = defaultBuilder().docker(mockDocker).removeConflictingContainersOnStartup(false).build();
+                .when(dockerCompose)
+                .up();
+        dockerComposeManager = defaultBuilder()
+                .docker(mockDocker)
+                .removeConflictingContainersOnStartup(false)
+                .build();
 
         exception.expect(DockerExecutionException.class);
         exception.expectMessage("The name \"conflictingContainer\" is already in use");

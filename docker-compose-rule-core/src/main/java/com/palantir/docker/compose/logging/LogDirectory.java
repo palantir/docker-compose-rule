@@ -37,7 +37,8 @@ public final class LogDirectory {
     }
 
     public static String circleAwareLogDirectory(String logDirectoryName) {
-        String artifactRoot = Optional.ofNullable(System.getenv("CIRCLE_ARTIFACTS")).orElse("build");
+        String artifactRoot =
+                Optional.ofNullable(System.getenv("CIRCLE_ARTIFACTS")).orElse("build");
         return artifactRoot + "/dockerLogs/" + logDirectoryName;
     }
 

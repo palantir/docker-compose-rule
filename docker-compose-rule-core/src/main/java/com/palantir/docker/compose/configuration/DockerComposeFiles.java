@@ -34,9 +34,8 @@ public class DockerComposeFiles {
     }
 
     public static DockerComposeFiles from(String... dockerComposeFilenames) {
-        List<File> dockerComposeFiles = newArrayList(dockerComposeFilenames).stream()
-                .map(File::new)
-                .collect(toList());
+        List<File> dockerComposeFiles =
+                newArrayList(dockerComposeFilenames).stream().map(File::new).collect(toList());
         validateAtLeastOneComposeFileSpecified(dockerComposeFiles);
         validateComposeFilesExist(dockerComposeFiles);
         return new DockerComposeFiles(dockerComposeFiles);
@@ -55,14 +54,12 @@ public class DockerComposeFiles {
     }
 
     private static void validateComposeFilesExist(List<File> dockerComposeFiles) {
-        List<File> missingFiles = dockerComposeFiles.stream()
-                                                    .filter(f -> !f.exists())
-                                                    .collect(toList());
+        List<File> missingFiles =
+                dockerComposeFiles.stream().filter(f -> !f.exists()).collect(toList());
 
         String errorMessage = missingFiles.stream()
                 .map(File::getAbsolutePath)
                 .collect(joining(", ", "The following docker-compose files: ", " do not exist."));
         checkState(missingFiles.isEmpty(), errorMessage);
     }
-
 }

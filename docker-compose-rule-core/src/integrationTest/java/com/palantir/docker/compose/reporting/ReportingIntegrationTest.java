@@ -65,10 +65,10 @@ public class ReportingIntegrationTest {
     @Test
     public void a_report_of_the_right_format_is_posted() throws IOException, InterruptedException {
         File config = temporaryFolder.newFile(".docker-compose-rule.yml");
-        Files.write(config.toPath(), ImmutableList.of(
-                "reporting:",
-                "  url: http://localhost:" + wireMockRule.port() + "/some/path"
-        ), StandardCharsets.UTF_8);
+        Files.write(
+                config.toPath(),
+                ImmutableList.of("reporting:", "  url: http://localhost:" + wireMockRule.port() + "/some/path"),
+                StandardCharsets.UTF_8);
 
         wireMockRule.stubFor(post("/some/path").willReturn(status(200)));
 
@@ -76,7 +76,8 @@ public class ReportingIntegrationTest {
         // from the current working directory makes it very hard to run in process, since other instantiations of
         // DockerComposeManger may have already set statics
         Process process = new ProcessBuilder()
-                .command("java",
+                .command(
+                        "java",
                         "-classpath",
                         System.getProperty("java.class.path"),
                         ReportingIntegrationTest.class.getCanonicalName(),

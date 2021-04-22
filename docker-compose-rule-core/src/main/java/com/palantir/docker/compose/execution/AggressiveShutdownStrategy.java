@@ -40,7 +40,9 @@ public final class AggressiveShutdownStrategy implements ShutdownStrategy {
     public void shutdown(DockerCompose dockerCompose, Docker docker) throws IOException, InterruptedException {
         List<ContainerName> runningContainers = dockerCompose.ps();
 
-        log.info("Shutting down {}", runningContainers.stream().map(ContainerName::semanticName).collect(toList()));
+        log.info(
+                "Shutting down {}",
+                runningContainers.stream().map(ContainerName::semanticName).collect(toList()));
         if (removeContainersCatchingErrors(docker, runningContainers)) {
             return;
         }
@@ -57,7 +59,8 @@ public final class AggressiveShutdownStrategy implements ShutdownStrategy {
         docker.pruneNetworks();
     }
 
-    private static boolean removeContainersCatchingErrors(Docker docker, List<ContainerName> runningContainers) throws IOException, InterruptedException {
+    private static boolean removeContainersCatchingErrors(Docker docker, List<ContainerName> runningContainers)
+            throws IOException, InterruptedException {
         try {
             removeContainers(docker, runningContainers);
             return true;
@@ -66,13 +69,12 @@ public final class AggressiveShutdownStrategy implements ShutdownStrategy {
         }
     }
 
-    private static void removeContainers(Docker docker, List<ContainerName> running) throws IOException, InterruptedException {
-        List<String> rawContainerNames = running.stream()
-                .map(ContainerName::rawName)
-                .collect(toList());
+    private static void removeContainers(Docker docker, List<ContainerName> running)
+            throws IOException, InterruptedException {
+        List<String> rawContainerNames =
+                running.stream().map(ContainerName::rawName).collect(toList());
 
         docker.rm(rawContainerNames);
         log.debug("Finished shutdown");
     }
-
 }

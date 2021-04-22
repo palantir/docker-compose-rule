@@ -38,31 +38,29 @@ public class ClusterWaitShould {
     private final ContainerCache containerCache = mock(ContainerCache.class);
     private final ClusterHealthCheck clusterHealthCheck = mock(ClusterHealthCheck.class);
 
-    private final Cluster cluster = ImmutableCluster.builder()
-            .containerCache(containerCache)
-            .ip(IP)
-            .build();
+    private final Cluster cluster =
+            ImmutableCluster.builder().containerCache(containerCache).ip(IP).build();
 
-    @Rule public ExpectedException exception = ExpectedException.none();
+    @Rule
+    public ExpectedException exception = ExpectedException.none();
 
-
-    @Test public void
-    return_when_a_cluster_is_ready() throws InterruptedException {
+    @Test
+    public void return_when_a_cluster_is_ready() throws InterruptedException {
         when(clusterHealthCheck.isClusterHealthy(cluster)).thenReturn(success());
         ClusterWait wait = new ClusterWait(clusterHealthCheck, DURATION);
         wait.waitUntilReady(cluster);
     }
 
-    @Test public void
-    check_until_a_cluster_is_ready() throws InterruptedException {
+    @Test
+    public void check_until_a_cluster_is_ready() throws InterruptedException {
         when(clusterHealthCheck.isClusterHealthy(cluster)).thenReturn(failure("failure!"), success());
         ClusterWait wait = new ClusterWait(clusterHealthCheck, DURATION);
         wait.waitUntilReady(cluster);
         verify(clusterHealthCheck, times(2)).isClusterHealthy(cluster);
     }
 
-    @Test(timeout = 2000L) public void
-    timeout_if_the_cluster_is_not_healthy() throws InterruptedException {
+    @Test(timeout = 2000L)
+    public void timeout_if_the_cluster_is_not_healthy() throws InterruptedException {
         when(clusterHealthCheck.isClusterHealthy(cluster)).thenReturn(failure("failure!"));
 
         exception.expect(IllegalStateException.class);

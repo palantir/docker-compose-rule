@@ -36,16 +36,11 @@ public final class ContainerNames {
         }
 
         String psBody = psHeadAndBody.get(1);
-        return psBodyLines(psBody)
-                .map(ContainerName::fromPsLine)
-                .collect(toList());
+        return psBodyLines(psBody).map(ContainerName::fromPsLine).collect(toList());
     }
 
     private static Stream<String> psBodyLines(String psBody) {
         List<String> lines = Splitter.on(BODY_PATTERN).splitToList(psBody);
-        return lines.stream()
-                .map(String::trim)
-                .filter(line -> !line.isEmpty());
+        return lines.stream().map(String::trim).filter(line -> !line.isEmpty());
     }
-
 }

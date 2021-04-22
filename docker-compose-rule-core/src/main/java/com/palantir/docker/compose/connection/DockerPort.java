@@ -72,7 +72,8 @@ public final class DockerPort {
     }
 
     @SuppressWarnings("ReadReturnValueIgnored")
-    public SuccessOrFailure isHttpRespondingSuccessfully(Function<DockerPort, String> urlFunction, boolean andCheckStatus) {
+    public SuccessOrFailure isHttpRespondingSuccessfully(
+            Function<DockerPort, String> urlFunction, boolean andCheckStatus) {
         URL url;
         try {
             String urlString = urlFunction.apply(this);
@@ -87,13 +88,17 @@ public final class DockerPort {
             log.debug("Http connection acquired, assuming port active");
             return SuccessOrFailure.success();
         } catch (SocketException e) {
-            return SuccessOrFailure.failureWithCondensedException("Failed to acquire http connection, assuming port inactive", e);
+            return SuccessOrFailure.failureWithCondensedException(
+                    "Failed to acquire http connection, assuming port inactive", e);
         } catch (FileNotFoundException e) {
-            return SuccessOrFailure.fromBoolean(!andCheckStatus, "Received 404, assuming port inactive: " + e.getMessage());
+            return SuccessOrFailure.fromBoolean(
+                    !andCheckStatus, "Received 404, assuming port inactive: " + e.getMessage());
         } catch (SSLHandshakeException e) {
-            return SuccessOrFailure.failureWithCondensedException("Received bad SSL response, assuming port inactive", e);
+            return SuccessOrFailure.failureWithCondensedException(
+                    "Received bad SSL response, assuming port inactive", e);
         } catch (IOException e) {
-            return SuccessOrFailure.failureWithCondensedException("Error acquiring http connection, assuming port open but inactive", e);
+            return SuccessOrFailure.failureWithCondensedException(
+                    "Error acquiring http connection, assuming port open but inactive", e);
         }
     }
 
@@ -113,11 +118,9 @@ public final class DockerPort {
      * @return formattedDockerPort the details of the {@link DockerPort} in the specified format
      */
     public String inFormat(String format) {
-        return format
-                .replaceAll("\\$HOST", getIp())
+        return format.replaceAll("\\$HOST", getIp())
                 .replaceAll("\\$EXTERNAL_PORT", String.valueOf(getExternalPort()))
                 .replaceAll("\\$INTERNAL_PORT", String.valueOf(getInternalPort()));
-
     }
 
     @Override
@@ -138,8 +141,7 @@ public final class DockerPort {
             return false;
         }
         DockerPort other = (DockerPort) obj;
-        return Objects.equals(ip, other.ip)
-                && Objects.equals(portMapping, other.portMapping);
+        return Objects.equals(ip, other.ip) && Objects.equals(portMapping, other.portMapping);
     }
 
     @Override

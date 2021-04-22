@@ -16,7 +16,10 @@
 package com.palantir.docker.compose.connection;
 
 public enum State {
-    DOWN, PAUSED, UNHEALTHY, HEALTHY;
+    DOWN,
+    PAUSED,
+    UNHEALTHY,
+    HEALTHY;
 
     /** Returns true if the container is up, unpaused and healthy. */
     public boolean isHealthy() {

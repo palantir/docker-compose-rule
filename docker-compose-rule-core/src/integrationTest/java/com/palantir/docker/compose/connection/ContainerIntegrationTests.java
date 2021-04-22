@@ -42,16 +42,13 @@ public class ContainerIntegrationTests {
     private static final ConditionFactory wait = await().atMost(Duration.ofSeconds(10));
 
     private final DockerMachine dockerMachine = DockerMachine.localMachine().build();
-    private final Docker docker = new Docker(DockerExecutable.builder()
-            .dockerConfiguration(dockerMachine)
-            .build());
+    private final Docker docker = new Docker(
+            DockerExecutable.builder().dockerConfiguration(dockerMachine).build());
 
     @Test
     public void testStateChanges_withoutHealthCheck() throws IOException, InterruptedException {
         DockerCompose dockerCompose = new DefaultDockerCompose(
-                DockerComposeFiles.from("src/test/resources/no-healthcheck.yaml"),
-                dockerMachine,
-                ProjectName.random());
+                DockerComposeFiles.from("src/test/resources/no-healthcheck.yaml"), dockerMachine, ProjectName.random());
 
         // The noHealthcheck service has no healthcheck specified; it should be immediately healthy
         Container container = new Container("noHealthcheck", docker, dockerCompose);
@@ -70,7 +67,8 @@ public class ContainerIntegrationTests {
     @Test
     public void testStateChanges_withHealthCheck() throws IOException, InterruptedException {
         assumeThat("docker version", Docker.version(), greaterThanOrEqualTo(Version.forIntegers(1, 12, 0)));
-        assumeThat("docker-compose version", DockerCompose.version(), greaterThanOrEqualTo(Version.forIntegers(1, 10, 0)));
+        assumeThat(
+                "docker-compose version", DockerCompose.version(), greaterThanOrEqualTo(Version.forIntegers(1, 10, 0)));
 
         DockerCompose dockerCompose = new DefaultDockerCompose(
                 DockerComposeFiles.from("src/test/resources/native-healthcheck.yaml"),

@@ -46,20 +46,21 @@ public final class RemoteEnvironmentValidator implements EnvironmentValidator {
     public void validateEnvironmentVariables(Map<String, String> dockerEnvironment) {
         Collection<String> missingVariables = getMissingEnvVariables(dockerEnvironment);
         String errorMessage = missingVariables.stream()
-                                              .collect(joining(", ",
-                                                               "Missing required environment variables: ",
-                                                               ". Please run `docker-machine env <machine-name>` and "
-                                                                       + "ensure they are set on the DockerComposition."));
+                .collect(joining(
+                        ", ",
+                        "Missing required environment variables: ",
+                        ". Please run `docker-machine env <machine-name>` and "
+                                + "ensure they are set on the DockerComposition."));
 
         Preconditions.checkState(missingVariables.isEmpty(), errorMessage);
     }
 
     private static Collection<String> getMissingEnvVariables(Map<String, String> dockerEnvironment) {
-        Collection<String> requiredVariables = Sets.union(newHashSet(DOCKER_HOST),
-                secureVariablesRequired(dockerEnvironment));
+        Collection<String> requiredVariables =
+                Sets.union(newHashSet(DOCKER_HOST), secureVariablesRequired(dockerEnvironment));
         return requiredVariables.stream()
-                                .filter(envVariable -> Strings.isNullOrEmpty(dockerEnvironment.get(envVariable)))
-                                .collect(Collectors.toSet());
+                .filter(envVariable -> Strings.isNullOrEmpty(dockerEnvironment.get(envVariable)))
+                .collect(Collectors.toSet());
     }
 
     private static Set<String> secureVariablesRequired(Map<String, String> dockerEnvironment) {
@@ -69,5 +70,4 @@ public final class RemoteEnvironmentValidator implements EnvironmentValidator {
     private static boolean certVerificationEnabled(Map<String, String> dockerEnvironment) {
         return dockerEnvironment.containsKey(DOCKER_TLS_VERIFY);
     }
-
 }

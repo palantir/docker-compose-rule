@@ -59,7 +59,8 @@ public class ConflictingContainerRemovingDockerComposeShould {
         String conflictingContainer = "conflictingContainer";
         doThrow(new DockerExecutionException("The name \"" + conflictingContainer + "\" is already in use"))
                 .doNothing()
-                .when(dockerCompose).up();
+                .when(dockerCompose)
+                .up();
 
         ConflictingContainerRemovingDockerCompose conflictingContainerRemovingDockerCompose =
                 new ConflictingContainerRemovingDockerCompose(dockerCompose, docker);
@@ -72,12 +73,13 @@ public class ConflictingContainerRemovingDockerComposeShould {
     @Test
     public void retry_specified_number_of_times() throws IOException, InterruptedException {
         String conflictingContainer = "conflictingContainer";
-        DockerExecutionException dockerException = new DockerExecutionException(
-                "The name \"" + conflictingContainer + "\" is already in use");
+        DockerExecutionException dockerException =
+                new DockerExecutionException("The name \"" + conflictingContainer + "\" is already in use");
         doThrow(dockerException)
                 .doThrow(dockerException)
                 .doNothing()
-                .when(dockerCompose).up();
+                .when(dockerCompose)
+                .up();
 
         ConflictingContainerRemovingDockerCompose conflictingContainerRemovingDockerCompose =
                 new ConflictingContainerRemovingDockerCompose(dockerCompose, docker, 3);
@@ -92,7 +94,8 @@ public class ConflictingContainerRemovingDockerComposeShould {
         String conflictingContainer = "conflictingContainer";
         doThrow(new DockerExecutionException("The name \"" + conflictingContainer + "\" is already in use"))
                 .doNothing()
-                .when(dockerCompose).up();
+                .when(dockerCompose)
+                .up();
         doThrow(DockerExecutionException.class).when(docker).rm(anySetOf(String.class));
 
         ConflictingContainerRemovingDockerCompose conflictingContainerRemovingDockerCompose =
@@ -108,7 +111,8 @@ public class ConflictingContainerRemovingDockerComposeShould {
         String conflictingContainer = "conflictingContainer";
         doThrow(new DockerExecutionException("The name \"" + conflictingContainer + "\" is already in use"))
                 .doNothing()
-                .when(dockerCompose).up();
+                .when(dockerCompose)
+                .up();
         doThrow(RuntimeException.class).when(docker).rm(anySetOf(String.class));
 
         exception.expect(RuntimeException.class);
@@ -121,7 +125,8 @@ public class ConflictingContainerRemovingDockerComposeShould {
     public void throw_exception_if_retry_attempts_exceeded() throws IOException, InterruptedException {
         String conflictingContainer = "conflictingContainer";
         doThrow(new DockerExecutionException("The name \"" + conflictingContainer + "\" is already in use"))
-                .when(dockerCompose).up();
+                .when(dockerCompose)
+                .up();
 
         exception.expect(DockerExecutionException.class);
         exception.expectMessage("docker-compose up failed");
@@ -136,8 +141,8 @@ public class ConflictingContainerRemovingDockerComposeShould {
 
         ConflictingContainerRemovingDockerCompose conflictingContainerRemovingDockerCompose =
                 new ConflictingContainerRemovingDockerCompose(dockerCompose, docker);
-        Set<String> conflictingContainerNames = conflictingContainerRemovingDockerCompose
-                .getConflictingContainerNames("The name \"" + conflictingContainer + "\" is already in use");
+        Set<String> conflictingContainerNames = conflictingContainerRemovingDockerCompose.getConflictingContainerNames(
+                "The name \"" + conflictingContainer + "\" is already in use");
 
         assertEquals(ImmutableSet.of(conflictingContainer), conflictingContainerNames);
     }
@@ -148,10 +153,9 @@ public class ConflictingContainerRemovingDockerComposeShould {
 
         ConflictingContainerRemovingDockerCompose conflictingContainerRemovingDockerCompose =
                 new ConflictingContainerRemovingDockerCompose(dockerCompose, docker);
-        Set<String> conflictingContainerNames = conflictingContainerRemovingDockerCompose
-                .getConflictingContainerNames("The container name \"" + conflictingContainer + "\" is already in use");
+        Set<String> conflictingContainerNames = conflictingContainerRemovingDockerCompose.getConflictingContainerNames(
+                "The container name \"" + conflictingContainer + "\" is already in use");
 
         assertEquals(ImmutableSet.of(conflictingContainer), conflictingContainerNames);
     }
-
 }

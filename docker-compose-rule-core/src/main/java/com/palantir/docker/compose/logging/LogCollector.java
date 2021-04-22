@@ -21,5 +21,4 @@ import java.io.IOException;
 public interface LogCollector {
 
     void collectLogs(DockerCompose dockerCompose) throws IOException, InterruptedException;
-
 }

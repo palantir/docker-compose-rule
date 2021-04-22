@@ -28,7 +28,7 @@ final class GitUtils {
     private static final Pattern SSH_REGEX = Pattern.compile(sshRegex());
     private static final Pattern JUST_A_PATH = Pattern.compile("[\\w/]+", Pattern.UNICODE_CHARACTER_CLASS);
 
-    private GitUtils() { }
+    private GitUtils() {}
 
     public static Optional<String> parsePathFromGitRemoteUrl(String gitRemoteUrl) {
         if (gitRemoteUrl.startsWith("file://")
@@ -64,13 +64,13 @@ final class GitUtils {
     }
 
     private static String sshRegex() {
-        String sshOrGit     = "(?:(?:ssh|git)://)?";
-        String user         = "(?:.+@)?";
-        String hostname     = ".*?";
-        String separator    = "[:/]";
-        String port         = "(?:\\d+/)?";
+        String sshOrGit = "(?:(?:ssh|git)://)?";
+        String user = "(?:.+@)?";
+        String hostname = ".*?";
+        String separator = "[:/]";
+        String port = "(?:\\d+/)?";
         String squigglyUser = "(?:~[^/]*/)?";
-        String pathCapture  = "(.*)";
+        String pathCapture = "(.*)";
 
         return sshOrGit + user + hostname + separator + port + squigglyUser + pathCapture;
     }

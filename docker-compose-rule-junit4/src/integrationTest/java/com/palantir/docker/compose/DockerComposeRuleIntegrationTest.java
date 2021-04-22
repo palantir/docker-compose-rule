@@ -54,9 +54,8 @@ public class DockerComposeRuleIntegrationTest {
 
     private static HealthCheck<List<Container>> toAllHaveAllPortsOpen() {
         return containers -> {
-            boolean healthy = containers.stream()
-                    .map(Container::areAllPortsOpen)
-                    .allMatch(SuccessOrFailure::succeeded);
+            boolean healthy =
+                    containers.stream().map(Container::areAllPortsOpen).allMatch(SuccessOrFailure::succeeded);
 
             return SuccessOrFailure.fromBoolean(healthy, "");
         };
@@ -183,6 +182,11 @@ public class DockerComposeRuleIntegrationTest {
 
     @Test
     public void run_returns_output() throws Exception {
-        assertThat(docker.run(DockerComposeRunOption.options("--entrypoint", "echo"), CONTAINERS.get(0), DockerComposeRunArgument.arguments("hello")), is("hello"));
+        assertThat(
+                docker.run(
+                        DockerComposeRunOption.options("--entrypoint", "echo"),
+                        CONTAINERS.get(0),
+                        DockerComposeRunArgument.arguments("hello")),
+                is("hello"));
     }
 }

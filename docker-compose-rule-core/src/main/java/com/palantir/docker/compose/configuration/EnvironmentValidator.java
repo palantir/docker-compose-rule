@@ -30,5 +30,4 @@ public interface EnvironmentValidator {
      * @param dockerEnvironment A map representing the docker environment
      */
     void validateEnvironmentVariables(Map<String, String> dockerEnvironment);
-
 }

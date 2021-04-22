@@ -48,7 +48,8 @@ public class RetryingDockerComposeShould {
 
     private void retryerJustCallsOperation() throws IOException, InterruptedException {
         when(retryer.runWithRetries(anyOperation())).thenAnswer(invocation -> {
-            Retryer.RetryableDockerOperation<?> operation = (Retryer.RetryableDockerOperation<?>) invocation.getArguments()[0];
+            Retryer.RetryableDockerOperation<?> operation =
+                    (Retryer.RetryableDockerOperation<?>) invocation.getArguments()[0];
             return operation.call();
         });
     }
@@ -67,7 +68,8 @@ public class RetryingDockerComposeShould {
     }
 
     @Test
-    public void call_ps_on_the_underlying_docker_compose_and_returns_the_same_value() throws IOException, InterruptedException {
+    public void call_ps_on_the_underlying_docker_compose_and_returns_the_same_value()
+            throws IOException, InterruptedException {
         when(dockerCompose.ps()).thenReturn(someContainerNames);
 
         assertThat(retryingDockerCompose.ps(), is(someContainerNames));
@@ -86,16 +88,20 @@ public class RetryingDockerComposeShould {
     }
 
     @Test
-    public void calls_exec_on_the_underlying_docker_compose_and_not_invoke_retryer() throws IOException, InterruptedException {
+    public void calls_exec_on_the_underlying_docker_compose_and_not_invoke_retryer()
+            throws IOException, InterruptedException {
         retryingDockerCompose.exec(options("-d"), CONTAINER_NAME, arguments("ls"));
         verifyRetryerWasNotUsed();
         verify(dockerCompose).exec(options("-d"), CONTAINER_NAME, arguments("ls"));
     }
 
     @Test
-    public void calls_run_on_the_underlying_docker_compose_and_not_invoke_retryer() throws IOException, InterruptedException {
-        retryingDockerCompose.run(DockerComposeRunOption.options("-d"), CONTAINER_NAME, DockerComposeRunArgument.arguments("ls"));
+    public void calls_run_on_the_underlying_docker_compose_and_not_invoke_retryer()
+            throws IOException, InterruptedException {
+        retryingDockerCompose.run(
+                DockerComposeRunOption.options("-d"), CONTAINER_NAME, DockerComposeRunArgument.arguments("ls"));
         verifyRetryerWasNotUsed();
-        verify(dockerCompose).run(DockerComposeRunOption.options("-d"), CONTAINER_NAME, DockerComposeRunArgument.arguments("ls"));
+        verify(dockerCompose)
+                .run(DockerComposeRunOption.options("-d"), CONTAINER_NAME, DockerComposeRunArgument.arguments("ls"));
     }
 }

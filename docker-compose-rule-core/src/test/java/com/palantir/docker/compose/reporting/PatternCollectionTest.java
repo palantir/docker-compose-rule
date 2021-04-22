@@ -23,10 +23,8 @@ import java.util.regex.Pattern;
 import org.junit.Test;
 
 public class PatternCollectionTest {
-    private final PatternCollection patternCollection = new PatternCollection(ImmutableList.of(
-            Pattern.compile("foo"),
-            Pattern.compile("bar")
-    ));
+    private final PatternCollection patternCollection =
+            new PatternCollection(ImmutableList.of(Pattern.compile("foo"), Pattern.compile("bar")));
 
     @Test
     public void matching_one_pattern() {
@@ -42,5 +40,4 @@ public class PatternCollectionTest {
     public void matching_zero_patterns() {
         assertThat(patternCollection.anyMatch("bbbbb")).isFalse();
     }
-
 }

@@ -33,10 +33,7 @@ public class DockerCommandLocations {
     }
 
     public Optional<String> preferredLocation() {
-        return possiblePaths.stream()
-                .filter(IS_NOT_NULL)
-                .filter(FILE_EXISTS)
-                .findFirst();
+        return possiblePaths.stream().filter(IS_NOT_NULL).filter(FILE_EXISTS).findFirst();
     }
 
     @Override

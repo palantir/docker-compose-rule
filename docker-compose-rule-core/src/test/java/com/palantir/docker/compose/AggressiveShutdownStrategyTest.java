@@ -65,5 +65,4 @@ public class AggressiveShutdownStrategyTest {
 
         verify(mockDocker, times(2)).rm(anyListOf(String.class));
     }
-
 }

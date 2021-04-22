@@ -33,10 +33,11 @@ public class EnvironmentVariableIntegrationTest {
     public TemporaryFolder temporaryFolder = new TemporaryFolder();
 
     @Test
-    public void docker_compose_gets_environment_variables_from_docker_machine_and_passes_it_into_a_test_container() throws Exception {
+    public void docker_compose_gets_environment_variables_from_docker_machine_and_passes_it_into_a_test_container()
+            throws Exception {
         DockerMachine dockerMachine = DockerMachine.localMachine()
-                                                   .withAdditionalEnvironmentVariable("SOME_VARIABLE", "SOME_VALUE")
-                                                   .build();
+                .withAdditionalEnvironmentVariable("SOME_VARIABLE", "SOME_VALUE")
+                .build();
 
         DockerComposeManager dockerComposition = new DockerComposeManager.Builder()
                 .file("src/test/resources/environment/docker-compose.yaml")
@@ -51,9 +52,7 @@ public class EnvironmentVariableIntegrationTest {
             dockerComposition.after();
         }
 
-        Path logLocation = temporaryFolder.getRoot()
-                                          .toPath()
-                                          .resolve("env-test.log");
+        Path logLocation = temporaryFolder.getRoot().toPath().resolve("env-test.log");
 
         assertThat(logLocation.toFile(), is(fileContainingString("SOME_VARIABLE=SOME_VALUE")));
     }

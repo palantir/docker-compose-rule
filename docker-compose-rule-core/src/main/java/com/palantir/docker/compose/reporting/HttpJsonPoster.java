@@ -54,9 +54,8 @@ class HttpJsonPoster {
             connection.setRequestProperty("User-Agent", "docker-compose-rule/" + version);
 
             connection.setDoOutput(true);
-            PrintWriter body = new PrintWriter(new BufferedWriter(new OutputStreamWriter(
-                    connection.getOutputStream(),
-                    StandardCharsets.UTF_8)));
+            PrintWriter body = new PrintWriter(
+                    new BufferedWriter(new OutputStreamWriter(connection.getOutputStream(), StandardCharsets.UTF_8)));
 
             body.println(json);
             body.close();
@@ -66,8 +65,8 @@ class HttpJsonPoster {
             int status = connection.getResponseCode();
 
             if (status >= 400) {
-                String error = CharStreams.toString(new InputStreamReader(
-                        connection.getErrorStream(), StandardCharsets.UTF_8));
+                String error = CharStreams.toString(
+                        new InputStreamReader(connection.getErrorStream(), StandardCharsets.UTF_8));
 
                 throw new RuntimeException("Posting json failed. Error is: " + error);
             }

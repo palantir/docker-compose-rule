@@ -31,9 +31,10 @@ public class AdditionalEnvironmentValidatorShould {
 
     @Test
     public void throw_exception_when_additional_environment_variables_contain_docker_variables() {
-        Map<String, String> variables = ImmutableMap.<String, String>builder().put("DOCKER_HOST", "tcp://some-host:2376")
-                                                                              .put("SOME_VARIABLE", "Some Value")
-                                                                              .build();
+        Map<String, String> variables = ImmutableMap.<String, String>builder()
+                .put("DOCKER_HOST", "tcp://some-host:2376")
+                .put("SOME_VARIABLE", "Some Value")
+                .build();
         exception.expect(IllegalStateException.class);
         exception.expectMessage("The following variables");
         exception.expectMessage("DOCKER_HOST");
@@ -43,8 +44,9 @@ public class AdditionalEnvironmentValidatorShould {
 
     @Test
     public void validate_arbitrary_environment_variables() {
-        Map<String, String> variables = ImmutableMap.<String, String>builder().put("SOME_VARIABLE", "Some Value")
-                                                                              .build();
+        Map<String, String> variables = ImmutableMap.<String, String>builder()
+                .put("SOME_VARIABLE", "Some Value")
+                .build();
 
         assertThat(AdditionalEnvironmentValidator.validate(variables), is(variables));
     }

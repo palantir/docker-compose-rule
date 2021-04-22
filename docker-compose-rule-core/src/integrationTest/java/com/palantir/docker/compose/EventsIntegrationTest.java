@@ -66,8 +66,7 @@ public class EventsIntegrationTest {
                 WaitForServicesEvent.class,
                 ShutdownStopEvent.class,
                 LogCollectionEvent.class,
-                ShutdownEvent.class
-        );
+                ShutdownEvent.class);
 
         assertThat(events).hasSameSizeAs(expected);
         for (int i = 0; i < events.size(); i++) {
@@ -103,7 +102,6 @@ public class EventsIntegrationTest {
                 .map(Optional::get)
                 .findFirst()
                 .orElseThrow(() -> new IllegalStateException("no clusterwaits in events"));
-
 
         assertThat(clusterWait.getServiceNames()).containsOnly("one");
         assertThat(clusterWait.getTask().getFailure()).hasValueSatisfying(failure -> {

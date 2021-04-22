@@ -33,9 +33,7 @@ public final class RunRecorder implements EventConsumer {
     private final Reporter reporter;
     private DockerComposeRun.Builder runBuilder;
 
-    RunRecorder(
-            Clock clock,
-            Reporter reporter) {
+    RunRecorder(Clock clock, Reporter reporter) {
         this.clock = clock;
         this.reporter = reporter;
 

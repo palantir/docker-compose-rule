@@ -39,38 +39,44 @@ public final class MockDockerEnvironment {
         this.dockerComposeProcess = dockerComposeProcess;
     }
 
-    public DockerPort availableService(String service, String ip, int externalPortNumber, int internalPortNumber) throws Exception {
+    public DockerPort availableService(String service, String ip, int externalPortNumber, int internalPortNumber)
+            throws Exception {
         DockerPort port = port(service, ip, externalPortNumber, internalPortNumber);
         doReturn(true).when(port).isListeningNow();
         return port;
     }
 
-    public DockerPort unavailableService(String service, String ip, int externalPortNumber, int internalPortNumber) throws Exception {
+    public DockerPort unavailableService(String service, String ip, int externalPortNumber, int internalPortNumber)
+            throws Exception {
         DockerPort port = port(service, ip, externalPortNumber, internalPortNumber);
         doReturn(false).when(port).isListeningNow();
         return port;
     }
 
-    public DockerPort availableHttpService(String service, String ip, int externalPortNumber, int internalPortNumber) throws Exception {
+    public DockerPort availableHttpService(String service, String ip, int externalPortNumber, int internalPortNumber)
+            throws Exception {
         DockerPort port = availableService(service, ip, externalPortNumber, internalPortNumber);
         doReturn(true).when(port).isHttpResponding(any(), eq(false));
         doReturn(SuccessOrFailure.success()).when(port).isHttpRespondingSuccessfully(any(), eq(false));
         return port;
     }
 
-    public DockerPort unavailableHttpService(String service, String ip, int externalPortNumber, int internalPortNumber) throws Exception {
+    public DockerPort unavailableHttpService(String service, String ip, int externalPortNumber, int internalPortNumber)
+            throws Exception {
         DockerPort port = availableService(service, ip, externalPortNumber, internalPortNumber);
         doReturn(false).when(port).isHttpResponding(any(), eq(false));
         return port;
     }
 
-    public DockerPort port(String service, String ip, int externalPortNumber, int internalPortNumber) throws IOException, InterruptedException {
+    public DockerPort port(String service, String ip, int externalPortNumber, int internalPortNumber)
+            throws IOException, InterruptedException {
         DockerPort port = dockerPortSpy(ip, externalPortNumber, internalPortNumber);
         when(dockerComposeProcess.ports(service)).thenReturn(new Ports(port));
         return port;
     }
 
-    public void ephemeralPort(String service, String ip, int internalPortNumber) throws IOException, InterruptedException {
+    public void ephemeralPort(String service, String ip, int internalPortNumber)
+            throws IOException, InterruptedException {
         AtomicInteger currentExternalPort = new AtomicInteger(33700);
         when(dockerComposeProcess.ports(service)).then(_a -> {
             DockerPort port = dockerPortSpy(ip, currentExternalPort.incrementAndGet(), internalPortNumber);
@@ -79,10 +85,9 @@ public final class MockDockerEnvironment {
     }
 
     public void ports(String service, String ip, Integer... portNumbers) throws IOException, InterruptedException {
-        List<DockerPort> ports = Arrays.asList(portNumbers)
-                                         .stream()
-                                         .map(portNumber -> dockerPortSpy(ip, portNumber, portNumber))
-                                         .collect(Collectors.toList());
+        List<DockerPort> ports = Arrays.asList(portNumbers).stream()
+                .map(portNumber -> dockerPortSpy(ip, portNumber, portNumber))
+                .collect(Collectors.toList());
         when(dockerComposeProcess.ports(service)).thenReturn(new Ports(ports));
     }
 

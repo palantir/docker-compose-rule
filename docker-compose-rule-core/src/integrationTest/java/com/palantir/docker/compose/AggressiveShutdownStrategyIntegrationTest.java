@@ -44,5 +44,4 @@ public class AggressiveShutdownStrategyIntegrationTest {
 
         assertThat(docker.dockerCompose().ps(), is(TestContainerNames.of()));
     }
-
 }

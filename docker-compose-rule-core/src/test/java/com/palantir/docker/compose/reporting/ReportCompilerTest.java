@@ -72,5 +72,4 @@ public class ReportCompilerTest {
         assertThat(sentReport.getSubmittedTime()).isEqualTo(time.atOffset(ZoneOffset.UTC));
         assertThat(sentReport.getWhitelistedEnvironmentVariables()).containsOnlyKeys("PATH");
     }
-
 }

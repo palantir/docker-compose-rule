@@ -57,9 +57,11 @@ public final class ConflictingContainerRemovingDockerCompose extends DelegatingD
                     throw e;
                 }
 
-                log.debug("docker-compose up failed due to container name conflicts (container names: {}). "
+                log.debug(
+                        "docker-compose up failed due to container name conflicts (container names: {}). "
                                 + "Removing containers and attempting docker-compose up again (attempt {}).",
-                        conflictingContainerNames, currRetryAttempt + 1);
+                        conflictingContainerNames,
+                        currRetryAttempt + 1);
                 removeContainers(conflictingContainerNames);
             }
         }
@@ -86,5 +88,4 @@ public final class ConflictingContainerRemovingDockerCompose extends DelegatingD
         }
         return builder.build();
     }
-
 }

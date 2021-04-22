@@ -28,6 +28,7 @@ import org.immutables.value.Value;
 public abstract class Cluster {
 
     public abstract String ip();
+
     public abstract ContainerCache containerCache();
 
     public Container container(String name) {
@@ -35,13 +36,10 @@ public abstract class Cluster {
     }
 
     public List<Container> containers(List<String> containerNames) {
-        return containerNames.stream()
-                .map(this::container)
-                .collect(toList());
+        return containerNames.stream().map(this::container).collect(toList());
     }
 
     public Set<Container> allContainers() throws IOException, InterruptedException {
         return containerCache().containers();
     }
-
 }

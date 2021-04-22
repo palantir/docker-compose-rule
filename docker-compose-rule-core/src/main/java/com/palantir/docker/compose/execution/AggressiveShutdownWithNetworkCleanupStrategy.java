@@ -39,13 +39,15 @@ public final class AggressiveShutdownWithNetworkCleanupStrategy implements Shutd
     public void shutdown(DockerCompose dockerCompose, Docker docker) throws IOException, InterruptedException {
         List<ContainerName> runningContainers = dockerCompose.ps();
 
-        log.info("Shutting down {}", runningContainers.stream().map(ContainerName::semanticName).collect(toList()));
+        log.info(
+                "Shutting down {}",
+                runningContainers.stream().map(ContainerName::semanticName).collect(toList()));
         removeContainersCatchingErrors(docker, runningContainers);
         removeNetworks(dockerCompose, docker);
-
     }
 
-    private static void removeContainersCatchingErrors(Docker docker, List<ContainerName> runningContainers) throws IOException, InterruptedException {
+    private static void removeContainersCatchingErrors(Docker docker, List<ContainerName> runningContainers)
+            throws IOException, InterruptedException {
         try {
             removeContainers(docker, runningContainers);
         } catch (DockerExecutionException exception) {
@@ -53,16 +55,17 @@ public final class AggressiveShutdownWithNetworkCleanupStrategy implements Shutd
         }
     }
 
-    private static void removeContainers(Docker docker, List<ContainerName> running) throws IOException, InterruptedException {
-        List<String> rawContainerNames = running.stream()
-                .map(ContainerName::rawName)
-                .collect(toList());
+    private static void removeContainers(Docker docker, List<ContainerName> running)
+            throws IOException, InterruptedException {
+        List<String> rawContainerNames =
+                running.stream().map(ContainerName::rawName).collect(toList());
 
         docker.rm(rawContainerNames);
         log.debug("Finished shutdown");
     }
 
-    private static void removeNetworks(DockerCompose dockerCompose, Docker docker) throws IOException, InterruptedException {
+    private static void removeNetworks(DockerCompose dockerCompose, Docker docker)
+            throws IOException, InterruptedException {
         dockerCompose.down();
         docker.pruneNetworks();
     }

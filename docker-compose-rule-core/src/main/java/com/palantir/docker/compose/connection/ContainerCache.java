@@ -36,12 +36,11 @@ public class ContainerCache {
     }
 
     public Container container(String containerName) {
-        return containers.computeIfAbsent(containerName,
-                _ignored -> new Container(containerName, docker, dockerCompose));
+        return containers.computeIfAbsent(
+                containerName, _ignored -> new Container(containerName, docker, dockerCompose));
     }
 
     public Set<Container> containers() throws IOException, InterruptedException {
         return dockerCompose.services().stream().map(this::container).collect(toSet());
     }
-
 }

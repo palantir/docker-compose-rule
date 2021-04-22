@@ -56,7 +56,7 @@ public final class DockerForMacHostsIssue {
         try {
             return Files.toString(new File("/etc/hosts"), UTF_8).contains(REDIRECT_LINE);
         } catch (IOException e) {
-            return true;  // Better to be silent than issue false warnings
+            return true; // Better to be silent than issue false warnings
         }
     }
 

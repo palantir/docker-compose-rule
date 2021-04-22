@@ -28,7 +28,8 @@ public final class HealthChecks {
         return container -> container.portIsListeningOnHttp(internalPort, urlFunction);
     }
 
-    public static HealthCheck<Container> toRespond2xxOverHttp(int internalPort, Function<DockerPort, String> urlFunction) {
+    public static HealthCheck<Container> toRespond2xxOverHttp(
+            int internalPort, Function<DockerPort, String> urlFunction) {
         return container -> container.portIsListeningOnHttpAndCheckStatus2xx(internalPort, urlFunction);
     }
 

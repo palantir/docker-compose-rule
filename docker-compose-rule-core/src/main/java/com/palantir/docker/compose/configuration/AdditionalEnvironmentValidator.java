@@ -27,17 +27,19 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 public final class AdditionalEnvironmentValidator {
-    private static final ImmutableSet<String> ILLEGAL_VARIABLES = ImmutableSet.of(
-            DOCKER_TLS_VERIFY, DOCKER_HOST, DOCKER_CERT_PATH);
+    private static final ImmutableSet<String> ILLEGAL_VARIABLES =
+            ImmutableSet.of(DOCKER_TLS_VERIFY, DOCKER_HOST, DOCKER_CERT_PATH);
 
     private AdditionalEnvironmentValidator() {}
 
     public static Map<String, String> validate(Map<String, String> additionalEnvironment) {
         Set<String> invalidVariables = Sets.intersection(additionalEnvironment.keySet(), ILLEGAL_VARIABLES);
         String errorMessage = invalidVariables.stream()
-                                              .collect(Collectors.joining(", ",
-                                                                          "The following variables: ",
-                                                                          " cannot exist in your additional environment variable block as they will interfere with Docker."));
+                .collect(Collectors.joining(
+                        ", ",
+                        "The following variables: ",
+                        " cannot exist in your additional environment variable block as they will interfere"
+                                + " with Docker."));
         checkState(invalidVariables.isEmpty(), errorMessage);
         return additionalEnvironment;
     }

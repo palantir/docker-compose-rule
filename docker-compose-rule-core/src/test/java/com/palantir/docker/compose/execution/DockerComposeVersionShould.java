@@ -23,7 +23,6 @@ import static org.hamcrest.Matchers.lessThan;
 import com.github.zafarkhaja.semver.Version;
 import org.junit.Test;
 
-
 public class DockerComposeVersionShould {
 
     @Test

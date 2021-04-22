@@ -16,7 +16,6 @@
 package com.palantir.docker.compose.connection;
 
 import static com.google.common.base.MoreObjects.firstNonNull;
-import static com.google.common.collect.Maps.newHashMap;
 import static com.palantir.docker.compose.configuration.EnvironmentVariables.DOCKER_CERT_PATH;
 import static com.palantir.docker.compose.configuration.EnvironmentVariables.DOCKER_HOST;
 import static com.palantir.docker.compose.configuration.EnvironmentVariables.DOCKER_TLS_VERIFY;
@@ -66,7 +65,8 @@ public class DockerMachine implements DockerConfiguration {
         if (!dockerType.isPresent()) {
             log.debug(
                     "Failed to determine Docker type (daemon or remote) based on current environment. "
-                            + "Proceeding with {} as the type.", FALLBACK_DOCKER_TYPE);
+                            + "Proceeding with {} as the type.",
+                    FALLBACK_DOCKER_TYPE);
         }
 
         return new LocalBuilder(dockerType.orElse(FALLBACK_DOCKER_TYPE), systemEnv);
@@ -158,13 +158,11 @@ public class DockerMachine implements DockerConfiguration {
                     // 2019-12-17: newer docker-compose adjusts its output based on the number of columns available
                     // in the terminal. This interferes with parsing of the output of docker-compose, so "COLUMNS" is
                     // set to an artificially large value.
-                                                          .put("COLUMNS", "10000")
-                                                          .putAll(dockerEnvironment)
-                                                          .putAll(additionalEnvironment)
-                                                          .build();
+                    .put("COLUMNS", "10000")
+                    .putAll(dockerEnvironment)
+                    .putAll(additionalEnvironment)
+                    .build();
             return new DockerMachine(hostIp, environment);
         }
-
     }
-
 }
