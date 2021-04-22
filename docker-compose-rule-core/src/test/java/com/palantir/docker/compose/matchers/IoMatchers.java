@@ -30,8 +30,8 @@ import org.hamcrest.FeatureMatcher;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeDiagnosingMatcher;
 
-public final class IOMatchers {
-    private IOMatchers() {}
+public final class IoMatchers {
+    private IoMatchers() {}
 
     public static Matcher<File> hasFiles(int numberOfFiles) {
         return new ValueCachingMatcher<File>() {

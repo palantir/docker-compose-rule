@@ -15,7 +15,7 @@
  */
 package com.palantir.docker.compose.execution;
 
-public class ProcessResult {
+public final class ProcessResult {
     private int exitCode;
     private final String output;
 

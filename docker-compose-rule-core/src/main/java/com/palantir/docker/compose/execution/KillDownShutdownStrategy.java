@@ -28,7 +28,7 @@ import org.slf4j.LoggerFactory;
  * many Docker images simply ignore due to being run by bash as process 1. We don't need a graceful
  * shutdown period anyway since the tests are done and we're destroying the docker image.
  */
-public class KillDownShutdownStrategy implements ShutdownStrategy {
+public final class KillDownShutdownStrategy implements ShutdownStrategy {
 
     private static final Logger log = LoggerFactory.getLogger(KillDownShutdownStrategy.class);
 

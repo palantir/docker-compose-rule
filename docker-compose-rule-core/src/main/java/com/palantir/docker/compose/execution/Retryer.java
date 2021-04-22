@@ -21,7 +21,7 @@ import org.joda.time.ReadableDuration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class Retryer {
+public final class Retryer {
     private static final Logger log = LoggerFactory.getLogger(Retryer.class);
     public static final ReadableDuration STANDARD_DELAY = Duration.standardSeconds(5);
 

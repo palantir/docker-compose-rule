@@ -16,8 +16,8 @@
 package com.palantir.docker.compose.logging;
 
 import static com.palantir.docker.compose.connection.waiting.HealthChecks.toHaveAllPortsOpen;
-import static com.palantir.docker.compose.matchers.IOMatchers.fileWithConents;
-import static com.palantir.docker.compose.matchers.IOMatchers.matchingPattern;
+import static com.palantir.docker.compose.matchers.IoMatchers.fileWithConents;
+import static com.palantir.docker.compose.matchers.IoMatchers.matchingPattern;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 

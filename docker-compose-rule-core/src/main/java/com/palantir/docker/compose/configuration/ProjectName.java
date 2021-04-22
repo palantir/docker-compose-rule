@@ -29,6 +29,7 @@ import org.immutables.value.Value.Parameter;
 
 @Immutable
 @PackageVisible
+@SuppressWarnings("DesignForExtension")
 public abstract class ProjectName {
 
     @Parameter

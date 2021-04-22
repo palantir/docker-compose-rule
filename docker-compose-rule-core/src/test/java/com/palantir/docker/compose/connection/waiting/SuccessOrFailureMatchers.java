@@ -25,7 +25,7 @@ import org.hamcrest.TypeSafeDiagnosingMatcher;
 
 public enum SuccessOrFailureMatchers {
     ;
-    public static class Successful extends TypeSafeDiagnosingMatcher<SuccessOrFailure> {
+    public static final class Successful extends TypeSafeDiagnosingMatcher<SuccessOrFailure> {
         @Override
         protected boolean matchesSafely(SuccessOrFailure item, Description mismatchDescription) {
             if (item.failed()) {
@@ -45,7 +45,7 @@ public enum SuccessOrFailureMatchers {
         return new Successful();
     }
 
-    public static class Failure extends FeatureMatcher<SuccessOrFailure, String> {
+    public static final class Failure extends FeatureMatcher<SuccessOrFailure, String> {
         public Failure(Matcher<? super String> subMatcher) {
             super(subMatcher, "failure message of", "failure message");
         }

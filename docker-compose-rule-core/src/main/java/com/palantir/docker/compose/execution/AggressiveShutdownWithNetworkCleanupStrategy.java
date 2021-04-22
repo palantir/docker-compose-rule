@@ -31,7 +31,7 @@ import org.slf4j.LoggerFactory;
  * @deprecated Use {@link ShutdownStrategy#KILL_DOWN}
  */
 @Deprecated
-public class AggressiveShutdownWithNetworkCleanupStrategy implements ShutdownStrategy {
+public final class AggressiveShutdownWithNetworkCleanupStrategy implements ShutdownStrategy {
 
     private static final Logger log = LoggerFactory.getLogger(AggressiveShutdownWithNetworkCleanupStrategy.class);
 

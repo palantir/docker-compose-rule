@@ -20,7 +20,7 @@ import com.palantir.docker.compose.configuration.ShutdownStrategy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class SkipShutdownStrategy implements ShutdownStrategy {
+public final class SkipShutdownStrategy implements ShutdownStrategy {
 
     private static final Logger log = LoggerFactory.getLogger(SkipShutdownStrategy.class);
 

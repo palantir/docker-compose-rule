@@ -27,6 +27,7 @@ import org.junit.jupiter.api.extension.ExtensionContext;
  */
 @Value.Immutable
 @CustomImmutablesStyle
+@SuppressWarnings("DesignForExtension")
 public abstract class DockerComposeExtension extends DockerComposeManager
         implements BeforeAllCallback, AfterAllCallback {
 

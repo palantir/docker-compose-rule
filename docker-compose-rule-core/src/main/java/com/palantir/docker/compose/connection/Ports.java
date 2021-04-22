@@ -25,7 +25,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
-public class Ports {
+public final class Ports {
 
     private static final Pattern PORT_PATTERN = Pattern.compile("((\\d+).(\\d+).(\\d+).(\\d+)):(\\d+)->(\\d+)/tcp");
     private static final int IP_ADDRESS = 1;

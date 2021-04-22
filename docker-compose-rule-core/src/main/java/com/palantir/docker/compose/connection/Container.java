@@ -27,7 +27,7 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-public class Container {
+public final class Container {
 
     private final String containerName;
     private final Docker docker;

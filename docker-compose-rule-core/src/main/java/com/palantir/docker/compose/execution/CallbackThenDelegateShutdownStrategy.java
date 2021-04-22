@@ -23,7 +23,7 @@ import java.io.IOException;
  * Calls a supplied {@link Runnable} and then continues with shutdown. Could be useful for gathering logs or other
  * information before shutting down containers.
  */
-public class CallbackThenDelegateShutdownStrategy implements ShutdownStrategy {
+public final class CallbackThenDelegateShutdownStrategy implements ShutdownStrategy {
 
     private final ShutdownStrategy delegate;
     private final Runnable callback;

@@ -24,6 +24,7 @@ import java.util.Set;
 import org.immutables.value.Value;
 
 @Value.Immutable
+@SuppressWarnings("DesignForExtension")
 public abstract class Cluster {
 
     public abstract String ip();

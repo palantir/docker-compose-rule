@@ -39,7 +39,7 @@ import org.joda.time.Duration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class DefaultDockerCompose implements DockerCompose {
+public final class DefaultDockerCompose implements DockerCompose {
 
     public static final Version VERSION_1_7_0 = Version.valueOf("1.7.0");
     private static final Duration LOG_TIMEOUT = standardMinutes(1);

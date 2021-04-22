@@ -69,6 +69,7 @@ import org.slf4j.LoggerFactory;
 
 @Value.Immutable
 @CustomImmutablesStyle
+@SuppressWarnings("DesignForExtension")
 public abstract class DockerComposeManager {
     private static final Logger log = LoggerFactory.getLogger(DockerComposeManager.class);
 

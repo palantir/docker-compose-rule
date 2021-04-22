@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 import org.hamcrest.Description;
 import org.hamcrest.TypeSafeMatcher;
 
-public class AvailablePortMatcher extends TypeSafeMatcher<Collection<DockerPort>> {
+public final class AvailablePortMatcher extends TypeSafeMatcher<Collection<DockerPort>> {
 
     @Override
     public void describeTo(Description description) {

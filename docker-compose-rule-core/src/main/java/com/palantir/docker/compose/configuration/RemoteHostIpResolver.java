@@ -21,7 +21,7 @@ import static com.palantir.docker.compose.configuration.EnvironmentVariables.TCP
 import java.util.Optional;
 import org.apache.commons.lang3.StringUtils;
 
-public class RemoteHostIpResolver implements HostIpResolver {
+public final class RemoteHostIpResolver implements HostIpResolver {
 
     @Override
     public String resolveIp(String dockerHost) {

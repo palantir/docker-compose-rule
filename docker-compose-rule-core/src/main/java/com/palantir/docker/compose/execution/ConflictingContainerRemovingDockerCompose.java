@@ -25,7 +25,7 @@ import java.util.regex.Pattern;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ConflictingContainerRemovingDockerCompose extends DelegatingDockerCompose {
+public final class ConflictingContainerRemovingDockerCompose extends DelegatingDockerCompose {
     private static final Logger log = LoggerFactory.getLogger(ConflictingContainerRemovingDockerCompose.class);
     private static final Pattern NAME_CONFLICT_PATTERN = Pattern.compile("name \"([^\"]*)\" is already in use");
 

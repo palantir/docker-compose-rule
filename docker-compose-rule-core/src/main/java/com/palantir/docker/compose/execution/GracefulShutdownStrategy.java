@@ -25,7 +25,7 @@ import org.slf4j.LoggerFactory;
  * Send SIGTERM to containers first, allowing them up to 10 seconds to
  * terminate before killing and rm-ing them.
  */
-public class GracefulShutdownStrategy implements ShutdownStrategy {
+public final class GracefulShutdownStrategy implements ShutdownStrategy {
 
     private static final Logger log = LoggerFactory.getLogger(GracefulShutdownStrategy.class);
 

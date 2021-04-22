@@ -21,6 +21,7 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.immutables.value.Value;
 
 @Value.Immutable
+@SuppressWarnings("DesignForExtension")
 public abstract class SuccessOrFailure {
     public static SuccessOrFailure onResultOf(Attempt attempt) {
         try {

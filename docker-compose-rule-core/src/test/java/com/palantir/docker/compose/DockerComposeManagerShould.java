@@ -16,8 +16,8 @@
 package com.palantir.docker.compose;
 
 import static com.palantir.docker.compose.connection.waiting.HealthChecks.toHaveAllPortsOpen;
-import static com.palantir.docker.compose.matchers.IOMatchers.fileContainingString;
-import static com.palantir.docker.compose.matchers.IOMatchers.fileWithName;
+import static com.palantir.docker.compose.matchers.IoMatchers.fileContainingString;
+import static com.palantir.docker.compose.matchers.IoMatchers.fileWithName;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.arrayContaining;
 import static org.hamcrest.Matchers.contains;

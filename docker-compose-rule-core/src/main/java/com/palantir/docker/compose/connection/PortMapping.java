@@ -17,7 +17,7 @@ package com.palantir.docker.compose.connection;
 
 import java.util.Objects;
 
-public class PortMapping {
+public final class PortMapping {
 
     private final int externalPort;
     private final int internalPort;

@@ -32,7 +32,7 @@ import org.slf4j.LoggerFactory;
  * @deprecated Use {@link ShutdownStrategy#KILL_DOWN}
  */
 @Deprecated
-public class AggressiveShutdownStrategy implements ShutdownStrategy {
+public final class AggressiveShutdownStrategy implements ShutdownStrategy {
 
     private static final Logger log = LoggerFactory.getLogger(AggressiveShutdownStrategy.class);
 
