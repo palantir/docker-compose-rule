@@ -100,6 +100,7 @@ public class EventEmitterShould {
     }
 
     @Test
+    @SuppressWarnings("checkstyle:Indentation")
     public void user_cluster_wait_give_the_service_names_that_were_used_by_the_cluser_wait_in_an_event()
             throws InterruptedException {
         OffsetDateTime startedTime = timeIs(5);

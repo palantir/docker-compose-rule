@@ -23,7 +23,7 @@ import com.palantir.docker.compose.connection.DockerMachine;
 import java.util.Map;
 import org.hamcrest.Description;
 
-public class DockerMachineEnvironmentMatcher extends ValueCachingMatcher<DockerMachine> {
+public final class DockerMachineEnvironmentMatcher extends ValueCachingMatcher<DockerMachine> {
 
     private final Map<String, String> expected;
 

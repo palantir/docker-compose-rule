@@ -70,7 +70,7 @@ import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 
 @RunWith(MockitoJUnitRunner.class)
-public class DockerComposeManagerShould {
+public final class DockerComposeManagerShould {
 
     private static final String IP = "127.0.0.1";
 
@@ -92,7 +92,7 @@ public class DockerComposeManagerShould {
     private DockerComposeManager dockerComposeManager;
 
     @Before
-    public void setup() {
+    public void before() {
         when(machine.getIp()).thenReturn(IP);
         dockerComposeManager = defaultBuilder().build();
     }

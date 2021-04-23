@@ -15,9 +15,6 @@
  */
 package com.palantir.docker.compose;
 
-import static com.palantir.docker.compose.connection.waiting.ClusterHealthCheck.serviceHealthCheck;
-import static com.palantir.docker.compose.connection.waiting.ClusterHealthCheck.transformingHealthCheck;
-
 import com.google.common.base.Throwables;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
@@ -301,7 +298,8 @@ public abstract class DockerComposeManager {
 
         /**
          * Deprecated.
-         * @deprecated Please use {@link DockerComposeManager#shutdownStrategy()} with {@link ShutdownStrategy#SKIP} instead.
+         * @deprecated Please use {@link DockerComposeManager#shutdownStrategy()} with
+         * {@link ShutdownStrategy#SKIP} instead.
          */
         @Deprecated
         default TSelf skipShutdown(boolean skipShutdown) {
@@ -318,7 +316,7 @@ public abstract class DockerComposeManager {
 
         default TSelf waitingForService(
                 String serviceName, HealthCheck<Container> healthCheck, ReadableDuration timeout) {
-            ClusterHealthCheck clusterHealthCheck = serviceHealthCheck(serviceName, healthCheck);
+            ClusterHealthCheck clusterHealthCheck = ClusterHealthCheck.serviceHealthCheck(serviceName, healthCheck);
             return addClusterWait(new ClusterWait(clusterHealthCheck, timeout));
         }
 
@@ -328,7 +326,7 @@ public abstract class DockerComposeManager {
 
         default TSelf waitingForServices(
                 List<String> services, HealthCheck<List<Container>> healthCheck, ReadableDuration timeout) {
-            ClusterHealthCheck clusterHealthCheck = serviceHealthCheck(services, healthCheck);
+            ClusterHealthCheck clusterHealthCheck = ClusterHealthCheck.serviceHealthCheck(services, healthCheck);
             return addClusterWait(new ClusterWait(clusterHealthCheck, timeout));
         }
 
@@ -338,8 +336,8 @@ public abstract class DockerComposeManager {
 
         default TSelf waitingForHostNetworkedPort(
                 int port, HealthCheck<DockerPort> healthCheck, ReadableDuration timeout) {
-            ClusterHealthCheck clusterHealthCheck =
-                    transformingHealthCheck(cluster -> new DockerPort(cluster.ip(), port, port), healthCheck);
+            ClusterHealthCheck clusterHealthCheck = ClusterHealthCheck.transformingHealthCheck(
+                    cluster -> new DockerPort(cluster.ip(), port, port), healthCheck);
             return addClusterWait(new ClusterWait(clusterHealthCheck, timeout));
         }
 

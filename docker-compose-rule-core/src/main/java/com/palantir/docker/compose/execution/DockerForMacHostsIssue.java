@@ -16,11 +16,10 @@
 
 package com.palantir.docker.compose.execution;
 
-import static java.nio.charset.StandardCharsets.UTF_8;
-
 import com.google.common.io.Files;
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 
 /**
  * Check whether Mac OS X users have pointed localunixsocket to localhost.
@@ -54,7 +53,8 @@ public final class DockerForMacHostsIssue {
 
     private static boolean localunixsocketRedirectedInEtcHosts() {
         try {
-            return Files.toString(new File("/etc/hosts"), UTF_8).contains(REDIRECT_LINE);
+            return Files.toString(new File("/etc/hosts"), StandardCharsets.UTF_8)
+                    .contains(REDIRECT_LINE);
         } catch (IOException e) {
             return true; // Better to be silent than issue false warnings
         }

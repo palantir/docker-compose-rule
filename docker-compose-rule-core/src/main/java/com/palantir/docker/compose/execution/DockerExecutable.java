@@ -23,6 +23,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @Value.Immutable
+@SuppressWarnings("DesignForExtension")
 public abstract class DockerExecutable implements Executable {
     private static final Logger log = LoggerFactory.getLogger(DockerExecutable.class);
 
