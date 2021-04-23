@@ -19,8 +19,7 @@ import static org.apache.commons.io.IOUtils.toInputStream;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.core.Is.is;
-import static org.mockito.Matchers.anyVararg;
-import static org.mockito.Mockito.verify;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 
@@ -52,21 +51,11 @@ public class CommandShould {
 
     @Before
     public void before() throws IOException {
-        when(dockerComposeExecutable.execute(anyVararg())).thenReturn(executedProcess);
+        when(dockerComposeExecutable.execute(any())).thenReturn(executedProcess);
         dockerComposeCommand = new Command(dockerComposeExecutable, logConsumer);
 
         givenTheUnderlyingProcessHasOutput("");
         givenTheUnderlyingProcessTerminatesWithAnExitCodeOf(0);
-    }
-
-    @Test
-    public void invoke_error_handler_when_exit_code_of_the_executed_process_is_non_0()
-            throws IOException, InterruptedException {
-        int expectedExitCode = 1;
-        givenTheUnderlyingProcessTerminatesWithAnExitCodeOf(expectedExitCode);
-        dockerComposeCommand.execute(errorHandler, "rm", "-f");
-
-        verify(errorHandler).handle(expectedExitCode, "", "docker-compose", "rm", "-f");
     }
 
     @Test

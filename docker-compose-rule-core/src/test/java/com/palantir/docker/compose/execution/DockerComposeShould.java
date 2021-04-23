@@ -59,6 +59,7 @@ public class DockerComposeShould {
     public void before() throws IOException {
         when(dockerMachine.getIp()).thenReturn("0.0.0.0");
         when(executor.execute(anyVararg())).thenReturn(executedProcess);
+        when(executor.commandName()).thenReturn("docker-compose");
         when(executedProcess.getInputStream()).thenReturn(toInputStream("0.0.0.0:7000->7000/tcp"));
         when(executedProcess.exitValue()).thenReturn(0);
         when(container.getContainerName()).thenReturn("my-container");
