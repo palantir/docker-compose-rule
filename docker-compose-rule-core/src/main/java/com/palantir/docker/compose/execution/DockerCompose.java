@@ -28,23 +28,50 @@ public interface DockerCompose {
     static Version version() throws IOException, InterruptedException {
         return DockerComposeExecutable.version();
     }
+
     void pull() throws IOException, InterruptedException;
+
     void build() throws IOException, InterruptedException;
+
     void up() throws IOException, InterruptedException;
-    void down() throws IOException, InterruptedException;
-    void stop() throws IOException, InterruptedException;
-    void kill() throws IOException, InterruptedException;
-    void rm() throws IOException, InterruptedException;
+
     void up(Container container) throws IOException, InterruptedException;
-    void start(Container container) throws IOException, InterruptedException;
+
+    void down() throws IOException, InterruptedException;
+
+    void stop() throws IOException, InterruptedException;
+
     void stop(Container container) throws IOException, InterruptedException;
+
+    void kill() throws IOException, InterruptedException;
+
     void kill(Container container) throws IOException, InterruptedException;
-    String exec(DockerComposeExecOption dockerComposeExecOption, String containerName, DockerComposeExecArgument dockerComposeExecArgument) throws IOException, InterruptedException;
-    String run(DockerComposeRunOption dockerComposeRunOption, String containerName, DockerComposeRunArgument dockerComposeRunArgument) throws IOException, InterruptedException;
+
+    void rm() throws IOException, InterruptedException;
+
+    void start(Container container) throws IOException, InterruptedException;
+
+    String exec(
+            DockerComposeExecOption dockerComposeExecOption,
+            String containerName,
+            DockerComposeExecArgument dockerComposeExecArgument)
+            throws IOException, InterruptedException;
+
+    String run(
+            DockerComposeRunOption dockerComposeRunOption,
+            String containerName,
+            DockerComposeRunArgument dockerComposeRunArgument)
+            throws IOException, InterruptedException;
+
     List<ContainerName> ps() throws IOException, InterruptedException;
+
     Optional<String> id(Container container) throws IOException, InterruptedException;
+
     String config() throws IOException, InterruptedException;
+
     List<String> services() throws IOException, InterruptedException;
+
     boolean writeLogs(String container, OutputStream output) throws IOException;
+
     Ports ports(String service) throws IOException, InterruptedException;
 }

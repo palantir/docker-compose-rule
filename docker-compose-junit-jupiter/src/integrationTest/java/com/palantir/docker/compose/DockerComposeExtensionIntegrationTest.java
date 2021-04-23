@@ -28,12 +28,12 @@ public class DockerComposeExtensionIntegrationTest {
 
     @RegisterExtension
     public static final DockerComposeExtension docker = DockerComposeExtension.builder()
-                .files(DockerComposeFiles.from("src/integrationTest/resources/docker-compose.yaml"))
-                .waitingForService("db", HealthChecks.toHaveAllPortsOpen())
-                .waitingForService("db2", HealthChecks.toHaveAllPortsOpen())
-                .waitingForService("db3", HealthChecks.toHaveAllPortsOpen())
-                .waitingForService("db4", HealthChecks.toHaveAllPortsOpen())
-                .build();
+            .files(DockerComposeFiles.from("src/integrationTest/resources/docker-compose.yaml"))
+            .waitingForService("db", HealthChecks.toHaveAllPortsOpen())
+            .waitingForService("db2", HealthChecks.toHaveAllPortsOpen())
+            .waitingForService("db3", HealthChecks.toHaveAllPortsOpen())
+            .waitingForService("db4", HealthChecks.toHaveAllPortsOpen())
+            .build();
 
     private static int port;
 
@@ -47,6 +47,7 @@ public class DockerComposeExtensionIntegrationTest {
     @Test
     @Order(2)
     public void container_stays_up_between_tests() {
-        assertThat(docker.containers().container("db").port(5432).getExternalPort()).isEqualTo(port);
+        assertThat(docker.containers().container("db").port(5432).getExternalPort())
+                .isEqualTo(port);
     }
 }

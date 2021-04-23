@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 package com.palantir.docker.compose.execution;
+
 import com.github.zafarkhaja.semver.Version;
 import com.google.common.base.Splitter;
 import java.util.List;
@@ -22,8 +23,8 @@ public final class DockerComposeVersion {
 
     private DockerComposeVersion() {}
 
-    //docker-compose version format is like 1.7.0rc1, which can't be parsed by java-semver
-    //here we only pass 1.7.0 to java-semver
+    // docker-compose version format is like 1.7.0rc1, which can't be parsed by java-semver
+    // here we only pass 1.7.0 to java-semver
     public static Version parseFromDockerComposeVersion(String versionOutput) {
         List<String> splitOnSeparator = Splitter.on(' ').splitToList(versionOutput);
         String version = splitOnSeparator.get(2);

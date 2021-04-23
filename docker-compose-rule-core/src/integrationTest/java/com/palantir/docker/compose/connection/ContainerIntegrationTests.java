@@ -20,6 +20,7 @@ import static com.palantir.docker.compose.execution.DockerComposeExecArgument.ar
 import static com.palantir.docker.compose.execution.DockerComposeExecOption.noOptions;
 import static org.awaitility.Awaitility.await;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assume.assumeThat;
 
@@ -31,27 +32,23 @@ import com.palantir.docker.compose.execution.Docker;
 import com.palantir.docker.compose.execution.DockerCompose;
 import com.palantir.docker.compose.execution.DockerExecutable;
 import java.io.IOException;
-import java.util.concurrent.TimeUnit;
+import java.time.Duration;
 import org.awaitility.core.ConditionFactory;
 import org.junit.Assert;
 import org.junit.Test;
-import org.mockito.internal.matchers.GreaterOrEqual;
 
 public class ContainerIntegrationTests {
 
-    private static final ConditionFactory wait = await().atMost(10, TimeUnit.SECONDS);
+    private static final ConditionFactory wait = await().atMost(Duration.ofSeconds(10));
 
     private final DockerMachine dockerMachine = DockerMachine.localMachine().build();
-    private final Docker docker = new Docker(DockerExecutable.builder()
-            .dockerConfiguration(dockerMachine)
-            .build());
+    private final Docker docker = new Docker(
+            DockerExecutable.builder().dockerConfiguration(dockerMachine).build());
 
     @Test
     public void testStateChanges_withoutHealthCheck() throws IOException, InterruptedException {
         DockerCompose dockerCompose = new DefaultDockerCompose(
-                DockerComposeFiles.from("src/test/resources/no-healthcheck.yaml"),
-                dockerMachine,
-                ProjectName.random());
+                DockerComposeFiles.from("src/test/resources/no-healthcheck.yaml"), dockerMachine, ProjectName.random());
 
         // The noHealthcheck service has no healthcheck specified; it should be immediately healthy
         Container container = new Container("noHealthcheck", docker, dockerCompose);
@@ -63,14 +60,16 @@ public class ContainerIntegrationTests {
     }
 
     /**
-     * This test is not currently enabled in Circle as it does not provide a sufficiently recent version of docker-compose.
+     * This test is not currently enabled in Circle as it does not provide a
+     * sufficiently recent version of docker-compose.
      *
      * @see <a href="https://github.com/palantir/docker-compose-rule/issues/156">Issue #156</a>
      */
     @Test
     public void testStateChanges_withHealthCheck() throws IOException, InterruptedException {
-        assumeThat("docker version", Docker.version(), new GreaterOrEqual<>(Version.forIntegers(1, 12, 0)));
-        assumeThat("docker-compose version", DockerCompose.version(), new GreaterOrEqual<>(Version.forIntegers(1, 10, 0)));
+        assumeThat("docker version", Docker.version(), greaterThanOrEqualTo(Version.forIntegers(1, 12, 0)));
+        assumeThat(
+                "docker-compose version", DockerCompose.version(), greaterThanOrEqualTo(Version.forIntegers(1, 10, 0)));
 
         DockerCompose dockerCompose = new DefaultDockerCompose(
                 DockerComposeFiles.from("src/test/resources/native-healthcheck.yaml"),

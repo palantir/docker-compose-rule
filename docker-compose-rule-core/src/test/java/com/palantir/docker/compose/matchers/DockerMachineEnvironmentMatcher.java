@@ -23,7 +23,7 @@ import com.palantir.docker.compose.connection.DockerMachine;
 import java.util.Map;
 import org.hamcrest.Description;
 
-public class DockerMachineEnvironmentMatcher extends ValueCachingMatcher<DockerMachine> {
+public final class DockerMachineEnvironmentMatcher extends ValueCachingMatcher<DockerMachine> {
 
     private final Map<String, String> expected;
 
@@ -43,7 +43,7 @@ public class DockerMachineEnvironmentMatcher extends ValueCachingMatcher<DockerM
     }
 
     @Override
-    protected void describeMismatchSafely(DockerMachine item, Description mismatchDescription) {
+    protected void describeMismatchSafely(DockerMachine _item, Description mismatchDescription) {
         mismatchDescription.appendText("\nThese environment variables were missing:\n");
         mismatchDescription.appendValue(missingEnvironmentVariables());
     }
@@ -53,12 +53,11 @@ public class DockerMachineEnvironmentMatcher extends ValueCachingMatcher<DockerM
     }
 
     private Map<String, String> missingEnvironmentVariables() {
-        Map<String, String> environment = value().configuredDockerComposeProcess()
-                                               .environment();
-        return expected.entrySet()
-                       .stream()
-                       .filter(required -> !hasEntry(required.getKey(), required.getValue()).matches(environment))
-                       .collect(toMap(Map.Entry::getKey, Map.Entry::getValue));
+        Map<String, String> environment =
+                value().configuredDockerComposeProcess().environment();
+        return expected.entrySet().stream()
+                .filter(required ->
+                        !hasEntry(required.getKey(), required.getValue()).matches(environment))
+                .collect(toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
-
 }

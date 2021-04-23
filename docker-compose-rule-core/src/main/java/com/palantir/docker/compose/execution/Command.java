@@ -15,24 +15,23 @@
  */
 package com.palantir.docker.compose.execution;
 
-import static com.google.common.base.Throwables.propagate;
-import static java.nio.charset.StandardCharsets.UTF_8;
-import static java.util.concurrent.Executors.newSingleThreadExecutor;
-import static java.util.stream.Collectors.joining;
-
+import com.google.common.base.Throwables;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
-public class Command {
+public final class Command {
     public static final int HOURS_TO_WAIT_FOR_STD_OUT_TO_CLOSE = 12;
     public static final int MINUTES_TO_WAIT_AFTER_STD_OUT_CLOSES = 1;
     private final Executable executable;
@@ -62,16 +61,15 @@ public class Command {
     }
 
     private static String constructNonZeroExitErrorMessage(int exitCode, String commandName, String... commands) {
-        return "'" + commandName + " " + Arrays.stream(commands).collect(joining(" ")) + "' returned exit code "
-                + exitCode;
+        return "'" + commandName + " " + Arrays.stream(commands).collect(Collectors.joining(" "))
+                + "' returned exit code " + exitCode;
     }
 
     private ProcessResult run(String... commands) throws IOException, InterruptedException {
         Process process = executable.execute(commands);
 
-        ExecutorService exec = newSingleThreadExecutor();
-        Future<String> outputProcessing = exec
-                .submit(() -> processOutputFrom(process));
+        ExecutorService exec = Executors.newSingleThreadExecutor();
+        Future<String> outputProcessing = exec.submit(() -> processOutputFrom(process));
 
         String output = waitForResultFrom(outputProcessing);
 
@@ -82,20 +80,21 @@ public class Command {
     }
 
     private String processOutputFrom(Process process) {
-        return asReader(process.getInputStream()).lines()
+        return asReader(process.getInputStream())
+                .lines()
                 .peek(logConsumer)
-                .collect(joining(System.lineSeparator()));
+                .collect(Collectors.joining(System.lineSeparator()));
     }
 
     private static String waitForResultFrom(Future<String> outputProcessing) {
         try {
             return outputProcessing.get(HOURS_TO_WAIT_FOR_STD_OUT_TO_CLOSE, TimeUnit.HOURS);
         } catch (InterruptedException | ExecutionException | TimeoutException e) {
-            throw propagate(e);
+            throw Throwables.propagate(e);
         }
     }
 
     private static BufferedReader asReader(InputStream inputStream) {
-        return new BufferedReader(new InputStreamReader(inputStream, UTF_8));
+        return new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
     }
 }

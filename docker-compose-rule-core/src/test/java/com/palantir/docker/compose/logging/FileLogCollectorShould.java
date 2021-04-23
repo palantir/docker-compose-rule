@@ -15,8 +15,8 @@
  */
 package com.palantir.docker.compose.logging;
 
-import static com.palantir.docker.compose.matchers.IOMatchers.fileContainingString;
-import static com.palantir.docker.compose.matchers.IOMatchers.fileWithName;
+import static com.palantir.docker.compose.matchers.IoMatchers.fileContainingString;
+import static com.palantir.docker.compose.matchers.IoMatchers.fileWithName;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.arrayContaining;
 import static org.hamcrest.Matchers.arrayContainingInAnyOrder;
@@ -46,6 +46,7 @@ public class FileLogCollectorShould {
 
     @Rule
     public TemporaryFolder logDirectoryParent = new TemporaryFolder();
+
     @Rule
     public ExpectedException exception = ExpectedException.none();
 
@@ -71,10 +72,8 @@ public class FileLogCollectorShould {
 
     @Test
     public void create_the_log_directory_if_it_does_not_already_exist() {
-        File doesNotExistYetDirectory = logDirectoryParent.getRoot()
-                .toPath()
-                .resolve("doesNotExist")
-                .toFile();
+        File doesNotExistYetDirectory =
+                logDirectoryParent.getRoot().toPath().resolve("doesNotExist").toFile();
         new FileLogCollector(doesNotExistYetDirectory);
         assertThat(doesNotExistYetDirectory.exists(), is(true));
     }
@@ -98,8 +97,7 @@ public class FileLogCollectorShould {
     }
 
     @Test
-    public void collect_logs_when_one_container_is_running()
-            throws Exception {
+    public void collect_logs_when_one_container_is_running() throws Exception {
         when(compose.services()).thenReturn(ImmutableList.of("db"));
         when(compose.writeLogs(eq("db"), any(OutputStream.class))).thenAnswer(args -> {
             OutputStream outputStream = (OutputStream) args.getArguments()[1];
@@ -133,7 +131,8 @@ public class FileLogCollectorShould {
         assertThat(dbLatch.await(1, TimeUnit.SECONDS), is(true));
         assertThat(db2Latch.await(1, TimeUnit.SECONDS), is(true));
 
-        assertThat(logDirectory.listFiles(), arrayContainingInAnyOrder(fileWithName("db.log"), fileWithName("db2.log")));
+        assertThat(
+                logDirectory.listFiles(), arrayContainingInAnyOrder(fileWithName("db.log"), fileWithName("db2.log")));
         assertThat(new File(logDirectory, "db.log"), is(fileContainingString("log")));
         assertThat(new File(logDirectory, "db2.log"), is(fileContainingString("other")));
     }

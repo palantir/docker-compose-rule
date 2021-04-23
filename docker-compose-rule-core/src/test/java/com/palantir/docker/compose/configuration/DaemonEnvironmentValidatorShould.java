@@ -33,9 +33,9 @@ public class DaemonEnvironmentValidatorShould {
     @Test
     public void validate_successfully_when_docker_environment_does_not_contain_docker_variables() {
         Map<String, String> variables = ImmutableMap.<String, String>builder()
-                                                    .put("SOME_VARIABLE", "SOME_VALUE")
-                                                    .put("ANOTHER_VARIABLE", "ANOTHER_VALUE")
-                                                    .build();
+                .put("SOME_VARIABLE", "SOME_VALUE")
+                .put("ANOTHER_VARIABLE", "ANOTHER_VALUE")
+                .build();
 
         DaemonEnvironmentValidator.instance().validateEnvironmentVariables(variables);
     }
@@ -56,5 +56,4 @@ public class DaemonEnvironmentValidatorShould {
         exception.expectMessage("They cannot be set when connecting to a local docker daemon");
         DaemonEnvironmentValidator.instance().validateEnvironmentVariables(variables);
     }
-
 }

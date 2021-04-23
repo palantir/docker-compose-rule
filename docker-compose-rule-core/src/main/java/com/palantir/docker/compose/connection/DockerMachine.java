@@ -15,15 +15,11 @@
  */
 package com.palantir.docker.compose.connection;
 
-import static com.google.common.base.MoreObjects.firstNonNull;
-import static com.google.common.collect.Maps.newHashMap;
-import static com.palantir.docker.compose.configuration.EnvironmentVariables.DOCKER_CERT_PATH;
-import static com.palantir.docker.compose.configuration.EnvironmentVariables.DOCKER_HOST;
-import static com.palantir.docker.compose.configuration.EnvironmentVariables.DOCKER_TLS_VERIFY;
-
+import com.google.common.base.MoreObjects;
 import com.google.common.collect.ImmutableMap;
 import com.palantir.docker.compose.configuration.AdditionalEnvironmentValidator;
 import com.palantir.docker.compose.configuration.DockerType;
+import com.palantir.docker.compose.configuration.EnvironmentVariables;
 import com.palantir.docker.compose.configuration.RemoteHostIpResolver;
 import com.palantir.docker.compose.execution.DockerConfiguration;
 import java.util.HashMap;
@@ -32,7 +28,7 @@ import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class DockerMachine implements DockerConfiguration {
+public final class DockerMachine implements DockerConfiguration {
 
     private static final Logger log = LoggerFactory.getLogger(DockerMachine.class);
     private static final DockerType FALLBACK_DOCKER_TYPE = DockerType.DAEMON;
@@ -66,7 +62,8 @@ public class DockerMachine implements DockerConfiguration {
         if (!dockerType.isPresent()) {
             log.debug(
                     "Failed to determine Docker type (daemon or remote) based on current environment. "
-                            + "Proceeding with {} as the type.", FALLBACK_DOCKER_TYPE);
+                            + "Proceeding with {} as the type.",
+                    FALLBACK_DOCKER_TYPE);
         }
 
         return new LocalBuilder(dockerType.orElse(FALLBACK_DOCKER_TYPE), systemEnv);
@@ -76,7 +73,7 @@ public class DockerMachine implements DockerConfiguration {
         return new LocalBuilder(dockerType, System.getenv());
     }
 
-    public static class LocalBuilder {
+    public static final class LocalBuilder {
 
         private final DockerType dockerType;
         private final Map<String, String> systemEnvironment;
@@ -93,18 +90,18 @@ public class DockerMachine implements DockerConfiguration {
         }
 
         public LocalBuilder withEnvironment(Map<String, String> newEnvironment) {
-            this.additionalEnvironment = newHashMap(firstNonNull(newEnvironment, newHashMap()));
+            this.additionalEnvironment = new HashMap<>(MoreObjects.firstNonNull(newEnvironment, new HashMap<>()));
             return this;
         }
 
         public DockerMachine build() {
             dockerType.validateEnvironmentVariables(systemEnvironment);
             AdditionalEnvironmentValidator.validate(additionalEnvironment);
-            Map<String, String> combinedEnvironment = newHashMap();
+            Map<String, String> combinedEnvironment = new HashMap<>();
             combinedEnvironment.putAll(systemEnvironment);
             combinedEnvironment.putAll(additionalEnvironment);
 
-            String dockerHost = systemEnvironment.getOrDefault(DOCKER_HOST, "");
+            String dockerHost = systemEnvironment.getOrDefault(EnvironmentVariables.DOCKER_HOST, "");
             return new DockerMachine(dockerType.resolveIp(dockerHost), ImmutableMap.copyOf(combinedEnvironment));
         }
     }
@@ -113,27 +110,28 @@ public class DockerMachine implements DockerConfiguration {
         return new RemoteBuilder();
     }
 
-    public static class RemoteBuilder {
+    @SuppressWarnings("AbbreviationAsWordInName")
+    public static final class RemoteBuilder {
 
-        private final Map<String, String> dockerEnvironment = newHashMap();
-        private Map<String, String> additionalEnvironment = newHashMap();
+        private final Map<String, String> dockerEnvironment = new HashMap<>();
+        private Map<String, String> additionalEnvironment = new HashMap<>();
 
         private RemoteBuilder() {}
 
         public RemoteBuilder host(String hostname) {
-            dockerEnvironment.put(DOCKER_HOST, hostname);
+            dockerEnvironment.put(EnvironmentVariables.DOCKER_HOST, hostname);
             return this;
         }
 
         public RemoteBuilder withTLS(String certPath) {
-            dockerEnvironment.put(DOCKER_TLS_VERIFY, "1");
-            dockerEnvironment.put(DOCKER_CERT_PATH, certPath);
+            dockerEnvironment.put(EnvironmentVariables.DOCKER_TLS_VERIFY, "1");
+            dockerEnvironment.put(EnvironmentVariables.DOCKER_CERT_PATH, certPath);
             return this;
         }
 
         public RemoteBuilder withoutTLS() {
-            dockerEnvironment.remove(DOCKER_TLS_VERIFY);
-            dockerEnvironment.remove(DOCKER_CERT_PATH);
+            dockerEnvironment.remove(EnvironmentVariables.DOCKER_TLS_VERIFY);
+            dockerEnvironment.remove(EnvironmentVariables.DOCKER_CERT_PATH);
             return this;
         }
 
@@ -143,7 +141,7 @@ public class DockerMachine implements DockerConfiguration {
         }
 
         public RemoteBuilder withEnvironment(Map<String, String> newEnvironment) {
-            this.additionalEnvironment = newHashMap(firstNonNull(newEnvironment, newHashMap()));
+            this.additionalEnvironment = new HashMap<>(MoreObjects.firstNonNull(newEnvironment, new HashMap<>()));
             return this;
         }
 
@@ -151,20 +149,18 @@ public class DockerMachine implements DockerConfiguration {
             DockerType.REMOTE.validateEnvironmentVariables(dockerEnvironment);
             AdditionalEnvironmentValidator.validate(additionalEnvironment);
 
-            String dockerHost = dockerEnvironment.getOrDefault(DOCKER_HOST, "");
+            String dockerHost = dockerEnvironment.getOrDefault(EnvironmentVariables.DOCKER_HOST, "");
             String hostIp = new RemoteHostIpResolver().resolveIp(dockerHost);
 
             Map<String, String> environment = ImmutableMap.<String, String>builder()
                     // 2019-12-17: newer docker-compose adjusts its output based on the number of columns available
                     // in the terminal. This interferes with parsing of the output of docker-compose, so "COLUMNS" is
                     // set to an artificially large value.
-                                                          .put("COLUMNS", "10000")
-                                                          .putAll(dockerEnvironment)
-                                                          .putAll(additionalEnvironment)
-                                                          .build();
+                    .put("COLUMNS", "10000")
+                    .putAll(dockerEnvironment)
+                    .putAll(additionalEnvironment)
+                    .build();
             return new DockerMachine(hostIp, environment);
         }
-
     }
-
 }

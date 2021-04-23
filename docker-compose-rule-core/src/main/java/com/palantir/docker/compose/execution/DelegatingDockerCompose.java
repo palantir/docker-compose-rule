@@ -46,6 +46,11 @@ abstract class DelegatingDockerCompose implements DockerCompose {
     }
 
     @Override
+    public void up(Container container) throws IOException, InterruptedException {
+        dockerCompose.up(container);
+    }
+
+    @Override
     public void down() throws IOException, InterruptedException {
         dockerCompose.down();
     }
@@ -56,28 +61,13 @@ abstract class DelegatingDockerCompose implements DockerCompose {
     }
 
     @Override
-    public void kill() throws IOException, InterruptedException {
-        dockerCompose.kill();
-    }
-
-    @Override
-    public void rm() throws IOException, InterruptedException {
-        dockerCompose.rm();
-    }
-
-    @Override
-    public void up(Container container) throws IOException, InterruptedException {
-        dockerCompose.up(container);
-    }
-
-    @Override
-    public void start(Container container) throws IOException, InterruptedException {
-        dockerCompose.start(container);
-    }
-
-    @Override
     public void stop(Container container) throws IOException, InterruptedException {
         dockerCompose.stop(container);
+    }
+
+    @Override
+    public void kill() throws IOException, InterruptedException {
+        dockerCompose.kill();
     }
 
     @Override
@@ -86,14 +76,30 @@ abstract class DelegatingDockerCompose implements DockerCompose {
     }
 
     @Override
-    public String exec(DockerComposeExecOption dockerComposeExecOption, String containerName,
-            DockerComposeExecArgument dockerComposeExecArgument) throws IOException, InterruptedException {
+    public void rm() throws IOException, InterruptedException {
+        dockerCompose.rm();
+    }
+
+    @Override
+    public void start(Container container) throws IOException, InterruptedException {
+        dockerCompose.start(container);
+    }
+
+    @Override
+    public String exec(
+            DockerComposeExecOption dockerComposeExecOption,
+            String containerName,
+            DockerComposeExecArgument dockerComposeExecArgument)
+            throws IOException, InterruptedException {
         return dockerCompose.exec(dockerComposeExecOption, containerName, dockerComposeExecArgument);
     }
 
     @Override
-    public String run(DockerComposeRunOption dockerComposeRunOption, String containerName,
-            DockerComposeRunArgument dockerComposeRunArgument) throws IOException, InterruptedException {
+    public String run(
+            DockerComposeRunOption dockerComposeRunOption,
+            String containerName,
+            DockerComposeRunArgument dockerComposeRunArgument)
+            throws IOException, InterruptedException {
         return dockerCompose.run(dockerComposeRunOption, containerName, dockerComposeRunArgument);
     }
 
@@ -130,5 +136,4 @@ abstract class DelegatingDockerCompose implements DockerCompose {
     protected final DockerCompose getDockerCompose() {
         return dockerCompose;
     }
-
 }

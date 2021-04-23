@@ -29,6 +29,7 @@ import org.immutables.value.Value.Parameter;
 
 @Immutable
 @PackageVisible
+@SuppressWarnings("DesignForExtension")
 public abstract class ProjectName {
 
     @Parameter
@@ -44,8 +45,10 @@ public abstract class ProjectName {
                 projectName().get().trim().length() > 0,
                 "ProjectName must not be blank. If you want to omit the project name, use ProjectName.omit()");
 
-        checkState(validCharacters(projectName().get()),
-                "ProjectName '%s' not allowed, please use lowercase letters and numbers only.", projectName().get());
+        checkState(
+                validCharacters(projectName().get()),
+                "ProjectName '%s' not allowed, please use lowercase letters and numbers only.",
+                projectName().get());
     }
 
     // Only allows strings that docker-compose-cli would not modify
@@ -56,12 +59,14 @@ public abstract class ProjectName {
     }
 
     public String asString() {
-        return projectName().orElseThrow(() -> new IllegalStateException(
-                "Cannot get the ProjectName as string if the ProjectName is omitted"));
+        return projectName()
+                .orElseThrow(() -> new IllegalStateException(
+                        "Cannot get the ProjectName as string if the ProjectName is omitted"));
     }
 
     public List<String> constructComposeFileCommand() {
-        return projectName().map(projectName -> ImmutableList.of("--project-name", projectName))
+        return projectName()
+                .map(projectName -> ImmutableList.of("--project-name", projectName))
                 .orElseGet(ImmutableList::of);
     }
 

@@ -26,17 +26,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @Value.Immutable
+@SuppressWarnings("DesignForExtension")
 public abstract class DockerComposeExecutable implements Executable {
     private static final Logger log = LoggerFactory.getLogger(DockerComposeExecutable.class);
 
     private static final DockerCommandLocations DOCKER_COMPOSE_LOCATIONS = new DockerCommandLocations(
-            System.getenv("DOCKER_COMPOSE_LOCATION"),
-            "/usr/local/bin/docker-compose",
-            "/usr/bin/docker-compose"
-    );
+            System.getenv("DOCKER_COMPOSE_LOCATION"), "/usr/local/bin/docker-compose", "/usr/bin/docker-compose");
 
     private static String defaultDockerComposePath() {
-        String pathToUse = DOCKER_COMPOSE_LOCATIONS.preferredLocation()
+        String pathToUse = DOCKER_COMPOSE_LOCATIONS
+                .preferredLocation()
                 .orElseThrow(() -> new IllegalStateException(
                         "Could not find docker-compose, looked in: " + DOCKER_COMPOSE_LOCATIONS));
 
@@ -46,30 +45,38 @@ public abstract class DockerComposeExecutable implements Executable {
     }
 
     static Version version() throws IOException, InterruptedException {
-        Command dockerCompose = new Command(new Executable() {
-            @Override
-            public String commandName() {
-                return "docker-compose";
-            }
+        Command dockerCompose = new Command(
+                new Executable() {
+                    @Override
+                    public String commandName() {
+                        return "docker-compose";
+                    }
 
-            @Override
-            public Process execute(String... commands) throws IOException {
-                List<String> args = ImmutableList.<String>builder()
-                        .add(defaultDockerComposePath())
-                        .add(commands)
-                        .build();
-                return new ProcessBuilder(args).redirectErrorStream(true).start();
-            }
-        }, log::trace);
+                    @Override
+                    public Process execute(String... commands) throws IOException {
+                        List<String> args = ImmutableList.<String>builder()
+                                .add(defaultDockerComposePath())
+                                .add(commands)
+                                .build();
+                        return new ProcessBuilder(args)
+                                .redirectErrorStream(true)
+                                .start();
+                    }
+                },
+                log::trace);
 
         String versionOutput = dockerCompose.execute(Command.throwingOnError(), "-v");
         return DockerComposeVersion.parseFromDockerComposeVersion(versionOutput);
     }
 
-    @Value.Parameter protected abstract DockerComposeFiles dockerComposeFiles();
-    @Value.Parameter protected abstract DockerConfiguration dockerConfiguration();
+    @Value.Parameter
+    protected abstract DockerComposeFiles dockerComposeFiles();
 
-    @Value.Default public ProjectName projectName() {
+    @Value.Parameter
+    protected abstract DockerConfiguration dockerConfiguration();
+
+    @Value.Default
+    public ProjectName projectName() {
         return ProjectName.random();
     }
 
@@ -94,7 +101,8 @@ public abstract class DockerComposeExecutable implements Executable {
                 .add(commands)
                 .build();
 
-        return dockerConfiguration().configuredDockerComposeProcess()
+        return dockerConfiguration()
+                .configuredDockerComposeProcess()
                 .command(args)
                 .redirectErrorStream(true)
                 .start();

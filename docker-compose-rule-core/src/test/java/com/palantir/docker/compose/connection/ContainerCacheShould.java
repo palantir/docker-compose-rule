@@ -44,5 +44,4 @@ public class ContainerCacheShould {
         Container sameContainer = containers.container(CONTAINER_NAME);
         assertThat(container, is(sameInstance(sameContainer)));
     }
-
 }

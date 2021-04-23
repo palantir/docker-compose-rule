@@ -39,23 +39,17 @@ public class RunRecorderTest {
     private static final Instant THE_TIME = Instant.ofEpochSecond(1);
     private static final OffsetDateTime DATE_TIME = THE_TIME.atOffset(ZoneOffset.UTC);
 
-    private static final Task TASK = Task.builder()
-            .startTime(DATE_TIME)
-            .endTime(DATE_TIME)
-            .build();
+    private static final Task TASK =
+            Task.builder().startTime(DATE_TIME).endTime(DATE_TIME).build();
 
-    private static final Event BUILD_EVENT = Event.build(BuildEvent.builder()
-            .task(TASK)
-            .build());
+    private static final Event BUILD_EVENT =
+            Event.build(BuildEvent.builder().task(TASK).build());
 
-    private static final Event PULL_EVENT = Event.pull(PullEvent.builder()
-            .task(TASK)
-            .build());
+    private static final Event PULL_EVENT =
+            Event.pull(PullEvent.builder().task(TASK).build());
 
     private final Reporter reporter = mock(Reporter.class);
-    private final RunRecorder runRecorder = new RunRecorder(
-            Clock.fixed(THE_TIME, ZoneId.of("UTC")),
-            reporter);
+    private final RunRecorder runRecorder = new RunRecorder(Clock.fixed(THE_TIME, ZoneId.of("UTC")), reporter);
 
     @Test
     public void will_not_duplicate_data_when_run_twice() {

@@ -36,21 +36,19 @@ public class RemoteBuilderShould {
         exception.expect(IllegalStateException.class);
         exception.expectMessage("Missing required environment variables");
         exception.expectMessage("DOCKER_HOST");
-        DockerMachine.remoteMachine()
-                     .withoutTLS()
-                     .build();
+        DockerMachine.remoteMachine().withoutTLS().build();
     }
 
     @Test
     public void have_no_tls_environment_variables_when_a_docker_machine_is_built_without_tls() {
         DockerMachine dockerMachine = DockerMachine.remoteMachine()
-                                                   .host("tcp://192.168.99.100")
-                                                   .withoutTLS()
-                                                   .build();
+                .host("tcp://192.168.99.100")
+                .withoutTLS()
+                .build();
 
         Map<String, String> expected = ImmutableMap.<String, String>builder()
-                                                   .put(DOCKER_HOST, "tcp://192.168.99.100")
-                                                   .build();
+                .put(DOCKER_HOST, "tcp://192.168.99.100")
+                .build();
 
         validateEnvironmentConfiguredDirectly(dockerMachine, expected);
     }
@@ -58,9 +56,9 @@ public class RemoteBuilderShould {
     @Test
     public void have_tls_environment_variables_set_when_a_docker_machine_is_built_with_tls() {
         DockerMachine dockerMachine = DockerMachine.remoteMachine()
-                                                   .host("tcp://192.168.99.100")
-                                                   .withTLS("/path/to/certs")
-                                                   .build();
+                .host("tcp://192.168.99.100")
+                .withTLS("/path/to/certs")
+                .build();
 
         Map<String, String> expected = ImmutableMap.<String, String>builder()
                 .put(DOCKER_HOST, "tcp://192.168.99.100")
@@ -72,10 +70,10 @@ public class RemoteBuilderShould {
     @Test
     public void build_a_docker_machine_with_additional_environment_variables() {
         DockerMachine dockerMachine = DockerMachine.remoteMachine()
-                                                   .host("tcp://192.168.99.100")
-                                                   .withoutTLS()
-                                                   .withAdditionalEnvironmentVariable("SOME_VARIABLE", "SOME_VALUE")
-                                                   .build();
+                .host("tcp://192.168.99.100")
+                .withoutTLS()
+                .withAdditionalEnvironmentVariable("SOME_VARIABLE", "SOME_VALUE")
+                .build();
 
         Map<String, String> expected = ImmutableMap.<String, String>builder()
                 .put(DOCKER_HOST, "tcp://192.168.99.100")
@@ -84,11 +82,11 @@ public class RemoteBuilderShould {
         validateEnvironmentConfiguredDirectly(dockerMachine, expected);
     }
 
-    private static void validateEnvironmentConfiguredDirectly(DockerMachine dockerMachine, Map<String, String> expectedEnvironment) {
+    private static void validateEnvironmentConfiguredDirectly(
+            DockerMachine dockerMachine, Map<String, String> expectedEnvironment) {
         ProcessBuilder process = dockerMachine.configuredDockerComposeProcess();
 
         Map<String, String> environment = process.environment();
         expectedEnvironment.forEach((var, val) -> assertThat(environment, hasEntry(var, val)));
     }
-
 }

@@ -24,7 +24,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
-public class ContainerCache {
+public final class ContainerCache {
 
     private final ConcurrentMap<String, Container> containers = new ConcurrentHashMap<>();
     private final Docker docker;
@@ -36,12 +36,11 @@ public class ContainerCache {
     }
 
     public Container container(String containerName) {
-        return containers.computeIfAbsent(containerName,
-                ignored -> new Container(containerName, docker, dockerCompose));
+        return containers.computeIfAbsent(
+                containerName, _ignored -> new Container(containerName, docker, dockerCompose));
     }
 
     public Set<Container> containers() throws IOException, InterruptedException {
         return dockerCompose.services().stream().map(this::container).collect(toSet());
     }
-
 }

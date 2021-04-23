@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
-public class ContainerNames {
+public final class ContainerNames {
     private static final Pattern HEAD_PATTERN = Pattern.compile("-+(\r|\n)+");
     private static final Pattern BODY_PATTERN = Pattern.compile("(\r|\n)+");
 
@@ -36,16 +36,11 @@ public class ContainerNames {
         }
 
         String psBody = psHeadAndBody.get(1);
-        return psBodyLines(psBody)
-                .map(ContainerName::fromPsLine)
-                .collect(toList());
+        return psBodyLines(psBody).map(ContainerName::fromPsLine).collect(toList());
     }
 
     private static Stream<String> psBodyLines(String psBody) {
         List<String> lines = Splitter.on(BODY_PATTERN).splitToList(psBody);
-        return lines.stream()
-                .map(String::trim)
-                .filter(line -> !line.isEmpty());
+        return lines.stream().map(String::trim).filter(line -> !line.isEmpty());
     }
-
 }

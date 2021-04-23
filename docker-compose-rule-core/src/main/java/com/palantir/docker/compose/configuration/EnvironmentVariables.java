@@ -21,5 +21,4 @@ public interface EnvironmentVariables {
     String DOCKER_CERT_PATH = "DOCKER_CERT_PATH";
     String DOCKER_HOST = "DOCKER_HOST";
     String DOCKER_TLS_VERIFY = "DOCKER_TLS_VERIFY";
-
 }

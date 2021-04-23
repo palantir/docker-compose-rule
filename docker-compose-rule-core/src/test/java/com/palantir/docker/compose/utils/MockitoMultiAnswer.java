@@ -22,7 +22,7 @@ import java.util.function.Function;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
-public class MockitoMultiAnswer<T> implements Answer<T> {
+public final class MockitoMultiAnswer<T> implements Answer<T> {
     private final List<Function<InvocationOnMock, T>> invocationHandlers;
     private int numberOfTimesCalled = 0;
 

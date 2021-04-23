@@ -51,5 +51,4 @@ public class DockerTypeShould {
                 .build();
         assertThat(DockerType.getFirstValidDockerTypeForEnvironment(variables), is(Optional.empty()));
     }
-
 }

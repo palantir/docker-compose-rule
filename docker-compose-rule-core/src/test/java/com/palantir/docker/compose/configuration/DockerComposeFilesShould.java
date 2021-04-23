@@ -51,8 +51,7 @@ public class DockerComposeFilesShould {
     }
 
     @Test
-    public void
-            throw_correct_exception_when_there_is_a_single_missing_compose_file_with_an_existing_compose_file()
+    public void throw_correct_exception_when_there_is_a_single_missing_compose_file_with_an_existing_compose_file()
             throws Exception {
         exception.expect(IllegalStateException.class);
         exception.expectMessage("The following docker-compose files:");
@@ -75,9 +74,10 @@ public class DockerComposeFilesShould {
     public void generate_docker_compose_file_command_correctly_for_multiple_compose_files() throws Exception {
         File composeFile1 = tempFolder.newFile("docker-compose1.yaml");
         File composeFile2 = tempFolder.newFile("docker-compose2.yaml");
-        DockerComposeFiles dockerComposeFiles = DockerComposeFiles.from(composeFile1.getAbsolutePath(), composeFile2.getAbsolutePath());
-        assertThat(dockerComposeFiles.constructComposeFileCommand(), contains(
-                "--file", composeFile1.getAbsolutePath(), "--file", composeFile2.getAbsolutePath()));
+        DockerComposeFiles dockerComposeFiles =
+                DockerComposeFiles.from(composeFile1.getAbsolutePath(), composeFile2.getAbsolutePath());
+        assertThat(
+                dockerComposeFiles.constructComposeFileCommand(),
+                contains("--file", composeFile1.getAbsolutePath(), "--file", composeFile2.getAbsolutePath()));
     }
-
 }

@@ -18,6 +18,7 @@ package com.palantir.docker.compose.matchers;
 import org.hamcrest.Description;
 import org.hamcrest.TypeSafeMatcher;
 
+@SuppressWarnings("DesignForExtension")
 public abstract class ValueCachingMatcher<T> extends TypeSafeMatcher<T> {
     private T cachedValue;
 

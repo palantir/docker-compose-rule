@@ -16,8 +16,7 @@
 package com.palantir.docker.compose.execution;
 
 public class DockerExecutionException extends RuntimeException {
-    public DockerExecutionException() {
-    }
+    public DockerExecutionException() {}
 
     public DockerExecutionException(String message) {
         super(message);

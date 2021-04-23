@@ -40,36 +40,32 @@ public class DockerComposeRuleConfigTest {
     @Test
     public void can_derserialize_config_found_one_dir_up() throws IOException {
         File config = temporaryFolder.newFile(".docker-compose-rule.yml");
-        Files.write(config.toPath(), ImmutableList.of(
-                "reporting:",
-                "  url: http://example.com/"
-        ), StandardCharsets.UTF_8);
+        Files.write(
+                config.toPath(), ImmutableList.of("reporting:", "  url: http://example.com/"), StandardCharsets.UTF_8);
 
         File startDir = temporaryFolder.newFolder("start-dir");
 
-        assertThat(DockerComposeRuleConfig.findAutomaticallyFrom(startDir)).hasValue(DockerComposeRuleConfig.builder()
-                .reporting(ReportingConfig.builder()
-                        .url("http://example.com/")
-                        .build())
-                .build());
+        assertThat(DockerComposeRuleConfig.findAutomaticallyFrom(startDir))
+                .hasValue(DockerComposeRuleConfig.builder()
+                        .reporting(ReportingConfig.builder()
+                                .url("http://example.com/")
+                                .build())
+                        .build());
     }
 
     @Test
     public void optional_empty_when_config_does_not_exist() {
-        assertThat(DockerComposeRuleConfig.findAutomaticallyFrom(temporaryFolder.getRoot())).isEmpty();
+        assertThat(DockerComposeRuleConfig.findAutomaticallyFrom(temporaryFolder.getRoot()))
+                .isEmpty();
     }
 
     @Test
     public void throws_when_config_file_is_invalid() throws IOException {
         File config = temporaryFolder.newFile(".docker-compose-rule.yml");
-        Files.write(config.toPath(), ImmutableList.of(
-                "reporting:",
-                "  whoops: oh no"
-        ), StandardCharsets.UTF_8);
+        Files.write(config.toPath(), ImmutableList.of("reporting:", "  whoops: oh no"), StandardCharsets.UTF_8);
 
         assertThatExceptionOfType(RuntimeException.class)
                 .isThrownBy(() -> DockerComposeRuleConfig.findAutomaticallyFrom(temporaryFolder.getRoot()))
                 .withMessageContaining("deserialize config file");
     }
-
 }

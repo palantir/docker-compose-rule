@@ -114,7 +114,8 @@ public class ContainerShould {
     }
 
     @Test
-    public void not_have_all_ports_open_if_has_at_least_one_closed_port_and_report_the_name_of_the_port() throws Exception {
+    public void not_have_all_ports_open_if_has_at_least_one_closed_port_and_report_the_name_of_the_port()
+            throws Exception {
         int unavailablePort = 4321;
         String unavailablePortString = Integer.toString(unavailablePort);
 
@@ -128,9 +129,7 @@ public class ContainerShould {
     public void be_listening_on_http_when_the_port_is() throws Exception {
         env.availableHttpService("service", IP, 1234, 2345);
 
-        assertThat(
-                container.portIsListeningOnHttp(2345, port -> "http://some.url:" + port),
-                is(successful()));
+        assertThat(container.portIsListeningOnHttp(2345, port -> "http://some.url:" + port), is(successful()));
     }
 
     @Test
@@ -142,10 +141,7 @@ public class ContainerShould {
 
         assertThat(
                 container.portIsListeningOnHttp(unavailablePort, port -> "http://some.url:" + port.getInternalPort()),
-                is(failureWithMessage(both(
-                    containsString(unvaliablePortString)).and(
-                    containsString("http://some.url:" + unvaliablePortString)
-                ))));
+                is(failureWithMessage(both(containsString(unvaliablePortString))
+                        .and(containsString("http://some.url:" + unvaliablePortString)))));
     }
-
 }

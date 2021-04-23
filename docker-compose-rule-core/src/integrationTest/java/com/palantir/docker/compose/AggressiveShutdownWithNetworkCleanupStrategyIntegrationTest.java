@@ -20,10 +20,10 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 
-import com.google.common.collect.Sets;
 import com.palantir.docker.compose.configuration.ShutdownStrategy;
 import com.palantir.docker.compose.logging.DoNothingLogCollector;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Set;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -52,7 +52,8 @@ public class AggressiveShutdownWithNetworkCleanupStrategyIntegrationTest {
     @Ignore("Something changed on circle for https://circleci.com/workflow-run/5e458cfe-cb9d-4c55-8fb4-71e6e4685930"
             + "such that this test no longer work :(")
     public void clean_up_created_networks_when_shutting_down() throws Exception {
-        Set<String> networksBeforeRun = parseLinesFromOutputString(docker.docker().listNetworks());
+        Set<String> networksBeforeRun =
+                parseLinesFromOutputString(docker.docker().listNetworks());
 
         docker.before();
         assertThat(parseLinesFromOutputString(docker.docker().listNetworks()), is(not(networksBeforeRun)));
@@ -62,6 +63,6 @@ public class AggressiveShutdownWithNetworkCleanupStrategyIntegrationTest {
     }
 
     private static Set<String> parseLinesFromOutputString(String output) {
-        return Sets.newHashSet(Arrays.asList(output.split("\n")));
+        return new HashSet<>(Arrays.asList(output.split("\n")));
     }
 }

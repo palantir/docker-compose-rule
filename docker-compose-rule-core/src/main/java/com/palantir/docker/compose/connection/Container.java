@@ -27,13 +27,13 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-public class Container {
+public final class Container {
 
     private final String containerName;
     private final Docker docker;
     private final DockerCompose dockerCompose;
 
-    private Supplier<Ports> portMappings = Suppliers.memoize(this::getDockerPorts)::get;
+    private Supplier<Ports> portMappings = Suppliers.memoize(this::getDockerPorts);
 
     public Container(String containerName, Docker docker, DockerCompose dockerCompose) {
         this.containerName = containerName;
@@ -45,7 +45,8 @@ public class Container {
         return containerName;
     }
 
-    public SuccessOrFailure portIsListeningOnHttpAndCheckStatus2xx(int internalPort, Function<DockerPort, String> urlFunction) {
+    public SuccessOrFailure portIsListeningOnHttpAndCheckStatus2xx(
+            int internalPort, Function<DockerPort, String> urlFunction) {
         return portIsListeningOnHttp(internalPort, urlFunction, true);
     }
 
@@ -53,25 +54,28 @@ public class Container {
         return portIsListeningOnHttp(internalPort, urlFunction, false);
     }
 
-    public SuccessOrFailure portIsListeningOnHttp(int internalPort, Function<DockerPort, String> urlFunction, boolean andCheckStatus) {
+    public SuccessOrFailure portIsListeningOnHttp(
+            int internalPort, Function<DockerPort, String> urlFunction, boolean andCheckStatus) {
         try {
             DockerPort port = port(internalPort);
             if (!port.isListeningNow()) {
-                return SuccessOrFailure.failure("Internal port " + internalPort + " is not listening in container " + containerName);
+                return SuccessOrFailure.failure(
+                        "Internal port " + internalPort + " is not listening in container " + containerName);
             }
             return port.isHttpRespondingSuccessfully(urlFunction, andCheckStatus)
-                    .mapFailure(failureMessage -> internalPort + " does not have a http response from " + urlFunction.apply(port) + ":\n" + failureMessage);
+                    .mapFailure(failureMessage -> internalPort + " does not have a http response from "
+                            + urlFunction.apply(port) + ":\n" + failureMessage);
         } catch (Exception e) {
             return SuccessOrFailure.fromException(e);
         }
     }
 
     public DockerPort portMappedExternallyTo(int externalPort) {
-        return portMappings.get()
-                           .stream()
-                           .filter(port -> port.getExternalPort() == externalPort)
-                           .findFirst()
-                           .orElseThrow(() -> new IllegalArgumentException("No port mapped externally to '" + externalPort + "' for container '" + containerName + "'"));
+        return portMappings.get().stream()
+                .filter(port -> port.getExternalPort() == externalPort)
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException(
+                        "No port mapped externally to '" + externalPort + "' for container '" + containerName + "'"));
     }
 
     /**
@@ -94,7 +98,7 @@ public class Container {
 
     public void start() throws IOException, InterruptedException {
         dockerCompose.start(this);
-        portMappings = Suppliers.memoize(this::getDockerPorts)::get;
+        portMappings = Suppliers.memoize(this::getDockerPorts);
     }
 
     public void stop() throws IOException, InterruptedException {
@@ -143,7 +147,7 @@ public class Container {
 
     @Override
     public int hashCode() {
-        return Objects.hash(containerName);
+        return Objects.hashCode(containerName);
     }
 
     @Override

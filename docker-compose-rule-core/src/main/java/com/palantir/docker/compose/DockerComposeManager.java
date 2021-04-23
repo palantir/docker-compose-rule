@@ -15,9 +15,6 @@
  */
 package com.palantir.docker.compose;
 
-import static com.palantir.docker.compose.connection.waiting.ClusterHealthCheck.serviceHealthCheck;
-import static com.palantir.docker.compose.connection.waiting.ClusterHealthCheck.transformingHealthCheck;
-
 import com.google.common.base.Throwables;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
@@ -69,6 +66,7 @@ import org.slf4j.LoggerFactory;
 
 @Value.Immutable
 @CustomImmutablesStyle
+@SuppressWarnings("DesignForExtension")
 public abstract class DockerComposeManager {
     private static final Logger log = LoggerFactory.getLogger(DockerComposeManager.class);
 
@@ -100,17 +98,15 @@ public abstract class DockerComposeManager {
     @Value.Default
     public DockerComposeExecutable dockerComposeExecutable() {
         return DockerComposeExecutable.builder()
-            .dockerComposeFiles(files())
-            .dockerConfiguration(machine())
-            .projectName(projectName())
-            .build();
+                .dockerComposeFiles(files())
+                .dockerConfiguration(machine())
+                .projectName(projectName())
+                .build();
     }
 
     @Value.Default
     public DockerExecutable dockerExecutable() {
-        return DockerExecutable.builder()
-                .dockerConfiguration(machine())
-                .build();
+        return DockerExecutable.builder().dockerConfiguration(machine()).build();
     }
 
     @Value.Default
@@ -125,8 +121,8 @@ public abstract class DockerComposeManager {
 
     @Value.Default
     public com.palantir.docker.compose.execution.DockerCompose dockerCompose() {
-        com.palantir.docker.compose.execution.DockerCompose
-                dockerCompose = new DefaultDockerCompose(dockerComposeExecutable(), machine());
+        com.palantir.docker.compose.execution.DockerCompose dockerCompose =
+                new DefaultDockerCompose(dockerComposeExecutable(), machine());
         return new RetryingDockerCompose(retryAttempts(), dockerCompose);
     }
 
@@ -166,8 +162,7 @@ public abstract class DockerComposeManager {
     @Value.Derived
     protected EventEmitter emitEventsFor() {
         List<EventConsumer> eventConsumers =
-                Stream.concat(Stream.of(runRecorder), eventConsumers().stream())
-                .collect(Collectors.toList());
+                Stream.concat(Stream.of(runRecorder), eventConsumers().stream()).collect(Collectors.toList());
 
         return new EventEmitter(eventConsumers);
     }
@@ -203,13 +198,13 @@ public abstract class DockerComposeManager {
 
     private void waitForServices() throws InterruptedException {
         log.debug("Waiting for services");
-        InterruptableClusterWait nativeHealthCheckClusterWait =
-                emitEventsFor().nativeClusterWait(
+        InterruptableClusterWait nativeHealthCheckClusterWait = emitEventsFor()
+                .nativeClusterWait(
                         new ClusterWait(ClusterHealthCheck.nativeHealthChecks(), nativeServiceHealthCheckTimeout()));
 
         List<InterruptableClusterWait> allClusterWaits = Stream.concat(
-                Stream.of(nativeHealthCheckClusterWait),
-                clusterWaits().stream().map(emitEventsFor()::userClusterWait))
+                        Stream.of(nativeHealthCheckClusterWait),
+                        clusterWaits().stream().map(emitEventsFor()::userClusterWait))
                 .collect(Collectors.toList());
 
         waitForAllClusterWaits(allClusterWaits);
@@ -220,13 +215,10 @@ public abstract class DockerComposeManager {
     private void waitForAllClusterWaits(List<InterruptableClusterWait> allClusterWaits) throws InterruptedException {
         ListeningExecutorService executorService = MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(
                 allClusterWaits.size(),
-                new ThreadFactoryBuilder()
-                        .setNameFormat("dcr-wait-%d")
-                        .build()));
+                new ThreadFactoryBuilder().setNameFormat("dcr-wait-%d").build()));
 
         try {
-            ListenableFuture<?> listListenableFuture =
-                    Futures.allAsList(allClusterWaits.stream()
+            ListenableFuture<?> listListenableFuture = Futures.allAsList(allClusterWaits.stream()
                     .map(clusterWait -> executorService.submit(() -> {
                         try {
                             clusterWait.waitForCluster(containers());
@@ -255,29 +247,25 @@ public abstract class DockerComposeManager {
 
     public void after() {
         try {
-            emitEventsFor().shutdownStop(() ->
-                    shutdownStrategy().stop(this.dockerCompose()));
+            emitEventsFor().shutdownStop(() -> shutdownStrategy().stop(this.dockerCompose()));
 
-            emitEventsFor().logCollection(() ->
-                    logCollector().collectLogs(this.dockerCompose()));
+            emitEventsFor().logCollection(() -> logCollector().collectLogs(this.dockerCompose()));
 
-            emitEventsFor().shutdown(() ->
-                    shutdownStrategy().shutdown(this.dockerCompose(), this.docker()));
+            emitEventsFor().shutdown(() -> shutdownStrategy().shutdown(this.dockerCompose(), this.docker()));
         } catch (IOException | InterruptedException e) {
             throw new RuntimeException("Error cleaning up docker compose cluster", e);
         } finally {
             runRecorder.after();
         }
-
     }
 
-    public String exec(DockerComposeExecOption options, String containerName,
-            DockerComposeExecArgument arguments) throws IOException, InterruptedException {
+    public String exec(DockerComposeExecOption options, String containerName, DockerComposeExecArgument arguments)
+            throws IOException, InterruptedException {
         return dockerCompose().exec(options, containerName, arguments);
     }
 
-    public String run(DockerComposeRunOption options, String containerName,
-            DockerComposeRunArgument arguments) throws IOException, InterruptedException {
+    public String run(DockerComposeRunOption options, String containerName, DockerComposeRunArgument arguments)
+            throws IOException, InterruptedException {
         return dockerCompose().run(options, containerName, arguments);
     }
 
@@ -310,7 +298,8 @@ public abstract class DockerComposeManager {
 
         /**
          * Deprecated.
-         * @deprecated Please use {@link DockerComposeManager#shutdownStrategy()} with {@link ShutdownStrategy#SKIP} instead.
+         * @deprecated Please use {@link DockerComposeManager#shutdownStrategy()} with
+         * {@link ShutdownStrategy#SKIP} instead.
          */
         @Deprecated
         default TSelf skipShutdown(boolean skipShutdown) {
@@ -325,9 +314,9 @@ public abstract class DockerComposeManager {
             return waitingForService(serviceName, healthCheck, DEFAULT_TIMEOUT);
         }
 
-        default TSelf waitingForService(String serviceName, HealthCheck<Container> healthCheck,
-                ReadableDuration timeout) {
-            ClusterHealthCheck clusterHealthCheck = serviceHealthCheck(serviceName, healthCheck);
+        default TSelf waitingForService(
+                String serviceName, HealthCheck<Container> healthCheck, ReadableDuration timeout) {
+            ClusterHealthCheck clusterHealthCheck = ClusterHealthCheck.serviceHealthCheck(serviceName, healthCheck);
             return addClusterWait(new ClusterWait(clusterHealthCheck, timeout));
         }
 
@@ -335,9 +324,9 @@ public abstract class DockerComposeManager {
             return waitingForServices(services, healthCheck, DEFAULT_TIMEOUT);
         }
 
-        default TSelf waitingForServices(List<String> services, HealthCheck<List<Container>> healthCheck,
-                ReadableDuration timeout) {
-            ClusterHealthCheck clusterHealthCheck = serviceHealthCheck(services, healthCheck);
+        default TSelf waitingForServices(
+                List<String> services, HealthCheck<List<Container>> healthCheck, ReadableDuration timeout) {
+            ClusterHealthCheck clusterHealthCheck = ClusterHealthCheck.serviceHealthCheck(services, healthCheck);
             return addClusterWait(new ClusterWait(clusterHealthCheck, timeout));
         }
 
@@ -345,9 +334,10 @@ public abstract class DockerComposeManager {
             return waitingForHostNetworkedPort(port, healthCheck, DEFAULT_TIMEOUT);
         }
 
-        default TSelf waitingForHostNetworkedPort(int port, HealthCheck<DockerPort> healthCheck,
-                ReadableDuration timeout) {
-            ClusterHealthCheck clusterHealthCheck = transformingHealthCheck(cluster -> new DockerPort(cluster.ip(), port, port), healthCheck);
+        default TSelf waitingForHostNetworkedPort(
+                int port, HealthCheck<DockerPort> healthCheck, ReadableDuration timeout) {
+            ClusterHealthCheck clusterHealthCheck = ClusterHealthCheck.transformingHealthCheck(
+                    cluster -> new DockerPort(cluster.ip(), port, port), healthCheck);
             return addClusterWait(new ClusterWait(clusterHealthCheck, timeout));
         }
 
@@ -362,5 +352,4 @@ public abstract class DockerComposeManager {
             return super.build();
         }
     }
-
 }

@@ -23,23 +23,23 @@ import org.slf4j.LoggerFactory;
 
 interface Reporter {
     void addRun(DockerComposeRun dockerComposeRun);
+
     void addException(Exception exception);
+
     void report();
 
-    class NoOpReporter implements Reporter {
+    final class NoOpReporter implements Reporter {
         private static final Logger log = LoggerFactory.getLogger(NoOpReporter.class);
 
         public static final Reporter INSTANCE = new NoOpReporter();
 
-        private NoOpReporter() { }
+        private NoOpReporter() {}
 
         @Override
-        public void addRun(DockerComposeRun dockerComposeRun) {
-        }
+        public void addRun(DockerComposeRun _dockerComposeRun) {}
 
         @Override
-        public void addException(Exception exception) {
-        }
+        public void addException(Exception _exception) {}
 
         @Override
         public void report() {

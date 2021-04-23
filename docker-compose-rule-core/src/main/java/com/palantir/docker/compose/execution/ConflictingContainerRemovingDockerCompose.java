@@ -25,7 +25,7 @@ import java.util.regex.Pattern;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ConflictingContainerRemovingDockerCompose extends DelegatingDockerCompose {
+public final class ConflictingContainerRemovingDockerCompose extends DelegatingDockerCompose {
     private static final Logger log = LoggerFactory.getLogger(ConflictingContainerRemovingDockerCompose.class);
     private static final Pattern NAME_CONFLICT_PATTERN = Pattern.compile("name \"([^\"]*)\" is already in use");
 
@@ -57,9 +57,11 @@ public class ConflictingContainerRemovingDockerCompose extends DelegatingDockerC
                     throw e;
                 }
 
-                log.debug("docker-compose up failed due to container name conflicts (container names: {}). "
+                log.debug(
+                        "docker-compose up failed due to container name conflicts (container names: {}). "
                                 + "Removing containers and attempting docker-compose up again (attempt {}).",
-                        conflictingContainerNames, currRetryAttempt + 1);
+                        conflictingContainerNames,
+                        currRetryAttempt + 1);
                 removeContainers(conflictingContainerNames);
             }
         }
@@ -86,5 +88,4 @@ public class ConflictingContainerRemovingDockerCompose extends DelegatingDockerC
         }
         return builder.build();
     }
-
 }

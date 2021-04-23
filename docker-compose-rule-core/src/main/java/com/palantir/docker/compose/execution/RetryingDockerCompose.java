@@ -19,7 +19,7 @@ import com.palantir.docker.compose.connection.ContainerName;
 import java.io.IOException;
 import java.util.List;
 
-public class RetryingDockerCompose extends DelegatingDockerCompose {
+public final class RetryingDockerCompose extends DelegatingDockerCompose {
     private final Retryer retryer;
 
     public RetryingDockerCompose(int retryAttempts, DockerCompose dockerCompose) {

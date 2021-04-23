@@ -28,7 +28,6 @@ class PatternCollection {
     }
 
     public boolean anyMatch(String text) {
-        return patterns.stream()
-                .anyMatch(pattern -> pattern.matcher(text).find());
+        return patterns.stream().anyMatch(pattern -> pattern.matcher(text).find());
     }
 }

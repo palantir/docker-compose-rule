@@ -29,24 +29,25 @@ import org.apache.commons.lang3.SystemUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class Docker {
+public final class Docker {
 
     private static final Logger log = LoggerFactory.getLogger(Docker.class);
 
     // Without java escape characters: ^(\d+)\.(\d+)\.(\d+)(?:-.*)?$
     private static final Pattern VERSION_PATTERN = Pattern.compile("^Docker version (\\d+)\\.(\\d+)\\.(\\d+)(?:-.*)?$");
-    private static final String HEALTH_STATUS_FORMAT =
-            "--format="
-                    + "{{if not .State.Running}}DOWN"
-                    + "{{else if .State.Paused}}PAUSED"
-                    + "{{else if index .State \"Health\"}}"
-                    + "{{if eq .State.Health.Status \"healthy\"}}HEALTHY"
-                    + "{{else}}UNHEALTHY{{end}}"
-                    + "{{else}}HEALTHY{{end}}";
+    private static final String HEALTH_STATUS_FORMAT = "--format="
+            + "{{if not .State.Running}}DOWN"
+            + "{{else if .State.Paused}}PAUSED"
+            + "{{else if index .State \"Health\"}}"
+            + "{{if eq .State.Health.Status \"healthy\"}}HEALTHY"
+            + "{{else}}UNHEALTHY{{end}}"
+            + "{{else}}HEALTHY{{end}}";
     private static final String HEALTH_STATUS_FORMAT_WINDOWS = HEALTH_STATUS_FORMAT.replaceAll("\"", "`\"");
 
     public static Version version() throws IOException, InterruptedException {
-        return new Docker(DockerExecutable.builder().dockerConfiguration(DockerMachine.localMachine().build()).build())
+        return new Docker(DockerExecutable.builder()
+                        .dockerConfiguration(DockerMachine.localMachine().build())
+                        .build())
                 .configuredVersion();
     }
 
@@ -54,9 +55,10 @@ public class Docker {
         String versionString = command.execute(Command.throwingOnError(), "-v");
         Matcher matcher = VERSION_PATTERN.matcher(versionString);
         checkState(matcher.matches(), "Unexpected output of docker -v: %s", versionString);
-        return Version.forIntegers(Integer.parseInt(matcher.group(1)),
-                                   Integer.parseInt(matcher.group(2)),
-                                   Integer.parseInt(matcher.group(3)));
+        return Version.forIntegers(
+                Integer.parseInt(matcher.group(1)),
+                Integer.parseInt(matcher.group(2)),
+                Integer.parseInt(matcher.group(3)));
     }
 
     private final Command command;
@@ -76,7 +78,8 @@ public class Docker {
     }
 
     public void rm(String... containerNames) throws IOException, InterruptedException {
-        command.execute(Command.throwingOnError(),
+        command.execute(
+                Command.throwingOnError(),
                 ObjectArrays.concat(new String[] {"rm", "-f"}, containerNames, String.class));
     }
 

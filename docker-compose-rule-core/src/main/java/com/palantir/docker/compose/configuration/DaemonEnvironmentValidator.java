@@ -15,12 +15,7 @@
  */
 package com.palantir.docker.compose.configuration;
 
-import static com.google.common.base.Preconditions.checkState;
-import static com.palantir.docker.compose.configuration.EnvironmentVariables.DOCKER_CERT_PATH;
-import static com.palantir.docker.compose.configuration.EnvironmentVariables.DOCKER_HOST;
-import static com.palantir.docker.compose.configuration.EnvironmentVariables.DOCKER_TLS_VERIFY;
-import static java.util.stream.Collectors.joining;
-
+import com.google.common.base.Preconditions;
 import com.google.common.base.Suppliers;
 import com.google.common.collect.ImmutableSet;
 import java.util.Map;
@@ -28,11 +23,14 @@ import java.util.Set;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-public class DaemonEnvironmentValidator implements EnvironmentValidator {
+public final class DaemonEnvironmentValidator implements EnvironmentValidator {
 
-    private static final Set<String> ILLEGAL_VARIABLES = ImmutableSet.of(DOCKER_TLS_VERIFY, DOCKER_HOST, DOCKER_CERT_PATH);
-    private static final Supplier<DaemonEnvironmentValidator> SUPPLIER = Suppliers.memoize(
-            () -> new DaemonEnvironmentValidator())::get;
+    private static final Set<String> ILLEGAL_VARIABLES = ImmutableSet.of(
+            EnvironmentVariables.DOCKER_TLS_VERIFY,
+            EnvironmentVariables.DOCKER_HOST,
+            EnvironmentVariables.DOCKER_CERT_PATH);
+    private static final Supplier<DaemonEnvironmentValidator> SUPPLIER =
+            Suppliers.memoize(() -> new DaemonEnvironmentValidator());
 
     public static DaemonEnvironmentValidator instance() {
         return SUPPLIER.get();
@@ -43,14 +41,14 @@ public class DaemonEnvironmentValidator implements EnvironmentValidator {
     @Override
     public void validateEnvironmentVariables(Map<String, String> dockerEnvironment) {
         Set<String> invalidVariables = ILLEGAL_VARIABLES.stream()
-                                                         .filter(dockerEnvironment::containsKey)
-                                                         .collect(Collectors.toSet());
+                .filter(dockerEnvironment::containsKey)
+                .collect(Collectors.toSet());
 
         String errorMessage = invalidVariables.stream()
-                                              .collect(joining(", ",
-                                                               "These variables were set: ",
-                                                               ". They cannot be set when connecting to a local docker daemon."));
-        checkState(invalidVariables.isEmpty(), errorMessage);
+                .collect(Collectors.joining(
+                        ", ",
+                        "These variables were set: ",
+                        ". They cannot be set when connecting to a local docker daemon."));
+        Preconditions.checkState(invalidVariables.isEmpty(), errorMessage);
     }
-
 }

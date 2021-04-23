@@ -17,7 +17,7 @@ package com.palantir.docker.compose.connection;
 
 import java.util.Objects;
 
-public class PortMapping {
+public final class PortMapping {
 
     private final int externalPort;
     private final int internalPort;
@@ -52,14 +52,11 @@ public class PortMapping {
             return false;
         }
         PortMapping other = (PortMapping) obj;
-        return Objects.equals(externalPort, other.externalPort)
-                && Objects.equals(internalPort, other.internalPort);
+        return Objects.equals(externalPort, other.externalPort) && Objects.equals(internalPort, other.internalPort);
     }
 
     @Override
     public String toString() {
-        return "PortMapping [externalPort=" + externalPort + ", internalPort="
-                + internalPort + "]";
+        return "PortMapping [externalPort=" + externalPort + ", internalPort=" + internalPort + "]";
     }
-
 }

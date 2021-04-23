@@ -49,10 +49,7 @@ final class ReportCompiler implements Reporter {
     private final Consumer<Report> reportConsumer;
     private final Report.Builder reportBuilder = Report.builder();
 
-    ReportCompiler(
-            Clock clock,
-            PatternCollection environmentVariableWhitelist,
-            Consumer<Report> reportConsumer) {
+    ReportCompiler(Clock clock, PatternCollection environmentVariableWhitelist, Consumer<Report> reportConsumer) {
         this.clock = clock;
         this.environmentVariableWhitelist = environmentVariableWhitelist;
         this.reportConsumer = reportConsumer;
@@ -110,11 +107,10 @@ final class ReportCompiler implements Reporter {
                         .flatMap(GitUtils::parsePathFromGitRemoteUrl))
                 .build();
     }
+
     private Optional<String> runProcess(String... args) {
         try {
-            Process process = new ProcessBuilder()
-                    .command(args)
-                    .start();
+            Process process = new ProcessBuilder().command(args).start();
 
             boolean finished = process.waitFor(5, TimeUnit.SECONDS);
 
@@ -124,21 +120,22 @@ final class ReportCompiler implements Reporter {
             }
 
             if (process.exitValue() != 0) {
-                throw new SafeRuntimeException("Process exited with exit value {} and stderr:\n{}",
+                throw new SafeRuntimeException(
+                        "Process exited with non-zero exit code",
                         SafeArg.of("exitValue", process.exitValue()),
                         SafeArg.of("stderr", inputStreamToString(process.getErrorStream())));
             }
 
             return Optional.of(inputStreamToString(process.getInputStream()));
         } catch (IOException | InterruptedException | RuntimeException exception) {
-            addException(new SafeRuntimeException("Running command failed. Args: {}",
-                    exception,
-                    SafeArg.of("args", Arrays.asList(args))));
+            addException(new SafeRuntimeException(
+                    "Running command failed.", exception, SafeArg.of("args", Arrays.asList(args))));
             return Optional.empty();
         }
     }
 
     private String inputStreamToString(InputStream inputStream) throws IOException {
-        return CharStreams.toString(new InputStreamReader(inputStream, StandardCharsets.UTF_8)).trim();
+        return CharStreams.toString(new InputStreamReader(inputStream, StandardCharsets.UTF_8))
+                .trim();
     }
 }

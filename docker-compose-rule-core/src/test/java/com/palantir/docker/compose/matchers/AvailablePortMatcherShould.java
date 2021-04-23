@@ -39,8 +39,8 @@ public class AvailablePortMatcherShould {
 
     @Test
     public void throw_exception_when_there_are_some_unavailable_ports() {
-        List<DockerPort> unavailablePorts = newArrayList(new DockerPort("0.0.0.0", 1234, 1234),
-                                                         new DockerPort("1.2.3.4", 2345, 3456));
+        List<DockerPort> unavailablePorts =
+                newArrayList(new DockerPort("0.0.0.0", 1234, 1234), new DockerPort("1.2.3.4", 2345, 3456));
         exception.expect(AssertionError.class);
         exception.expectMessage("For host with ip address: 0.0.0.0");
         exception.expectMessage("external port '1234' mapped to internal port '1234' was unavailable");
@@ -48,5 +48,4 @@ public class AvailablePortMatcherShould {
         exception.expectMessage("external port '2345' mapped to internal port '3456' was unavailable");
         assertThat(unavailablePorts, areAvailable());
     }
-
 }

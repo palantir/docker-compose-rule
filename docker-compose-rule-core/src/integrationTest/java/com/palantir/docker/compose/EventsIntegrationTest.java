@@ -66,8 +66,7 @@ public class EventsIntegrationTest {
                 WaitForServicesEvent.class,
                 ShutdownStopEvent.class,
                 LogCollectionEvent.class,
-                ShutdownEvent.class
-        );
+                ShutdownEvent.class);
 
         assertThat(events).hasSameSizeAs(expected);
         for (int i = 0; i < events.size(); i++) {
@@ -83,7 +82,7 @@ public class EventsIntegrationTest {
                 .file(ALL_GOOD_DOCKER_COMPOSE_YAML)
                 .waitingForService(
                         "one",
-                        container -> SuccessOrFailure.failure(failureMessage),
+                        _container -> SuccessOrFailure.failure(failureMessage),
                         org.joda.time.Duration.standardSeconds(1))
                 .addEventConsumer(eventConsumer)
                 .build();
@@ -103,7 +102,6 @@ public class EventsIntegrationTest {
                 .map(Optional::get)
                 .findFirst()
                 .orElseThrow(() -> new IllegalStateException("no clusterwaits in events"));
-
 
         assertThat(clusterWait.getServiceNames()).containsOnly("one");
         assertThat(clusterWait.getTask().getFailure()).hasValueSatisfying(failure -> {
@@ -130,22 +128,22 @@ public class EventsIntegrationTest {
     private Optional<ClusterWaitEvent> isClusterWait(Event event) {
         return event.accept(new Event.Visitor<Optional<ClusterWaitEvent>>() {
             @Override
-            public Optional<ClusterWaitEvent> visitBuild(BuildEvent value) {
+            public Optional<ClusterWaitEvent> visitBuild(BuildEvent _value) {
                 return Optional.empty();
             }
 
             @Override
-            public Optional<ClusterWaitEvent> visitPull(PullEvent value) {
+            public Optional<ClusterWaitEvent> visitPull(PullEvent _value) {
                 return Optional.empty();
             }
 
             @Override
-            public Optional<ClusterWaitEvent> visitUp(UpEvent value) {
+            public Optional<ClusterWaitEvent> visitUp(UpEvent _value) {
                 return Optional.empty();
             }
 
             @Override
-            public Optional<ClusterWaitEvent> visitWaitForServices(WaitForServicesEvent value) {
+            public Optional<ClusterWaitEvent> visitWaitForServices(WaitForServicesEvent _value) {
                 return Optional.empty();
             }
 
@@ -155,22 +153,22 @@ public class EventsIntegrationTest {
             }
 
             @Override
-            public Optional<ClusterWaitEvent> visitShutdownStop(ShutdownStopEvent value) {
+            public Optional<ClusterWaitEvent> visitShutdownStop(ShutdownStopEvent _value) {
                 return Optional.empty();
             }
 
             @Override
-            public Optional<ClusterWaitEvent> visitLogCollection(LogCollectionEvent value) {
+            public Optional<ClusterWaitEvent> visitLogCollection(LogCollectionEvent _value) {
                 return Optional.empty();
             }
 
             @Override
-            public Optional<ClusterWaitEvent> visitShutdown(ShutdownEvent value) {
+            public Optional<ClusterWaitEvent> visitShutdown(ShutdownEvent _value) {
                 return Optional.empty();
             }
 
             @Override
-            public Optional<ClusterWaitEvent> visitUnknown(String unknownType) {
+            public Optional<ClusterWaitEvent> visitUnknown(String _unknownType) {
                 return Optional.empty();
             }
         });

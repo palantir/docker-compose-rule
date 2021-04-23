@@ -19,7 +19,6 @@ import com.palantir.docker.compose.connection.Cluster;
 import java.util.Optional;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 import org.awaitility.Awaitility;
 import org.awaitility.core.ConditionTimeoutException;
@@ -28,7 +27,7 @@ import org.joda.time.ReadableDuration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ClusterWait {
+public final class ClusterWait {
     private static final Logger log = LoggerFactory.getLogger(ClusterWait.class);
     private final ClusterHealthCheck clusterHealthCheck;
     private final Duration timeout;
@@ -39,8 +38,8 @@ public class ClusterWait {
     }
 
     public void waitUntilReady(Cluster cluster) {
-        final AtomicReference<Optional<SuccessOrFailure>> lastSuccessOrFailure = new AtomicReference<>(
-                Optional.empty());
+        final AtomicReference<Optional<SuccessOrFailure>> lastSuccessOrFailure =
+                new AtomicReference<>(Optional.empty());
 
         // semi-intelligent poll interval. If we specify a fast timeout, it will poll more often, otherwise poll
         // at a slower rate
@@ -48,17 +47,18 @@ public class ClusterWait {
 
         try {
             Awaitility.await()
-                    .pollInterval(pollInterval.getMillis(), TimeUnit.MILLISECONDS)
-                    .pollDelay(ThreadLocalRandom.current().nextInt(1, 50), TimeUnit.MILLISECONDS)
-                    .atMost(timeout.getMillis(), TimeUnit.MILLISECONDS)
+                    .pollInterval(java.time.Duration.ofMillis(pollInterval.getMillis()))
+                    .pollDelay(java.time.Duration.ofMillis(
+                            ThreadLocalRandom.current().nextInt(1, 50)))
+                    .atMost(java.time.Duration.ofMillis(timeout.getMillis()))
                     .until(weHaveSuccess(cluster, lastSuccessOrFailure));
         } catch (ConditionTimeoutException e) {
             throw new IllegalStateException(serviceDidNotStartupExceptionMessage(lastSuccessOrFailure));
         }
     }
 
-    private Callable<Boolean> weHaveSuccess(Cluster cluster,
-            AtomicReference<Optional<SuccessOrFailure>> lastSuccessOrFailure) {
+    private Callable<Boolean> weHaveSuccess(
+            Cluster cluster, AtomicReference<Optional<SuccessOrFailure>> lastSuccessOrFailure) {
         return () -> {
             SuccessOrFailure successOrFailure = clusterHealthCheck.isClusterHealthy(cluster);
             lastSuccessOrFailure.set(Optional.of(successOrFailure));
@@ -68,7 +68,8 @@ public class ClusterWait {
 
     private static String serviceDidNotStartupExceptionMessage(
             AtomicReference<Optional<SuccessOrFailure>> lastSuccessOrFailure) {
-        String healthcheckFailureMessage = lastSuccessOrFailure.get()
+        String healthcheckFailureMessage = lastSuccessOrFailure
+                .get()
                 .flatMap(SuccessOrFailure::toOptionalFailureMessage)
                 .orElse("The healthcheck did not finish before the timeout");
 
@@ -82,5 +83,4 @@ public class ClusterWait {
 
         return second;
     }
-
 }

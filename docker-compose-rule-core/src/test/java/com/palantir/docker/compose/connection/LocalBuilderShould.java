@@ -15,7 +15,6 @@
  */
 package com.palantir.docker.compose.connection;
 
-import static com.google.common.collect.Maps.newHashMap;
 import static com.palantir.docker.compose.configuration.DaemonHostIpResolver.LOCALHOST;
 import static com.palantir.docker.compose.configuration.DockerType.DAEMON;
 import static com.palantir.docker.compose.configuration.DockerType.REMOTE;
@@ -29,6 +28,7 @@ import static org.hamcrest.core.Is.is;
 
 import com.google.common.collect.ImmutableMap;
 import com.palantir.docker.compose.connection.DockerMachine.LocalBuilder;
+import java.util.HashMap;
 import java.util.Map;
 import org.junit.Rule;
 import org.junit.Test;
@@ -43,9 +43,10 @@ public class LocalBuilderShould {
     public void override_previous_environment_when_additional_environment_set_twice_daemon() {
         Map<String, String> environment1 = ImmutableMap.of("ENV_1", "VAL_1");
         Map<String, String> environment2 = ImmutableMap.of("ENV_2", "VAL_2");
-        DockerMachine localMachine = new LocalBuilder(DAEMON, newHashMap()).withEnvironment(environment1)
-                                                                           .withEnvironment(environment2)
-                                                                           .build();
+        DockerMachine localMachine = new LocalBuilder(DAEMON, new HashMap<>())
+                .withEnvironment(environment1)
+                .withEnvironment(environment2)
+                .build();
         assertThat(localMachine, not(containsEnvironment(environment1)));
         assertThat(localMachine, containsEnvironment(environment2));
     }
@@ -53,12 +54,13 @@ public class LocalBuilderShould {
     @Test
     public void be_union_of_additional_environment_and_individual_environment_when_both_set_daemon() {
         Map<String, String> environment = ImmutableMap.<String, String>builder()
-                                                       .put("ENV_1", "VAL_1")
-                                                       .put("ENV_2", "VAL_2")
-                                                       .build();
-        DockerMachine localMachine = new LocalBuilder(DAEMON, newHashMap()).withEnvironment(environment)
-                                                                           .withAdditionalEnvironmentVariable("ENV_3", "VAL_3")
-                                                                           .build();
+                .put("ENV_1", "VAL_1")
+                .put("ENV_2", "VAL_2")
+                .build();
+        DockerMachine localMachine = new LocalBuilder(DAEMON, new HashMap<>())
+                .withEnvironment(environment)
+                .withAdditionalEnvironmentVariable("ENV_3", "VAL_3")
+                .build();
         assertThat(localMachine, containsEnvironment(environment));
         assertThat(localMachine, containsEnvironment(ImmutableMap.of("ENV_3", "VAL_3")));
     }
@@ -70,9 +72,10 @@ public class LocalBuilderShould {
                 .build();
         Map<String, String> environment1 = ImmutableMap.of("ENV_1", "VAL_1");
         Map<String, String> environment2 = ImmutableMap.of("ENV_2", "VAL_2");
-        DockerMachine localMachine = new LocalBuilder(REMOTE, dockerVariables).withEnvironment(environment1)
-                                                                           .withEnvironment(environment2)
-                                                                           .build();
+        DockerMachine localMachine = new LocalBuilder(REMOTE, dockerVariables)
+                .withEnvironment(environment1)
+                .withEnvironment(environment2)
+                .build();
         assertThat(localMachine, not(containsEnvironment(environment1)));
         assertThat(localMachine, containsEnvironment(environment2));
     }
@@ -86,9 +89,10 @@ public class LocalBuilderShould {
                 .put("ENV_1", "VAL_1")
                 .put("ENV_2", "VAL_2")
                 .build();
-        DockerMachine localMachine = new LocalBuilder(REMOTE, dockerVariables).withEnvironment(environment)
-                                                                              .withAdditionalEnvironmentVariable("ENV_3", "VAL_3")
-                                                                              .build();
+        DockerMachine localMachine = new LocalBuilder(REMOTE, dockerVariables)
+                .withEnvironment(environment)
+                .withAdditionalEnvironmentVariable("ENV_3", "VAL_3")
+                .build();
         assertThat(localMachine, containsEnvironment(environment));
         assertThat(localMachine, containsEnvironment(ImmutableMap.of("ENV_3", "VAL_3")));
     }
@@ -99,9 +103,10 @@ public class LocalBuilderShould {
                 .put("ENV_1", "VAL_1")
                 .put("ENV_2", "VAL_2")
                 .build();
-        DockerMachine localMachine = new LocalBuilder(DAEMON, newHashMap()).withEnvironment(environment)
-                                                                           .withAdditionalEnvironmentVariable("ENV_2", "DIFFERENT_VALUE")
-                                                                           .build();
+        DockerMachine localMachine = new LocalBuilder(DAEMON, new HashMap<>())
+                .withEnvironment(environment)
+                .withAdditionalEnvironmentVariable("ENV_2", "DIFFERENT_VALUE")
+                .build();
 
         Map<String, String> expected = ImmutableMap.<String, String>builder()
                 .put("ENV_1", "VAL_1")
@@ -113,15 +118,13 @@ public class LocalBuilderShould {
 
     @Test
     public void override_system_environment_with_additional_environment() {
-        Map<String, String> systemEnv = ImmutableMap.<String, String>builder()
-                .put("ENV_1", "VAL_1")
-                .build();
+        Map<String, String> systemEnv =
+                ImmutableMap.<String, String>builder().put("ENV_1", "VAL_1").build();
         Map<String, String> overrideEnv = ImmutableMap.<String, String>builder()
                 .put("ENV_1", "DIFFERENT_VALUE")
                 .build();
-        DockerMachine localMachine = new LocalBuilder(DAEMON, systemEnv)
-                .withEnvironment(overrideEnv)
-                .build();
+        DockerMachine localMachine =
+                new LocalBuilder(DAEMON, systemEnv).withEnvironment(overrideEnv).build();
 
         assertThat(localMachine, not(containsEnvironment(systemEnv)));
         assertThat(localMachine, containsEnvironment(overrideEnv));
@@ -152,30 +155,32 @@ public class LocalBuilderShould {
         exception.expectMessage(DOCKER_HOST);
         exception.expectMessage("cannot exist in your additional environment variable block");
 
-        new LocalBuilder(DAEMON, newHashMap()).withAdditionalEnvironmentVariable(DOCKER_HOST, "tcp://192.168.99.100:2376")
-                                              .build();
+        new LocalBuilder(DAEMON, new HashMap<>())
+                .withAdditionalEnvironmentVariable(DOCKER_HOST, "tcp://192.168.99.100:2376")
+                .build();
     }
 
     @Test
     public void have_invalid_additional_variables_remote() {
         Map<String, String> dockerVariables = ImmutableMap.<String, String>builder()
-                                                          .put(DOCKER_HOST, "tcp://192.168.99.100:2376")
-                                                          .put(DOCKER_TLS_VERIFY, "1")
-                                                          .put(DOCKER_CERT_PATH, "/path/to/certs")
-                                                          .build();
+                .put(DOCKER_HOST, "tcp://192.168.99.100:2376")
+                .put(DOCKER_TLS_VERIFY, "1")
+                .put(DOCKER_CERT_PATH, "/path/to/certs")
+                .build();
 
         exception.expect(IllegalStateException.class);
         exception.expectMessage("The following variables");
         exception.expectMessage(DOCKER_HOST);
         exception.expectMessage("cannot exist in your additional environment variable block");
 
-        new LocalBuilder(REMOTE, dockerVariables).withAdditionalEnvironmentVariable(DOCKER_HOST, "tcp://192.168.99.101:2376")
-                                                 .build();
+        new LocalBuilder(REMOTE, dockerVariables)
+                .withAdditionalEnvironmentVariable(DOCKER_HOST, "tcp://192.168.99.101:2376")
+                .build();
     }
 
     @Test
     public void return_localhost_as_ip_daemon() {
-        DockerMachine localMachine = new LocalBuilder(DAEMON, newHashMap()).build();
+        DockerMachine localMachine = new LocalBuilder(DAEMON, new HashMap<>()).build();
         assertThat(localMachine.getIp(), is(LOCALHOST));
     }
 
@@ -196,14 +201,14 @@ public class LocalBuilderShould {
         exception.expect(IllegalStateException.class);
         exception.expectMessage("Missing required environment variables: ");
         exception.expectMessage(DOCKER_HOST);
-        new LocalBuilder(REMOTE, newHashMap()).build();
+        new LocalBuilder(REMOTE, new HashMap<>()).build();
     }
 
     @Test
     public void build_without_tls_remote() {
         Map<String, String> dockerVariables = ImmutableMap.<String, String>builder()
-                                                          .put(DOCKER_HOST, "tcp://192.168.99.100:2376")
-                                                          .build();
+                .put(DOCKER_HOST, "tcp://192.168.99.100:2376")
+                .build();
 
         DockerMachine localMachine = new LocalBuilder(REMOTE, dockerVariables).build();
         assertThat(localMachine, containsEnvironment(dockerVariables));

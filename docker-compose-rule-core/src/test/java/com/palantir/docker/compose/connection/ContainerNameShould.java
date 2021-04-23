@@ -1,5 +1,17 @@
 /*
  * (c) Copyright 2016 Palantir Technologies Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package com.palantir.docker.compose.connection;
@@ -28,7 +40,8 @@ public class ContainerNameShould {
 
     @Test
     public void can_handle_custom_container_names() {
-        ContainerName name = ContainerName.fromPsLine("test-1.container.name   /docker-entrypoint.sh postgres   Up      5432/tcp");
+        ContainerName name =
+                ContainerName.fromPsLine("test-1.container.name   /docker-entrypoint.sh postgres   Up      5432/tcp");
 
         ContainerName expected = ImmutableContainerName.builder()
                 .rawName("test-1.container.name")
@@ -58,13 +71,15 @@ public class ContainerNameShould {
 
     @Test
     public void allow_containers_with_underscores_in_their_name() {
-        List<ContainerName> names = ContainerNames.parseFromDockerComposePs("\n----\ndir_left_right_1 other line contents");
+        List<ContainerName> names =
+                ContainerNames.parseFromDockerComposePs("\n----\ndir_left_right_1 other line contents");
         assertThat(names, contains(containerName("dir", "left_right", "1")));
     }
 
     @Test
     public void result_in_two_container_names_when_ps_output_has_two_containers() {
-        List<ContainerName> names = ContainerNames.parseFromDockerComposePs("\n----\ndir_db_1 other line contents\ndir_db2_1 other stuff");
+        List<ContainerName> names =
+                ContainerNames.parseFromDockerComposePs("\n----\ndir_db_1 other line contents\ndir_db2_1 other stuff");
         assertThat(names, contains(containerName("dir", "db", "1"), containerName("dir", "db2", "1")));
     }
 
@@ -76,7 +91,8 @@ public class ContainerNameShould {
 
     @Test
     public void ignore_a_line_with_ony_spaces_in_ps_output() {
-        List<ContainerName> names = ContainerNames.parseFromDockerComposePs("\n----\ndir_db_1 other line contents\n   \n");
+        List<ContainerName> names =
+                ContainerNames.parseFromDockerComposePs("\n----\ndir_db_1 other line contents\n   \n");
         assertThat(names, contains(containerName("dir", "db", "1")));
     }
 

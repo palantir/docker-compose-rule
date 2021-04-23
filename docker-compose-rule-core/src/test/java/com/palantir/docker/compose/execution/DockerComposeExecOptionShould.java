@@ -24,8 +24,8 @@ import org.junit.Test;
 
 public class DockerComposeExecOptionShould {
 
-    @Test public void
-    be_constructable_with_no_args() {
+    @Test
+    public void be_constructable_with_no_args() {
         DockerComposeExecOption option = noOptions();
         assertThat(option.options(), empty());
     }

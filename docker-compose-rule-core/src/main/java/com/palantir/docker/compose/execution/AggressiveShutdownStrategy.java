@@ -1,5 +1,17 @@
 /*
  * (c) Copyright 2016 Palantir Technologies Inc. All rights reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package com.palantir.docker.compose.execution;
@@ -20,7 +32,7 @@ import org.slf4j.LoggerFactory;
  * @deprecated Use {@link ShutdownStrategy#KILL_DOWN}
  */
 @Deprecated
-public class AggressiveShutdownStrategy implements ShutdownStrategy {
+public final class AggressiveShutdownStrategy implements ShutdownStrategy {
 
     private static final Logger log = LoggerFactory.getLogger(AggressiveShutdownStrategy.class);
 
@@ -28,7 +40,9 @@ public class AggressiveShutdownStrategy implements ShutdownStrategy {
     public void shutdown(DockerCompose dockerCompose, Docker docker) throws IOException, InterruptedException {
         List<ContainerName> runningContainers = dockerCompose.ps();
 
-        log.info("Shutting down {}", runningContainers.stream().map(ContainerName::semanticName).collect(toList()));
+        log.info(
+                "Shutting down {}",
+                runningContainers.stream().map(ContainerName::semanticName).collect(toList()));
         if (removeContainersCatchingErrors(docker, runningContainers)) {
             return;
         }
@@ -45,7 +59,8 @@ public class AggressiveShutdownStrategy implements ShutdownStrategy {
         docker.pruneNetworks();
     }
 
-    private static boolean removeContainersCatchingErrors(Docker docker, List<ContainerName> runningContainers) throws IOException, InterruptedException {
+    private static boolean removeContainersCatchingErrors(Docker docker, List<ContainerName> runningContainers)
+            throws IOException, InterruptedException {
         try {
             removeContainers(docker, runningContainers);
             return true;
@@ -54,13 +69,12 @@ public class AggressiveShutdownStrategy implements ShutdownStrategy {
         }
     }
 
-    private static void removeContainers(Docker docker, List<ContainerName> running) throws IOException, InterruptedException {
-        List<String> rawContainerNames = running.stream()
-                .map(ContainerName::rawName)
-                .collect(toList());
+    private static void removeContainers(Docker docker, List<ContainerName> running)
+            throws IOException, InterruptedException {
+        List<String> rawContainerNames =
+                running.stream().map(ContainerName::rawName).collect(toList());
 
         docker.rm(rawContainerNames);
         log.debug("Finished shutdown");
     }
-
 }

@@ -15,24 +15,20 @@
  */
 package com.palantir.docker.compose.configuration;
 
-import static com.google.common.collect.Sets.newHashSet;
-import static com.palantir.docker.compose.configuration.EnvironmentVariables.DOCKER_CERT_PATH;
-import static com.palantir.docker.compose.configuration.EnvironmentVariables.DOCKER_HOST;
-import static com.palantir.docker.compose.configuration.EnvironmentVariables.DOCKER_TLS_VERIFY;
-import static java.util.stream.Collectors.joining;
-
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class RemoteEnvironmentValidator implements EnvironmentValidator {
+public final class RemoteEnvironmentValidator implements EnvironmentValidator {
 
-    private static final Set<String> SECURE_VARIABLES = ImmutableSet.of(DOCKER_TLS_VERIFY, DOCKER_CERT_PATH);
+    private static final Set<String> SECURE_VARIABLES =
+            ImmutableSet.of(EnvironmentVariables.DOCKER_TLS_VERIFY, EnvironmentVariables.DOCKER_CERT_PATH);
     private static final RemoteEnvironmentValidator VALIDATOR = new RemoteEnvironmentValidator();
 
     public static RemoteEnvironmentValidator instance() {
@@ -45,28 +41,28 @@ public class RemoteEnvironmentValidator implements EnvironmentValidator {
     public void validateEnvironmentVariables(Map<String, String> dockerEnvironment) {
         Collection<String> missingVariables = getMissingEnvVariables(dockerEnvironment);
         String errorMessage = missingVariables.stream()
-                                              .collect(joining(", ",
-                                                               "Missing required environment variables: ",
-                                                               ". Please run `docker-machine env <machine-name>` and "
-                                                                       + "ensure they are set on the DockerComposition."));
+                .collect(Collectors.joining(
+                        ", ",
+                        "Missing required environment variables: ",
+                        ". Please run `docker-machine env <machine-name>` and "
+                                + "ensure they are set on the DockerComposition."));
 
         Preconditions.checkState(missingVariables.isEmpty(), errorMessage);
     }
 
     private static Collection<String> getMissingEnvVariables(Map<String, String> dockerEnvironment) {
-        Collection<String> requiredVariables = Sets.union(newHashSet(DOCKER_HOST),
-                secureVariablesRequired(dockerEnvironment));
+        Collection<String> requiredVariables = Sets.union(
+                Sets.newHashSet(EnvironmentVariables.DOCKER_HOST), secureVariablesRequired(dockerEnvironment));
         return requiredVariables.stream()
-                                .filter(envVariable -> Strings.isNullOrEmpty(dockerEnvironment.get(envVariable)))
-                                .collect(Collectors.toSet());
+                .filter(envVariable -> Strings.isNullOrEmpty(dockerEnvironment.get(envVariable)))
+                .collect(Collectors.toSet());
     }
 
     private static Set<String> secureVariablesRequired(Map<String, String> dockerEnvironment) {
-        return certVerificationEnabled(dockerEnvironment) ? SECURE_VARIABLES : newHashSet();
+        return certVerificationEnabled(dockerEnvironment) ? SECURE_VARIABLES : new HashSet<>();
     }
 
     private static boolean certVerificationEnabled(Map<String, String> dockerEnvironment) {
-        return dockerEnvironment.containsKey(DOCKER_TLS_VERIFY);
+        return dockerEnvironment.containsKey(EnvironmentVariables.DOCKER_TLS_VERIFY);
     }
-
 }

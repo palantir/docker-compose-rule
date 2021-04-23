@@ -33,8 +33,8 @@ public class RemoteEnvironmentValidatorShould {
     @Test
     public void throw_exception_if_docker_host_is_not_set() {
         Map<String, String> variables = ImmutableMap.<String, String>builder()
-                                                    .put("SOME_VARIABLE", "SOME_VALUE")
-                                                    .build();
+                .put("SOME_VARIABLE", "SOME_VALUE")
+                .build();
 
         exception.expect(IllegalStateException.class);
         exception.expectMessage("Missing required environment variables: ");
@@ -58,9 +58,9 @@ public class RemoteEnvironmentValidatorShould {
     @Test
     public void validate_environment_with_all_valid_variables_set_without_tls() {
         Map<String, String> variables = ImmutableMap.<String, String>builder()
-                                                    .put(DOCKER_HOST, "tcp://192.168.99.100:2376")
-                                                    .put("SOME_VARIABLE", "SOME_VALUE")
-                                                    .build();
+                .put(DOCKER_HOST, "tcp://192.168.99.100:2376")
+                .put("SOME_VARIABLE", "SOME_VALUE")
+                .build();
 
         RemoteEnvironmentValidator.instance().validateEnvironmentVariables(variables);
     }

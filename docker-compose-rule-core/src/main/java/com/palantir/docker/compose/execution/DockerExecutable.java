@@ -23,16 +23,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @Value.Immutable
+@SuppressWarnings("DesignForExtension")
 public abstract class DockerExecutable implements Executable {
     private static final Logger log = LoggerFactory.getLogger(DockerExecutable.class);
 
-    private static final DockerCommandLocations DOCKER_LOCATIONS = new DockerCommandLocations(
-            System.getenv("DOCKER_LOCATION"),
-            "/usr/local/bin/docker",
-            "/usr/bin/docker"
-    );
+    private static final DockerCommandLocations DOCKER_LOCATIONS =
+            new DockerCommandLocations(System.getenv("DOCKER_LOCATION"), "/usr/local/bin/docker", "/usr/bin/docker");
 
-    @Value.Parameter protected abstract DockerConfiguration dockerConfiguration();
+    @Value.Parameter
+    protected abstract DockerConfiguration dockerConfiguration();
 
     @Override
     public final String commandName() {
@@ -41,9 +40,9 @@ public abstract class DockerExecutable implements Executable {
 
     @Value.Derived
     protected String dockerPath() {
-        String pathToUse = DOCKER_LOCATIONS.preferredLocation()
-                .orElseThrow(() -> new IllegalStateException(
-                        "Could not find docker, looked in: " + DOCKER_LOCATIONS));
+        String pathToUse = DOCKER_LOCATIONS
+                .preferredLocation()
+                .orElseThrow(() -> new IllegalStateException("Could not find docker, looked in: " + DOCKER_LOCATIONS));
 
         log.debug("Using docker found at " + pathToUse);
 
@@ -52,12 +51,11 @@ public abstract class DockerExecutable implements Executable {
 
     @Override
     public Process execute(String... commands) throws IOException {
-        List<String> args = ImmutableList.<String>builder()
-                .add(dockerPath())
-                .add(commands)
-                .build();
+        List<String> args =
+                ImmutableList.<String>builder().add(dockerPath()).add(commands).build();
 
-        return dockerConfiguration().configuredDockerComposeProcess()
+        return dockerConfiguration()
+                .configuredDockerComposeProcess()
                 .command(args)
                 .redirectErrorStream(true)
                 .start();

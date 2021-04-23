@@ -25,6 +25,7 @@ import org.junit.runners.model.Statement;
 
 @Value.Immutable
 @CustomImmutablesStyle
+@SuppressWarnings("DesignForExtension")
 public abstract class DockerComposeRule extends DockerComposeManager implements TestRule {
     @Override
     public Statement apply(Statement base, Description description) {
@@ -51,7 +52,7 @@ public abstract class DockerComposeRule extends DockerComposeManager implements 
         return new Builder();
     }
 
-    public static class Builder extends ImmutableDockerComposeRule.Builder implements BuilderExtensions<Builder> {
+    public static final class Builder extends ImmutableDockerComposeRule.Builder implements BuilderExtensions<Builder> {
         @Override
         public DockerComposeRule build() {
             return super.build();

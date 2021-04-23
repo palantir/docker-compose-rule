@@ -31,8 +31,7 @@ public interface ReportingConfig {
     @Value.Auxiliary
     @Value.Derived
     default PatternCollection envVarWhitelistPatterns() {
-        return new PatternCollection(ImmutableList.of(
-                Pattern.compile("^CIRCLE")));
+        return new PatternCollection(ImmutableList.of(Pattern.compile("^CIRCLE")));
     }
 
     class Builder extends ImmutableReportingConfig.Builder {}
