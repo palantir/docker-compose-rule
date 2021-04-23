@@ -8,5 +8,5 @@ conjure {
 }
 
 configure(subprojects) {
-    apply from: "${rootDir}/gradle/publish-jar.gradle"
+    apply plugin: 'com.palantir.external-publish-jar'
 }
