@@ -20,7 +20,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.core.Is.is;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
@@ -63,7 +63,7 @@ public class CommandShould {
             throws IOException, InterruptedException {
         dockerComposeCommand.execute(errorHandler, "rm", "-f");
 
-        verifyZeroInteractions(errorHandler);
+        verifyNoMoreInteractions(errorHandler);
     }
 
     @Test

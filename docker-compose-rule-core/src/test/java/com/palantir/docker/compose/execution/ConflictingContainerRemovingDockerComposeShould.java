@@ -21,7 +21,7 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 import com.google.common.collect.ImmutableSet;
 import java.io.IOException;
@@ -51,7 +51,7 @@ public class ConflictingContainerRemovingDockerComposeShould {
         conflictingContainerRemovingDockerCompose.up();
 
         verify(dockerCompose, times(1)).up();
-        verifyZeroInteractions(docker);
+        verifyNoMoreInteractions(docker);
     }
 
     @Test
