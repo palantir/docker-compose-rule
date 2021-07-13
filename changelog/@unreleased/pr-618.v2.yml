@@ -1,0 +1,5 @@
+type: fix
+fix:
+  description: Use newer version of conjure-java-runtime that exists on maven central.
+  links:
+  - https://github.com/palantir/docker-compose-rule/pull/618
