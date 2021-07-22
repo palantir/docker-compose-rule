@@ -15,6 +15,7 @@
  */
 package com.palantir.docker.compose.execution;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.anySetOf;
 import static org.mockito.Mockito.doThrow;
@@ -144,7 +145,7 @@ public class ConflictingContainerRemovingDockerComposeShould {
         Set<String> conflictingContainerNames = conflictingContainerRemovingDockerCompose.getConflictingContainerNames(
                 "The name \"" + conflictingContainer + "\" is already in use");
 
-        assertEquals(ImmutableSet.of(conflictingContainer), conflictingContainerNames);
+        assertThat(conflictingContainerNames).isEqualTo(ImmutableSet.of(conflictingContainer));
     }
 
     @Test
@@ -156,6 +157,6 @@ public class ConflictingContainerRemovingDockerComposeShould {
         Set<String> conflictingContainerNames = conflictingContainerRemovingDockerCompose.getConflictingContainerNames(
                 "The container name \"" + conflictingContainer + "\" is already in use");
 
-        assertEquals(ImmutableSet.of(conflictingContainer), conflictingContainerNames);
+        assertThat(conflictingContainerNames).isEqualTo(ImmutableSet.of(conflictingContainer));
     }
 }

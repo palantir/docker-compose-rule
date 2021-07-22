@@ -20,7 +20,7 @@ import static com.google.common.base.Throwables.propagate;
 import static com.palantir.docker.compose.connection.waiting.HealthChecks.toHaveAllPortsOpen;
 import static com.palantir.docker.compose.execution.DockerComposeExecArgument.arguments;
 import static com.palantir.docker.compose.execution.DockerComposeExecOption.options;
-import static org.hamcrest.MatcherAssert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.core.Is.is;
 
 import com.google.common.collect.ImmutableList;
@@ -74,7 +74,7 @@ public class DockerComposeRuleIntegrationTest {
     @Test
     public void should_run_docker_compose_up_using_the_specified_docker_compose_file_to_bring_postgres_up() {
         forEachContainer(container -> {
-            assertThat(docker.containers().container(container).port(5432).isListeningNow(), is(true));
+            assertThat(docker.containers().container(container).port(5432).isListeningNow()).isEqualTo(true);
         });
     }
 
@@ -83,14 +83,14 @@ public class DockerComposeRuleIntegrationTest {
         docker.after();
 
         forEachContainer(container -> {
-            assertThat(docker.containers().container(container).port(5432).isListeningNow(), is(false));
+            assertThat(docker.containers().container(container).port(5432).isListeningNow()).isEqualTo(false);
         });
     }
 
     @Test
     public void can_access_external_port_for_internal_port_of_machine() {
         forEachContainer(container -> {
-            assertThat(docker.containers().container(container).port(5432).isListeningNow(), is(true));
+            assertThat(docker.containers().container(container).port(5432).isListeningNow()).isEqualTo(true);
         });
     }
 
@@ -101,10 +101,10 @@ public class DockerComposeRuleIntegrationTest {
                 Container container = docker.containers().container(containerName);
 
                 container.stop();
-                assertThat(container.state(), is(State.DOWN));
+                assertThat(container.state()).isEqualTo(State.DOWN);
 
                 container.start();
-                assertThat(container.state(), is(State.HEALTHY));
+                assertThat(container.state()).isEqualTo(State.HEALTHY);
             } catch (IOException | InterruptedException e) {
                 propagate(e);
             }
@@ -118,7 +118,7 @@ public class DockerComposeRuleIntegrationTest {
                 Container container = docker.containers().container(containerName);
 
                 container.stop();
-                assertThat(container.state(), is(State.DOWN));
+                assertThat(container.state()).isEqualTo(State.DOWN);
 
                 container.stop();
             } catch (IOException | InterruptedException e) {
@@ -134,7 +134,7 @@ public class DockerComposeRuleIntegrationTest {
                 Container container = docker.containers().container(containerName);
 
                 container.start();
-                assertThat(container.state(), is(State.HEALTHY));
+                assertThat(container.state()).isEqualTo(State.HEALTHY);
             } catch (IOException | InterruptedException e) {
                 propagate(e);
             }
@@ -148,10 +148,10 @@ public class DockerComposeRuleIntegrationTest {
                 Container container = docker.containers().container(containerName);
 
                 container.kill();
-                assertThat(container.state(), is(State.DOWN));
+                assertThat(container.state()).isEqualTo(State.DOWN);
 
                 container.start();
-                assertThat(container.state(), is(State.HEALTHY));
+                assertThat(container.state()).isEqualTo(State.HEALTHY);
             } catch (IOException | InterruptedException e) {
                 propagate(e);
             }
@@ -165,7 +165,7 @@ public class DockerComposeRuleIntegrationTest {
                 Container container = docker.containers().container(containerName);
 
                 container.kill();
-                assertThat(container.state(), is(State.DOWN));
+                assertThat(container.state()).isEqualTo(State.DOWN);
 
                 container.kill();
             } catch (IOException | InterruptedException e) {
@@ -177,16 +177,14 @@ public class DockerComposeRuleIntegrationTest {
     @Ignore // This test will not run on Circle CI because it does not currently support docker-compose exec.
     @Test
     public void exec_returns_output() throws Exception {
-        assertThat(docker.exec(options(), CONTAINERS.get(0), arguments("echo", "hello")), is("hello"));
+        assertThat(docker.exec(options(), CONTAINERS.get(0), arguments("echo", "hello"))).isEqualTo("hello");
     }
 
     @Test
     public void run_returns_output() throws Exception {
-        assertThat(
-                docker.run(
+        assertThat(docker.run(
                         DockerComposeRunOption.options("--entrypoint", "echo"),
                         CONTAINERS.get(0),
-                        DockerComposeRunArgument.arguments("hello")),
-                is("hello"));
+                        DockerComposeRunArgument.arguments("hello"))).isEqualTo("hello");
     }
 }

@@ -17,6 +17,7 @@
 package com.palantir.docker.compose;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Assertions.fail;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.mock;
@@ -87,12 +88,7 @@ public class EventsIntegrationTest {
                 .addEventConsumer(eventConsumer)
                 .build();
 
-        try {
-            runDockerComposeRule(dockerComposeManager);
-            fail("Was expecting an exception");
-        } catch (Throwable t) {
-            // ignore the failure
-        }
+                    assertThatThrownBy(() -> runDockerComposeRule(dockerComposeManager)).describedAs("Was expecting an exception").isInstanceOf(Throwable.class);
 
         List<Event> events = getEvents();
 

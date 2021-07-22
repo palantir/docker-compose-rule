@@ -16,7 +16,7 @@
 
 package com.palantir.docker.compose;
 
-import static org.hamcrest.MatcherAssert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assume.assumeTrue;
 
@@ -48,8 +48,8 @@ public class HostNetworkedPortsIntegrationTest {
                 .build();
         try {
             docker.before();
-            assertThat(docker.hostNetworkedPort(5432).getInternalPort(), is(5432));
-            assertThat(docker.hostNetworkedPort(5432).getExternalPort(), is(5432));
+            assertThat(docker.hostNetworkedPort(5432).getInternalPort()).isEqualTo(5432);
+            assertThat(docker.hostNetworkedPort(5432).getExternalPort()).isEqualTo(5432);
         } finally {
             docker.after();
         }

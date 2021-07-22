@@ -16,7 +16,7 @@
 
 package com.palantir.docker.compose;
 
-import static org.hamcrest.MatcherAssert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.is;
 
 import com.palantir.docker.compose.configuration.ShutdownStrategy;
@@ -36,12 +36,12 @@ public class AggressiveShutdownStrategyIntegrationTest {
                 .shutdownStrategy(ShutdownStrategy.AGGRESSIVE)
                 .build();
 
-        MatcherAssert.assertThat(docker.dockerCompose().ps(), Matchers.is(TestContainerNames.of()));
+        assertThat(docker.dockerCompose().ps()).isEqualTo(TestContainerNames.of());
 
         docker.before();
-        assertThat(docker.dockerCompose().ps().size(), is(2));
+        assertThat(docker.dockerCompose().ps().size()).isEqualTo(2);
         docker.after();
 
-        assertThat(docker.dockerCompose().ps(), is(TestContainerNames.of()));
+        assertThat(docker.dockerCompose().ps()).isEqualTo(TestContainerNames.of());
     }
 }

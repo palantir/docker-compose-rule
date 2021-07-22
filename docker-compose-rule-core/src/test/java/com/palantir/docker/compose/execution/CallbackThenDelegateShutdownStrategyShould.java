@@ -16,9 +16,9 @@
 
 package com.palantir.docker.compose.execution;
 
-import static org.hamcrest.MatcherAssert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
 import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.fail;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
@@ -59,7 +59,7 @@ public class CallbackThenDelegateShutdownStrategyShould {
             ShutdownStrategy.callbackAndThen(callback, delegate).stop(dockerCompose);
             fail("expected exception");
         } catch (RuntimeException e) {
-            assertThat(e, is(callbackException));
+            assertThat(e).isEqualTo(callbackException);
         }
 
         InOrder inOrder = inOrder(callback, delegate);
