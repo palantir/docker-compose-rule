@@ -16,9 +16,12 @@
 package com.palantir.docker.compose.configuration;
 
 import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import org.immutables.value.Value.Style;
 
+@Retention(RetentionPolicy.SOURCE)
 @Target({ElementType.PACKAGE, ElementType.TYPE})
 @Style(visibility = Style.ImplementationVisibility.PACKAGE)
 @interface PackageVisible {}
