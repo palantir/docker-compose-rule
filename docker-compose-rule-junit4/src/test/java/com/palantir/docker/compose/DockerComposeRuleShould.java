@@ -26,17 +26,20 @@ import com.palantir.docker.compose.connection.DockerMachine;
 import com.palantir.docker.compose.execution.DockerCompose;
 import com.palantir.docker.compose.execution.DockerExecutionException;
 import com.palantir.docker.compose.logging.LogCollector;
-import org.junit.Before;
 import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
 import org.junit.runner.Description;
-import org.junit.runner.RunWith;
 import org.junit.runners.model.Statement;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 public class DockerComposeRuleShould {
 
     private static final String IP = "127.0.0.1";
@@ -53,7 +56,7 @@ public class DockerComposeRuleShould {
     private LogCollector logCollector = mock(LogCollector.class);
     private DockerComposeRule rule;
 
-    @Before
+    @BeforeEach
     public void before() {
         when(machine.getIp()).thenReturn(IP);
         rule = defaultBuilder().build();

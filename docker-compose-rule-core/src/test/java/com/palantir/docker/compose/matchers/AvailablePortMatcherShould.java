@@ -23,7 +23,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import com.palantir.docker.compose.connection.DockerPort;
 import java.util.List;
 import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.junit.rules.ExpectedException;
 
 public class AvailablePortMatcherShould {

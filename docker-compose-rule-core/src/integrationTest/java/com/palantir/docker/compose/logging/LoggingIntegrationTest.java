@@ -24,19 +24,18 @@ import static org.hamcrest.core.Is.is;
 import com.palantir.docker.compose.DockerComposeManager;
 import java.io.File;
 import java.io.IOException;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 public class LoggingIntegrationTest {
 
-    @Rule
-    public TemporaryFolder logFolder = new TemporaryFolder();
+    @TempDir
+    public File logFolder ;
 
     private DockerComposeManager dockerComposeRule;
 
-    @Before
+    @BeforeEach
     public void before() {
         dockerComposeRule = new DockerComposeManager.Builder()
                 .file("src/test/resources/docker-compose.yaml")
