@@ -19,22 +19,22 @@ import static java.util.Optional.empty;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 
+import java.io.File;
 import java.io.IOException;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 public class DockerCommandLocationsShould {
     private static final String badLocation = "file/that/does/not/exist";
     private static final String otherBadLocation = "another/file/that/does/not/exist";
 
-    @Rule
-    public TemporaryFolder folder = new TemporaryFolder();
+    @TempDir
+    public File folder ;
 
     private String goodLocation;
 
-    @Before
+    @BeforeEach
     public void before() throws IOException {
         goodLocation = folder.newFile("docker-compose.yml").getAbsolutePath();
     }

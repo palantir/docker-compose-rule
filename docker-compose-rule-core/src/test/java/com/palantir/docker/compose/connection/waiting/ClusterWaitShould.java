@@ -25,9 +25,11 @@ import static org.mockito.Mockito.when;
 import com.palantir.docker.compose.connection.Cluster;
 import com.palantir.docker.compose.connection.ContainerCache;
 import com.palantir.docker.compose.connection.ImmutableCluster;
+import java.util.concurrent.TimeUnit;
 import org.joda.time.Duration;
 import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Timeout;
 import org.junit.rules.ExpectedException;
 
 public class ClusterWaitShould {
@@ -59,7 +61,8 @@ public class ClusterWaitShould {
         verify(clusterHealthCheck, times(2)).isClusterHealthy(cluster);
     }
 
-    @Test(timeout = 2000L)
+    @Test
+@Timeout(value = 2000L, unit = TimeUnit.MILLISECONDS)
     public void timeout_if_the_cluster_is_not_healthy() throws InterruptedException {
         when(clusterHealthCheck.isClusterHealthy(cluster)).thenReturn(failure("failure!"));
 
