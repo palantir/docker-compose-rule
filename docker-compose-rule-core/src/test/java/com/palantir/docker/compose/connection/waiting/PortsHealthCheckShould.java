@@ -17,12 +17,13 @@ package com.palantir.docker.compose.connection.waiting;
 
 import static com.palantir.docker.compose.connection.waiting.SuccessOrFailureMatchers.failure;
 import static com.palantir.docker.compose.connection.waiting.SuccessOrFailureMatchers.successful;
-import static org.hamcrest.MatcherAssert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import com.palantir.docker.compose.connection.Container;
+import org.assertj.core.api.HamcrestCondition;
 import org.junit.Test;
 
 public class PortsHealthCheckShould {
@@ -33,14 +34,14 @@ public class PortsHealthCheckShould {
     public void be_healthy_when_all_ports_are_listening() {
         whenTheContainerHasAllPortsOpen();
 
-        assertThat(healthCheck.isHealthy(container), is(successful()));
+        assertThat(healthCheck.isHealthy(container)).is(new HamcrestCondition<>(is(successful())));
     }
 
     @Test
     public void be_unhealthy_when_all_ports_are_not_listening() {
         whenTheContainerDoesNotHaveAllPortsOpen();
 
-        assertThat(healthCheck.isHealthy(container), is(failure()));
+        assertThat(healthCheck.isHealthy(container)).is(new HamcrestCondition<>(is(failure())));
     }
 
     private void whenTheContainerDoesNotHaveAllPortsOpen() {
