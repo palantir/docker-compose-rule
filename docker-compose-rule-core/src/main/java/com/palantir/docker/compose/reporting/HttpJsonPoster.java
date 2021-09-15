@@ -17,6 +17,8 @@
 package com.palantir.docker.compose.reporting;
 
 import com.google.common.io.CharStreams;
+import com.palantir.logsafe.logger.SafeLogger;
+import com.palantir.logsafe.logger.SafeLoggerFactory;
 import java.io.BufferedWriter;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
@@ -25,11 +27,9 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.Optional;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 class HttpJsonPoster {
-    private static final Logger log = LoggerFactory.getLogger(HttpJsonPoster.class);
+    private static final SafeLogger log = SafeLoggerFactory.get(HttpJsonPoster.class);
 
     private final ReportingConfig reportingConfig;
 
