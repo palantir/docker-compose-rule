@@ -15,13 +15,7 @@
  */
 package com.palantir.docker.compose.configuration;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.contains;
-import static org.hamcrest.Matchers.empty;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.List;
 import org.junit.Rule;
@@ -37,8 +31,8 @@ public class ProjectNameShould {
     public void use_project_name_prefix_in_construct_compose_command() {
         List<String> command = ProjectName.random().constructComposeFileCommand();
 
-        assertThat(command, hasSize(2));
-        assertThat(command.get(0), is("--project-name"));
+        assertThat(command).hasSize(2);
+        assertThat(command.get(0)).isEqualTo("--project-name");
     }
 
     @Test
@@ -46,31 +40,31 @@ public class ProjectNameShould {
         List<String> firstCommand = ProjectName.random().constructComposeFileCommand();
         List<String> secondCommand = ProjectName.random().constructComposeFileCommand();
 
-        assertThat(firstCommand, is(not(equalTo(secondCommand))));
+        assertThat(firstCommand).isNotEqualTo(secondCommand);
     }
 
     @Test
     public void have_eight_characters_long_random() {
         String randomName = ProjectName.random().constructComposeFileCommand().get(1);
-        assertThat(randomName.length(), is(8));
+        assertThat(randomName.length()).isEqualTo(8);
     }
 
     @Test
     public void should_pass_name_to_command_in_from_string_factory() {
         List<String> command = ProjectName.fromString("projectname").constructComposeFileCommand();
-        assertThat(command, contains("--project-name", "projectname"));
+        assertThat(command).containsExactly("--project-name", "projectname");
     }
 
     @Test
     public void should_disallow_names_in_from_string_factory() {
         List<String> command = ProjectName.fromString("projectname").constructComposeFileCommand();
-        assertThat(command, contains("--project-name", "projectname"));
+        assertThat(command).containsExactly("--project-name", "projectname");
     }
 
     @Test
     public void return_empty_command_when_omitted() {
         List<String> command = ProjectName.omit().constructComposeFileCommand();
-        assertThat(command, empty());
+        assertThat(command).isEmpty();
     }
 
     @Test
@@ -91,6 +85,6 @@ public class ProjectNameShould {
     @Test
     public void should_return_the_project_name_when_asString_called() {
         String projectName = ProjectName.fromString("projectname").asString();
-        assertThat(projectName, is("projectname"));
+        assertThat(projectName).isEqualTo("projectname");
     }
 }

@@ -15,8 +15,7 @@
  */
 package com.palantir.docker.compose.configuration;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.Is.is;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import com.google.common.collect.ImmutableMap;
 import java.util.Map;
@@ -48,6 +47,6 @@ public class AdditionalEnvironmentValidatorShould {
                 .put("SOME_VARIABLE", "Some Value")
                 .build();
 
-        assertThat(AdditionalEnvironmentValidator.validate(variables), is(variables));
+        assertThat(AdditionalEnvironmentValidator.validate(variables)).isEqualTo(variables);
     }
 }

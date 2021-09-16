@@ -15,9 +15,7 @@
  */
 package com.palantir.docker.compose.connection;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.sameInstance;
-import static org.hamcrest.core.Is.is;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
 import com.palantir.docker.compose.execution.Docker;
@@ -35,13 +33,13 @@ public class ContainerCacheShould {
     @Test
     public void return_a_container_with_the_specified_name_when_getting_a_new_container() {
         Container container = containers.container(CONTAINER_NAME);
-        assertThat(container, is(new Container(CONTAINER_NAME, docker, dockerCompose)));
+        assertThat(container).isEqualTo(new Container(CONTAINER_NAME, docker, dockerCompose));
     }
 
     @Test
     public void return_the_same_object_when_getting_a_container_twice() {
         Container container = containers.container(CONTAINER_NAME);
         Container sameContainer = containers.container(CONTAINER_NAME);
-        assertThat(container, is(sameInstance(sameContainer)));
+        assertThat(container).isSameAs(sameContainer);
     }
 }
