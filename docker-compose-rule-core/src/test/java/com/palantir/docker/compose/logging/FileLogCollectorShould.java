@@ -17,7 +17,7 @@ package com.palantir.docker.compose.logging;
 
 import static com.palantir.docker.compose.matchers.IoMatchers.fileContainingString;
 import static com.palantir.docker.compose.matchers.IoMatchers.fileWithName;
-import static org.hamcrest.MatcherAssert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.arrayContaining;
 import static org.hamcrest.Matchers.arrayContainingInAnyOrder;
 import static org.hamcrest.Matchers.emptyArray;
@@ -35,6 +35,7 @@ import java.io.OutputStream;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import org.apache.commons.io.IOUtils;
+import org.assertj.core.api.HamcrestCondition;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -75,7 +76,7 @@ public class FileLogCollectorShould {
         File doesNotExistYetDirectory =
                 logDirectoryParent.getRoot().toPath().resolve("doesNotExist").toFile();
         new FileLogCollector(doesNotExistYetDirectory);
-        assertThat(doesNotExistYetDirectory.exists(), is(true));
+        assertThat(doesNotExistYetDirectory.exists()).isEqualTo(true);
     }
 
     @Test
@@ -93,7 +94,7 @@ public class FileLogCollectorShould {
     public void not_collect_any_logs_when_no_containers_are_running() throws IOException, InterruptedException {
         when(compose.services()).thenReturn(ImmutableList.of());
         logCollector.collectLogs(compose);
-        assertThat(logDirectory.list(), is(emptyArray()));
+        assertThat(logDirectory.list()).isEmpty();
     }
 
     @Test
@@ -105,8 +106,8 @@ public class FileLogCollectorShould {
             return true;
         });
         logCollector.collectLogs(compose);
-        assertThat(logDirectory.listFiles(), arrayContaining(fileWithName("db.log")));
-        assertThat(new File(logDirectory, "db.log"), is(fileContainingString("log")));
+        assertThat(logDirectory.listFiles()).is(new HamcrestCondition<>(arrayContaining(fileWithName("db.log"))));
+        assertThat(new File(logDirectory, "db.log")).is(new HamcrestCondition<>(is(fileContainingString("log"))));
     }
 
     @Test
@@ -128,13 +129,12 @@ public class FileLogCollectorShould {
         });
 
         logCollector.collectLogs(compose);
-        assertThat(dbLatch.await(1, TimeUnit.SECONDS), is(true));
-        assertThat(db2Latch.await(1, TimeUnit.SECONDS), is(true));
+        assertThat(dbLatch.await(1, TimeUnit.SECONDS)).isEqualTo(true);
+        assertThat(db2Latch.await(1, TimeUnit.SECONDS)).isEqualTo(true);
 
-        assertThat(
-                logDirectory.listFiles(), arrayContainingInAnyOrder(fileWithName("db.log"), fileWithName("db2.log")));
-        assertThat(new File(logDirectory, "db.log"), is(fileContainingString("log")));
-        assertThat(new File(logDirectory, "db2.log"), is(fileContainingString("other")));
+        assertThat(logDirectory.listFiles()).is(new HamcrestCondition<>(arrayContainingInAnyOrder(fileWithName("db.log"), fileWithName("db2.log"))));
+        assertThat(new File(logDirectory, "db.log")).is(new HamcrestCondition<>(is(fileContainingString("log"))));
+        assertThat(new File(logDirectory, "db2.log")).is(new HamcrestCondition<>(is(fileContainingString("other"))));
     }
 
     private static File cannotBeCreatedDirectory() {

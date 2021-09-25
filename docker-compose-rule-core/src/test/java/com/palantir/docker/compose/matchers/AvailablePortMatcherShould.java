@@ -18,10 +18,11 @@ package com.palantir.docker.compose.matchers;
 import static com.google.common.collect.Lists.newArrayList;
 import static com.palantir.docker.compose.matchers.AvailablePortMatcher.areAvailable;
 import static java.util.Collections.emptyList;
-import static org.hamcrest.MatcherAssert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import com.palantir.docker.compose.connection.DockerPort;
 import java.util.List;
+import org.assertj.core.api.HamcrestCondition;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -34,7 +35,7 @@ public class AvailablePortMatcherShould {
     @Test
     public void succeed_when_there_are_no_unavailable_ports() {
         List<DockerPort> unavailablePorts = emptyList();
-        assertThat(unavailablePorts, areAvailable());
+        assertThat(unavailablePorts).is(new HamcrestCondition<>(areAvailable()));
     }
 
     @Test
@@ -46,6 +47,6 @@ public class AvailablePortMatcherShould {
         exception.expectMessage("external port '1234' mapped to internal port '1234' was unavailable");
         exception.expectMessage("For host with ip address: 1.2.3.4");
         exception.expectMessage("external port '2345' mapped to internal port '3456' was unavailable");
-        assertThat(unavailablePorts, areAvailable());
+        assertThat(unavailablePorts).is(new HamcrestCondition<>(areAvailable()));
     }
 }

@@ -18,12 +18,13 @@ package com.palantir.docker.compose.logging;
 import static com.palantir.docker.compose.connection.waiting.HealthChecks.toHaveAllPortsOpen;
 import static com.palantir.docker.compose.matchers.IoMatchers.fileWithConents;
 import static com.palantir.docker.compose.matchers.IoMatchers.matchingPattern;
-import static org.hamcrest.MatcherAssert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.core.Is.is;
 
 import com.palantir.docker.compose.DockerComposeManager;
 import java.io.File;
 import java.io.IOException;
+import org.assertj.core.api.HamcrestCondition;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -53,11 +54,7 @@ public class LoggingIntegrationTest {
         } finally {
             dockerComposeRule.after();
         }
-        assertThat(
-                new File(logFolder.getRoot(), "db.log"),
-                is(fileWithConents(matchingPattern(".*Attaching to \\w+_db_1.*server started.*"))));
-        assertThat(
-                new File(logFolder.getRoot(), "db2.log"),
-                is(fileWithConents(matchingPattern(".*Attaching to \\w+_db2_1.*server started.*"))));
+        assertThat(new File(logFolder.getRoot(), "db.log")).is(new HamcrestCondition<>(is(fileWithConents(matchingPattern(".*Attaching to \\w+_db_1.*server started.*")))));
+        assertThat(new File(logFolder.getRoot(), "db2.log")).is(new HamcrestCondition<>(is(fileWithConents(matchingPattern(".*Attaching to \\w+_db2_1.*server started.*")))));
     }
 }

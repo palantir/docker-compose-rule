@@ -16,7 +16,7 @@
 package com.palantir.docker.compose.execution;
 
 import static org.apache.commons.io.IOUtils.toInputStream;
-import static org.hamcrest.MatcherAssert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.core.Is.is;
 import static org.mockito.ArgumentMatchers.any;
@@ -74,7 +74,7 @@ public class CommandShould {
         givenTheUnderlyingProcessHasOutput(expectedOutput);
         String commandOutput = dockerComposeCommand.execute(errorHandler, "rm", "-f");
 
-        assertThat(commandOutput, is(expectedOutput));
+        assertThat(commandOutput).isEqualTo(expectedOutput);
     }
 
     @Test
@@ -83,7 +83,7 @@ public class CommandShould {
         givenTheUnderlyingProcessHasOutput(expectedOutput);
         String commandOutput = dockerComposeCommand.execute(errorHandler, "rm", "-f");
 
-        assertThat(commandOutput, is(expectedOutput));
+        assertThat(commandOutput).isEqualTo(expectedOutput);
     }
 
     @Test
@@ -93,7 +93,7 @@ public class CommandShould {
 
         dockerComposeCommand.execute(errorHandler, "rm", "-f");
 
-        assertThat(consumedLogLines, contains("line 1", "line 2"));
+        assertThat(consumedLogLines).containsExactly("line 1", "line 2");
     }
 
     // flaky test: https://circleci.com/gh/palantir/docker-compose-rule/378, 370, 367, 366
@@ -103,7 +103,7 @@ public class CommandShould {
         int preThreadCount = Thread.getAllStackTraces().entrySet().size();
         dockerComposeCommand.execute(errorHandler, "rm", "-f");
         int postThreadCount = Thread.getAllStackTraces().entrySet().size();
-        assertThat("command thread pool has exited", preThreadCount == postThreadCount);
+        assertThat(preThreadCount == postThreadCount).describedAs("command thread pool has exited").isTrue();
     }
 
     private void givenTheUnderlyingProcessHasOutput(String output) {

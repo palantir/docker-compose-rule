@@ -15,11 +15,11 @@
  */
 package com.palantir.docker.compose.execution;
 
-import static org.hamcrest.MatcherAssert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.lessThan;
 import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.fail;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -27,6 +27,7 @@ import static org.mockito.Mockito.when;
 import com.google.common.base.Stopwatch;
 import com.palantir.docker.compose.utils.MockitoMultiAnswer;
 import java.util.concurrent.TimeUnit;
+import org.assertj.core.api.HamcrestCondition;
 import org.joda.time.Duration;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -44,7 +45,7 @@ public class RetryerShould {
     public void not_retry_if_the_operation_was_successful_and_return_result() throws Exception {
         when(operation.call()).thenReturn("hi");
 
-        assertThat(retryer.runWithRetries(operation), is("hi"));
+        assertThat(retryer.runWithRetries(operation)).isEqualTo("hi");
         verify(operation).call();
     }
 
@@ -58,7 +59,7 @@ public class RetryerShould {
         } catch (DockerExecutionException e) {
             // expected
         }
-        assertThat(stopwatch.elapsed(TimeUnit.MILLISECONDS), lessThan(1000L));
+        assertThat(stopwatch.elapsed(TimeUnit.MILLISECONDS)).is(new HamcrestCondition<>(lessThan(1000L)));
     }
 
     @Test
@@ -67,12 +68,12 @@ public class RetryerShould {
 
         Stopwatch stopwatch = Stopwatch.createStarted();
         when(operation.call()).thenThrow(new DockerExecutionException()).thenAnswer(_i -> {
-            assertThat(stopwatch.elapsed(TimeUnit.MILLISECONDS), greaterThan(100L));
+            assertThat(stopwatch.elapsed(TimeUnit.MILLISECONDS)).is(new HamcrestCondition<>(greaterThan(100L)));
             return "success";
         });
 
         String result = timeRetryer.runWithRetries(operation);
-        assertThat(result, is("success"));
+        assertThat(result).isEqualTo("success");
     }
 
     @Test
@@ -85,7 +86,7 @@ public class RetryerShould {
                         },
                         _secondInvocation -> "hola"));
 
-        assertThat(retryer.runWithRetries(operation), is("hola"));
+        assertThat(retryer.runWithRetries(operation)).isEqualTo("hola");
         verify(operation, times(2)).call();
     }
 
@@ -108,7 +109,7 @@ public class RetryerShould {
             retryer.runWithRetries(operation);
             fail("Should have caught exception");
         } catch (DockerExecutionException actualException) {
-            assertThat(actualException, is(finalException));
+            assertThat(actualException).isEqualTo(finalException);
         }
 
         verify(operation, times(2)).call();

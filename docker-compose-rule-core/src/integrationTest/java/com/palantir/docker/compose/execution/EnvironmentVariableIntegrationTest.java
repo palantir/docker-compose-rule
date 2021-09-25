@@ -17,12 +17,13 @@ package com.palantir.docker.compose.execution;
 
 import static com.palantir.docker.compose.connection.waiting.HealthChecks.toHaveAllPortsOpen;
 import static com.palantir.docker.compose.matchers.IoMatchers.fileContainingString;
-import static org.hamcrest.MatcherAssert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.is;
 
 import com.palantir.docker.compose.DockerComposeManager;
 import com.palantir.docker.compose.connection.DockerMachine;
 import java.nio.file.Path;
+import org.assertj.core.api.HamcrestCondition;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -54,6 +55,6 @@ public class EnvironmentVariableIntegrationTest {
 
         Path logLocation = temporaryFolder.getRoot().toPath().resolve("env-test.log");
 
-        assertThat(logLocation.toFile(), is(fileContainingString("SOME_VARIABLE=SOME_VALUE")));
+        assertThat(logLocation.toFile()).is(new HamcrestCondition<>(is(fileContainingString("SOME_VARIABLE=SOME_VALUE"))));
     }
 }

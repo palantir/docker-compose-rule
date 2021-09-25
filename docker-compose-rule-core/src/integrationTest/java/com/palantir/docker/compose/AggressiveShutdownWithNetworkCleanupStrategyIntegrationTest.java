@@ -16,7 +16,7 @@
 
 package com.palantir.docker.compose;
 
-import static org.hamcrest.MatcherAssert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 
@@ -25,6 +25,7 @@ import com.palantir.docker.compose.logging.DoNothingLogCollector;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
+import org.assertj.core.api.HamcrestCondition;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -39,13 +40,13 @@ public class AggressiveShutdownWithNetworkCleanupStrategyIntegrationTest {
 
     @Test
     public void shut_down_multiple_containers_immediately() throws Exception {
-        assertThat(docker.dockerCompose().ps(), is(TestContainerNames.of()));
+        assertThat(docker.dockerCompose().ps()).isEqualTo(TestContainerNames.of());
 
         docker.before();
-        assertThat(docker.dockerCompose().ps().size(), is(2));
+        assertThat(docker.dockerCompose().ps().size()).isEqualTo(2);
         docker.after();
 
-        assertThat(docker.dockerCompose().ps(), is(TestContainerNames.of()));
+        assertThat(docker.dockerCompose().ps()).isEqualTo(TestContainerNames.of());
     }
 
     @Test
@@ -56,10 +57,10 @@ public class AggressiveShutdownWithNetworkCleanupStrategyIntegrationTest {
                 parseLinesFromOutputString(docker.docker().listNetworks());
 
         docker.before();
-        assertThat(parseLinesFromOutputString(docker.docker().listNetworks()), is(not(networksBeforeRun)));
+        assertThat(parseLinesFromOutputString(docker.docker().listNetworks())).is(new HamcrestCondition<>(is(not(networksBeforeRun))));
         docker.after();
 
-        assertThat(parseLinesFromOutputString(docker.docker().listNetworks()), is(networksBeforeRun));
+        assertThat(parseLinesFromOutputString(docker.docker().listNetworks())).isEqualTo(networksBeforeRun);
     }
 
     private static Set<String> parseLinesFromOutputString(String output) {

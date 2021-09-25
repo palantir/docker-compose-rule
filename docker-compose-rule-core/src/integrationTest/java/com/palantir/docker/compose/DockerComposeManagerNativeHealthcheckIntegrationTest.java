@@ -19,9 +19,10 @@ package com.palantir.docker.compose;
 import static com.google.common.util.concurrent.Uninterruptibles.getUninterruptibly;
 import static com.palantir.docker.compose.execution.DockerComposeExecArgument.arguments;
 import static com.palantir.docker.compose.execution.DockerComposeExecOption.noOptions;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.fail;
 import static org.awaitility.Awaitility.await;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
-import static org.junit.Assert.fail;
 import static org.junit.Assume.assumeThat;
 
 import com.github.zafarkhaja.semver.Version;
@@ -78,12 +79,7 @@ public class DockerComposeManagerNativeHealthcheckIntegrationTest {
         await().until(container::state, Matchers.equalTo(State.UNHEALTHY));
 
         // The "withHealthCheck" container should not initially pass its healthcheck
-        try {
-            getUninterruptibly(beforeFuture, 1, TimeUnit.SECONDS);
-            fail("Expected before() to wait");
-        } catch (TimeoutException e) {
-            // Expected
-        }
+                    assertThatThrownBy(() -> getUninterruptibly(beforeFuture, 1, TimeUnit.SECONDS)).describedAs("Expected before() to wait").isInstanceOf(TimeoutException.class);
 
         // Touching the "healthy" file in the "withHealthCheck" container should make its healthcheck pass
         docker.dockerCompose().exec(noOptions(), "withHealthcheck", arguments("touch", "healthy"));

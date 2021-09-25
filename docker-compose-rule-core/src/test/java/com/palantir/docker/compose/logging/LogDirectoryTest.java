@@ -16,7 +16,7 @@
 
 package com.palantir.docker.compose.logging;
 
-import static org.hamcrest.MatcherAssert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.is;
 
 import org.junit.Rule;
@@ -31,14 +31,14 @@ public class LogDirectoryTest {
     @Test
     public void gradleDockerLogsDirectory_should_use_class_simple_name() {
         String directory = LogDirectory.gradleDockerLogsDirectory(SomeTestClass.class);
-        assertThat(directory, is("build/dockerLogs/SomeTestClass"));
+        assertThat(directory).isEqualTo("build/dockerLogs/SomeTestClass");
     }
 
     @Test
     public void circleAwareLogDirectory_should_match_gradleDockerLogsDirectory_by_default() {
         variablesRule.set("CIRCLE_ARTIFACTS", null);
         String directory = LogDirectory.circleAwareLogDirectory(SomeTestClass.class);
-        assertThat(directory, is("build/dockerLogs/SomeTestClass"));
+        assertThat(directory).isEqualTo("build/dockerLogs/SomeTestClass");
     }
 
     @Test
@@ -46,7 +46,7 @@ public class LogDirectoryTest {
         variablesRule.set("CIRCLE_ARTIFACTS", "/tmp/circle-artifacts.g4DjuuD");
 
         String directory = LogDirectory.circleAwareLogDirectory(SomeTestClass.class);
-        assertThat(directory, is("/tmp/circle-artifacts.g4DjuuD/dockerLogs/SomeTestClass"));
+        assertThat(directory).isEqualTo("/tmp/circle-artifacts.g4DjuuD/dockerLogs/SomeTestClass");
     }
 
     @Test
@@ -54,7 +54,7 @@ public class LogDirectoryTest {
         variablesRule.set("CIRCLE_ARTIFACTS", "/tmp/circle-artifacts.123456");
 
         String directory = LogDirectory.circleAwareLogDirectory("some-path");
-        assertThat(directory, is("/tmp/circle-artifacts.123456/dockerLogs/some-path"));
+        assertThat(directory).isEqualTo("/tmp/circle-artifacts.123456/dockerLogs/some-path");
     }
 
     private static final class SomeTestClass {}

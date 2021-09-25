@@ -18,7 +18,7 @@ package com.palantir.docker.compose.connection.waiting;
 
 import static com.palantir.docker.compose.connection.waiting.SuccessOrFailureMatchers.failure;
 import static com.palantir.docker.compose.connection.waiting.SuccessOrFailureMatchers.successful;
-import static org.hamcrest.MatcherAssert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -26,6 +26,7 @@ import static org.mockito.Mockito.when;
 import com.palantir.docker.compose.connection.Container;
 import com.palantir.docker.compose.connection.DockerPort;
 import java.util.function.Function;
+import org.assertj.core.api.HamcrestCondition;
 import org.junit.Test;
 
 public class HttpHealthCheckShould {
@@ -37,14 +38,14 @@ public class HttpHealthCheckShould {
     public void be_healthy_when_the_port_is_listening_over_http() {
         whenTheContainerIsListeningOnHttpTo(PORT, URL_FUNCTION);
 
-        assertThat(HealthChecks.toRespondOverHttp(PORT, URL_FUNCTION).isHealthy(container), is(successful()));
+        assertThat(HealthChecks.toRespondOverHttp(PORT, URL_FUNCTION).isHealthy(container)).is(new HamcrestCondition<>(is(successful())));
     }
 
     @Test
     public void be_unhealthy_when_all_ports_are_not_listening() {
         whenTheContainerIsNotListeningOnHttpTo(PORT, URL_FUNCTION);
 
-        assertThat(HealthChecks.toRespondOverHttp(PORT, URL_FUNCTION).isHealthy(container), is(failure()));
+        assertThat(HealthChecks.toRespondOverHttp(PORT, URL_FUNCTION).isHealthy(container)).is(new HamcrestCondition<>(is(failure())));
     }
 
     private void whenTheContainerIsListeningOnHttpTo(int port, Function<DockerPort, String> urlFunction) {

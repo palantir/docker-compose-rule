@@ -18,7 +18,7 @@ package com.palantir.docker.compose;
 import static com.palantir.docker.compose.connection.waiting.HealthChecks.toHaveAllPortsOpen;
 import static com.palantir.docker.compose.matchers.IoMatchers.fileContainingString;
 import static com.palantir.docker.compose.matchers.IoMatchers.fileWithName;
-import static org.hamcrest.MatcherAssert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.arrayContaining;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.core.Is.is;
@@ -57,6 +57,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.apache.commons.io.IOUtils;
+import org.assertj.core.api.HamcrestCondition;
 import org.joda.time.Duration;
 import org.junit.Before;
 import org.junit.Rule;
@@ -144,7 +145,7 @@ public final class DockerComposeManagerShould {
         HealthCheck<Container> checkCalledOnce = _container ->
                 SuccessOrFailure.fromBoolean(timesCheckCalled.incrementAndGet() == 1, "not called once yet");
         defaultBuilder().waitingForService("db", checkCalledOnce).build().before();
-        assertThat(timesCheckCalled.get(), is(1));
+        assertThat(timesCheckCalled.get()).isEqualTo(1);
     }
 
     @Test
@@ -170,7 +171,7 @@ public final class DockerComposeManagerShould {
         HealthCheck<Container> checkCalledTwice = _container ->
                 SuccessOrFailure.fromBoolean(timesCheckCalled.incrementAndGet() == 2, "not called twice yet");
         defaultBuilder().waitingForService("db", checkCalledTwice).build().before();
-        assertThat(timesCheckCalled.get(), is(2));
+        assertThat(timesCheckCalled.get()).isEqualTo(2);
     }
 
     @Test
@@ -196,7 +197,7 @@ public final class DockerComposeManagerShould {
         DockerPort actualPort =
                 dockerComposeManager.containers().container("db").portMappedExternallyTo(5433);
 
-        assertThat(actualPort, is(expectedPort));
+        assertThat(actualPort).isEqualTo(expectedPort);
     }
 
     @Test
@@ -208,7 +209,7 @@ public final class DockerComposeManagerShould {
         DockerPort actualPort =
                 dockerComposeManager.containers().container("db").portMappedInternallyTo(5432);
 
-        assertThat(actualPort, is(expectedPort));
+        assertThat(actualPort).isEqualTo(expectedPort);
     }
 
     @Test
@@ -263,9 +264,9 @@ public final class DockerComposeManagerShould {
         });
         loggingComposition.before();
         loggingComposition.after();
-        assertThat(latch.await(1, TimeUnit.SECONDS), is(true));
-        assertThat(logLocation.listFiles(), arrayContaining(fileWithName("db.log")));
-        assertThat(new File(logLocation, "db.log"), is(fileContainingString("db log")));
+        assertThat(latch.await(1, TimeUnit.SECONDS)).isEqualTo(true);
+        assertThat(logLocation.listFiles()).is(new HamcrestCondition<>(arrayContaining(fileWithName("db.log"))));
+        assertThat(new File(logLocation, "db.log")).is(new HamcrestCondition<>(is(fileContainingString("db log"))));
     }
 
     @Test
@@ -332,7 +333,7 @@ public final class DockerComposeManagerShould {
                 .clusterWaits(ImmutableList.of(secondWait))
                 .build();
 
-        assertThat(twoAssignments.clusterWaits(), contains(firstWait, secondWait));
+        assertThat(twoAssignments.clusterWaits()).containsExactly(firstWait, secondWait);
     }
 
     @Test
