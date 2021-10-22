@@ -35,7 +35,7 @@ import java.io.IOException;
 import java.time.Duration;
 import org.awaitility.core.ConditionFactory;
 import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class ContainerIntegrationTests {
 
