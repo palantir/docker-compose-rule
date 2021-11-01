@@ -27,7 +27,7 @@ import com.google.common.collect.ImmutableSet;
 import java.io.IOException;
 import java.util.Set;
 import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.junit.rules.ExpectedException;
 
 public class ConflictingContainerRemovingDockerComposeShould {

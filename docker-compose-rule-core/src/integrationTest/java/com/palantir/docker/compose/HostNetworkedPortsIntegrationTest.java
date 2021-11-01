@@ -25,7 +25,7 @@ import com.palantir.docker.compose.connection.waiting.HealthCheck;
 import com.palantir.docker.compose.connection.waiting.SuccessOrFailure;
 import org.apache.commons.lang3.SystemUtils;
 import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class HostNetworkedPortsIntegrationTest {
     private static HealthCheck<DockerPort> toBeOpen() {

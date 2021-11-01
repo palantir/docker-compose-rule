@@ -27,8 +27,8 @@ import com.palantir.docker.compose.connection.State;
 import com.palantir.docker.compose.connection.waiting.ClusterWait;
 import java.io.IOException;
 import org.joda.time.Duration;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class DockerComposeManagerUpContainerIntegrationTest {
 
@@ -36,7 +36,7 @@ public class DockerComposeManagerUpContainerIntegrationTest {
 
     private DockerComposeManager dockerComposeManager;
 
-    @Before
+    @BeforeEach
     public void before() throws Exception {
         dockerComposeManager = new DockerComposeManager.Builder()
                 .shutdownStrategy(AGGRESSIVE)

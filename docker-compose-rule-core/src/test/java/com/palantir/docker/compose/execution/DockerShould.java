@@ -25,8 +25,8 @@ import static org.mockito.Mockito.when;
 
 import com.github.zafarkhaja.semver.Version;
 import java.io.IOException;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class DockerShould {
 
@@ -35,7 +35,7 @@ public class DockerShould {
 
     private final Process executedProcess = mock(Process.class);
 
-    @Before
+    @BeforeEach
     public void before() throws IOException {
         when(executor.execute(anyVararg())).thenReturn(executedProcess);
         when(executedProcess.exitValue()).thenReturn(0);
