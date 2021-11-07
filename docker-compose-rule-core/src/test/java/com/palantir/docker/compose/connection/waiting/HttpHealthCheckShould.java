@@ -26,7 +26,7 @@ import static org.mockito.Mockito.when;
 import com.palantir.docker.compose.connection.Container;
 import com.palantir.docker.compose.connection.DockerPort;
 import java.util.function.Function;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class HttpHealthCheckShould {
     private static final Function<DockerPort, String> URL_FUNCTION = _port -> null;

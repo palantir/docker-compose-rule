@@ -21,7 +21,7 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.lessThan;
 
 import com.github.zafarkhaja.semver.Version;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class DockerComposeVersionShould {
 

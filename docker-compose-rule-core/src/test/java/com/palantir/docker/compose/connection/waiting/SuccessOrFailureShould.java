@@ -23,7 +23,7 @@ import static org.hamcrest.Matchers.both;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.core.Is.is;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class SuccessOrFailureShould {
     @Test

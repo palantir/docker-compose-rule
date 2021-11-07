@@ -31,8 +31,8 @@ import com.palantir.docker.compose.connection.ContainerName;
 import com.palantir.docker.compose.execution.Retryer.RetryableDockerOperation;
 import java.io.IOException;
 import java.util.List;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class RetryingDockerComposeShould {
     private final DockerCompose dockerCompose = mock(DockerCompose.class);
@@ -41,7 +41,7 @@ public class RetryingDockerComposeShould {
     private final List<ContainerName> someContainerNames = TestContainerNames.of("hey");
     private static final String CONTAINER_NAME = "container";
 
-    @Before
+    @BeforeEach
     public void before() throws IOException, InterruptedException {
         retryerJustCallsOperation();
     }

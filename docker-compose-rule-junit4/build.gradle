@@ -13,4 +13,12 @@ dependencies {
     testCompile 'org.hamcrest:hamcrest-core'
     testCompile 'org.mockito:mockito-inline'
     testCompile 'org.assertj:assertj-core'
+    integrationTestImplementation 'org.junit.jupiter:junit-jupiter'
+    integrationTestRuntimeOnly 'org.junit.vintage:junit-vintage-engine', {
+        because 'allows JUnit 3 and JUnit 4 tests to run'
+    }
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+    testRuntimeOnly 'org.junit.vintage:junit-vintage-engine', {
+        because 'allows JUnit 3 and JUnit 4 tests to run'
+    }
 }

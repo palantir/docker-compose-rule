@@ -38,9 +38,9 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
-import org.junit.Before;
 import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.rules.ExpectedException;
 
 public class DockerComposeShould {
@@ -55,7 +55,7 @@ public class DockerComposeShould {
     private final Process executedProcess = mock(Process.class);
     private final Container container = mock(Container.class);
 
-    @Before
+    @BeforeEach
     public void before() throws IOException {
         when(dockerMachine.getIp()).thenReturn("0.0.0.0");
         when(executor.execute(anyVararg())).thenReturn(executedProcess);
