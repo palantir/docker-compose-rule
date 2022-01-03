@@ -19,8 +19,7 @@ package com.palantir.docker.compose;
 import static com.palantir.docker.compose.configuration.ShutdownStrategy.AGGRESSIVE;
 import static com.palantir.docker.compose.connection.waiting.ClusterHealthCheck.serviceHealthCheck;
 import static com.palantir.docker.compose.connection.waiting.HealthChecks.toHaveAllPortsOpen;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.Is.is;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import com.palantir.docker.compose.connection.Container;
 import com.palantir.docker.compose.connection.State;
@@ -51,7 +50,7 @@ public class DockerComposeManagerUpContainerIntegrationTest {
 
         container.up();
 
-        assertThat(container.state(), is(State.HEALTHY));
+        assertThat(container.state()).isEqualTo(State.HEALTHY);
     }
 
     @Test
@@ -64,6 +63,6 @@ public class DockerComposeManagerUpContainerIntegrationTest {
         new ClusterWait(serviceHealthCheck(SERVICE_NAME, toHaveAllPortsOpen()), Duration.standardSeconds(5))
                 .waitUntilReady(dockerComposeManager.containers());
 
-        assertThat(container.state(), is(State.HEALTHY));
+        assertThat(container.state()).isEqualTo(State.HEALTHY);
     }
 }

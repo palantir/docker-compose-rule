@@ -22,14 +22,14 @@ import static com.palantir.docker.compose.configuration.EnvironmentVariables.DOC
 import static com.palantir.docker.compose.configuration.EnvironmentVariables.DOCKER_HOST;
 import static com.palantir.docker.compose.configuration.EnvironmentVariables.DOCKER_TLS_VERIFY;
 import static com.palantir.docker.compose.matchers.DockerMachineEnvironmentMatcher.containsEnvironment;
-import static org.hamcrest.MatcherAssert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.not;
-import static org.hamcrest.core.Is.is;
 
 import com.google.common.collect.ImmutableMap;
 import com.palantir.docker.compose.connection.DockerMachine.LocalBuilder;
 import java.util.HashMap;
 import java.util.Map;
+import org.assertj.core.api.HamcrestCondition;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -47,8 +47,8 @@ public class LocalBuilderShould {
                 .withEnvironment(environment1)
                 .withEnvironment(environment2)
                 .build();
-        assertThat(localMachine, not(containsEnvironment(environment1)));
-        assertThat(localMachine, containsEnvironment(environment2));
+        assertThat(localMachine).is(new HamcrestCondition<>(not(containsEnvironment(environment1))));
+        assertThat(localMachine).is(new HamcrestCondition<>(containsEnvironment(environment2)));
     }
 
     @Test
@@ -61,8 +61,8 @@ public class LocalBuilderShould {
                 .withEnvironment(environment)
                 .withAdditionalEnvironmentVariable("ENV_3", "VAL_3")
                 .build();
-        assertThat(localMachine, containsEnvironment(environment));
-        assertThat(localMachine, containsEnvironment(ImmutableMap.of("ENV_3", "VAL_3")));
+        assertThat(localMachine).is(new HamcrestCondition<>(containsEnvironment(environment)));
+        assertThat(localMachine).is(new HamcrestCondition<>(containsEnvironment(ImmutableMap.of("ENV_3", "VAL_3"))));
     }
 
     @Test
@@ -76,8 +76,8 @@ public class LocalBuilderShould {
                 .withEnvironment(environment1)
                 .withEnvironment(environment2)
                 .build();
-        assertThat(localMachine, not(containsEnvironment(environment1)));
-        assertThat(localMachine, containsEnvironment(environment2));
+        assertThat(localMachine).is(new HamcrestCondition<>(not(containsEnvironment(environment1))));
+        assertThat(localMachine).is(new HamcrestCondition<>(containsEnvironment(environment2)));
     }
 
     @Test
@@ -93,8 +93,8 @@ public class LocalBuilderShould {
                 .withEnvironment(environment)
                 .withAdditionalEnvironmentVariable("ENV_3", "VAL_3")
                 .build();
-        assertThat(localMachine, containsEnvironment(environment));
-        assertThat(localMachine, containsEnvironment(ImmutableMap.of("ENV_3", "VAL_3")));
+        assertThat(localMachine).is(new HamcrestCondition<>(containsEnvironment(environment)));
+        assertThat(localMachine).is(new HamcrestCondition<>(containsEnvironment(ImmutableMap.of("ENV_3", "VAL_3"))));
     }
 
     @Test
@@ -112,8 +112,8 @@ public class LocalBuilderShould {
                 .put("ENV_1", "VAL_1")
                 .put("ENV_2", "DIFFERENT_VALUE")
                 .build();
-        assertThat(localMachine, not(containsEnvironment(environment)));
-        assertThat(localMachine, containsEnvironment(expected));
+        assertThat(localMachine).is(new HamcrestCondition<>(not(containsEnvironment(environment))));
+        assertThat(localMachine).is(new HamcrestCondition<>(containsEnvironment(expected)));
     }
 
     @Test
@@ -126,8 +126,8 @@ public class LocalBuilderShould {
         DockerMachine localMachine =
                 new LocalBuilder(DAEMON, systemEnv).withEnvironment(overrideEnv).build();
 
-        assertThat(localMachine, not(containsEnvironment(systemEnv)));
-        assertThat(localMachine, containsEnvironment(overrideEnv));
+        assertThat(localMachine).is(new HamcrestCondition<>(not(containsEnvironment(systemEnv))));
+        assertThat(localMachine).is(new HamcrestCondition<>(containsEnvironment(overrideEnv)));
     }
 
     @Test
@@ -181,7 +181,7 @@ public class LocalBuilderShould {
     @Test
     public void return_localhost_as_ip_daemon() {
         DockerMachine localMachine = new LocalBuilder(DAEMON, new HashMap<>()).build();
-        assertThat(localMachine.getIp(), is(LOCALHOST));
+        assertThat(localMachine.getIp()).isEqualTo(LOCALHOST);
     }
 
     @Test
@@ -193,7 +193,7 @@ public class LocalBuilderShould {
                 .build();
 
         DockerMachine localMachine = new LocalBuilder(REMOTE, dockerVariables).build();
-        assertThat(localMachine.getIp(), is("192.168.99.100"));
+        assertThat(localMachine.getIp()).isEqualTo("192.168.99.100");
     }
 
     @Test
@@ -211,7 +211,7 @@ public class LocalBuilderShould {
                 .build();
 
         DockerMachine localMachine = new LocalBuilder(REMOTE, dockerVariables).build();
-        assertThat(localMachine, containsEnvironment(dockerVariables));
+        assertThat(localMachine).is(new HamcrestCondition<>(containsEnvironment(dockerVariables)));
     }
 
     @Test
@@ -236,6 +236,6 @@ public class LocalBuilderShould {
                 .build();
 
         DockerMachine localMachine = new LocalBuilder(REMOTE, dockerVariables).build();
-        assertThat(localMachine, containsEnvironment(dockerVariables));
+        assertThat(localMachine).is(new HamcrestCondition<>(containsEnvironment(dockerVariables)));
     }
 }

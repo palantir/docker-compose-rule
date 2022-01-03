@@ -15,35 +15,36 @@
  */
 package com.palantir.docker.compose.execution;
 
-import static org.hamcrest.MatcherAssert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.greaterThan;
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.lessThan;
 
 import com.github.zafarkhaja.semver.Version;
+import org.assertj.core.api.HamcrestCondition;
 import org.junit.Test;
 
 public class DockerComposeVersionShould {
 
     @Test
     public void compare_major_versions_first() {
-        assertThat(Version.valueOf("2.1.0").compareTo(Version.valueOf("1.2.1")), greaterThan(0));
+        assertThat(Version.valueOf("2.1.0").compareTo(Version.valueOf("1.2.1")))
+                .is(new HamcrestCondition<>(greaterThan(0)));
     }
 
     @Test
     public void compare_minor_versions_when_major_versions_are_the_same() {
-        assertThat(Version.valueOf("2.1.7").compareTo(Version.valueOf("2.3.2")), lessThan(0));
+        assertThat(Version.valueOf("2.1.7").compareTo(Version.valueOf("2.3.2")))
+                .is(new HamcrestCondition<>(lessThan(0)));
     }
 
     @Test
     public void return_equals_for_the_same_version_strings() {
-        assertThat(Version.valueOf("2.1.2").compareTo(Version.valueOf("2.1.2")), is(0));
+        assertThat(Version.valueOf("2.1.2").compareTo(Version.valueOf("2.1.2"))).isEqualTo(0);
     }
 
     @Test
     public void remove_non_digits_when_passing_version_string() {
-        assertThat(
-                DockerComposeVersion.parseFromDockerComposeVersion("docker-compose version 1.7.0rc1, build 1ad8866"),
-                is(Version.valueOf("1.7.0")));
+        assertThat(DockerComposeVersion.parseFromDockerComposeVersion("docker-compose version 1.7.0rc1, build 1ad8866"))
+                .isEqualTo(Version.valueOf("1.7.0"));
     }
 }

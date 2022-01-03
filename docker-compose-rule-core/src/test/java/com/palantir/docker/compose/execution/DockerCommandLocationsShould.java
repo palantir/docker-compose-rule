@@ -15,9 +15,7 @@
  */
 package com.palantir.docker.compose.execution;
 
-import static java.util.Optional.empty;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.Is.is;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.IOException;
 import org.junit.Before;
@@ -44,7 +42,7 @@ public class DockerCommandLocationsShould {
         DockerCommandLocations dockerCommandLocations =
                 new DockerCommandLocations(badLocation, goodLocation, otherBadLocation);
 
-        assertThat(dockerCommandLocations.preferredLocation().get(), is(goodLocation));
+        assertThat(dockerCommandLocations.preferredLocation().get()).isEqualTo(goodLocation);
     }
 
     @Test
@@ -52,13 +50,13 @@ public class DockerCommandLocationsShould {
         DockerCommandLocations dockerCommandLocations =
                 new DockerCommandLocations(System.getenv("AN_UNSET_DOCKER_COMPOSE_PATH"), goodLocation);
 
-        assertThat(dockerCommandLocations.preferredLocation().get(), is(goodLocation));
+        assertThat(dockerCommandLocations.preferredLocation().get()).isEqualTo(goodLocation);
     }
 
     @Test
     public void have_no_preferred_path_when_all_possible_paths_are_all_invalid() {
         DockerCommandLocations dockerCommandLocations = new DockerCommandLocations(badLocation);
 
-        assertThat(dockerCommandLocations.preferredLocation(), is(empty()));
+        assertThat(dockerCommandLocations.preferredLocation()).isEmpty();
     }
 }
