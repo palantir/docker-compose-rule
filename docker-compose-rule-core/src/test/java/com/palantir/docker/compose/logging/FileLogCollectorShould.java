@@ -35,9 +35,9 @@ import java.io.OutputStream;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import org.apache.commons.io.IOUtils;
-import org.junit.Before;
 import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
 
@@ -54,7 +54,7 @@ public class FileLogCollectorShould {
     private File logDirectory;
     private LogCollector logCollector;
 
-    @Before
+    @BeforeEach
     public void before() throws IOException {
         logDirectory = logDirectoryParent.newFolder();
         logCollector = new FileLogCollector(logDirectory);

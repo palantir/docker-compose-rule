@@ -21,7 +21,7 @@ import static org.hamcrest.core.Is.is;
 import com.google.common.collect.ImmutableMap;
 import java.util.Map;
 import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.junit.rules.ExpectedException;
 
 public class AdditionalEnvironmentValidatorShould {

@@ -23,7 +23,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import com.palantir.docker.compose.connection.Container;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class PortsHealthCheckShould {
     private final HealthCheck<Container> healthCheck = HealthChecks.toHaveAllPortsOpen();
