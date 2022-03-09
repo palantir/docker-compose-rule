@@ -26,7 +26,7 @@ import static org.mockito.Mockito.when;
 
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class HttpJsonPosterTest {
     private final ReportingConfig reportingConfig = mock(ReportingConfig.class);

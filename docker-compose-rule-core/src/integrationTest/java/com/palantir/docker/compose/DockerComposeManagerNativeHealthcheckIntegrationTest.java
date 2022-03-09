@@ -37,15 +37,15 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import org.hamcrest.Matchers;
-import org.junit.After;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 
 public class DockerComposeManagerNativeHealthcheckIntegrationTest {
 
     private final ExecutorService pool = Executors.newFixedThreadPool(1);
     private DockerComposeManager docker = null;
 
-    @After
+    @AfterEach
     public void shutdownPool() {
         pool.shutdown();
         if (docker != null) {

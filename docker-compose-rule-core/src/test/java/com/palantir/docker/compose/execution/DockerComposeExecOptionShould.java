@@ -20,7 +20,7 @@ import static com.palantir.docker.compose.execution.DockerComposeExecOption.noOp
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class DockerComposeExecOptionShould {
 

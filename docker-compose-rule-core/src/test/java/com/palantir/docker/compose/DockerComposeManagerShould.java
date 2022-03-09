@@ -58,18 +58,21 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.apache.commons.io.IOUtils;
 import org.joda.time.Duration;
-import org.junit.Before;
 import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
-import org.junit.runner.RunWith;
 import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 public final class DockerComposeManagerShould {
 
     private static final String IP = "127.0.0.1";
@@ -91,7 +94,7 @@ public final class DockerComposeManagerShould {
     private LogCollector logCollector = mock(LogCollector.class);
     private DockerComposeManager dockerComposeManager;
 
-    @Before
+    @BeforeEach
     public void before() {
         when(machine.getIp()).thenReturn(IP);
         dockerComposeManager = defaultBuilder().build();
