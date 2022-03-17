@@ -28,9 +28,14 @@ import java.util.stream.Stream;
 public final class Ports {
 
     private static final Pattern PORT_PATTERN = Pattern.compile("((\\d+).(\\d+).(\\d+).(\\d+)):(\\d+)->(\\d+)/tcp");
+    private static final Pattern PORT_RANGE_PATTERN = Pattern.compile("((\\d+).(\\d+).(\\d+).(\\d+)):(\\d+)-(\\d+)->(\\d+)-(\\d+)/tcp");
     private static final int IP_ADDRESS = 1;
     private static final int EXTERNAL_PORT = 6;
     private static final int INTERNAL_PORT = 7;
+    private static final int EXTERNAL_PORT_RANGE_START = 6;
+    private static final int EXTERNAL_PORT_RANGE_END = 7;
+    private static final int INTERNAL_PORT_RANGE_START = 8;
+    private static final int INTERNAL_PORT_RANGE_END = 9;
 
     private static final String NO_IP_ADDRESS = "0.0.0.0";
 
@@ -59,6 +64,24 @@ public final class Ports {
             int internalPort = Integer.parseInt(matcher.group(INTERNAL_PORT));
 
             ports.add(new DockerPort(ip, externalPort, internalPort));
+        }
+        Matcher rangeMmatcher = PORT_RANGE_PATTERN.matcher(psOutput);
+        while (rangeMmatcher.find()) {
+            String matchedIpAddress = matcher.group(IP_ADDRESS);
+            String ip = matchedIpAddress.equals(NO_IP_ADDRESS) ? dockerMachineIp : matchedIpAddress;
+            int externalPortRangeStart = Integer.parseInt(matcher.group(EXTERNAL_PORT_RANGE_START));
+            int externalPortRangeEnd = Integer.parseInt(matcher.group(EXTERNAL_PORT_RANGE_END));
+            int internalPortRangeStart = Integer.parseInt(matcher.group(INTERNAL_PORT_RANGE_START));
+            int internalPortRangeEnd = Integer.parseInt(matcher.group(INTERNAL_PORT_RANGE_END));
+            int len = externalPortRangeEnd - externalPortRangeStart;
+            // Sanity check
+            if (len == internalPortRangeEnd - internalPortRangeStart) {
+                for (int i = 0; i <= len; i++) {
+                    int externalPort = externalPortRangeStart + i;
+                    int internalPort = internalPortRangeStart + i;
+                    ports.add(new DockerPort(ip, externalPort, internalPort));
+                }
+            }
         }
         return new Ports(ports);
     }
