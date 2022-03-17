@@ -28,7 +28,8 @@ import java.util.stream.Stream;
 public final class Ports {
 
     private static final Pattern PORT_PATTERN = Pattern.compile("((\\d+).(\\d+).(\\d+).(\\d+)):(\\d+)->(\\d+)/tcp");
-    private static final Pattern PORT_RANGE_PATTERN = Pattern.compile("((\\d+).(\\d+).(\\d+).(\\d+)):(\\d+)-(\\d+)->(\\d+)-(\\d+)/tcp");
+    private static final Pattern PORT_RANGE_PATTERN =
+            Pattern.compile("((\\d+).(\\d+).(\\d+).(\\d+)):(\\d+)-(\\d+)->(\\d+)-(\\d+)/tcp");
     private static final int IP_ADDRESS = 1;
     private static final int EXTERNAL_PORT = 6;
     private static final int INTERNAL_PORT = 7;
