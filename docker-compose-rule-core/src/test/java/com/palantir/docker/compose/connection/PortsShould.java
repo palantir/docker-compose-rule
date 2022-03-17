@@ -65,6 +65,15 @@ public class PortsShould {
     }
 
     @Test
+    public void result_in_two_ports_when_there_are_two_tcp_ports_in_a_range_mapping() {
+        String psOutput = "0.0.0.0:4432-4433->5432-5433/tcp";
+        Ports ports = Ports.parseFromDockerComposePs(psOutput, LOCALHOST_IP);
+        Ports expected = new Ports(
+                newArrayList(new DockerPort(LOCALHOST_IP, 4432, 5432), new DockerPort(LOCALHOST_IP, 4433, 5433)));
+        assertThat(ports, is(expected));
+    }
+
+    @Test
     public void result_in_no_ports_when_there_is_a_non_mapped_exposed_port() {
         String psOutput = "5432/tcp";
         Ports ports = Ports.parseFromDockerComposePs(psOutput, LOCALHOST_IP);

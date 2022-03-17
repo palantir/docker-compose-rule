@@ -65,14 +65,14 @@ public final class Ports {
 
             ports.add(new DockerPort(ip, externalPort, internalPort));
         }
-        Matcher rangeMmatcher = PORT_RANGE_PATTERN.matcher(psOutput);
-        while (rangeMmatcher.find()) {
-            String matchedIpAddress = matcher.group(IP_ADDRESS);
+        Matcher rangeMatcher = PORT_RANGE_PATTERN.matcher(psOutput);
+        while (rangeMatcher.find()) {
+            String matchedIpAddress = rangeMatcher.group(IP_ADDRESS);
             String ip = matchedIpAddress.equals(NO_IP_ADDRESS) ? dockerMachineIp : matchedIpAddress;
-            int externalPortRangeStart = Integer.parseInt(matcher.group(EXTERNAL_PORT_RANGE_START));
-            int externalPortRangeEnd = Integer.parseInt(matcher.group(EXTERNAL_PORT_RANGE_END));
-            int internalPortRangeStart = Integer.parseInt(matcher.group(INTERNAL_PORT_RANGE_START));
-            int internalPortRangeEnd = Integer.parseInt(matcher.group(INTERNAL_PORT_RANGE_END));
+            int externalPortRangeStart = Integer.parseInt(rangeMatcher.group(EXTERNAL_PORT_RANGE_START));
+            int externalPortRangeEnd = Integer.parseInt(rangeMatcher.group(EXTERNAL_PORT_RANGE_END));
+            int internalPortRangeStart = Integer.parseInt(rangeMatcher.group(INTERNAL_PORT_RANGE_START));
+            int internalPortRangeEnd = Integer.parseInt(rangeMatcher.group(INTERNAL_PORT_RANGE_END));
             int len = externalPortRangeEnd - externalPortRangeStart;
             // Sanity check
             if (len == internalPortRangeEnd - internalPortRangeStart) {
