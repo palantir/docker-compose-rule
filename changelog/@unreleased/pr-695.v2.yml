@@ -1,0 +1,5 @@
+type: fix
+fix:
+  description: Map port range mappings from docker ps output.
+  links:
+  - https://github.com/palantir/docker-compose-rule/pull/695
