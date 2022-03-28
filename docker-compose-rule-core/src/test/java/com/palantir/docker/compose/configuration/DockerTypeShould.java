@@ -18,12 +18,10 @@ package com.palantir.docker.compose.configuration;
 import static com.palantir.docker.compose.configuration.EnvironmentVariables.DOCKER_CERT_PATH;
 import static com.palantir.docker.compose.configuration.EnvironmentVariables.DOCKER_HOST;
 import static com.palantir.docker.compose.configuration.EnvironmentVariables.DOCKER_TLS_VERIFY;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import com.google.common.collect.ImmutableMap;
 import java.util.Map;
-import java.util.Optional;
 import org.junit.Test;
 
 public class DockerTypeShould {
@@ -35,13 +33,13 @@ public class DockerTypeShould {
                 .put(DOCKER_TLS_VERIFY, "1")
                 .put(DOCKER_CERT_PATH, "/path/to/certs")
                 .build();
-        assertThat(DockerType.getFirstValidDockerTypeForEnvironment(variables), is(Optional.of(DockerType.REMOTE)));
+        assertThat(DockerType.getFirstValidDockerTypeForEnvironment(variables)).contains(DockerType.REMOTE);
     }
 
     @Test
     public void return_daemon_as_first_valid_type_if_environment_is_illegal_for_remote() {
         Map<String, String> variables = ImmutableMap.of();
-        assertThat(DockerType.getFirstValidDockerTypeForEnvironment(variables), is(Optional.of(DockerType.DAEMON)));
+        assertThat(DockerType.getFirstValidDockerTypeForEnvironment(variables)).contains(DockerType.DAEMON);
     }
 
     @Test
@@ -49,6 +47,6 @@ public class DockerTypeShould {
         Map<String, String> variables = ImmutableMap.<String, String>builder()
                 .put(DOCKER_TLS_VERIFY, "1")
                 .build();
-        assertThat(DockerType.getFirstValidDockerTypeForEnvironment(variables), is(Optional.empty()));
+        assertThat(DockerType.getFirstValidDockerTypeForEnvironment(variables)).isEmpty();
     }
 }

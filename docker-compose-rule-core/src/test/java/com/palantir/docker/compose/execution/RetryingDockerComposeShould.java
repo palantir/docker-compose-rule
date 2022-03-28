@@ -17,8 +17,7 @@ package com.palantir.docker.compose.execution;
 
 import static com.palantir.docker.compose.execution.DockerComposeExecArgument.arguments;
 import static com.palantir.docker.compose.execution.DockerComposeExecOption.options;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.Is.is;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -72,7 +71,7 @@ public class RetryingDockerComposeShould {
             throws IOException, InterruptedException {
         when(dockerCompose.ps()).thenReturn(someContainerNames);
 
-        assertThat(retryingDockerCompose.ps(), is(someContainerNames));
+        assertThat(retryingDockerCompose.ps()).isEqualTo(someContainerNames);
 
         verifyRetryerWasUsed();
         verify(dockerCompose).ps();

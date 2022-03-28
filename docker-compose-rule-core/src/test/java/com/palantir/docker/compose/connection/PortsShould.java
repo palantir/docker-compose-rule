@@ -17,8 +17,7 @@ package com.palantir.docker.compose.connection;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static java.util.Collections.emptyList;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.Is.is;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -36,7 +35,7 @@ public class PortsShould {
         String psOutput = "------";
         Ports ports = Ports.parseFromDockerComposePs(psOutput, null);
         Ports expected = new Ports(emptyList());
-        assertThat(ports, is(expected));
+        assertThat(ports).isEqualTo(expected);
     }
 
     @Test
@@ -44,7 +43,7 @@ public class PortsShould {
         String psOutput = "0.0.0.0:5432->5432/tcp";
         Ports ports = Ports.parseFromDockerComposePs(psOutput, LOCALHOST_IP);
         Ports expected = new Ports(newArrayList(new DockerPort(LOCALHOST_IP, 5432, 5432)));
-        assertThat(ports, is(expected));
+        assertThat(ports).isEqualTo(expected);
     }
 
     @Test
@@ -52,7 +51,7 @@ public class PortsShould {
         String psOutput = "10.0.1.2:1234->2345/tcp";
         Ports ports = Ports.parseFromDockerComposePs(psOutput, LOCALHOST_IP);
         Ports expected = new Ports(newArrayList(new DockerPort("10.0.1.2", 1234, 2345)));
-        assertThat(ports, is(expected));
+        assertThat(ports).isEqualTo(expected);
     }
 
     @Test
@@ -61,7 +60,7 @@ public class PortsShould {
         Ports ports = Ports.parseFromDockerComposePs(psOutput, LOCALHOST_IP);
         Ports expected = new Ports(
                 newArrayList(new DockerPort(LOCALHOST_IP, 5432, 5432), new DockerPort(LOCALHOST_IP, 5433, 5432)));
-        assertThat(ports, is(expected));
+        assertThat(ports).isEqualTo(expected);
     }
 
     @Test
@@ -70,7 +69,7 @@ public class PortsShould {
         Ports ports = Ports.parseFromDockerComposePs(psOutput, LOCALHOST_IP);
         Ports expected = new Ports(
                 newArrayList(new DockerPort(LOCALHOST_IP, 4432, 5432), new DockerPort(LOCALHOST_IP, 4433, 5433)));
-        assertThat(ports, is(expected));
+        assertThat(ports).isEqualTo(expected);
     }
 
     @Test
@@ -78,7 +77,7 @@ public class PortsShould {
         String psOutput = "5432/tcp";
         Ports ports = Ports.parseFromDockerComposePs(psOutput, LOCALHOST_IP);
         Ports expected = new Ports(emptyList());
-        assertThat(ports, is(expected));
+        assertThat(ports).isEqualTo(expected);
     }
 
     @Test
@@ -92,7 +91,7 @@ public class PortsShould {
                         + " 8881/tcp, 8882/tcp, 8883/tcp, 8884/tcp, 8885/tcp, 8886/tcp \n";
         Ports ports = Ports.parseFromDockerComposePs(psOutput, LOCALHOST_IP);
         Ports expected = new Ports(newArrayList(new DockerPort(LOCALHOST_IP, 8880, 8880)));
-        assertThat(ports, is(expected));
+        assertThat(ports).isEqualTo(expected);
     }
 
     @Test
