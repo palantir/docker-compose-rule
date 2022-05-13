@@ -17,6 +17,7 @@ package com.palantir.docker.compose.execution;
 
 import com.github.zafarkhaja.semver.Version;
 import com.google.common.base.Strings;
+import com.google.common.base.Suppliers;
 import com.google.common.collect.ImmutableList;
 import com.palantir.docker.compose.configuration.DockerComposeFiles;
 import com.palantir.docker.compose.configuration.ProjectName;
@@ -31,6 +32,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Supplier;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.Validate;
 import org.joda.time.Duration;
@@ -40,12 +42,14 @@ import org.slf4j.LoggerFactory;
 public final class DefaultDockerCompose implements DockerCompose {
 
     public static final Version VERSION_1_7_0 = Version.valueOf("1.7.0");
+    public static final Version VERSION_1_28_0 = Version.valueOf("1.28.0");
     private static final Duration LOG_TIMEOUT = Duration.standardMinutes(1);
     private static final Logger log = LoggerFactory.getLogger(DefaultDockerCompose.class);
 
     private final Command command;
     private final DockerMachine dockerMachine;
     private final DockerComposeExecutable rawExecutable;
+    private final Supplier<Version> version;
 
     public DefaultDockerCompose(
             DockerComposeFiles dockerComposeFiles, DockerMachine dockerMachine, ProjectName projectName) {
@@ -62,6 +66,14 @@ public final class DefaultDockerCompose implements DockerCompose {
         this.rawExecutable = rawExecutable;
         this.command = new Command(rawExecutable, log::trace);
         this.dockerMachine = dockerMachine;
+        this.version = Suppliers.memoize(() -> {
+            try {
+                String versionOutput = command.execute(Command.throwingOnError(), "-v");
+                return DockerComposeVersion.parseFromDockerComposeVersion(versionOutput);
+            } catch (IOException | InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        });
     }
 
     @Override
@@ -145,12 +157,7 @@ public final class DefaultDockerCompose implements DockerCompose {
 
     private void verifyDockerComposeVersionAtLeast(Version targetVersion, String message)
             throws IOException, InterruptedException {
-        Validate.validState(version().greaterThanOrEqualTo(targetVersion), message);
-    }
-
-    private Version version() throws IOException, InterruptedException {
-        String versionOutput = command.execute(Command.throwingOnError(), "-v");
-        return DockerComposeVersion.parseFromDockerComposeVersion(versionOutput);
+        Validate.validState(version.get().greaterThanOrEqualTo(targetVersion), message);
     }
 
     private static String[] constructFullDockerComposeExecArguments(
@@ -236,7 +243,11 @@ public final class DefaultDockerCompose implements DockerCompose {
     private Process logs(String container) throws IOException, InterruptedException {
         verifyDockerComposeVersionAtLeast(
                 VERSION_1_7_0, "You need at least docker-compose 1.7 to run docker-compose logs");
-        return rawExecutable.execute("logs", "--no-color", container);
+        if (version.get().lessThan(VERSION_1_28_0)) {
+            return rawExecutable.execute("logs", "--no-color", container);
+        } else {
+            return rawExecutable.execute("logs", "--no-color", "--no-log-prefix", container);
+        }
     }
 
     @Override
