@@ -22,7 +22,7 @@ import static org.hamcrest.Matchers.not;
 
 import java.io.File;
 import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
 
