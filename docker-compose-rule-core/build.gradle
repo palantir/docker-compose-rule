@@ -28,4 +28,5 @@ dependencies {
     testImplementation 'com.github.tomakehurst:wiremock'
 
     integrationTestCompile project.sourceSets.test.output
+    implementation 'com.palantir.safe-logging:logger'
 }

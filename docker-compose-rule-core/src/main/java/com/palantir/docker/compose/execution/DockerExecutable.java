@@ -16,16 +16,16 @@
 package com.palantir.docker.compose.execution;
 
 import com.google.common.collect.ImmutableList;
+import com.palantir.logsafe.logger.SafeLogger;
+import com.palantir.logsafe.logger.SafeLoggerFactory;
 import java.io.IOException;
 import java.util.List;
 import org.immutables.value.Value;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 @Value.Immutable
 @SuppressWarnings("DesignForExtension")
 public abstract class DockerExecutable implements Executable {
-    private static final Logger log = LoggerFactory.getLogger(DockerExecutable.class);
+    private static final SafeLogger log = SafeLoggerFactory.get(DockerExecutable.class);
 
     private static final DockerCommandLocations DOCKER_LOCATIONS =
             new DockerCommandLocations(System.getenv("DOCKER_LOCATION"), "/usr/local/bin/docker", "/usr/bin/docker");

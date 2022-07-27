@@ -17,9 +17,9 @@
 package com.palantir.docker.compose.execution;
 
 import com.palantir.docker.compose.configuration.ShutdownStrategy;
+import com.palantir.logsafe.logger.SafeLogger;
+import com.palantir.logsafe.logger.SafeLoggerFactory;
 import java.io.IOException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Send SIGTERM to containers first, allowing them up to 10 seconds to
@@ -27,7 +27,7 @@ import org.slf4j.LoggerFactory;
  */
 public final class GracefulShutdownStrategy implements ShutdownStrategy {
 
-    private static final Logger log = LoggerFactory.getLogger(GracefulShutdownStrategy.class);
+    private static final SafeLogger log = SafeLoggerFactory.get(GracefulShutdownStrategy.class);
 
     @Override
     public void stop(DockerCompose dockerCompose) throws IOException, InterruptedException {

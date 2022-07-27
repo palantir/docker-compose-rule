@@ -18,8 +18,8 @@ package com.palantir.docker.compose.reporting;
 
 import com.palantir.docker.compose.configuration.DockerComposeRuleConfig;
 import com.palantir.docker.compose.report.DockerComposeRun;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.palantir.logsafe.logger.SafeLogger;
+import com.palantir.logsafe.logger.SafeLoggerFactory;
 
 interface Reporter {
     void addRun(DockerComposeRun dockerComposeRun);
@@ -29,7 +29,7 @@ interface Reporter {
     void report();
 
     final class NoOpReporter implements Reporter {
-        private static final Logger log = LoggerFactory.getLogger(NoOpReporter.class);
+        private static final SafeLogger log = SafeLoggerFactory.get(NoOpReporter.class);
 
         public static final Reporter INSTANCE = new NoOpReporter();
 
