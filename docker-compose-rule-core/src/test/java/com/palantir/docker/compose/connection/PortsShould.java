@@ -96,6 +96,35 @@ public class PortsShould {
     }
 
     @Test
+    public void parse_docker_compose_output_on_narrow_terminal() {
+        String psOutput = "         Name                 Command             State              Ports       \n"
+                + "--------------------------------------------------------------------------------\n"
+                + "projectnamemyserv   docker-entrypoint.sh   Up (healthy)   4510/tcp, 4511/tcp,\n"
+                + "ice_localstack_1                                          4512/tcp, 4513/tcp,\n"
+                + "                                                          4514/tcp, 4515/tcp,\n"
+                + "                                                          4558/tcp, 4559/tcp,\n"
+                + "                                                          0.0.0.0:49153->4566\n"
+                + "                                                          /tcp,:::49153->4566\n"
+                + "                                                          /tcp, 5678/tcp     ";
+        Ports ports = Ports.parseFromDockerComposePs(psOutput, LOCALHOST_IP);
+        Ports expected = new Ports(newArrayList(new DockerPort(LOCALHOST_IP, 49153, 4566)));
+        assertThat(ports, is(expected));
+    }
+
+    @Test
+    public void parse_docker_compose_output_on_narrow_terminal_2() {
+        String psOutput = "    Name           Command         State           Ports    \n"
+                + "------------------------------------------------------------\n"
+                + "decisiontable   docker-         Up (healthy)   4559/tcp, 0.0\n"
+                + "microservice_   entrypoint.sh                  .0.0:49187->4\n"
+                + "localstack_1                                   566/tcp,     \n"
+                + "                                               5678/tcp     ";
+        Ports ports = Ports.parseFromDockerComposePs(psOutput, LOCALHOST_IP);
+        Ports expected = new Ports(newArrayList(new DockerPort(LOCALHOST_IP, 49187, 4566)));
+        assertThat(ports, is(expected));
+    }
+
+    @Test
     public void throw_illegal_state_exception_when_no_running_container_found_for_service() {
         exception.expect(IllegalArgumentException.class);
         exception.expectMessage("No container found");

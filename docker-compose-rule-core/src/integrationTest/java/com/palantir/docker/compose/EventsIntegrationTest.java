@@ -17,7 +17,7 @@
 package com.palantir.docker.compose;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.fail;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -87,18 +87,15 @@ public class EventsIntegrationTest {
                 .addEventConsumer(eventConsumer)
                 .build();
 
-        try {
-            runDockerComposeRule(dockerComposeManager);
-            fail("Was expecting an exception");
-        } catch (Throwable t) {
-            // ignore the failure
-        }
+        assertThatThrownBy(() -> runDockerComposeRule(dockerComposeManager), "Was expecting an exception")
+                .isInstanceOf(Throwable.class);
 
         List<Event> events = getEvents();
 
         ClusterWaitEvent clusterWait = events.stream()
                 .map(this::isClusterWait)
                 .filter(Optional::isPresent)
+                .filter(e -> e.get().getTask().getFailure().isPresent())
                 .map(Optional::get)
                 .findFirst()
                 .orElseThrow(() -> new IllegalStateException("no clusterwaits in events"));
