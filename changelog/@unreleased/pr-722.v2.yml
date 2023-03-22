@@ -1,0 +1,5 @@
+type: feature
+feature:
+  description: docker-compose-rule now adds (opt in) support for docker-compose v2
+  links:
+  - https://github.com/palantir/docker-compose-rule/pull/722
