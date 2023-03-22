@@ -97,8 +97,13 @@ public abstract class DockerComposeExecutable implements Executable {
     }
 
     @Value.Derived
-    protected String dockerComposePath() {
-        return defaultDockerComposePath(useDockerComposeV2());
+    protected List<String> dockerComposePath() {
+        String path = defaultDockerComposePath(useDockerComposeV2());
+        if (useDockerComposeV2()) {
+            return ImmutableList.of(path, "compose");
+        } else {
+            return ImmutableList.of(path);
+        }
     }
 
     @Value.Default
@@ -111,7 +116,7 @@ public abstract class DockerComposeExecutable implements Executable {
         DockerForMacHostsIssue.issueWarning();
 
         List<String> args = ImmutableList.<String>builder()
-                .add(dockerComposePath())
+                .addAll(dockerComposePath())
                 .addAll(projectName().constructComposeFileCommand())
                 .addAll(dockerComposeFiles().constructComposeFileCommand())
                 .add(commands)
