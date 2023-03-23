@@ -96,15 +96,17 @@ public class EventsIntegrationTest {
 
         List<Event> events = getEvents();
 
-        ClusterWaitEvent clusterWait = events.stream()
+        Optional<ClusterWaitEvent> clusterWait = events.stream()
                 .map(this::isClusterWait)
                 .filter(Optional::isPresent)
                 .map(Optional::get)
-                .findFirst()
-                .orElseThrow(() -> new IllegalStateException("no clusterwaits in events"));
+                .filter(clusterWaitEvent ->
+                        clusterWaitEvent.getTask().getFailure().isPresent())
+                .findFirst();
 
-        assertThat(clusterWait.getServiceNames()).containsOnly("one");
-        assertThat(clusterWait.getTask().getFailure()).hasValueSatisfying(failure -> {
+        assertThat(clusterWait).isPresent();
+        assertThat(clusterWait.get().getServiceNames()).containsOnly("one");
+        assertThat(clusterWait.get().getTask().getFailure()).hasValueSatisfying(failure -> {
             assertThat(failure).contains(failureMessage);
         });
     }
