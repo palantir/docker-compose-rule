@@ -91,7 +91,7 @@ public class DockerComposeShould {
 
     @Test
     public void parse_and_returns_container_names_on_ps() throws IOException, InterruptedException {
-        when(executedProcess.getInputStream()).thenReturn(toInputStream("ps\n----\ndir_db_1"));
+        when(executedProcess.getInputStream()).thenReturn(toInputStream("HEADER\ndir_db_1"));
         List<ContainerName> containerNames = compose.ps();
         verify(executor).execute("ps");
         assertThat(
@@ -123,7 +123,7 @@ public class DockerComposeShould {
         when(mockVersionProcess.exitValue()).thenReturn(0);
         when(mockVersionProcess.getInputStream())
                 .thenReturn(toInputStream("docker-compose version 1.7.0, build 1ad8866"));
-        when(executor.execute("-v")).thenReturn(mockVersionProcess);
+        when(executor.execute("version")).thenReturn(mockVersionProcess);
         when(executor.execute("logs", "--no-color", "db")).thenReturn(executedProcess);
         when(executedProcess.getInputStream()).thenReturn(toInputStream("logs"));
         ByteArrayOutputStream output = new ByteArrayOutputStream();
@@ -224,7 +224,7 @@ public class DockerComposeShould {
 
         DockerComposeExecutable processExecutor = mock(DockerComposeExecutable.class);
 
-        addProcessToExecutor(processExecutor, processWithOutput(versionString), "-v");
+        addProcessToExecutor(processExecutor, processWithOutput(versionString), "version");
         addProcessToExecutor(processExecutor, processWithOutput(lsString), "exec", "-T", "container_1", "ls", "-l");
 
         DockerCompose processCompose = new DefaultDockerCompose(processExecutor, dockerMachine);

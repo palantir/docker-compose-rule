@@ -149,7 +149,7 @@ public final class DefaultDockerCompose implements DockerCompose {
     }
 
     private Version version() throws IOException, InterruptedException {
-        String versionOutput = command.execute(Command.throwingOnError(), "-v");
+        String versionOutput = command.execute(Command.throwingOnError(), "version");
         return DockerComposeVersion.parseFromDockerComposeVersion(versionOutput);
     }
 
