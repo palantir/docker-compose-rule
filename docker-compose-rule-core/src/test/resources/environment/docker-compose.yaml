@@ -1,5 +1,8 @@
-env-test:
-  image: gliderlabs/alpine
-  environment:
-    SOME_VARIABLE: ${SOME_VARIABLE}
-  command: env
+version: "2.1"
+
+services:
+  env-test:
+    image: gliderlabs/alpine
+    environment:
+      SOME_VARIABLE: ${SOME_VARIABLE}
+    command: env
