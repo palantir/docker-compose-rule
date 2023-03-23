@@ -38,7 +38,6 @@ public class AggressiveShutdownWithNetworkCleanupStrategyIntegrationTest {
             .build();
 
     @Test
-    @Ignore("Does not work; clean up later")
     public void shut_down_multiple_containers_immediately() throws Exception {
         assertThat(docker.dockerCompose().ps(), is(TestContainerNames.of()));
 

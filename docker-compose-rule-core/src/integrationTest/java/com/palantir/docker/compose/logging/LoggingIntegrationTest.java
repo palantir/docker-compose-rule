@@ -25,7 +25,6 @@ import com.palantir.docker.compose.DockerComposeManager;
 import java.io.File;
 import java.io.IOException;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -48,7 +47,6 @@ public class LoggingIntegrationTest {
     }
 
     @Test
-    @Ignore("Does not work; clean up later")
     public void logs_can_be_saved_to_a_directory() throws IOException, InterruptedException {
         try {
             dockerComposeRule.before();

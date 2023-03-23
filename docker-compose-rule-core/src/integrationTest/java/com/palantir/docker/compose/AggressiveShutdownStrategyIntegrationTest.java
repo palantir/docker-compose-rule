@@ -23,10 +23,8 @@ import com.palantir.docker.compose.configuration.ShutdownStrategy;
 import com.palantir.docker.compose.logging.DoNothingLogCollector;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
-import org.junit.Ignore;
 import org.junit.Test;
 
-@Ignore("Does not work; clean up later")
 public class AggressiveShutdownStrategyIntegrationTest {
 
     @Test
