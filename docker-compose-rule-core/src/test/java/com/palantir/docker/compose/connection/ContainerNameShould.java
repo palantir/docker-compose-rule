@@ -53,46 +53,46 @@ public class ContainerNameShould {
 
     @Test
     public void result_in_no_container_names_when_ps_output_is_empty() {
-        List<ContainerName> names = ContainerNames.parseFromDockerComposePs("\n----\n");
+        List<ContainerName> names = ContainerNames.parseFromDockerComposePs("HEADER\n");
         assertThat(names, is(emptyList()));
     }
 
     @Test
     public void result_in_a_single_container_name_when_ps_output_has_a_single_container() {
-        List<ContainerName> names = ContainerNames.parseFromDockerComposePs("\n----\ndir_db_1 other line contents");
+        List<ContainerName> names = ContainerNames.parseFromDockerComposePs("HEADER\ndir_db_1 other line contents");
         assertThat(names, contains(containerName("dir", "db", "1")));
     }
 
     @Test
     public void allow_windows_newline_characters() {
-        List<ContainerName> names = ContainerNames.parseFromDockerComposePs("\r\n----\r\ndir_db_1 other line contents");
+        List<ContainerName> names = ContainerNames.parseFromDockerComposePs("HEADER\r\ndir_db_1 other line contents");
         assertThat(names, contains(containerName("dir", "db", "1")));
     }
 
     @Test
     public void allow_containers_with_underscores_in_their_name() {
         List<ContainerName> names =
-                ContainerNames.parseFromDockerComposePs("\n----\ndir_left_right_1 other line contents");
+                ContainerNames.parseFromDockerComposePs("HEADER\ndir_left_right_1 other line contents");
         assertThat(names, contains(containerName("dir", "left_right", "1")));
     }
 
     @Test
     public void result_in_two_container_names_when_ps_output_has_two_containers() {
         List<ContainerName> names =
-                ContainerNames.parseFromDockerComposePs("\n----\ndir_db_1 other line contents\ndir_db2_1 other stuff");
+                ContainerNames.parseFromDockerComposePs("HEADER\ndir_db_1 other line contents\ndir_db2_1 other stuff");
         assertThat(names, contains(containerName("dir", "db", "1"), containerName("dir", "db2", "1")));
     }
 
     @Test
     public void ignore_an_empty_line_in_ps_output() {
-        List<ContainerName> names = ContainerNames.parseFromDockerComposePs("\n----\ndir_db_1 other line contents\n\n");
+        List<ContainerName> names = ContainerNames.parseFromDockerComposePs("HEADER\ndir_db_1 other line contents\n\n");
         assertThat(names, contains(containerName("dir", "db", "1")));
     }
 
     @Test
     public void ignore_a_line_with_ony_spaces_in_ps_output() {
         List<ContainerName> names =
-                ContainerNames.parseFromDockerComposePs("\n----\ndir_db_1 other line contents\n   \n");
+                ContainerNames.parseFromDockerComposePs("HEADER\ndir_db_1 other line contents\n   \n");
         assertThat(names, contains(containerName("dir", "db", "1")));
     }
 
