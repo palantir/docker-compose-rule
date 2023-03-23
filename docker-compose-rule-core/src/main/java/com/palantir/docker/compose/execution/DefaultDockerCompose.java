@@ -149,8 +149,15 @@ public final class DefaultDockerCompose implements DockerCompose {
     }
 
     private Version version() throws IOException, InterruptedException {
-        String versionOutput = command.execute(Command.throwingOnError(), "version");
-        return DockerComposeVersion.parseFromDockerComposeVersion(versionOutput);
+        // docker-compose and docker compose have different ways to query the version.
+        // Since it can be either one, even silently sym-linked underneath us, try both
+        try {
+            String versionOutput = command.execute(Command.throwingOnError(), "version");
+            return DockerComposeVersion.parseFromDockerComposeVersion(versionOutput);
+        } catch (RuntimeException _exception) {
+            String versionOutput = command.execute(Command.throwingOnError(), "-v");
+            return DockerComposeVersion.parseFromDockerComposeVersion(versionOutput);
+        }
     }
 
     private static String[] constructFullDockerComposeExecArguments(
