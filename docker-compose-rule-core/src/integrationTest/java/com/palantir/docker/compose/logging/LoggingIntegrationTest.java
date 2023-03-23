@@ -55,9 +55,9 @@ public class LoggingIntegrationTest {
         }
         assertThat(
                 new File(logFolder.getRoot(), "db.log"),
-                is(fileWithConents(matchingPattern(".*Attaching to \\w+_db_1.*server started.*"))));
+                is(fileWithConents(matchingPattern(".*db-1.*server started.*"))));
         assertThat(
                 new File(logFolder.getRoot(), "db2.log"),
-                is(fileWithConents(matchingPattern(".*Attaching to \\w+_db2_1.*server started.*"))));
+                is(fileWithConents(matchingPattern(".*db2-1.*server started.*"))));
     }
 }

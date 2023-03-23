@@ -101,7 +101,13 @@ public abstract class DockerComposeManager {
                 .dockerComposeFiles(files())
                 .dockerConfiguration(machine())
                 .projectName(projectName())
+                .useDockerComposeV2(useDockerComposeV2())
                 .build();
+    }
+
+    @Value.Default
+    public boolean useDockerComposeV2() {
+        return false;
     }
 
     @Value.Default

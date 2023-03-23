@@ -30,20 +30,31 @@ import org.slf4j.LoggerFactory;
 public abstract class DockerComposeExecutable implements Executable {
     private static final Logger log = LoggerFactory.getLogger(DockerComposeExecutable.class);
 
-    private static final DockerCommandLocations DOCKER_COMPOSE_LOCATIONS = new DockerCommandLocations(
+    private static final DockerCommandLocations DOCKER_COMPOSE_V1_LOCATIONS = new DockerCommandLocations(
             System.getenv("DOCKER_COMPOSE_LOCATION"), "/usr/local/bin/docker-compose", "/usr/bin/docker-compose");
 
-    private static String defaultDockerComposePath() {
-        String pathToUse = DOCKER_COMPOSE_LOCATIONS
+    private static final DockerCommandLocations DOCKER_COMPOSE_V2_LOCATIONS =
+            new DockerCommandLocations(System.getenv("DOCKER_LOCATION"), "/usr/local/bin/docker", "/usr/bin/docker");
+
+    private static String defaultDockerComposePath(boolean useDockerComposeV2) {
+        DockerCommandLocations locations =
+                useDockerComposeV2 ? DOCKER_COMPOSE_V2_LOCATIONS : DOCKER_COMPOSE_V1_LOCATIONS;
+        String pathToUse = locations
                 .preferredLocation()
-                .orElseThrow(() -> new IllegalStateException(
-                        "Could not find docker-compose, looked in: " + DOCKER_COMPOSE_LOCATIONS));
+                .orElseThrow(() -> new IllegalStateException("Could not find docker-compose, looked in: " + locations));
 
         log.debug("Using docker-compose found at " + pathToUse);
 
         return pathToUse;
     }
 
+    /**
+     * Returns the version of docker-compose.
+     *
+     * @deprecated only supports getting the version of docker-compose v1.
+     * Just use {@link #execute} to get the version directly.
+     */
+    @Deprecated
     static Version version() throws IOException, InterruptedException {
         Command dockerCompose = new Command(
                 new Executable() {
@@ -55,7 +66,7 @@ public abstract class DockerComposeExecutable implements Executable {
                     @Override
                     public Process execute(String... commands) throws IOException {
                         List<String> args = ImmutableList.<String>builder()
-                                .add(defaultDockerComposePath())
+                                .add(defaultDockerComposePath(false))
                                 .add(commands)
                                 .build();
                         return new ProcessBuilder(args)
@@ -82,12 +93,22 @@ public abstract class DockerComposeExecutable implements Executable {
 
     @Override
     public final String commandName() {
-        return "docker-compose";
+        return useDockerComposeV2() ? "docker compose" : "docker-compose";
     }
 
     @Value.Derived
-    protected String dockerComposePath() {
-        return defaultDockerComposePath();
+    protected List<String> dockerComposePath() {
+        String path = defaultDockerComposePath(useDockerComposeV2());
+        if (useDockerComposeV2()) {
+            return ImmutableList.of(path, "compose");
+        } else {
+            return ImmutableList.of(path);
+        }
+    }
+
+    @Value.Default
+    public boolean useDockerComposeV2() {
+        return false;
     }
 
     @Override
@@ -95,7 +116,7 @@ public abstract class DockerComposeExecutable implements Executable {
         DockerForMacHostsIssue.issueWarning();
 
         List<String> args = ImmutableList.<String>builder()
-                .add(dockerComposePath())
+                .addAll(dockerComposePath())
                 .addAll(projectName().constructComposeFileCommand())
                 .addAll(dockerComposeFiles().constructComposeFileCommand())
                 .add(commands)
