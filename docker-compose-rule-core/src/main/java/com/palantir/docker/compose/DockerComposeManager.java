@@ -107,7 +107,7 @@ public abstract class DockerComposeManager {
 
     @Value.Default
     public boolean useDockerComposeV2() {
-        return false;
+        return true;
     }
 
     @Value.Default
