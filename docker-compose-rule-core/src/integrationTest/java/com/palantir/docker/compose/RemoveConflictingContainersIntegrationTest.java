@@ -46,7 +46,7 @@ public class RemoveConflictingContainersIntegrationTest {
         try {
             composition.before();
             exception.expect(DockerExecutionException.class);
-            exception.expectMessage("'docker-compose up -d' returned exit code");
+            exception.expectMessage("'docker compose up -d' returned exit code");
             conflictingComposition.before();
         } finally {
             composition.after();
