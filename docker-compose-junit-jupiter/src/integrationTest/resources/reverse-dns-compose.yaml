@@ -1,0 +1,16 @@
+version: '2.1'
+
+services:
+  db:
+    hostname: db.palantir.pt
+    container_name: db.palantir.pt
+    image: praqma/network-multitool
+    tty: true
+    command: sh -c 'while true; do sleep 1000; done'
+
+  db2:
+    hostname: db2.palantir.pt
+    container_name: db2.palantir.pt
+    image: praqma/network-multitool
+    tty: true
+    command: sh -c 'while true; do sleep 1000; done'
