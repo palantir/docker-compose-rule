@@ -1,5 +1,5 @@
-type: improvement
-improvement:
+type: break
+break:
   description: Enable docker-compose v2 by default
   links:
   - https://github.com/palantir/docker-compose-rule/pull/729
