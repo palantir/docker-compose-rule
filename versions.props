@@ -8,6 +8,7 @@ joda-time:joda-time = 2.10.3
 junit:junit = 4.13
 org.hamcrest:* = 2.1
 org.immutables:* = 2.8.8
+org.junit.vintage:* = 5.5.0
 org.mockito:* = 3.9.0
 org.slf4j:* = 1.7.36
 one.util:streamex = 0.7.2

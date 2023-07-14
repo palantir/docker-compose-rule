@@ -21,7 +21,7 @@ import static com.palantir.docker.compose.configuration.ShutdownStrategy.AGGRESS
 import com.palantir.docker.compose.execution.DockerExecutionException;
 import java.io.IOException;
 import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.junit.rules.ExpectedException;
 
 public class RemoveConflictingContainersIntegrationTest {

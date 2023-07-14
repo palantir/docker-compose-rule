@@ -22,7 +22,7 @@ import static org.mockito.Mockito.mock;
 
 import com.palantir.docker.compose.execution.Docker;
 import com.palantir.docker.compose.execution.DockerCompose;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class ContainerCacheShould {
 

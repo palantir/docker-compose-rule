@@ -37,7 +37,7 @@ import com.palantir.docker.compose.events.UpEvent;
 import com.palantir.docker.compose.events.WaitForServicesEvent;
 import java.util.List;
 import java.util.Optional;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 
 @SuppressWarnings("IllegalThrows")
