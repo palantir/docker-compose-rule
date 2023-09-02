@@ -18,11 +18,13 @@ package com.palantir.docker.compose.connection;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public final class Ports {
@@ -56,7 +58,30 @@ public final class Ports {
 
     public static Ports parseFromDockerComposePs(String psOutput, String dockerMachineIp) {
         Preconditions.checkArgument(!Strings.isNullOrEmpty(psOutput), "No container found");
-        Matcher matcher = PORT_PATTERN.matcher(psOutput);
+        final String[] lines = psOutput.split("\\R");
+        String cleanOutput = psOutput;
+        // Clean actual ps output to remove line breaks and unneeded spaces
+        if (lines.length > 1) {
+            int lineWithDashes = -1;
+            for (int i = 0; i < lines.length; i++) {
+                if (lines[i].startsWith("-------")) {
+                    lineWithDashes = i;
+                    break;
+                }
+            }
+            Preconditions.checkArgument(lineWithDashes > -1, "No container found");
+            final int linesToSkip = lineWithDashes + 1;
+            Preconditions.checkArgument(lines.length > linesToSkip, "No container found");
+            final int lastIndexOfFieldSeparator = lines[linesToSkip].lastIndexOf("   ");
+            Preconditions.checkArgument(lastIndexOfFieldSeparator > -1, "Invalid input");
+
+            cleanOutput = Arrays.stream(lines)
+                    .skip(linesToSkip)
+                    .map(l -> l.substring(lastIndexOfFieldSeparator + 3))
+                    .map(String::trim)
+                    .collect(Collectors.joining(""));
+        }
+        Matcher matcher = PORT_PATTERN.matcher(cleanOutput);
         List<DockerPort> ports = new ArrayList<>();
         while (matcher.find()) {
             String matchedIpAddress = matcher.group(IP_ADDRESS);
@@ -66,7 +91,7 @@ public final class Ports {
 
             ports.add(new DockerPort(ip, externalPort, internalPort));
         }
-        Matcher rangeMatcher = PORT_RANGE_PATTERN.matcher(psOutput);
+        Matcher rangeMatcher = PORT_RANGE_PATTERN.matcher(cleanOutput);
         while (rangeMatcher.find()) {
             String matchedIpAddress = rangeMatcher.group(IP_ADDRESS);
             String ip = matchedIpAddress.equals(NO_IP_ADDRESS) ? dockerMachineIp : matchedIpAddress;

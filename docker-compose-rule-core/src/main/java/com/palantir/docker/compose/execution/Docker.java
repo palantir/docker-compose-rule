@@ -34,7 +34,8 @@ public final class Docker {
     private static final Logger log = LoggerFactory.getLogger(Docker.class);
 
     // Without java escape characters: ^(\d+)\.(\d+)\.(\d+)(?:-.*)?$
-    private static final Pattern VERSION_PATTERN = Pattern.compile("^Docker version (\\d+)\\.(\\d+)\\.(\\d+)(?:-.*)?$");
+    private static final Pattern VERSION_PATTERN =
+            Pattern.compile("^Docker version (\\d+)\\.(\\d+)\\.(\\d+)(?:[,-].*)?$");
     private static final String HEALTH_STATUS_FORMAT = "--format="
             + "{{if not .State.Running}}DOWN"
             + "{{else if .State.Paused}}PAUSED"
