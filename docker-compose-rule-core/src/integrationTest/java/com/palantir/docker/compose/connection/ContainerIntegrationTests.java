@@ -18,9 +18,9 @@ package com.palantir.docker.compose.connection;
 
 import static com.palantir.docker.compose.execution.DockerComposeExecArgument.arguments;
 import static com.palantir.docker.compose.execution.DockerComposeExecOption.noOptions;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
 import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertEquals;
 
 import com.palantir.docker.compose.configuration.DockerComposeFiles;
 import com.palantir.docker.compose.configuration.ProjectName;
@@ -31,7 +31,6 @@ import com.palantir.docker.compose.execution.DockerExecutable;
 import java.io.IOException;
 import java.time.Duration;
 import org.awaitility.core.ConditionFactory;
-import org.junit.Assert;
 import org.junit.Test;
 
 public class ContainerIntegrationTests {
@@ -49,11 +48,11 @@ public class ContainerIntegrationTests {
 
         // The noHealthcheck service has no healthcheck specified; it should be immediately healthy
         Container container = new Container("noHealthcheck", docker, dockerCompose);
-        Assert.assertEquals(State.DOWN, container.state());
+        assertThat(container.state()).isEqualTo(State.DOWN);
         container.up();
-        assertEquals(State.HEALTHY, container.state());
+        assertThat(container.state()).isEqualTo(State.HEALTHY);
         container.kill();
-        assertEquals(State.DOWN, container.state());
+        assertThat(container.state()).isEqualTo(State.DOWN);
     }
 
     @Test
@@ -65,14 +64,14 @@ public class ContainerIntegrationTests {
 
         // The withHealthcheck service's healthcheck checks every 100ms whether the file "healthy" exists
         Container container = new Container("withHealthcheck", docker, dockerCompose);
-        assertEquals(State.DOWN, container.state());
+        assertThat(container.state()).isEqualTo(State.DOWN);
         container.up();
-        assertEquals(State.UNHEALTHY, container.state());
+        assertThat(container.state()).isEqualTo(State.UNHEALTHY);
         dockerCompose.exec(noOptions(), "withHealthcheck", arguments("touch", "healthy"));
         wait.until(container::state, equalTo(State.HEALTHY));
         dockerCompose.exec(noOptions(), "withHealthcheck", arguments("rm", "healthy"));
         wait.until(container::state, equalTo(State.UNHEALTHY));
         container.kill();
-        assertEquals(State.DOWN, container.state());
+        assertThat(container.state()).isEqualTo(State.DOWN);
     }
 }
