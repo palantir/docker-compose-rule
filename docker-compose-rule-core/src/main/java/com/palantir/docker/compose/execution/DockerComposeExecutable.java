@@ -108,7 +108,7 @@ public abstract class DockerComposeExecutable implements Executable {
 
     @Value.Default
     public boolean useDockerComposeV2() {
-        return false;
+        return true;
     }
 
     @Override
