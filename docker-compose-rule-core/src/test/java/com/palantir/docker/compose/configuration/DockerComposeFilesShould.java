@@ -15,8 +15,7 @@
  */
 package com.palantir.docker.compose.configuration;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.contains;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.not;
 
@@ -67,7 +66,8 @@ public class DockerComposeFilesShould {
     public void generate_docker_compose_file_command_correctly_for_single_compose_file() throws Exception {
         File composeFile = tempFolder.newFile("docker-compose.yaml");
         DockerComposeFiles dockerComposeFiles = DockerComposeFiles.from(composeFile.getAbsolutePath());
-        assertThat(dockerComposeFiles.constructComposeFileCommand(), contains("--file", composeFile.getAbsolutePath()));
+        assertThat(dockerComposeFiles.constructComposeFileCommand())
+                .containsExactly("--file", composeFile.getAbsolutePath());
     }
 
     @Test
@@ -76,8 +76,7 @@ public class DockerComposeFilesShould {
         File composeFile2 = tempFolder.newFile("docker-compose2.yaml");
         DockerComposeFiles dockerComposeFiles =
                 DockerComposeFiles.from(composeFile1.getAbsolutePath(), composeFile2.getAbsolutePath());
-        assertThat(
-                dockerComposeFiles.constructComposeFileCommand(),
-                contains("--file", composeFile1.getAbsolutePath(), "--file", composeFile2.getAbsolutePath()));
+        assertThat(dockerComposeFiles.constructComposeFileCommand())
+                .containsExactly("--file", composeFile1.getAbsolutePath(), "--file", composeFile2.getAbsolutePath());
     }
 }

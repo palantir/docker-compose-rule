@@ -16,8 +16,7 @@
 package com.palantir.docker.compose.execution;
 
 import static org.apache.commons.io.IOUtils.toInputStream;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.anyVararg;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -55,7 +54,7 @@ public class DockerShould {
         String lsOutput = "0.0.0.0:7000->7000/tcp";
         when(executedProcess.getInputStream()).thenReturn(toInputStream(lsOutput));
 
-        assertThat(docker.listNetworks(), is(lsOutput));
+        assertThat(docker.listNetworks()).isEqualTo(lsOutput);
 
         verify(executor).execute("network", "ls");
     }
@@ -65,7 +64,7 @@ public class DockerShould {
         String lsOutput = "0.0.0.0:7000->7000/tcp";
         when(executedProcess.getInputStream()).thenReturn(toInputStream(lsOutput));
 
-        assertThat(docker.pruneNetworks(), is(lsOutput));
+        assertThat(docker.pruneNetworks()).isEqualTo(lsOutput);
 
         verify(executor).execute("network", "prune", "--force");
     }
@@ -75,7 +74,7 @@ public class DockerShould {
         when(executedProcess.getInputStream()).thenReturn(toInputStream("Docker version 1.7.2"));
 
         Version version = docker.configuredVersion();
-        assertThat(version, is(Version.valueOf("1.7.2")));
+        assertThat(version).isEqualTo(Version.valueOf("1.7.2"));
     }
 
     @Test
@@ -83,6 +82,6 @@ public class DockerShould {
         when(executedProcess.getInputStream()).thenReturn(toInputStream("Docker version 17.03.1-ce"));
 
         Version version = docker.configuredVersion();
-        assertThat(version, is(Version.valueOf("17.3.1")));
+        assertThat(version).isEqualTo(Version.valueOf("17.3.1"));
     }
 }

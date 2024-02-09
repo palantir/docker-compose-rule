@@ -16,9 +16,8 @@
 package com.palantir.docker.compose.configuration;
 
 import static com.palantir.docker.compose.configuration.EnvironmentVariables.TCP_PROTOCOL;
-import static org.hamcrest.MatcherAssert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
-import org.hamcrest.Matchers;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -48,12 +47,12 @@ public class RemoteHostIpResolverShould {
     @Test
     public void resolve_docker_host_with_port() {
         String dockerHost = String.format("%s%s:%d", TCP_PROTOCOL, IP, PORT);
-        assertThat(new RemoteHostIpResolver().resolveIp(dockerHost), Matchers.is(IP));
+        assertThat(new RemoteHostIpResolver().resolveIp(dockerHost)).isEqualTo(IP);
     }
 
     @Test
     public void resolve_docker_host_without_port() {
         String dockerHost = String.format("%s%s", TCP_PROTOCOL, IP);
-        assertThat(new RemoteHostIpResolver().resolveIp(dockerHost), Matchers.is(IP));
+        assertThat(new RemoteHostIpResolver().resolveIp(dockerHost)).isEqualTo(IP);
     }
 }

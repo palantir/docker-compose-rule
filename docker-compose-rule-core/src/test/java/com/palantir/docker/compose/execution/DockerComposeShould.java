@@ -18,9 +18,7 @@ package com.palantir.docker.compose.execution;
 import static com.palantir.docker.compose.execution.DockerComposeExecArgument.arguments;
 import static com.palantir.docker.compose.execution.DockerComposeExecOption.options;
 import static org.apache.commons.io.IOUtils.toInputStream;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.contains;
-import static org.hamcrest.core.Is.is;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Matchers.anyVararg;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.reset;
@@ -94,12 +92,11 @@ public class DockerComposeShould {
         when(executedProcess.getInputStream()).thenReturn(toInputStream("HEADER\ndir_db_1"));
         List<ContainerName> containerNames = compose.ps();
         verify(executor).execute("ps");
-        assertThat(
-                containerNames,
-                contains(ImmutableContainerName.builder()
+        assertThat(containerNames)
+                .containsExactly(ImmutableContainerName.builder()
                         .semanticName("db")
                         .rawName("dir_db_1")
-                        .build()));
+                        .build());
     }
 
     @Test
@@ -110,7 +107,7 @@ public class DockerComposeShould {
 
         compose.writeLogs("db", output);
         verify(executor).execute("logs", "--no-color", "db");
-        assertThat(new String(output.toByteArray(), StandardCharsets.UTF_8), is("logs"));
+        assertThat(new String(output.toByteArray(), StandardCharsets.UTF_8)).isEqualTo("logs");
     }
 
     @Test
@@ -130,7 +127,7 @@ public class DockerComposeShould {
 
         compose.writeLogs("db", output);
         verify(executor).execute("logs", "--no-color", "db");
-        assertThat(new String(output.toByteArray(), StandardCharsets.UTF_8), is("logs"));
+        assertThat(new String(output.toByteArray(), StandardCharsets.UTF_8)).isEqualTo("logs");
     }
 
     @Test
@@ -178,7 +175,7 @@ public class DockerComposeShould {
     public void parse_the_ps_output_on_ports() throws IOException, InterruptedException {
         Ports ports = compose.ports("db");
         verify(executor).execute("ps", "db");
-        assertThat(ports, is(new Ports(new DockerPort("0.0.0.0", 7000, 7000))));
+        assertThat(ports).isEqualTo(new Ports(new DockerPort("0.0.0.0", 7000, 7000)));
     }
 
     @Test
@@ -229,7 +226,8 @@ public class DockerComposeShould {
 
         DockerCompose processCompose = new DefaultDockerCompose(processExecutor, dockerMachine);
 
-        assertThat(processCompose.exec(options(), "container_1", arguments("ls", "-l")), is(lsString));
+        assertThat(processCompose.exec(options(), "container_1", arguments("ls", "-l")))
+                .isEqualTo(lsString);
     }
 
     @Test
@@ -243,12 +241,11 @@ public class DockerComposeShould {
 
         DockerCompose processCompose = new DefaultDockerCompose(processExecutor, dockerMachine);
 
-        assertThat(
-                processCompose.run(
+        assertThat(processCompose.run(
                         DockerComposeRunOption.options("-it"),
                         "container_1",
-                        DockerComposeRunArgument.arguments("ls", "-l")),
-                is(lsString));
+                        DockerComposeRunArgument.arguments("ls", "-l")))
+                .isEqualTo(lsString);
     }
 
     private static void addProcessToExecutor(

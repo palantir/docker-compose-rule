@@ -17,10 +17,9 @@ package com.palantir.docker.compose.connection;
 
 import static com.palantir.docker.compose.connection.waiting.SuccessOrFailureMatchers.failureWithMessage;
 import static com.palantir.docker.compose.connection.waiting.SuccessOrFailureMatchers.successful;
-import static org.hamcrest.MatcherAssert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.both;
 import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.not;
 import static org.hamcrest.core.Is.is;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -30,6 +29,7 @@ import com.palantir.docker.compose.configuration.MockDockerEnvironment;
 import com.palantir.docker.compose.execution.Docker;
 import com.palantir.docker.compose.execution.DockerCompose;
 import java.io.IOException;
+import org.assertj.core.api.HamcrestCondition;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -50,14 +50,14 @@ public class ContainerShould {
     public void return_port_for_container_when_external_port_number_given() throws Exception {
         DockerPort expected = env.availableService("service", IP, 5433, 5432);
         DockerPort port = container.portMappedExternallyTo(5433);
-        assertThat(port, is(expected));
+        assertThat(port).isEqualTo(expected);
     }
 
     @Test
     public void return_port_for_container_when_internal_port_number_given() throws Exception {
         DockerPort expected = env.availableService("service", IP, 5433, 5432);
         DockerPort port = container.port(5432);
-        assertThat(port, is(expected));
+        assertThat(port).isEqualTo(expected);
     }
 
     @Test
@@ -77,13 +77,13 @@ public class ContainerShould {
         int prePort = port.getExternalPort();
 
         DockerPort samePort = container.port(internalPort);
-        assertThat(prePort, is(samePort.getExternalPort()));
+        assertThat(prePort).isEqualTo(samePort.getExternalPort());
 
         container.stop();
         container.start();
 
         DockerPort updatedPort = container.port(internalPort);
-        assertThat(prePort, not(is(updatedPort.getExternalPort())));
+        assertThat(prePort).isNotEqualTo(updatedPort.getExternalPort());
     }
 
     @Test
@@ -110,7 +110,7 @@ public class ContainerShould {
     public void have_all_ports_open_if_all_exposed_ports_are_open() throws Exception {
         env.availableHttpService("service", IP, 1234, 1234);
 
-        assertThat(container.areAllPortsOpen(), is(successful()));
+        assertThat(container.areAllPortsOpen()).is(new HamcrestCondition<>(is(successful())));
     }
 
     @Test
@@ -122,14 +122,16 @@ public class ContainerShould {
         env.availableService("service", IP, 1234, 1234);
         env.unavailableService("service", IP, unavailablePort, unavailablePort);
 
-        assertThat(container.areAllPortsOpen(), is(failureWithMessage(containsString(unavailablePortString))));
+        assertThat(container.areAllPortsOpen())
+                .is(new HamcrestCondition<>(is(failureWithMessage(containsString(unavailablePortString)))));
     }
 
     @Test
     public void be_listening_on_http_when_the_port_is() throws Exception {
         env.availableHttpService("service", IP, 1234, 2345);
 
-        assertThat(container.portIsListeningOnHttp(2345, port -> "http://some.url:" + port), is(successful()));
+        assertThat(container.portIsListeningOnHttp(2345, port -> "http://some.url:" + port))
+                .is(new HamcrestCondition<>(is(successful())));
     }
 
     @Test
@@ -139,9 +141,9 @@ public class ContainerShould {
 
         env.unavailableHttpService("service", IP, unavailablePort, unavailablePort);
 
-        assertThat(
-                container.portIsListeningOnHttp(unavailablePort, port -> "http://some.url:" + port.getInternalPort()),
-                is(failureWithMessage(both(containsString(unvaliablePortString))
-                        .and(containsString("http://some.url:" + unvaliablePortString)))));
+        assertThat(container.portIsListeningOnHttp(
+                        unavailablePort, port -> "http://some.url:" + port.getInternalPort()))
+                .is(new HamcrestCondition<>(is(failureWithMessage(both(containsString(unvaliablePortString))
+                        .and(containsString("http://some.url:" + unvaliablePortString))))));
     }
 }
