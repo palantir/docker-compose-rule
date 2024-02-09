@@ -1,0 +1,6 @@
+type: improvement
+improvement:
+  description: Project names are no longer validation. Any value can be used for a
+    project name.
+  links:
+  - https://github.com/palantir/docker-compose-rule/pull/741

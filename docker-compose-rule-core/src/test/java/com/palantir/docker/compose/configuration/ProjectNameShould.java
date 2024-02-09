@@ -68,21 +68,6 @@ public class ProjectNameShould {
     }
 
     @Test
-    public void reject_blanks_in_from_string() {
-        exception.expect(IllegalStateException.class);
-        exception.expectMessage("ProjectName must not be blank.");
-        ProjectName.fromString(" ");
-    }
-
-    @Test
-    public void match_validation_behavior_of_docker_compose_cli() {
-        exception.expect(IllegalStateException.class);
-        exception.expectMessage(
-                "ProjectName 'Crazy#Proj ect!Name' not allowed, please use lowercase letters and numbers only.");
-        ProjectName.fromString("Crazy#Proj ect!Name");
-    }
-
-    @Test
     public void should_return_the_project_name_when_asString_called() {
         String projectName = ProjectName.fromString("projectname").asString();
         assertThat(projectName).isEqualTo("projectname");

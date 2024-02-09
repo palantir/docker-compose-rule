@@ -15,15 +15,10 @@
  */
 package com.palantir.docker.compose.configuration;
 
-import static com.google.common.base.Preconditions.checkState;
-
 import com.google.common.collect.ImmutableList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.function.Predicate;
-import java.util.regex.Pattern;
-import org.immutables.value.Value.Check;
 import org.immutables.value.Value.Immutable;
 import org.immutables.value.Value.Parameter;
 
@@ -34,29 +29,6 @@ public abstract class ProjectName {
 
     @Parameter
     protected abstract Optional<String> projectName();
-
-    @Check
-    protected void validate() {
-        if (!projectName().isPresent()) {
-            return;
-        }
-
-        checkState(
-                projectName().get().trim().length() > 0,
-                "ProjectName must not be blank. If you want to omit the project name, use ProjectName.omit()");
-
-        checkState(
-                validCharacters(projectName().get()),
-                "ProjectName '%s' not allowed, please use lowercase letters and numbers only.",
-                projectName().get());
-    }
-
-    // Only allows strings that docker-compose-cli would not modify
-    // https://github.com/docker/compose/blob/85e2fb63b3309280a602f1f76d77d3a82e53b6c2/compose/cli/command.py#L84
-    protected boolean validCharacters(String projectName) {
-        Predicate<String> illegalCharacters = Pattern.compile("[^a-z0-9]").asPredicate();
-        return !illegalCharacters.test(projectName);
-    }
 
     public String asString() {
         return projectName()
