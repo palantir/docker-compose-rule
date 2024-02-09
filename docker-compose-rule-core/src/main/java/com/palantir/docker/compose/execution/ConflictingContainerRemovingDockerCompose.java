@@ -46,11 +46,13 @@ public final class ConflictingContainerRemovingDockerCompose extends DelegatingD
 
     @Override
     public void up() throws IOException, InterruptedException {
+        DockerExecutionException lastException = null;
         for (int currRetryAttempt = 0; currRetryAttempt <= retryAttempts; currRetryAttempt++) {
             try {
                 getDockerCompose().up();
                 return;
             } catch (DockerExecutionException e) {
+                lastException = e;
                 Set<String> conflictingContainerNames = getConflictingContainerNames(e.getMessage());
                 if (conflictingContainerNames.isEmpty()) {
                     // failed due to reason other than conflicting containers, so re-throw
@@ -66,7 +68,7 @@ public final class ConflictingContainerRemovingDockerCompose extends DelegatingD
             }
         }
 
-        throw new DockerExecutionException("docker-compose up failed");
+        throw new DockerExecutionException("docker-compose up failed", lastException);
     }
 
     private void removeContainers(Collection<String> containerNames) throws IOException, InterruptedException {
