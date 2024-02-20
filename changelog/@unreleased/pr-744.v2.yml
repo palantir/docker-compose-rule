@@ -1,0 +1,6 @@
+type: fix
+fix:
+  description: Use Docker Compose v2 by default when constructing a `DockerComposeExecutable`
+    explicitly.
+  links:
+  - https://github.com/palantir/docker-compose-rule/pull/744
