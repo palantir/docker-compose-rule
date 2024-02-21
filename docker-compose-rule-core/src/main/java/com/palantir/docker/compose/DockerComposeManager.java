@@ -51,6 +51,8 @@ import com.palantir.docker.compose.logging.LogCollector;
 import com.palantir.docker.compose.logging.LogDirectory;
 import com.palantir.docker.compose.report.TestDescription;
 import com.palantir.docker.compose.reporting.RunRecorder;
+import com.palantir.logsafe.logger.SafeLogger;
+import com.palantir.logsafe.logger.SafeLoggerFactory;
 import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -61,14 +63,12 @@ import java.util.stream.Stream;
 import org.immutables.value.Value;
 import org.joda.time.Duration;
 import org.joda.time.ReadableDuration;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 @Value.Immutable
 @CustomImmutablesStyle
 @SuppressWarnings("DesignForExtension")
 public abstract class DockerComposeManager {
-    private static final Logger log = LoggerFactory.getLogger(DockerComposeManager.class);
+    private static final SafeLogger log = SafeLoggerFactory.get(DockerComposeManager.class);
 
     public static final Duration DEFAULT_TIMEOUT = Duration.standardMinutes(2);
     public static final int DEFAULT_RETRY_ATTEMPTS = 2;

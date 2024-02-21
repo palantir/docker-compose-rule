@@ -17,12 +17,12 @@
 package com.palantir.docker.compose.execution;
 
 import com.palantir.docker.compose.configuration.ShutdownStrategy;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.palantir.logsafe.logger.SafeLogger;
+import com.palantir.logsafe.logger.SafeLoggerFactory;
 
 public final class SkipShutdownStrategy implements ShutdownStrategy {
 
-    private static final Logger log = LoggerFactory.getLogger(SkipShutdownStrategy.class);
+    private static final SafeLogger log = SafeLoggerFactory.get(SkipShutdownStrategy.class);
 
     @Override
     public void shutdown(DockerCompose _dockerCompose, Docker _docker) {

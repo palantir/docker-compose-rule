@@ -17,9 +17,9 @@
 package com.palantir.docker.compose.execution;
 
 import com.palantir.docker.compose.configuration.ShutdownStrategy;
+import com.palantir.logsafe.logger.SafeLogger;
+import com.palantir.logsafe.logger.SafeLoggerFactory;
 import java.io.IOException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Shuts down fast but cleanly by issuing a kill (fast shutdown) followed by a down (thorough cleanup)
@@ -30,7 +30,7 @@ import org.slf4j.LoggerFactory;
  */
 public final class KillDownShutdownStrategy implements ShutdownStrategy {
 
-    private static final Logger log = LoggerFactory.getLogger(KillDownShutdownStrategy.class);
+    private static final SafeLogger log = SafeLoggerFactory.get(KillDownShutdownStrategy.class);
 
     @Override
     public void stop(DockerCompose dockerCompose) throws IOException, InterruptedException {

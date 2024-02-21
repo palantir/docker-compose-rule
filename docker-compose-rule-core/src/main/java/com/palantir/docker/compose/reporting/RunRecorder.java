@@ -20,14 +20,14 @@ import com.palantir.docker.compose.events.Event;
 import com.palantir.docker.compose.events.EventConsumer;
 import com.palantir.docker.compose.report.DockerComposeRun;
 import com.palantir.docker.compose.report.TestDescription;
+import com.palantir.logsafe.logger.SafeLogger;
+import com.palantir.logsafe.logger.SafeLoggerFactory;
 import java.time.Clock;
 import java.time.ZoneOffset;
 import java.util.concurrent.Callable;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public final class RunRecorder implements EventConsumer {
-    private static final Logger log = LoggerFactory.getLogger(RunRecorder.class);
+    private static final SafeLogger log = SafeLoggerFactory.get(RunRecorder.class);
 
     private final Clock clock;
     private final Reporter reporter;

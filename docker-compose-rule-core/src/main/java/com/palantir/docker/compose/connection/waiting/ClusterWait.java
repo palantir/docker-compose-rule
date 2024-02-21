@@ -16,6 +16,8 @@
 package com.palantir.docker.compose.connection.waiting;
 
 import com.palantir.docker.compose.connection.Cluster;
+import com.palantir.logsafe.logger.SafeLogger;
+import com.palantir.logsafe.logger.SafeLoggerFactory;
 import java.util.Optional;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ThreadLocalRandom;
@@ -24,11 +26,9 @@ import org.awaitility.Awaitility;
 import org.awaitility.core.ConditionTimeoutException;
 import org.joda.time.Duration;
 import org.joda.time.ReadableDuration;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public final class ClusterWait {
-    private static final Logger log = LoggerFactory.getLogger(ClusterWait.class);
+    private static final SafeLogger log = SafeLoggerFactory.get(ClusterWait.class);
     private final ClusterHealthCheck clusterHealthCheck;
     private final Duration timeout;
 
