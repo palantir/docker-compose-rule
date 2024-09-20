@@ -24,6 +24,8 @@ import com.palantir.docker.compose.report.Report;
 import com.palantir.docker.compose.report.Versions;
 import com.palantir.logsafe.SafeArg;
 import com.palantir.logsafe.exceptions.SafeRuntimeException;
+import com.palantir.logsafe.logger.SafeLogger;
+import com.palantir.logsafe.logger.SafeLoggerFactory;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -36,11 +38,9 @@ import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import one.util.streamex.EntryStream;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 final class ReportCompiler implements Reporter {
-    private static final Logger log = LoggerFactory.getLogger(ReportCompiler.class);
+    private static final SafeLogger log = SafeLoggerFactory.get(ReportCompiler.class);
 
     private static final String REPORT_API_VERSION = "2";
 
