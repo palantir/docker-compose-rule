@@ -80,10 +80,20 @@ public final class Command {
     }
 
     private String processOutputFrom(Process process) {
-        return asReader(process.getInputStream())
+        String stdout = asReader(process.getInputStream())
                 .lines()
                 .peek(logConsumer)
                 .collect(Collectors.joining(System.lineSeparator()));
+
+        String stderr = asReader(process.getErrorStream())
+                .lines()
+                .peek(logConsumer)
+                .collect(Collectors.joining(System.lineSeparator()));
+
+        return String.format(
+                "STDERR: %s\n\n------\n\nSTDOUT: %s\n",
+                stderr.isEmpty() ? "<empty>" : stderr,
+                stdout.isEmpty() ? "<empty>" : stdout);
     }
 
     private static String waitForResultFrom(Future<String> outputProcessing) {

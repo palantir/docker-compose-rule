@@ -53,6 +53,7 @@ public class CommandShould {
         dockerComposeCommand = new Command(dockerComposeExecutable, logConsumer);
 
         givenTheUnderlyingProcessHasOutput("");
+        givenTheUnderlyingProcessHasError("");
         givenTheUnderlyingProcessTerminatesWithAnExitCodeOf(0);
     }
 
@@ -72,7 +73,7 @@ public class CommandShould {
         givenTheUnderlyingProcessHasOutput(expectedOutput);
         String commandOutput = dockerComposeCommand.execute(errorHandler, "rm", "-f");
 
-        assertThat(commandOutput).isEqualTo(expectedOutput);
+        assertThat(commandOutput).isEqualTo("STDERR: <empty>\n\n------\n\nSTDOUT: " + expectedOutput + "\n");
     }
 
     @Test
@@ -81,7 +82,29 @@ public class CommandShould {
         givenTheUnderlyingProcessHasOutput(expectedOutput);
         String commandOutput = dockerComposeCommand.execute(errorHandler, "rm", "-f");
 
-        assertThat(commandOutput).isEqualTo(expectedOutput);
+        assertThat(commandOutput).isEqualTo("STDERR: <empty>\n\n------\n\nSTDOUT: " + expectedOutput + "\n");
+    }
+
+    @Test
+    public void return_output_when_only_stderr_is_present() throws IOException, InterruptedException {
+        String expectedStderr = "error output";
+        givenTheUnderlyingProcessHasError(expectedStderr);
+        String commandOutput = dockerComposeCommand.execute(errorHandler, "rm", "-f");
+
+        assertThat(commandOutput)
+                .isEqualTo("STDERR: " + expectedStderr + "\n\n------\n\nSTDOUT: <empty>\n");
+    }
+
+    @Test
+    public void return_output_containing_both_stderr_and_stdout() throws IOException, InterruptedException {
+        String expectedStdout = "standard output";
+        String expectedStderr = "error output";
+        givenTheUnderlyingProcessHasOutput(expectedStdout);
+        givenTheUnderlyingProcessHasError(expectedStderr);
+        String commandOutput = dockerComposeCommand.execute(errorHandler, "rm", "-f");
+
+        assertThat(commandOutput)
+                .isEqualTo("STDERR: " + expectedStderr + "\n\n------\n\nSTDOUT: " + expectedStdout + "\n");
     }
 
     @Test
@@ -92,6 +115,16 @@ public class CommandShould {
         dockerComposeCommand.execute(errorHandler, "rm", "-f");
 
         assertThat(consumedLogLines).containsExactly("line 1", "line 2");
+    }
+
+    @Test
+    public void give_both_stdout_and_stderr_to_the_specified_consumer() throws IOException, InterruptedException {
+        givenTheUnderlyingProcessHasOutput("stdout line");
+        givenTheUnderlyingProcessHasError("stderr line");
+
+        dockerComposeCommand.execute(errorHandler, "rm", "-f");
+
+        assertThat(consumedLogLines).containsExactly("stdout line", "stderr line");
     }
 
     // flaky test: https://circleci.com/gh/palantir/docker-compose-rule/378, 370, 367, 366
@@ -108,6 +141,10 @@ public class CommandShould {
 
     private void givenTheUnderlyingProcessHasOutput(String output) {
         when(executedProcess.getInputStream()).thenReturn(toInputStream(output));
+    }
+
+    private void givenTheUnderlyingProcessHasError(String error) {
+        when(executedProcess.getErrorStream()).thenReturn(toInputStream(error));
     }
 
     private void givenTheUnderlyingProcessTerminatesWithAnExitCodeOf(int exitCode) {
