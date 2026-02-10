@@ -126,7 +126,7 @@ jobs:
       CIRCLE_TEST_REPORTS: /home/circleci/junit
       CIRCLE_ARTIFACTS: /home/circleci/artifacts
       _JAVA_OPTIONS: -Dorg.gradle.internal.launcher.welcomeMessageEnabled=false -Xmx8192m
-      JAVA_HOME: /opt/java11
+      JAVA_HOME: /opt/java17
     steps:
       - attach_workspace: { at: /home/circleci }
       - restore_cache: { key: 'gradle-wrapper-v2-{{ checksum "gradle/wrapper/gradle-wrapper.properties" }}' }
@@ -136,7 +136,7 @@ jobs:
           command: |
             sudo mkdir -p /opt/java && cd /opt/java && sudo chown -R circleci:circleci .
             curl https://cdn.azul.com/zulu/bin/zulu11.54.23-ca-jdk11.0.14-linux_x64.tar.gz | tar -xzf - -C /opt/java
-            sudo ln -s /opt/java/zulu*/ /opt/java11
+            sudo ln -s /opt/java/zulu*/ /opt/java17
       - run: ./gradlew --parallel --stacktrace build -x test -x check -Porg.gradle.java.installations.fromEnv=JAVA_8_HOME,JAVA_11_HOME,JAVA_15_HOME,JAVA_17_HOME,JAVA_HOME
       - save_cache:
           key: 'build-gradle-cache-v2-{{ checksum "versions.props" }}-{{ checksum "build.gradle" }}'
@@ -152,7 +152,7 @@ jobs:
     environment:
       CIRCLE_TEST_REPORTS: /home/circleci/junit
       CIRCLE_ARTIFACTS: /home/circleci/artifacts
-      JAVA_HOME: /opt/java11
+      JAVA_HOME: /opt/java17
       _JAVA_OPTIONS: -Dorg.gradle.internal.launcher.welcomeMessageEnabled=false -Xmx8192m
     steps:
       - attach_workspace: { at: /home/circleci }
@@ -161,7 +161,7 @@ jobs:
       - run: |
           sudo mkdir -p /opt/java && cd /opt/java && sudo chown -R circleci:circleci .
           curl https://cdn.azul.com/zulu/bin/zulu11.54.23-ca-jdk11.0.14-linux_x64.tar.gz | tar -xzf - -C /opt/java
-          sudo ln -s /opt/java/zulu*/ /opt/java11
+          sudo ln -s /opt/java/zulu*/ /opt/java17
       - run: ./gradlew --parallel --stacktrace build -x test -x check -Pcom.palantir.baseline-error-prone.disable -Porg.gradle.java.installations.fromEnv=JAVA_8_HOME,JAVA_11_HOME,JAVA_15_HOME,JAVA_17_HOME,JAVA_HOME
       - save_cache:
           key: 'build-11-gradle-cache-v2-{{ checksum "versions.props" }}-{{ checksum "build.gradle" }}'
