@@ -15,13 +15,14 @@
  */
 package com.palantir.docker.compose.execution;
 
-import static org.apache.commons.io.IOUtils.toInputStream;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
@@ -30,7 +31,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CommandShould {
@@ -107,7 +108,8 @@ public class CommandShould {
     }
 
     private void givenTheUnderlyingProcessHasOutput(String output) {
-        when(executedProcess.getInputStream()).thenReturn(toInputStream(output));
+        when(executedProcess.getInputStream())
+                .thenReturn(new ByteArrayInputStream(output.getBytes(StandardCharsets.UTF_8)));
     }
 
     private void givenTheUnderlyingProcessTerminatesWithAnExitCodeOf(int exitCode) {

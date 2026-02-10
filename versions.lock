@@ -1,83 +1,185 @@
-# Run ./gradlew --write-locks to regenerate this file
-com.fasterxml.jackson.core:jackson-annotations:2.15.2 (6 constraints: d46a0135)
-com.fasterxml.jackson.core:jackson-core:2.15.2 (11 constraints: aee8697a)
-com.fasterxml.jackson.core:jackson-databind:2.15.2 (15 constraints: b6250991)
+# Run ./gradlew writeVersionsLocks to regenerate this file. Blank lines are to minimize merge conflicts.
+
+com.fasterxml.jackson.core:jackson-annotations:2.20 (7 constraints: 6b79cb28)
+
+com.fasterxml.jackson.core:jackson-core:2.20.1 (12 constraints: c5f896d1)
+
+com.fasterxml.jackson.core:jackson-databind:2.20.1 (15 constraints: d225a599)
+
 com.fasterxml.jackson.dataformat:jackson-dataformat-cbor:2.15.2 (1 constraints: 7e1c99a4)
+
 com.fasterxml.jackson.dataformat:jackson-dataformat-smile:2.15.2 (1 constraints: 7e1c99a4)
+
 com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.15.2 (1 constraints: 3c05403b)
+
 com.fasterxml.jackson.datatype:jackson-datatype-guava:2.12.3 (1 constraints: 7e1c99a4)
+
 com.fasterxml.jackson.datatype:jackson-datatype-jdk8:2.12.3 (1 constraints: 7e1c99a4)
+
 com.fasterxml.jackson.datatype:jackson-datatype-joda:2.12.3 (1 constraints: 7e1c99a4)
+
 com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.12.3 (1 constraints: 7e1c99a4)
+
 com.fasterxml.jackson.module:jackson-module-afterburner:2.12.3 (1 constraints: 7e1c99a4)
+
 com.github.zafarkhaja:java-semver:0.9.0 (1 constraints: 0b050636)
+
 com.google.code.findbugs:jsr305:3.0.2 (1 constraints: 980fcc86)
-com.google.errorprone:error_prone_annotations:2.7.1 (2 constraints: f5201957)
-com.google.guava:guava:21.0 (3 constraints: ef28dd83)
-com.palantir.conjure.java:conjure-lib:5.67.0 (1 constraints: 44056a3b)
-com.palantir.conjure.java.api:errors:2.19.0 (1 constraints: 2410a5a9)
+
+com.google.errorprone:error_prone_annotations:2.41.0 (7 constraints: 2769fece)
+
+com.google.guava:failureaccess:1.0.3 (1 constraints: 160ae3b4)
+
+com.google.guava:guava:33.5.0-jre (4 constraints: e8386d76)
+
+com.google.guava:listenablefuture:9999.0-empty-to-avoid-conflict-with-guava (1 constraints: bd17c918)
+
+com.google.j2objc:j2objc-annotations:3.1 (1 constraints: b809f1a0)
+
+com.palantir.conjure.java:conjure-lib:8.69.0 (1 constraints: 3e055d3b)
+
+com.palantir.conjure.java.api:errors:2.68.0 (1 constraints: 2810b6a9)
+
 com.palantir.conjure.java.runtime:conjure-java-jackson-serialization:6.16.0 (1 constraints: 3f05593b)
-com.palantir.ri:resource-identifier:1.3.0 (1 constraints: ec0f6e99)
-com.palantir.safe-logging:preconditions:1.16.0 (4 constraints: 644ae273)
-com.palantir.safe-logging:safe-logging:1.16.0 (2 constraints: f920db6c)
-com.palantir.tokens:auth-tokens:3.9.0 (1 constraints: f40f8a99)
+
+com.palantir.ri:resource-identifier:2.12.0 (1 constraints: 1d1090a9)
+
+com.palantir.safe-logging:logger:3.9.0 (2 constraints: 371cf9ba)
+
+com.palantir.safe-logging:logger-slf4j:3.9.0 (1 constraints: 070e6e42)
+
+com.palantir.safe-logging:logger-spi:3.9.0 (2 constraints: 1d1e0c7c)
+
+com.palantir.safe-logging:preconditions:3.10.0 (6 constraints: d16770cf)
+
+com.palantir.safe-logging:safe-logging:3.10.0 (6 constraints: d45d9083)
+
+com.palantir.tokens:auth-tokens:3.21.0 (1 constraints: 1e1097a9)
+
+com.palantir.tritium:tritium-ids:0.122.0 (1 constraints: f80f88a6)
+
 commons-io:commons-io:2.6 (1 constraints: ac04232c)
-javax.annotation:javax.annotation-api:1.3.2 (2 constraints: f814bfb6)
-javax.ws.rs:javax.ws.rs-api:2.1.1 (1 constraints: f10f7399)
+
 joda-time:joda-time:2.10.8 (2 constraints: 651b4e70)
-junit:junit:4.13 (4 constraints: 362657b7)
+
+junit:junit:4.13.2 (5 constraints: 4537ebe6)
+
 one.util:streamex:0.7.2 (1 constraints: 0b050236)
+
 org.apache.commons:commons-lang3:3.7 (3 constraints: 751ee657)
-org.apiguardian:apiguardian-api:1.1.0 (5 constraints: 0654a8a8)
+
+org.apiguardian:apiguardian-api:1.1.2 (7 constraints: cc761de9)
+
 org.awaitility:awaitility:4.0.2 (1 constraints: 08050136)
+
+org.eclipse.collections:eclipse-collections:13.0.0 (1 constraints: 1c1091a9)
+
+org.eclipse.collections:eclipse-collections-api:13.0.0 (2 constraints: fa22df26)
+
 org.hamcrest:hamcrest:2.1 (3 constraints: 851b6e77)
+
 org.hamcrest:hamcrest-core:2.1 (2 constraints: 720ac8bf)
-org.immutables:value:2.8.8 (1 constraints: 14051536)
-org.junit.jupiter:junit-jupiter-api:5.5.0 (4 constraints: 723497b4)
-org.junit.platform:junit-platform-commons:1.5.0 (2 constraints: d320004a)
-org.opentest4j:opentest4j:1.2.0 (2 constraints: cd205b49)
-org.slf4j:slf4j-api:1.7.36 (6 constraints: 4e45fdd3)
+
+org.immutables:value:2.12.1 (2 constraints: dc1425b6)
+
+org.jetbrains:annotations:26.0.2 (3 constraints: 3826c998)
+
+org.jspecify:jspecify:1.0.0 (2 constraints: 6e19b7e8)
+
+org.junit.jupiter:junit-jupiter-api:5.12.2 (4 constraints: 3235495a)
+
+org.junit.platform:junit-platform-commons:1.12.2 (2 constraints: 3321f183)
+
+org.opentest4j:opentest4j:1.3.0 (2 constraints: cf209249)
+
+org.slf4j:slf4j-api:2.0.17 (7 constraints: 8c55daaa)
+
 org.yaml:snakeyaml:2.0 (1 constraints: 3a178910)
 
+
+
 [Test dependencies]
+
 com.flipkart.zjsonpatch:zjsonpatch:0.4.4 (1 constraints: 100e923b)
+
 com.github.jknack:handlebars:4.0.7 (2 constraints: b31d3e32)
+
 com.github.jknack:handlebars-helpers:4.0.7 (1 constraints: 130e9d3b)
+
 com.github.stefanbirkner:system-rules:1.19.0 (1 constraints: 3d05443b)
+
 com.github.tomakehurst:wiremock:2.24.0 (1 constraints: 3a053f3b)
+
 com.jayway.jsonpath:json-path:2.4.0 (1 constraints: 0e0e983b)
+
 commons-codec:commons-codec:1.10 (1 constraints: f10f8781)
+
 commons-logging:commons-logging:1.2 (1 constraints: c20f9771)
+
 javax.servlet:javax.servlet-api:3.1.0 (1 constraints: 830dcc28)
+
 junit:junit-dep:4.11 (1 constraints: ba1063b3)
-net.bytebuddy:byte-buddy:1.10.20 (1 constraints: 6e0ba2e9)
-net.bytebuddy:byte-buddy-agent:1.10.20 (1 constraints: 6e0ba2e9)
+
+net.bytebuddy:byte-buddy:1.17.7 (1 constraints: 4a0b4ede)
+
+net.bytebuddy:byte-buddy-agent:1.17.7 (1 constraints: 4a0b4ede)
+
 net.minidev:accessors-smart:1.2 (1 constraints: e60926a4)
+
 net.minidev:json-smart:2.3 (1 constraints: a40c49ff)
+
 net.sf.jopt-simple:jopt-simple:5.0.3 (1 constraints: 100e9e3b)
+
 org.antlr:antlr4-runtime:4.7.1 (1 constraints: 820c6b05)
+
 org.apache.httpcomponents:httpclient:4.5.6 (1 constraints: 170eab3b)
+
 org.apache.httpcomponents:httpcore:4.4.10 (1 constraints: 561013a2)
+
 org.assertj:assertj-core:3.14.0 (1 constraints: 3a05413b)
+
 org.eclipse.jetty:jetty-continuation:9.2.26.v20180806 (1 constraints: e01007f8)
+
 org.eclipse.jetty:jetty-http:9.2.26.v20180806 (2 constraints: de203d05)
+
 org.eclipse.jetty:jetty-io:9.2.26.v20180806 (2 constraints: de203d05)
+
 org.eclipse.jetty:jetty-security:9.2.26.v20180806 (1 constraints: 6d1042e2)
+
 org.eclipse.jetty:jetty-server:9.2.26.v20180806 (2 constraints: 67218739)
+
 org.eclipse.jetty:jetty-servlet:9.2.26.v20180806 (2 constraints: 6e20b8eb)
+
 org.eclipse.jetty:jetty-servlets:9.2.26.v20180806 (1 constraints: 8810fee5)
+
 org.eclipse.jetty:jetty-util:9.2.26.v20180806 (4 constraints: fe3c89dd)
+
 org.eclipse.jetty:jetty-webapp:9.2.26.v20180806 (1 constraints: 8810fee5)
+
 org.eclipse.jetty:jetty-xml:9.2.26.v20180806 (1 constraints: e70f20cb)
-org.junit.jupiter:junit-jupiter:5.5.0 (1 constraints: 0c051336)
-org.junit.jupiter:junit-jupiter-engine:5.5.0 (1 constraints: 070ed43b)
-org.junit.jupiter:junit-jupiter-params:5.5.0 (1 constraints: 070ed43b)
-org.junit.platform:junit-platform-engine:1.5.0 (1 constraints: a6101cb4)
-org.mockito:mockito-core:3.9.0 (1 constraints: ec0bd6ee)
-org.mockito:mockito-inline:3.9.0 (1 constraints: 0e051536)
-org.objenesis:objenesis:3.2 (1 constraints: b10a13bd)
+
+org.junit.jupiter:junit-jupiter:5.12.2 (1 constraints: 7b072377)
+
+org.junit.jupiter:junit-jupiter-engine:5.12.2 (1 constraints: 370e054a)
+
+org.junit.jupiter:junit-jupiter-params:5.12.2 (1 constraints: 370e054a)
+
+org.junit.platform:junit-platform-engine:1.12.2 (3 constraints: f63355a4)
+
+org.junit.platform:junit-platform-launcher:1.12.2 (1 constraints: 3805313b)
+
+org.junit.vintage:junit-vintage-engine:5.12.2 (1 constraints: 3c05493b)
+
+org.mockito:mockito-core:5.21.0 (1 constraints: 3a05483b)
+
+org.objenesis:objenesis:3.3 (1 constraints: b20a14bd)
+
 org.ow2.asm:asm:7.0 (2 constraints: 061aea08)
-org.slf4j:slf4j-simple:1.7.36 (1 constraints: 43054b3b)
+
+org.slf4j:slf4j-simple:2.0.17 (1 constraints: 43054b3b)
+
 org.xmlunit:xmlunit-core:2.6.2 (3 constraints: bd288e9d)
+
 org.xmlunit:xmlunit-legacy:2.6.2 (1 constraints: 120ea03b)
+
 org.xmlunit:xmlunit-placeholders:2.6.2 (1 constraints: 120ea03b)

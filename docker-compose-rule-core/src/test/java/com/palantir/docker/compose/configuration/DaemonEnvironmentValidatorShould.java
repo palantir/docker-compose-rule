@@ -28,6 +28,7 @@ import org.junit.rules.ExpectedException;
 public class DaemonEnvironmentValidatorShould {
 
     @Rule
+    @SuppressWarnings("for-rollout:deprecation")
     public ExpectedException exception = ExpectedException.none();
 
     @Test

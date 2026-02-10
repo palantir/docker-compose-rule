@@ -28,6 +28,7 @@ public class RemoteHostIpResolverShould {
     private static final int PORT = 2376;
 
     @Rule
+    @SuppressWarnings("for-rollout:deprecation")
     public ExpectedException exception = ExpectedException.none();
 
     @Test

@@ -15,7 +15,6 @@
  */
 package com.palantir.docker.compose;
 
-import com.google.common.base.Throwables;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
@@ -235,7 +234,7 @@ public abstract class DockerComposeManager {
                                 return;
                             }
 
-                            Throwables.propagate(e);
+                            throw new RuntimeException(e);
                         }
                     }))
                     .collect(Collectors.toList()));

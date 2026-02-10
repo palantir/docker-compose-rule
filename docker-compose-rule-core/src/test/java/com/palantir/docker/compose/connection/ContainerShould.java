@@ -39,6 +39,7 @@ public class ContainerShould {
     private static final String IP = "127.0.0.1";
 
     @Rule
+    @SuppressWarnings("for-rollout:deprecation")
     public ExpectedException exception = ExpectedException.none();
 
     private final Docker docker = mock(Docker.class);

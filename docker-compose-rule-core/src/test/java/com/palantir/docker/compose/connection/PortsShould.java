@@ -28,6 +28,7 @@ public class PortsShould {
     private static final String LOCALHOST_IP = "127.0.0.1";
 
     @Rule
+    @SuppressWarnings("for-rollout:deprecation")
     public ExpectedException exception = ExpectedException.none();
 
     @Test

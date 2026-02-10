@@ -42,6 +42,7 @@ public class ClusterWaitShould {
             ImmutableCluster.builder().containerCache(containerCache).ip(IP).build();
 
     @Rule
+    @SuppressWarnings("for-rollout:deprecation")
     public ExpectedException exception = ExpectedException.none();
 
     @Test

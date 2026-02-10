@@ -16,7 +16,7 @@
 package com.palantir.docker.compose.execution;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Matchers.anySetOf;
+import static org.mockito.ArgumentMatchers.anySet;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -35,6 +35,7 @@ public class ConflictingContainerRemovingDockerComposeShould {
     private final Docker docker = mock(Docker.class);
 
     @Rule
+    @SuppressWarnings("for-rollout:deprecation")
     public ExpectedException exception = ExpectedException.none();
 
     @Test
@@ -96,7 +97,7 @@ public class ConflictingContainerRemovingDockerComposeShould {
                 .doNothing()
                 .when(dockerCompose)
                 .up();
-        doThrow(DockerExecutionException.class).when(docker).rm(anySetOf(String.class));
+        doThrow(DockerExecutionException.class).when(docker).rm(anySet());
 
         ConflictingContainerRemovingDockerCompose conflictingContainerRemovingDockerCompose =
                 new ConflictingContainerRemovingDockerCompose(dockerCompose, docker);
@@ -113,7 +114,7 @@ public class ConflictingContainerRemovingDockerComposeShould {
                 .doNothing()
                 .when(dockerCompose)
                 .up();
-        doThrow(RuntimeException.class).when(docker).rm(anySetOf(String.class));
+        doThrow(RuntimeException.class).when(docker).rm(anySet());
 
         exception.expect(RuntimeException.class);
         ConflictingContainerRemovingDockerCompose conflictingContainerRemovingDockerCompose =

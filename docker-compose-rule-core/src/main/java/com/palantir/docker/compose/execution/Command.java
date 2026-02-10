@@ -15,7 +15,6 @@
  */
 package com.palantir.docker.compose.execution;
 
-import com.google.common.base.Throwables;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -90,7 +89,7 @@ public final class Command {
         try {
             return outputProcessing.get(HOURS_TO_WAIT_FOR_STD_OUT_TO_CLOSE, TimeUnit.HOURS);
         } catch (InterruptedException | ExecutionException | TimeoutException e) {
-            throw Throwables.propagate(e);
+            throw new RuntimeException(e);
         }
     }
 

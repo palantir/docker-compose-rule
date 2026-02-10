@@ -5,19 +5,20 @@ com.google.guava:guava = 21.0
 org.awaitility:awaitility = 4.0.2
 commons-io:commons-io = 2.6
 joda-time:joda-time = 2.10.3
-junit:junit = 4.13
+junit:junit = 4.13.2
 org.hamcrest:* = 2.1
 org.immutables:* = 2.8.8
-org.mockito:* = 3.9.0
+org.mockito:* = 5.21.0
 org.slf4j:* = 1.7.36
 one.util:streamex = 0.7.2
 org.assertj:assertj-core = 3.14.0
-com.palantir.conjure:* = 4.16.1
-com.palantir.conjure.java:* = 5.67.0
+com.palantir.conjure:* = 4.53.0
+com.palantir.conjure.java:* = 8.69.0
 com.fasterxml.jackson.dataformat:* = 2.15.2
-one.util:streamex = 0.7.2
 com.github.tomakehurst:wiremock = 2.24.0
-org.junit.jupiter:* = 5.5.0
+org.junit.jupiter:* = 5.12.2
+org.junit.platform:* = 1.12.2
+org.junit.vintage:* = 5.12.2
 
 # dependency-upgrader:OFF
 com.palantir.conjure.java.runtime:* = 6.16.0

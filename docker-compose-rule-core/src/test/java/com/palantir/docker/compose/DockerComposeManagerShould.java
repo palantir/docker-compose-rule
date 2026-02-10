@@ -22,8 +22,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.arrayContaining;
 import static org.hamcrest.core.Is.is;
 import static org.joda.time.Duration.millis;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.eq;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -50,12 +50,12 @@ import com.palantir.docker.compose.logging.LogCollector;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
-import org.apache.commons.io.IOUtils;
 import org.assertj.core.api.HamcrestCondition;
 import org.joda.time.Duration;
 import org.junit.Before;
@@ -67,7 +67,7 @@ import org.junit.runner.RunWith;
 import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class DockerComposeManagerShould {
@@ -75,6 +75,7 @@ public final class DockerComposeManagerShould {
     private static final String IP = "127.0.0.1";
 
     @Rule
+    @SuppressWarnings("for-rollout:deprecation")
     public ExpectedException exception = ExpectedException.none();
 
     @Rule
@@ -257,7 +258,7 @@ public final class DockerComposeManagerShould {
         CountDownLatch latch = new CountDownLatch(1);
         when(dockerCompose.writeLogs(eq("db"), any(OutputStream.class))).thenAnswer(args -> {
             OutputStream outputStream = (OutputStream) args.getArguments()[1];
-            IOUtils.write("db log", outputStream);
+            outputStream.write("db log".getBytes(StandardCharsets.UTF_8));
             latch.countDown();
             return null;
         });

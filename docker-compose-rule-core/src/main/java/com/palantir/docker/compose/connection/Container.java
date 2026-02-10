@@ -16,7 +16,6 @@
 package com.palantir.docker.compose.connection;
 
 import com.google.common.base.Suppliers;
-import com.google.common.base.Throwables;
 import com.palantir.docker.compose.connection.waiting.SuccessOrFailure;
 import com.palantir.docker.compose.execution.Docker;
 import com.palantir.docker.compose.execution.DockerCompose;
@@ -129,7 +128,7 @@ public final class Container {
         try {
             return dockerCompose.ports(containerName);
         } catch (IOException | InterruptedException e) {
-            throw Throwables.propagate(e);
+            throw new RuntimeException(e);
         }
     }
 

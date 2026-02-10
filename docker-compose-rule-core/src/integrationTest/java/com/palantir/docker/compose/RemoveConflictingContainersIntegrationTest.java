@@ -29,6 +29,7 @@ public class RemoveConflictingContainersIntegrationTest {
     private static final String DOCKER_COMPOSE_YAML_PATH = "src/test/resources/named-containers-docker-compose.yaml";
 
     @Rule
+    @SuppressWarnings("for-rollout:deprecation")
     public ExpectedException exception = ExpectedException.none();
 
     @Test
