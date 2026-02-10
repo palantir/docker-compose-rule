@@ -35,6 +35,7 @@ public class DockerComposeRuleConfigTest {
     public final TemporaryFolder temporaryFolder = new TemporaryFolder();
 
     @Rule
+    @SuppressWarnings("for-rollout:deprecation")
     public final ExpectedException expectedException = ExpectedException.none();
 
     @Test

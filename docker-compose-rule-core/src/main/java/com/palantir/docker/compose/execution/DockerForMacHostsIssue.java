@@ -16,7 +16,6 @@
 
 package com.palantir.docker.compose.execution;
 
-import com.google.common.io.Files;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -53,7 +52,7 @@ public final class DockerForMacHostsIssue {
 
     private static boolean localunixsocketRedirectedInEtcHosts() {
         try {
-            return Files.toString(new File("/etc/hosts"), StandardCharsets.UTF_8)
+            return java.nio.file.Files.readString(new File("/etc/hosts").toPath(), StandardCharsets.UTF_8)
                     .contains(REDIRECT_LINE);
         } catch (IOException e) {
             return true; // Better to be silent than issue false warnings

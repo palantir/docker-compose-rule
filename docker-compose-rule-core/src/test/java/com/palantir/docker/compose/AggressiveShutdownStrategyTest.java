@@ -16,7 +16,7 @@
 
 package com.palantir.docker.compose;
 
-import static org.mockito.Matchers.anyListOf;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -33,6 +33,7 @@ import org.junit.rules.ExpectedException;
 public class AggressiveShutdownStrategyTest {
 
     @Rule
+    @SuppressWarnings("for-rollout:deprecation")
     public final ExpectedException exception = ExpectedException.none();
 
     private final DockerCompose mockDockerCompose = mock(DockerCompose.class);
@@ -47,11 +48,11 @@ public class AggressiveShutdownStrategyTest {
         doThrow(new DockerExecutionException(btrfs_message))
                 .doNothing()
                 .when(mockDocker)
-                .rm(anyListOf(String.class));
+                .rm(anyList());
 
         ShutdownStrategy.AGGRESSIVE.shutdown(mockDockerCompose, mockDocker);
 
-        verify(mockDocker, times(2)).rm(anyListOf(String.class));
+        verify(mockDocker, times(2)).rm(anyList());
     }
 
     @Test
@@ -59,10 +60,10 @@ public class AggressiveShutdownStrategyTest {
         doThrow(new DockerExecutionException(btrfs_message))
                 .doThrow(new DockerExecutionException(btrfs_message))
                 .when(mockDocker)
-                .rm(anyListOf(String.class));
+                .rm(anyList());
 
         ShutdownStrategy.AGGRESSIVE.shutdown(mockDockerCompose, mockDocker);
 
-        verify(mockDocker, times(2)).rm(anyListOf(String.class));
+        verify(mockDocker, times(2)).rm(anyList());
     }
 }

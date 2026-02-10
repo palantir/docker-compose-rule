@@ -15,6 +15,7 @@
  */
 package com.palantir.docker.compose;
 
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -29,20 +30,16 @@ import com.palantir.docker.compose.logging.LogCollector;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.junit.rules.TemporaryFolder;
 import org.junit.runner.Description;
 import org.junit.runner.RunWith;
 import org.junit.runners.model.Statement;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DockerComposeRuleShould {
 
     private static final String IP = "127.0.0.1";
-
-    @Rule
-    public ExpectedException exception = ExpectedException.none();
 
     @Rule
     public TemporaryFolder logFolder = new TemporaryFolder();
@@ -75,12 +72,8 @@ public class DockerComposeRuleShould {
 
         doThrow(new DockerExecutionException("")).when(dockerCompose).up();
         rule = defaultBuilder().build();
-
-        try {
-            exception.expect(DockerExecutionException.class);
-            rule.apply(statement, description).evaluate();
-        } finally {
-            verify(logCollector, times(1)).collectLogs(dockerCompose);
-        }
+        assertThatThrownBy(() -> rule.apply(statement, description).evaluate())
+                .isInstanceOf(DockerExecutionException.class);
+        verify(logCollector, times(1)).collectLogs(dockerCompose);
     }
 }

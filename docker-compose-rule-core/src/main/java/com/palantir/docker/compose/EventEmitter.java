@@ -16,7 +16,6 @@
 
 package com.palantir.docker.compose;
 
-import com.google.common.base.Throwables;
 import com.palantir.docker.compose.connection.Cluster;
 import com.palantir.docker.compose.connection.waiting.ClusterWait;
 import com.palantir.docker.compose.connection.waiting.Exceptions;
@@ -32,6 +31,7 @@ import com.palantir.docker.compose.events.ShutdownStopEvent;
 import com.palantir.docker.compose.events.Task;
 import com.palantir.docker.compose.events.UpEvent;
 import com.palantir.docker.compose.events.WaitForServicesEvent;
+import com.palantir.logsafe.exceptions.SafeUncheckedIoException;
 import java.io.IOException;
 import java.time.Clock;
 import java.time.OffsetDateTime;
@@ -130,7 +130,7 @@ class EventEmitter {
         try {
             emitTask(runnable, eventFunction);
         } catch (IOException e) {
-            Throwables.propagate(e);
+            throw new SafeUncheckedIoException(e);
         }
     }
 

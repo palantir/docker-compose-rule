@@ -30,6 +30,7 @@ import org.junit.rules.ExpectedException;
 public class RemoteBuilderShould {
 
     @Rule
+    @SuppressWarnings("for-rollout:deprecation")
     public ExpectedException exception = ExpectedException.none();
 
     @Test

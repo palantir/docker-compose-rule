@@ -16,7 +16,6 @@
 
 package com.palantir.docker.compose;
 
-import static com.google.common.base.Throwables.propagate;
 import static com.palantir.docker.compose.connection.waiting.HealthChecks.toHaveAllPortsOpen;
 import static com.palantir.docker.compose.execution.DockerComposeExecArgument.arguments;
 import static com.palantir.docker.compose.execution.DockerComposeExecOption.options;
@@ -65,6 +64,7 @@ public class DockerComposeRuleIntegrationTest {
     public TemporaryFolder logFolder = new TemporaryFolder();
 
     @Rule
+    @SuppressWarnings("for-rollout:deprecation")
     public ExpectedException exception = ExpectedException.none();
 
     private static void forEachContainer(Consumer<String> consumer) {
@@ -106,7 +106,7 @@ public class DockerComposeRuleIntegrationTest {
                 container.start();
                 assertThat(container.state(), is(State.HEALTHY));
             } catch (IOException | InterruptedException e) {
-                propagate(e);
+                throw new RuntimeException(e);
             }
         });
     }
@@ -122,7 +122,7 @@ public class DockerComposeRuleIntegrationTest {
 
                 container.stop();
             } catch (IOException | InterruptedException e) {
-                propagate(e);
+                throw new RuntimeException(e);
             }
         });
     }
@@ -136,7 +136,7 @@ public class DockerComposeRuleIntegrationTest {
                 container.start();
                 assertThat(container.state(), is(State.HEALTHY));
             } catch (IOException | InterruptedException e) {
-                propagate(e);
+                throw new RuntimeException(e);
             }
         });
     }
@@ -153,7 +153,7 @@ public class DockerComposeRuleIntegrationTest {
                 container.start();
                 assertThat(container.state(), is(State.HEALTHY));
             } catch (IOException | InterruptedException e) {
-                propagate(e);
+                throw new RuntimeException(e);
             }
         });
     }
@@ -169,7 +169,7 @@ public class DockerComposeRuleIntegrationTest {
 
                 container.kill();
             } catch (IOException | InterruptedException e) {
-                propagate(e);
+                throw new RuntimeException(e);
             }
         });
     }

@@ -18,6 +18,7 @@ package com.palantir.docker.compose.matchers;
 import static org.hamcrest.Matchers.containsString;
 
 import com.google.common.base.MoreObjects;
+import com.palantir.logsafe.exceptions.SafeUncheckedIoException;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -112,7 +113,7 @@ public final class IoMatchers {
                 try {
                     return FileUtils.readFileToString(file, StandardCharsets.UTF_8);
                 } catch (IOException e) {
-                    throw new RuntimeException(e);
+                    throw new SafeUncheckedIoException(e);
                 }
             }
         };

@@ -25,6 +25,7 @@ import org.junit.rules.ExpectedException;
 public class ProjectNameShould {
 
     @Rule
+    @SuppressWarnings("for-rollout:deprecation")
     public final ExpectedException exception = ExpectedException.none();
 
     @Test

@@ -24,6 +24,7 @@ import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.google.common.annotations.VisibleForTesting;
 import com.palantir.docker.compose.CustomImmutablesStyle;
 import com.palantir.docker.compose.reporting.ReportingConfig;
+import com.palantir.logsafe.exceptions.SafeUncheckedIoException;
 import java.io.File;
 import java.io.IOException;
 import java.util.Optional;
@@ -67,7 +68,7 @@ public abstract class DockerComposeRuleConfig {
             try {
                 return OBJECT_MAPPER.readValue(config, DockerComposeRuleConfig.class);
             } catch (IOException e) {
-                throw new RuntimeException("Couldn't deserialize config file", e);
+                throw new SafeUncheckedIoException("Couldn't deserialize config file", e);
             }
         });
     }

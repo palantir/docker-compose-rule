@@ -31,6 +31,7 @@ public class DockerComposeFilesShould {
     public final TemporaryFolder tempFolder = new TemporaryFolder();
 
     @Rule
+    @SuppressWarnings("for-rollout:deprecation")
     public final ExpectedException exception = ExpectedException.none();
 
     @Test

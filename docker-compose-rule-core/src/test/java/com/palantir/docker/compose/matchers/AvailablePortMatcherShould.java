@@ -29,6 +29,7 @@ import org.junit.rules.ExpectedException;
 public class AvailablePortMatcherShould {
 
     @Rule
+    @SuppressWarnings("for-rollout:deprecation")
     public ExpectedException exception = ExpectedException.none();
 
     @Test

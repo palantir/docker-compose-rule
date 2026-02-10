@@ -18,6 +18,7 @@ package com.palantir.docker.compose.logging;
 import static com.google.common.base.Preconditions.checkArgument;
 
 import com.palantir.docker.compose.execution.DockerCompose;
+import com.palantir.logsafe.exceptions.SafeUncheckedIoException;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -63,7 +64,7 @@ public final class FileLogCollector implements LogCollector {
         } catch (final FileAlreadyExistsException e) {
             // ignore
         } catch (final IOException e) {
-            throw new RuntimeException("Error creating log file", e);
+            throw new SafeUncheckedIoException("Error creating log file", e);
         }
         log.info("Writing logs for container '{}' to '{}'", container, outputFile.getAbsolutePath());
         try (FileOutputStream outputStream = new FileOutputStream(outputFile)) {
@@ -71,7 +72,7 @@ public final class FileLogCollector implements LogCollector {
                 log.error("Timed out while collecting logs for '{}'", container);
             }
         } catch (IOException e) {
-            throw new RuntimeException("Error reading log", e);
+            throw new SafeUncheckedIoException("Error reading log", e);
         }
     }
 }

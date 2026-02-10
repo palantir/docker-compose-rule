@@ -22,8 +22,8 @@ import static org.hamcrest.Matchers.arrayContaining;
 import static org.hamcrest.Matchers.arrayContainingInAnyOrder;
 import static org.hamcrest.Matchers.emptyArray;
 import static org.hamcrest.core.Is.is;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.eq;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -34,7 +34,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
-import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -48,6 +47,7 @@ public class FileLogCollectorShould {
     public TemporaryFolder logDirectoryParent = new TemporaryFolder();
 
     @Rule
+    @SuppressWarnings("for-rollout:deprecation")
     public ExpectedException exception = ExpectedException.none();
 
     private final DockerCompose compose = mock(DockerCompose.class);
@@ -101,7 +101,7 @@ public class FileLogCollectorShould {
         when(compose.services()).thenReturn(ImmutableList.of("db"));
         when(compose.writeLogs(eq("db"), any(OutputStream.class))).thenAnswer(args -> {
             OutputStream outputStream = (OutputStream) args.getArguments()[1];
-            IOUtils.write("log", outputStream);
+            outputStream.write("log".getBytes(java.nio.charset.StandardCharsets.UTF_8));
             return true;
         });
         logCollector.collectLogs(compose);
@@ -115,14 +115,14 @@ public class FileLogCollectorShould {
         CountDownLatch dbLatch = new CountDownLatch(1);
         when(compose.writeLogs(eq("db"), any(OutputStream.class))).thenAnswer(args -> {
             OutputStream outputStream = (OutputStream) args.getArguments()[1];
-            IOUtils.write("log", outputStream);
+            outputStream.write("log".getBytes(java.nio.charset.StandardCharsets.UTF_8));
             dbLatch.countDown();
             return true;
         });
         CountDownLatch db2Latch = new CountDownLatch(1);
         when(compose.writeLogs(eq("db2"), any(OutputStream.class))).thenAnswer(args -> {
             OutputStream outputStream = (OutputStream) args.getArguments()[1];
-            IOUtils.write("other", outputStream);
+            outputStream.write("other".getBytes(java.nio.charset.StandardCharsets.UTF_8));
             db2Latch.countDown();
             return true;
         });

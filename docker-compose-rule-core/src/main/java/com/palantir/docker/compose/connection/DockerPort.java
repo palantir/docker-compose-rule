@@ -16,6 +16,7 @@
 package com.palantir.docker.compose.connection;
 
 import com.palantir.docker.compose.connection.waiting.SuccessOrFailure;
+import com.palantir.logsafe.exceptions.SafeUncheckedIoException;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -80,7 +81,7 @@ public final class DockerPort {
             log.trace("Trying to connect to {}", urlString);
             url = new URL(urlString);
         } catch (MalformedURLException e) {
-            throw new RuntimeException("Could not create URL for connecting to localhost", e);
+            throw new SafeUncheckedIoException("Could not create URL for connecting to localhost", e);
         }
         try {
             url.openConnection().connect();
