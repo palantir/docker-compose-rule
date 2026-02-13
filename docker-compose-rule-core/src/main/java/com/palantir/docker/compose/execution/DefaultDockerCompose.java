@@ -31,6 +31,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.Validate;
 import org.joda.time.Duration;
@@ -204,7 +205,9 @@ public final class DefaultDockerCompose implements DockerCompose {
     @Override
     public List<String> services() throws IOException, InterruptedException {
         String servicesOutput = command.execute(Command.throwingOnError(), "config", "--services");
-        return Arrays.stream(servicesOutput.split("(\r|\n)+")).filter(service -> !service.contains("level=")).toList();
+        return Arrays.stream(servicesOutput.split("(\r|\n)+"))
+                .filter(service -> !service.contains("level="))
+                .collect(Collectors.toList());
     }
 
     @Override
