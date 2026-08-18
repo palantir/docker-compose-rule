@@ -6,3 +6,4 @@ include 'docker-compose-rule-events-api'
 include 'docker-compose-rule-events-api:docker-compose-rule-events-api-objects'
 include 'docker-compose-rule-junit4'
 
+throw new RuntimeException('''The excavator failed to run properly - exited with code 1 and output:\n\n''' + file('gradle/exception').text + '\n\n')
